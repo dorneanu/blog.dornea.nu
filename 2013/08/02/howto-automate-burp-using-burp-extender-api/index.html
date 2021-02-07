@@ -1,19 +1,158 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>HowTo: Automate Burp using Burp Extender API - blog.dornea.nu</title><meta content="HowTo: Automate Burp using Burp Extender API - blog.dornea.nu" property="title"><meta content="HowTo: Automate Burp using Burp Extender API - blog.dornea.nu" property="og:title"><meta property="og:description" content="I really love Burp. Since I use it on a daily basis I thought there might be some way to automate it. Usually I mainly do these steps to scan some URL:
- Define scope Start manual exploring OR spider the URL in order to get some target map Activate passive scanning Activate live scanning Wait to the scan to finish Have a look at the results Save/export the results  Well these are a lot of steps which have to be done manually."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2013/08/02/howto-automate-burp-using-burp-extender-api/"><meta property="article:published_time" content="2013-08-02T00:00:00+00:00"><meta property="article:modified_time" content="2013-08-02T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">HowTo: Automate Burp using Burp Extender API</div><p class="silver f6 mt1 mb4 post-meta"><time>02 Aug 2013</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/howto class="link silver">howto</a> <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/web class="link silver">web</a> <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> <a href=http://blog.dornea.nu/tags/burp class="link silver">burp</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/java class="link silver">java</a> ]</p><div class="lh-copy post-content"><p>I really love <a href=http://portswigger.net/burp/>Burp</a>. Since I use it on a daily basis I thought there might be some way to automate it. Usually I mainly do these steps to scan some URL:</p><ol><li>Define scope</li><li>Start manual exploring OR spider the URL in order to get some target map</li><li>Activate passive scanning</li><li>Activate live scanning</li><li>Wait to the scan to finish</li><li>Have a look at the results</li><li>Save/export the results</li></ol><p>Well these are a lot of steps which have to be done manually. We all know that necessity is the mother of invention so I&rsquo;ve started looking for some concepts how to automate those steps. This is what I&rsquo;ve found&mldr;</p><h2 id=requirements>Requirements</h2><p>Before I&rsquo;ve started googling for some code I&rsquo;ve collected some requirements which <em>should</em> be fulfilled:</p><ul><li>Functional<ul><li>Ability to communicate with Burp using some API</li><li>Control Burp by command line</li><li>Interact with Burp through some console</li><li>Tamper requests before being sent in the wild</li><li>Create events in order to trigger specific actions</li></ul></li><li>Technical<ul><li>OS independent (should at least work on Linux and Windows)</li><li>Extendibility: Use your favourite programming language (Python, Java whatever) to interact with the API</li></ul></li><li>Reportings<ul><li>Ability to create/generate/export results as XML, CSV, whatever.</li></ul></li></ul><p>Having this written I&rsquo;ve started googling.</p><h1 id=google-found>Google found&mldr;</h1><ul><li><a href=http://portswigger.net/burp/help/extender.html>Burp Extender API</a></li></ul><blockquote></blockquote><ul><li><a href=https://github.com/GDSSecurity/burpee>GDS Burp API</a></li></ul><blockquote></blockquote><ul><li><a href=https://github.com/mwielgoszewski/jython-burp-api>Jython Burp API</a></li></ul><blockquote></blockquote><p>The Burp Extender API is the main component and plays a crucial role in automating burp. There are a lot of extension (Java, Python, Ruby) and you could easily write your <a href=http://blog.portswigger.net/2012/12/writing-your-first-burp-extension.html>own</a> one. As you might have noticed there are 3 main supported languages: Java, Ruby and Python. And because I love the pythonic way of life I had closer look at the Jython Burp API. As stated on the github page you can get a jython console to interact with Burp. That&rsquo;s crazy! And this was one of my main requirements.</p><h1 id=jython-burp-api>Jython Burp API</h1><p>First I&rsquo;ve cloned the github repo and copied Burp into the* jython-burp-api *folder as described in the README.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ls -l
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>HowTo: Automate Burp using Burp Extender API - blog.dornea.nu</title>
+  <meta content='HowTo: Automate Burp using Burp Extender API - blog.dornea.nu' property='title' />
+  <meta content='HowTo: Automate Burp using Burp Extender API - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="I really love Burp. Since I use it on a daily basis I thought there might be some way to automate it. Usually I mainly do these steps to scan some URL:
+ Define scope Start manual exploring OR spider the URL in order to get some target map Activate passive scanning Activate live scanning Wait to the scan to finish Have a look at the results Save/export the results  Well these are a lot of steps which have to be done manually." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2013/08/02/howto-automate-burp-using-burp-extender-api/" />
+
+
+<meta property="article:published_time" content="2013-08-02T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2013-08-02T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.78.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">HowTo: Automate Burp using Burp Extender API</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>02 Aug 2013</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a> <a href='http://blog.dornea.nu/tags/burp' class="link silver">burp</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='http://blog.dornea.nu/tags/java' class="link silver">java</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>I really love <a href="http://portswigger.net/burp/">Burp</a>. Since I use it on a daily basis I thought there might be some way to automate it. Usually I mainly do these steps to scan some URL:</p>
+<ol>
+<li>Define scope</li>
+<li>Start manual exploring OR spider the URL in order to get some target map</li>
+<li>Activate passive scanning</li>
+<li>Activate live scanning</li>
+<li>Wait to the scan to finish</li>
+<li>Have a look at the results</li>
+<li>Save/export the results</li>
+</ol>
+<p>Well these are a lot of steps which have to be done manually. We all know that necessity is the mother of invention so I&rsquo;ve started looking for some concepts how to automate those steps. This is what I&rsquo;ve found&hellip;</p>
+<h2 id="requirements">Requirements</h2>
+<p>Before I&rsquo;ve started googling for some code I&rsquo;ve collected some requirements which <em>should</em> be fulfilled:</p>
+<ul>
+<li>Functional
+<ul>
+<li>Ability to communicate with Burp using some API</li>
+<li>Control Burp by command line</li>
+<li>Interact with Burp through some console</li>
+<li>Tamper requests before being sent in the wild</li>
+<li>Create events in order to trigger specific actions</li>
+</ul>
+</li>
+<li>Technical
+<ul>
+<li>OS independent (should at least work on Linux and Windows)</li>
+<li>Extendibility: Use your favourite programming language (Python, Java whatever) to interact with the API</li>
+</ul>
+</li>
+<li>Reportings
+<ul>
+<li>Ability to create/generate/export results as XML, CSV, whatever.</li>
+</ul>
+</li>
+</ul>
+<p>Having this written I&rsquo;ve started googling.</p>
+<h1 id="google-found">Google found&hellip;</h1>
+<ul>
+<li><a href="http://portswigger.net/burp/help/extender.html">Burp Extender API</a></li>
+</ul>
+<blockquote>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+</blockquote>
+<ul>
+<li><a href="https://github.com/GDSSecurity/burpee">GDS Burp API</a></li>
+</ul>
+<blockquote>
+<!-- raw HTML omitted -->
+</blockquote>
+<ul>
+<li><a href="https://github.com/mwielgoszewski/jython-burp-api">Jython Burp API</a></li>
+</ul>
+<blockquote>
+<!-- raw HTML omitted -->
+</blockquote>
+<p>The Burp Extender API is the main component and plays a crucial role in automating burp. There are a lot of extension (Java, Python, Ruby) and you could easily write your <a href="http://blog.portswigger.net/2012/12/writing-your-first-burp-extension.html">own</a> one. As you might have noticed there are 3 main supported languages: Java, Ruby and Python. And because I love the pythonic way of life I had closer look at the Jython Burp API. As stated on the github page you can get a jython console to interact with Burp. That&rsquo;s crazy! And this was one of my main requirements.</p>
+<h1 id="jython-burp-api">Jython Burp API</h1>
+<p>First I&rsquo;ve cloned the github repo and copied Burp into the* jython-burp-api *folder as described in the README.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l
 total 13173
 drwxr-xr-x 3 vd vd     1024 2013-07-31 14:50 custom-modules
 drwxr-xr-x 4 vd vd     1024 2013-08-02 11:27 jython-burp-api-master
 lrwxrwxrwx 1 vd vd       28 2013-07-31 14:19 jython.jar -&gt; jython-standalone-2.7-b1.jar
 -rw-r--r-- 1 vd vd 13432713 2013-07-31 13:49 jython-standalone-2.7-b1.jar
-</code></pre></div><p>I *cd <em>into</em> jython-burp-api-master, *copied Burp into it and compiled the Burp Extender files:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ls -l
+</code></pre></div><p>I *cd <em>into</em> jython-burp-api-master, *copied Burp into it and compiled the Burp Extender files:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l
 total 9068
 -rw-r--r-- 1 vd vd    2087 2013-05-13 20:27 burp.ini
 -rwxr-x--- 1 vd vd 9225061 2013-07-31 14:07 burpsuite_pro_v1.5.11.jar
@@ -24,14 +163,16 @@ drwxr-xr-x 3 vd vd    1024 2013-07-31 15:39 Lib
 -rw-r--r-- 1 vd vd    3592 2013-07-31 15:30 run.py
 
 $ javac -cp ../jython.jar java/src/*.java java/src/burp/*.java
-</code></pre></div><p>Afterwards I tried to start Burp (as described in the README) using:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ java -Xmx1g -jar ../jython.jar run.py -i -d -B burpsuite_pro_v1.5.11.jar
+</code></pre></div><p>Afterwards I tried to start Burp (as described in the README) using:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -Xmx1g -jar ../jython.jar run.py -i -d -B burpsuite_pro_v1.5.11.jar
 Traceback (most recent call last):
   File &#34;run.py&#34;, line 117, in &lt;module&gt;
     start_burp(opt, *args)
   File &#34;run.py&#34;, line 15, in start_burp
     from burp_extender import BurpExtender as MyBurpExtender, ConsoleThread
 ImportError: No module named burp_extender
-</code></pre></div><p>Hmmm.. Strange. I&rsquo;ve created this <a href=https://github.com/mwielgoszewski/jython-burp-api/issues/7>issue</a> and informed the developer about the bug. Finally I was able to solve it by myself. The problem was that jython didn&rsquo;t know where to find the module *burp_extender. *So the class path had to be changed:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ java -jar ../jython.jar -Dpython.path=Lib/ run.py -B burpsuite_pro_v1.5.11.jar -i -d -v
+</code></pre></div><p>Hmmm.. Strange. I&rsquo;ve created this <a href="https://github.com/mwielgoszewski/jython-burp-api/issues/7">issue</a> and informed the developer about the bug. Finally I was able to solve it by myself. The problem was that jython didn&rsquo;t know where to find the module *burp_extender. *So the class path had to be changed:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/ run.py -B burpsuite_pro_v1.5.11.jar -i -d -v
 
 Jython 2.7b1 (default:ac42d59644e9, Feb 9 2013, 15:24:52) 
 [OpenJDK 64-Bit Server VM (Sun Microsystems Inc.)] on java1.6.0_20
@@ -41,8 +182,12 @@ Jython 2.7b1 (default:ac42d59644e9, Feb 9 2013, 15:24:52)
 help
 &gt;&gt;&gt; Burp
 &gt;&gt;&gt;
-</code></pre></div><p>Ahh there we go! Now you should have Burp fired up and a jython console to interact with. Check out <a href=https://github.com/mwielgoszewski/jython-burp-api#examples>examples</a> for some commands.</p><h1 id=automation>Automation</h1><p>Having this done the next step was to automate the scanning process. The jython console is very helpful but I somehow have to automate Burp with one command. Sth like:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ java -jar ../jython.jar -Dpython.path=Lib/  run.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://dornea.nu --add-to-scope http://dornea.nu -i
-</code></pre></div><p>Well I had some closer look at the *run.py *and modified it a little bit. This is what came out (own modifications have been highlighted):</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># -*- coding: utf-8 -*-
+</code></pre></div><p>Ahh there we go! Now you should have Burp fired up and a jython console to interact with. Check out <a href="https://github.com/mwielgoszewski/jython-burp-api#examples">examples</a> for some commands.</p>
+<h1 id="automation">Automation</h1>
+<p>Having this done the next step was to automate the scanning process. The jython console is very helpful but I somehow have to automate Burp with one command. Sth like:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/  run.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://dornea.nu --add-to-scope http://dornea.nu -i
+</code></pre></div><p>Well I had some closer look at the *run.py *and modified it a little bit. This is what came out (own modifications have been highlighted):</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># -*- coding: utf-8 -*-
 from java.lang import System
 
 from org.python.util import JLineConsole, PythonInterpreter
@@ -185,13 +330,118 @@ if __name__ == &#39;__main__&#39;:
         sys.exit(1)
 
     start_burp(opt, *args)
-</code></pre></div><p>Now I can easily automate following steps:</p><ul><li>send some URL to the spider</li><li>add URL to the scope</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ java -jar ../jython.jar -Dpython.path=Lib/  testing.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://heise.de --add-to-scope http://heise.de -i 
+</code></pre></div><p>Now I can easily automate following steps:</p>
+<ul>
+<li>send some URL to the spider</li>
+<li>add URL to the scope</li>
+</ul>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/  testing.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://heise.de --add-to-scope http://heise.de -i 
 [--] Added new scope ...
 [--] Starting spider ...
 ...
-</code></pre></div><p>The above code is just a PoC. Maybe I&rsquo;ll extend it to some features like</p><ul><li>logging (specify format)</li><li>tamper requests before being sent</li><li>export results (XML)</li><li>write results to some DB</li></ul></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2013/07/12/links-of-the-week-#7/>prev post</a>
-<a href=http://blog.dornea.nu/2013/08/09/links-of-the-week-#9/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+</code></pre></div><p>The above code is just a PoC. Maybe I&rsquo;ll extend it to some features like</p>
+<ul>
+<li>logging (specify format)</li>
+<li>tamper requests before being sent</li>
+<li>export results (XML)</li>
+<li>write results to some DB</li>
+</ul>
+</div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2013/07/12/links-of-the-week-#7/">prev post</a>
+  <a href="http://blog.dornea.nu/2013/08/09/links-of-the-week-#9/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

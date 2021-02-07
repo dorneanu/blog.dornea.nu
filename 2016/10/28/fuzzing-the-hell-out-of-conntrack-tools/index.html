@@ -1,46 +1,143 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Fuzzing the hell out of conntrack tools - blog.dornea.nu</title><meta content="Fuzzing the hell out of conntrack tools - blog.dornea.nu" property="title"><meta content="Fuzzing the hell out of conntrack tools - blog.dornea.nu" property="og:title"><meta property="og:description" content="Fuzzing is nowadays the attack technique used by a lot of pentesters and security researchers. Whether you&rsquo;re looking for vulnerabilities in media files (pictures, videos, audio stuff) or just binary files, fuzzing is the right approach if you don&rsquo;t want to do some static code analysis or debug the hell out of your targets.
-When it comes to fuzzing there are a few tools to mention that have established during the last years."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/10/28/fuzzing-the-hell-out-of-conntrack-tools/"><meta property="article:published_time" content="2016-10-28T00:00:00+00:00"><meta property="article:modified_time" content="2016-10-28T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Fuzzing the hell out of conntrack tools</div><p class="silver f6 mt1 mb4 post-meta"><time>28 Oct 2016</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/hacking class="link silver">hacking</a> <a href=http://blog.dornea.nu/tags/fuzz class="link silver">fuzz</a> <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/afl class="link silver">afl</a> <a href=http://blog.dornea.nu/tags/linux class="link silver">linux</a> <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> ]</p><div class="lh-copy post-content"><p>Fuzzing is nowadays <strong>the</strong> attack technique used by a lot of pentesters and security researchers. Whether you&rsquo;re
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Fuzzing the hell out of conntrack tools - blog.dornea.nu</title>
+  <meta content='Fuzzing the hell out of conntrack tools - blog.dornea.nu' property='title' />
+  <meta content='Fuzzing the hell out of conntrack tools - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Fuzzing is nowadays the attack technique used by a lot of pentesters and security researchers. Whether you&rsquo;re looking for vulnerabilities in media files (pictures, videos, audio stuff) or just binary files, fuzzing is the right approach if you don&rsquo;t want to do some static code analysis or debug the hell out of your targets.
+When it comes to fuzzing there are a few tools to mention that have established during the last years." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2016/10/28/fuzzing-the-hell-out-of-conntrack-tools/" />
+
+
+<meta property="article:published_time" content="2016-10-28T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2016-10-28T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.78.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Fuzzing the hell out of conntrack tools</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>28 Oct 2016</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='http://blog.dornea.nu/tags/fuzz' class="link silver">fuzz</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='http://blog.dornea.nu/tags/afl' class="link silver">afl</a> <a href='http://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>Fuzzing is nowadays <strong>the</strong> attack technique used by a lot of pentesters and security researchers. Whether you&rsquo;re
 looking for vulnerabilities in media files (pictures, videos, audio stuff) or just binary files,
 fuzzing is the right approach if you don&rsquo;t want to do some static code analysis or debug the
-hell out of your targets.</p><p>When it comes to fuzzing there are a few tools to mention that have established during the last
-years. One of them is definitely <a href=http://lcamtuf.coredump.cx/afl/>AFL</a>. AFL has a very powerful
-<a href=https://lcamtuf.blogspot.de/2014/08/binary-fuzzing-strategies-what-works.html>fuzzing engine</a>
-and a lot of <a href=http://lcamtuf.coredump.cx/afl/#bugs>vulnerabilities</a> have been identified by AFL.
+hell out of your targets.</p>
+<p>When it comes to fuzzing there are a few tools to mention that have established during the last
+years. One of them is definitely <a href="http://lcamtuf.coredump.cx/afl/">AFL</a>. AFL has a very powerful
+<a href="https://lcamtuf.blogspot.de/2014/08/binary-fuzzing-strategies-what-works.html">fuzzing engine</a>
+and a lot of <a href="http://lcamtuf.coredump.cx/afl/#bugs">vulnerabilities</a> have been identified by AFL.
 However, AFL&rsquo;s simpleness of using files as parameters to your target binary, is also one big
 disadvantage. While in most cases you should be fine by reading your input from files, when dealing
 with <strong>sockets</strong>, the <strong>code</strong> has to be <strong>modified</strong> in order to read input from files instead of sockets.
-This step can be very <strong>complex</strong> and involves good C/C++ skills.</p><p>After reading <a href=https://blog.skullsecurity.org/2015/how-i-nearly-almost-saved-the-internet-starring-afl-fuzz-and-dnsmasq>&ldquo;How I nearly almost saved the Internet&rdquo;</a>
+This step can be very <strong>complex</strong> and involves good C/C++ skills.</p>
+<p>After reading <a href="https://blog.skullsecurity.org/2015/how-i-nearly-almost-saved-the-internet-starring-afl-fuzz-and-dnsmasq">&ldquo;How I nearly almost saved the Internet&rdquo;</a>
 I thought it should be an easy task to adapt the code of my target in order
 to run it by AFL. This step was indeed very <strong>time-consuming</strong> and was done after endless debug sessions.
 Below I&rsquo;ll try to give some overview which steps might be essential in fuzzing your target in an
 effective way. Modifying the source code for your needs definitely requires a deep understanding
 of the programms workflow. I hope this post will provide some useful tips how to speed up
-the fuzzing process - whatever your target will be.</p><h2 id=motivation>Motivation</h2><p>Why would one want to <strong>fuzz</strong> <a href=http://conntrack-tools.netfilter.org>conntrack-tools</a> anyway? Before we continue: <strong>No 0day here!</strong>
+the fuzzing process - whatever your target will be.</p>
+<h2 id="motivation">Motivation</h2>
+<p>Why would one want to <strong>fuzz</strong> <a href="http://conntrack-tools.netfilter.org">conntrack-tools</a> anyway? Before we continue: <strong>No 0day here!</strong>
 As sad as it sounds, I wasn&rsquo;t able to find any crashes using <code>AFL</code>. But that is no guarantee
-for safe, secure code so there might be some vulnerabilities ready to be found.</p><p>As you probably know <strong>software security</strong> doest not only apply to web stuff but also to
+for safe, secure code so there might be some vulnerabilities ready to be found.</p>
+<p>As you probably know <strong>software security</strong> doest not only apply to web stuff but also to
 software that runs critical network infrastructure. Since the IT sec community seems to
 have a <strong>huge</strong> focus on web applications (it&rsquo;s still the main entry point, right?), a few
 people (in relation to the first group mentioned) do have a look at network/system level
-stuff. In my case I wanted to audit and fuzz software that deals with <a href=http://www.iptables.info/en/connection-state.html#COMPLEXPROTOCOLS>connection tracking</a> management. In my particular case I&rsquo;ve used <a href=http://conntrack-tools.netfilter.org/conntrackd.html>conntrackd</a>
-to manage and synchronize the connection tracking information between 2 hosts.</p><h2 id=setup>Setup</h2><p>On 2 virtual machines I&rsquo;ve downloaded the <code>conntrack-tools</code> (also includes <code>conntrackd</code>),
-compiled the code and ran the daemons:</p><p>{% blockdiag
+stuff. In my case I wanted to audit and fuzz software that deals with <a href="http://www.iptables.info/en/connection-state.html#COMPLEXPROTOCOLS">connection tracking</a> management. In my particular case I&rsquo;ve used <a href="http://conntrack-tools.netfilter.org/conntrackd.html">conntrackd</a>
+to manage and synchronize the connection tracking information between 2 hosts.</p>
+<h2 id="setup">Setup</h2>
+<p>On 2 virtual machines I&rsquo;ve downloaded the <code>conntrack-tools</code> (also includes <code>conntrackd</code>),
+compiled the code and ran the daemons:</p>
+<p>{% blockdiag
 nwdiag
 {
 network nat-network {
-address = &ldquo;192.168.122.0/24&rdquo;</p><pre><code>      nat01 [address = &quot;192.168.122.242&quot;];
+address = &ldquo;192.168.122.0/24&rdquo;</p>
+<pre><code>      nat01 [address = &quot;192.168.122.242&quot;];
       nat02 [address = &quot;192.168.122.252&quot;];
   }
 }
-</code></pre><p>%}</p><p>So <code>nat01</code> and <code>nat02</code> were supposed to exchange information about their connection tracking table.
-In a nutshell <code>conntrackd</code>:</p><ul><li><strong>synchronizes</strong> connection tracking states among several replica firewalls</li><li>has <strong>channels</strong> (UDP, TCP)</li><li>has <strong>sync</strong> modes (notrack, ftfw)</li></ul><p>Let&rsquo;s have a look at some <strong>configuration</strong> file:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>Sync {
+</code></pre>
+<p>%}</p>
+<p>So <code>nat01</code> and <code>nat02</code> were supposed to exchange information about their connection tracking table.
+In a nutshell <code>conntrackd</code>:</p>
+<ul>
+<li><strong>synchronizes</strong> connection tracking states among several replica firewalls</li>
+<li>has <strong>channels</strong> (UDP, TCP)</li>
+<li>has <strong>sync</strong> modes (notrack, ftfw)</li>
+</ul>
+<p>Let&rsquo;s have a look at some <strong>configuration</strong> file:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Sync {
         Mode FTFW{
         }
     UDP Default {
@@ -53,22 +150,38 @@ In a nutshell <code>conntrackd</code>:</p><ul><li><strong>synchronizes</strong> 
         Checksum on
     }
 }
-</code></pre></div><p>This configuration says:</p><ul><li><strong>FTFW</strong> sync mode is used</li><li><strong>own</strong> IP address is <code>192.168.122.242</code></li><li><strong>destination</strong> IP address for sync is <code>192.168.122.252</code></li><li>use <strong>port</strong> <code>3780</code> for sync</li></ul><p>Basically this how synchronization works. Of course some details have been ommitted for the sake of
-simplicity. For the detailed configuration please refer to the <a href=http://conntrack-tools.netfilter.org/manual.html>documentation</a>.
-In the end the daemons are started by specifying the config file:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ./src/conntrackd -C &lt;config file&gt;
+</code></pre></div><p>This configuration says:</p>
+<ul>
+<li><strong>FTFW</strong> sync mode is used</li>
+<li><strong>own</strong> IP address is <code>192.168.122.242</code></li>
+<li><strong>destination</strong> IP address for sync is <code>192.168.122.252</code></li>
+<li>use <strong>port</strong> <code>3780</code> for sync</li>
+</ul>
+<p>Basically this how synchronization works. Of course some details have been ommitted for the sake of
+simplicity. For the detailed configuration please refer to the <a href="http://conntrack-tools.netfilter.org/manual.html">documentation</a>.
+In the end the daemons are started by specifying the config file:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ./src/conntrackd -C &lt;config file&gt;
 ...
-</code></pre></div><blockquote><p>If you experience some crazy error messages, make sure you have following kernel modules loaded: <code>af_netlink</code></p></blockquote><h2 id=network-traffic>Network traffic</h2><p>If you then <strong>sniff</strong> for packets you&rsquo;ll see some magic packets:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ tshark -nr nat-traffic.pcap -E separator=&#34;,&#34; -T fields -e udp.srcport -e udp.dstport -e udp.length -e data  | head -n 5
+</code></pre></div><blockquote>
+<p>If you experience some crazy error messages, make sure you have following kernel modules loaded: <code>af_netlink</code></p>
+</blockquote>
+<h2 id="network-traffic">Network traffic</h2>
+<p>If you then <strong>sniff</strong> for packets you&rsquo;ll see some magic packets:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ tshark -nr nat-traffic.pcap -E separator=&#34;,&#34; -T fields -e udp.srcport -e udp.dstport -e udp.length -e data  | head -n 5
 53085,3780,76,110000445815c162000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb000500040400000000080006000000780008000c7e64b2c3
 53085,3780,76,110000445815c163000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb0005000406000000000800060000001e0008000c7e64b2c3
 53085,3780,76,100000445815c164000c00000a216801d83ad4a30008000500000198000500020600000000080003c29a0050000500040100000000080006000000780008000ceb64b2c3
 53085,3780,76,110000445815c1aa000c00000a171f0cca0c1b21000800050000019a00050002060000000008000386e600350005000402000000000800060000003c0008000c7e64b2c3
 53085,3780,76,110000445815c1ab000c00000a171f0cca0c1b21000800050000019e00050002060000000008000386e60035000500040300000000080006000038400008000c7e64b2c3
-</code></pre></div><p>As you have noticed the <code>UDP</code> payloads above are very similar to each other. However, <strong>bigger</strong> payloads were also transmitted:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>57252,3780,1444,1100004457e14ced000c00000a21680236ef249d000800050000019e000500020600000000080003d9ac01bb000500040300000000080006000038400008000ceb64b
+</code></pre></div><p>As you have noticed the <code>UDP</code> payloads above are very similar to each other. However, <strong>bigger</strong> payloads were also transmitted:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">57252,3780,1444,1100004457e14ced000c00000a21680236ef249d000800050000019e000500020600000000080003d9ac01bb000500040300000000080006000038400008000ceb64b
 2c31100004457e14cee000c00000a17680236ef22ae000800050000019e000500020600000000080003c0a201bb000500040300000000080006000038400008000c7e64b2c31100004457
 e14cef000c00000a176801c3b265ac000800050000019e000500020600000000080003bc700050000500040300000000080006000038400008000c7e64b2c31100004457e14cf0000c000
 00a176802b0206cff000800050000019e000500020600000000080003c16401bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf1000c00000a21680136ef208d000800050000019e0005000206000000000800039dc201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf2000c00000a17680236ef249d000800050000019e000500020600000000080003d12c01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf3000c00000a21680236ef208d000800050000019e000500020600000000080003be7c01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf4000c00000a21680236ef37cb000800050000019e000500020600000000080003d4d201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf5000c00000a21680236ef208d000800050000019e000500020600000000080003de9001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf6000c00000a21680136ef208d000800050000019e000500020600000000080003bdae01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf7000c00000a17680336ef22af000800050000019e000500020600000000080003a37a01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf8000c00000a21680136ef208d000800050000019e0005000206000000000800039c8601bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf9000c00000a21680134314113000800050000019e00050002060000000008000382f401bb000500040300000000080006000038400008000ceb64b2c31100004c57e14cfa000c00000a21680236ef3698000800050000019e000500020600000000080003d27c01bb000500040300000000080006000038400008000ceb64b2c30006000eeb0600001100004457e14cfb000c00000a17680336ef249d000800050000019e000500020600000000080003de7601bb000500040300000000080006000038400008000c7e64b2c31100004457e14cfc000c00000a21680136ef208d000800050000019e0005000206000000000800039ce001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cfd000c00000a176803c01efd70000800050000019e000500020600000000080003b51001bb0005000403000000000800
-</code></pre></div><h2 id=analysis>Analysis</h2><p>Now what valuable information can we extract from the payloads? Using <a href=http://www.secdev.org/projects/scapy/>scapy</a> I&rsquo;ve did
-some basic traffic analysis:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>In [11]: p.payload.payload.show()
+</code></pre></div><h2 id="analysis">Analysis</h2>
+<p>Now what valuable information can we extract from the payloads? Using <a href="http://www.secdev.org/projects/scapy/">scapy</a> I&rsquo;ve did
+some basic traffic analysis:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">In [11]: p.payload.payload.show()
 
 ###[ UDP ]###
   sport     = 53085
@@ -79,10 +192,14 @@ some basic traffic analysis:</p><div class=highlight><pre style=color:#d0d0d0;ba
      load      = &#39;\x11\x00\x00DX\x15\xc1c\x00\x0c\x00\x00\n\x17h\x026\xef6\x8f\x00\x08\x00\x05\x00\x00\x01\x9e\x00\x05\x00\x02\x06\x00\x00\x00\x00\x08\x00\x03\x91\xf2\x01\xbb\x00\x05\x00\x04\x06\x00\x00\x00\x00\x08\x00\x06\x00\x00\x00\x1e\x00\x08\x00\x0c~d\xb2\xc3&#39;
 </code></pre></div><p>Apparently this is no ASCII data (who would have expected that anyway? :) Using <code>gdb</code> I wanted to know what&rsquo;s inside the data
 and did some <strong>dynamic analysis</strong>. This way I was able to learn more about the data being passed over the wire and how
-the source code is structured.</p><p>But first I had to make the code debuggable:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ CCFLAGS=&#34;-g3 -gdwarf2&#34; ./configure
+the source code is structured.</p>
+<p>But first I had to make the code debuggable:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ CCFLAGS=&#34;-g3 -gdwarf2&#34; ./configure
 [...]
-</code></pre></div><p>Afterwards you should be able to <strong>run</strong> it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ sudo ./src/conntrackd -C conntrackd.conf
-</code></pre></div><p>Sniffing the traffic you should see sth like this:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ sudo tshark -i ens3 -Y udp -E separator=&#34;,&#34; -T fields -e ip.src -e udp.srcport -e udp.dstport -e udp.length -e data
+</code></pre></div><p>Afterwards you should be able to <strong>run</strong> it:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sudo ./src/conntrackd -C conntrackd.conf
+</code></pre></div><p>Sniffing the traffic you should see sth like this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sudo tshark -i ens3 -Y udp -E separator=&#34;,&#34; -T fields -e ip.src -e udp.srcport -e udp.dstport -e udp.length -e data
 192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109293
 192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109294
 192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109295
@@ -94,7 +211,8 @@ the source code is structured.</p><p>But first I had to make the code debuggable
 ^C8 packets captured
 </code></pre></div><p>The daemon will try to send out some &ldquo;keep-alive&rdquo; messages to its counterpart. Now we send those packets
 <strong>manually</strong> and debug the interesting part in the code. For packet generation I&rsquo;ll use <code>scapy</code> again (running as
-<strong>root</strong> since you&rsquo;ll need to create <strong>RAW sockets</strong>):</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>In [1]: from scapy.all import *
+<strong>root</strong> since you&rsquo;ll need to create <strong>RAW sockets</strong>):</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">In [1]: from scapy.all import *
 WARNING: No route found for IPv6 destination :: (no default route?)
 
 In [2]: import binascii
@@ -109,69 +227,84 @@ Out[5]: &lt;Ether  type=IPv4 |&lt;IP  frag=0 proto=udp dst=192.168.122.242 |&lt;
 In [7]: sendp(p/Raw(load=payload))
 .
 Sent 1 packets.
-</code></pre></div><h3 id=data-flow>Data flow</h3><p>After heavy debugging sessions I was able to understand the data flow inside the code. Below I&rsquo;ll try to explain how <code>conntrackd</code> basically
-works:</p><ol><li>The <strong>configuration</strong> file gets parsed and several options are set</li><li>In <code>src/sync-mode.c</code> you have <a href=http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n362>init_sync</a> where a lot of vodoo happens but the most important part is:</li></ol><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c>	<span style=color:#6ab825;font-weight:700>for</span> (i=<span style=color:#3677a9>0</span>; i&lt;STATE_SYNC(channel)-&gt;channel_num; i++) {
-		<span style=color:#6ab825;font-weight:700>int</span> fd = channel_get_fd(STATE_SYNC(channel)-&gt;channel[i]);
+</code></pre></div><h3 id="data-flow">Data flow</h3>
+<p>After heavy debugging sessions I was able to understand the data flow inside the code. Below I&rsquo;ll try to explain how <code>conntrackd</code> basically
+works:</p>
+<ol>
+<li>The <strong>configuration</strong> file gets parsed and several options are set</li>
+<li>In <code>src/sync-mode.c</code> you have <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n362">init_sync</a> where a lot of vodoo happens but the most important part is:</li>
+</ol>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">	<span style="color:#6ab825;font-weight:bold">for</span> (i=<span style="color:#3677a9">0</span>; i&lt;STATE_SYNC(channel)-&gt;channel_num; i++) {
+		<span style="color:#6ab825;font-weight:bold">int</span> fd = channel_get_fd(STATE_SYNC(channel)-&gt;channel[i]);
 		fcntl(fd, F_SETFL, O_NONBLOCK);
 
-		<span style=color:#6ab825;font-weight:700>switch</span>(channel_type(STATE_SYNC(channel)-&gt;channel[i])) {
-		<span style=color:#6ab825;font-weight:700>case</span> CHANNEL_T_STREAM:
+		<span style="color:#6ab825;font-weight:bold">switch</span>(channel_type(STATE_SYNC(channel)-&gt;channel[i])) {
+		<span style="color:#6ab825;font-weight:bold">case</span> CHANNEL_T_STREAM:
 			register_fd(fd, channel_accept_cb,
 					STATE_SYNC(channel)-&gt;channel[i],
 					STATE(fds));
-			<span style=color:#6ab825;font-weight:700>break</span>;
-		<span style=color:#6ab825;font-weight:700>case</span> CHANNEL_T_DATAGRAM:
+			<span style="color:#6ab825;font-weight:bold">break</span>;
+		<span style="color:#6ab825;font-weight:bold">case</span> CHANNEL_T_DATAGRAM:
 			register_fd(fd, channel_handler,
 					STATE_SYNC(channel)-&gt;channel[i],
 					STATE(fds));
-			<span style=color:#6ab825;font-weight:700>break</span>;
+			<span style="color:#6ab825;font-weight:bold">break</span>;
 		}
 	}
 </code></pre></div><p>Depending on the <strong>sync</strong> mode, then for every <strong>channel</strong> a channel <strong>handler</strong> is being registered. This
-will be called every time an &ldquo;event&rdquo; occurs, that means a packet arrives:</p><ul><li>for TCP packets (<code>CHANNEL_T_STREAM</code>) <code>channel_accept_cb</code> will be called</li><li>for UDP datagrams (<code>CHANNEL_T_DATAGRAM</code>) <code>channel_handler</code> will be called</li></ul><p>Since I chose to test for <strong>UDP</strong> packets, let&rsquo;s have a look at <a href=http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n253>channel_handler</a>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>static</span> <span style=color:#6ab825;font-weight:700>void</span> <span style=color:#447fcf>channel_handler</span>(<span style=color:#6ab825;font-weight:700>void</span> *data)
+will be called every time an &ldquo;event&rdquo; occurs, that means a packet arrives:</p>
+<ul>
+<li>for TCP packets (<code>CHANNEL_T_STREAM</code>) <code>channel_accept_cb</code> will be called</li>
+<li>for UDP datagrams (<code>CHANNEL_T_DATAGRAM</code>) <code>channel_handler</code> will be called</li>
+</ul>
+<p>Since I chose to test for <strong>UDP</strong> packets, let&rsquo;s have a look at <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n253">channel_handler</a>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">channel_handler</span>(<span style="color:#6ab825;font-weight:bold">void</span> *data)
 {
-	<span style=color:#6ab825;font-weight:700>struct</span> channel *c = data;
-	<span style=color:#6ab825;font-weight:700>int</span> k;
+	<span style="color:#6ab825;font-weight:bold">struct</span> channel *c = data;
+	<span style="color:#6ab825;font-weight:bold">int</span> k;
 
-	<span style=color:#6ab825;font-weight:700>for</span> (k=<span style=color:#3677a9>0</span>; k&lt;CONFIG(event_iterations_limit); k++) {
-		<span style=color:#6ab825;font-weight:700>if</span> (channel_handler_routine(c) == -<span style=color:#3677a9>1</span>) {
-			<span style=color:#6ab825;font-weight:700>break</span>;
+	<span style="color:#6ab825;font-weight:bold">for</span> (k=<span style="color:#3677a9">0</span>; k&lt;CONFIG(event_iterations_limit); k++) {
+		<span style="color:#6ab825;font-weight:bold">if</span> (channel_handler_routine(c) == -<span style="color:#3677a9">1</span>) {
+			<span style="color:#6ab825;font-weight:bold">break</span>;
 		}
 	}
 }
-</code></pre></div><p>This will then call <a href=http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n178>channel_handler_routine</a>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>static</span> <span style=color:#6ab825;font-weight:700>int</span> <span style=color:#447fcf>channel_handler_routine</span>(<span style=color:#6ab825;font-weight:700>struct</span> channel *m)
+</code></pre></div><p>This will then call <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n178">channel_handler_routine</a>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">channel_handler_routine</span>(<span style="color:#6ab825;font-weight:bold">struct</span> channel *m)
 {
 	ssize_t numbytes;
 	ssize_t remain, pending = cur - __net;
-	<span style=color:#6ab825;font-weight:700>char</span> *ptr = __net;
+	<span style="color:#6ab825;font-weight:bold">char</span> *ptr = __net;
 
-	numbytes = channel_recv(m, cur, <span style=color:#6ab825;font-weight:700>sizeof</span>(__net) - pending);
-	<span style=color:#6ab825;font-weight:700>if</span> (numbytes &lt;= <span style=color:#3677a9>0</span>)
-		<span style=color:#6ab825;font-weight:700>return</span> -<span style=color:#3677a9>1</span>;
+	numbytes = channel_recv(m, cur, <span style="color:#6ab825;font-weight:bold">sizeof</span>(__net) - pending);
+	<span style="color:#6ab825;font-weight:bold">if</span> (numbytes &lt;= <span style="color:#3677a9">0</span>)
+		<span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
 
 	remain = numbytes;
-	<span style=color:#6ab825;font-weight:700>if</span> (pending) {
+	<span style="color:#6ab825;font-weight:bold">if</span> (pending) {
 		remain += pending;
 		cur = __net;
 	}
 
-	<span style=color:#6ab825;font-weight:700>while</span> (remain &gt; <span style=color:#3677a9>0</span>) {
-		<span style=color:#6ab825;font-weight:700>struct</span> nethdr *net = (<span style=color:#6ab825;font-weight:700>struct</span> nethdr *) ptr;
-		<span style=color:#6ab825;font-weight:700>int</span> len;
+	<span style="color:#6ab825;font-weight:bold">while</span> (remain &gt; <span style="color:#3677a9">0</span>) {
+		<span style="color:#6ab825;font-weight:bold">struct</span> nethdr *net = (<span style="color:#6ab825;font-weight:bold">struct</span> nethdr *) ptr;
+		<span style="color:#6ab825;font-weight:bold">int</span> len;
 
-		<span style=color:#999;font-style:italic>// HERE THE PACKET ITSELF IS ANALYZED
-</span><span style=color:#999;font-style:italic></span>		[...]
+		<span style="color:#999;font-style:italic">// HERE THE PACKET ITSELF IS ANALYZED
+</span><span style="color:#999;font-style:italic"></span>		[...]
 	}
 
-	<span style=color:#6ab825;font-weight:700>return</span> <span style=color:#3677a9>0</span>;
+	<span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">0</span>;
 }
-</code></pre></div><p>Obvisouly <a href=http://git.netfilter.org/conntrack-tools/tree/src/channel.c#n279>channel_recv</a> is called:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>int</span> <span style=color:#447fcf>channel_recv</span>(<span style=color:#6ab825;font-weight:700>struct</span> channel *c, <span style=color:#6ab825;font-weight:700>char</span> *buf, <span style=color:#6ab825;font-weight:700>int</span> size)
+</code></pre></div><p>Obvisouly <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel.c#n279">channel_recv</a> is called:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">channel_recv</span>(<span style="color:#6ab825;font-weight:bold">struct</span> channel *c, <span style="color:#6ab825;font-weight:bold">char</span> *buf, <span style="color:#6ab825;font-weight:bold">int</span> size)
 {
-	<span style=color:#6ab825;font-weight:700>return</span> c-&gt;ops-&gt;recv(c-&gt;data, buf, size);
+	<span style="color:#6ab825;font-weight:bold">return</span> c-&gt;ops-&gt;recv(c-&gt;data, buf, size);
 }
 </code></pre></div><p>Depending on which channel (variable <code>c</code>) is currently active <code>channel_recv</code> will then call the channel&rsquo;s
-<code>recv</code> function. The channel for UDP is stored in a structure called <a href=http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n128>channel_udp</a>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>struct</span> channel_ops channel_udp = {
-	.headersiz	= <span style=color:#3677a9>28</span>, <span style=color:#999;font-style:italic>/* IP header (20 bytes) + UDP header 8 (bytes) */</span>
+<code>recv</code> function. The channel for UDP is stored in a structure called <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n128">channel_udp</a>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">struct</span> channel_ops channel_udp = {
+	.headersiz	= <span style="color:#3677a9">28</span>, <span style="color:#999;font-style:italic">/* IP header (20 bytes) + UDP header 8 (bytes) */</span>
 	.open		= channel_udp_open,
 	.close		= channel_udp_close,
 	.send		= channel_udp_send,
@@ -182,70 +315,80 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 	.stats		= channel_udp_stats,
 	.stats_extended = channel_udp_stats_extended,
 };
-</code></pre></div><p>As you can notice <code>channel_udp.recv</code> is a function pointer to <a href=http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n49>channel_udp_recv</a>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>static</span> <span style=color:#6ab825;font-weight:700>int</span>
-<span style=color:#447fcf>channel_udp_recv</span>(<span style=color:#6ab825;font-weight:700>void</span> *channel, <span style=color:#6ab825;font-weight:700>char</span> *buf, <span style=color:#6ab825;font-weight:700>int</span> size)
+</code></pre></div><p>As you can notice <code>channel_udp.recv</code> is a function pointer to <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n49">channel_udp_recv</a>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">int</span>
+<span style="color:#447fcf">channel_udp_recv</span>(<span style="color:#6ab825;font-weight:bold">void</span> *channel, <span style="color:#6ab825;font-weight:bold">char</span> *buf, <span style="color:#6ab825;font-weight:bold">int</span> size)
 {
-	<span style=color:#6ab825;font-weight:700>struct</span> udp_channel *m = channel;
-	<span style=color:#6ab825;font-weight:700>return</span> udp_recv(m-&gt;server, buf, size);
+	<span style="color:#6ab825;font-weight:bold">struct</span> udp_channel *m = channel;
+	<span style="color:#6ab825;font-weight:bold">return</span> udp_recv(m-&gt;server, buf, size);
 }
-</code></pre></div><p>So now we&rsquo;re getting closer to the function that is actually responsible for reading data from the wire. In <a href=http://git.netfilter.org/conntrack-tools/tree/src/udp.c#n193>udp_recv</a> all the magic happens:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c>ssize_t <span style=color:#447fcf>udp_recv</span>(<span style=color:#6ab825;font-weight:700>struct</span> udp_sock *m, <span style=color:#6ab825;font-weight:700>void</span> *data, <span style=color:#6ab825;font-weight:700>int</span> size)
+</code></pre></div><p>So now we&rsquo;re getting closer to the function that is actually responsible for reading data from the wire. In <a href="http://git.netfilter.org/conntrack-tools/tree/src/udp.c#n193">udp_recv</a> all the magic happens:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">ssize_t <span style="color:#447fcf">udp_recv</span>(<span style="color:#6ab825;font-weight:bold">struct</span> udp_sock *m, <span style="color:#6ab825;font-weight:bold">void</span> *data, <span style="color:#6ab825;font-weight:bold">int</span> size)
 {
 	ssize_t ret;
-	socklen_t sin_size = <span style=color:#6ab825;font-weight:700>sizeof</span>(<span style=color:#6ab825;font-weight:700>struct</span> sockaddr_in);
+	socklen_t sin_size = <span style="color:#6ab825;font-weight:bold">sizeof</span>(<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in);
 
         ret = recvfrom(m-&gt;fd,
 		       data, 
 		       size,
-		       <span style=color:#3677a9>0</span>,
-		       (<span style=color:#6ab825;font-weight:700>struct</span> sockaddr *)&amp;m-&gt;addr,
+		       <span style="color:#3677a9">0</span>,
+		       (<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr *)&amp;m-&gt;addr,
 		       &amp;sin_size);
-	<span style=color:#6ab825;font-weight:700>if</span> (ret == -<span style=color:#3677a9>1</span>) {
-		<span style=color:#6ab825;font-weight:700>if</span> (errno != EAGAIN)
+	<span style="color:#6ab825;font-weight:bold">if</span> (ret == -<span style="color:#3677a9">1</span>) {
+		<span style="color:#6ab825;font-weight:bold">if</span> (errno != EAGAIN)
 			m-&gt;stats.error++;
-		<span style=color:#6ab825;font-weight:700>return</span> ret;
+		<span style="color:#6ab825;font-weight:bold">return</span> ret;
 	}
 
 	m-&gt;stats.bytes += ret;
 	m-&gt;stats.messages++;
 
-	<span style=color:#6ab825;font-weight:700>return</span> ret;
+	<span style="color:#6ab825;font-weight:bold">return</span> ret;
 }
-</code></pre></div><p>Nothing special about: Just call <code>recvfrom</code>, read the data into <code>data</code> and update some statistics.</p><h3 id=the-plan>The plan</h3><p>If we want to do some fuzzing we&rsquo;ll have to modify <code>udp_recv</code> to read from some file instead of sockets. Re-writing
-the function was actually a quite easy task:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#cd2828;font-weight:700>#ifdef FUZZ
-</span><span style=color:#cd2828;font-weight:700></span>ssize_t <span style=color:#447fcf>my_udp_recv</span>(<span style=color:#6ab825;font-weight:700>struct</span> udp_sock *m, <span style=color:#6ab825;font-weight:700>void</span> *data, <span style=color:#6ab825;font-weight:700>int</span> size, <span style=color:#6ab825;font-weight:700>char</span> *filename) {
+</code></pre></div><p>Nothing special about: Just call <code>recvfrom</code>, read the data into <code>data</code> and update some statistics.</p>
+<h3 id="the-plan">The plan</h3>
+<p>If we want to do some fuzzing we&rsquo;ll have to modify <code>udp_recv</code> to read from some file instead of sockets. Re-writing
+the function was actually a quite easy task:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#ifdef FUZZ
+</span><span style="color:#cd2828;font-weight:bold"></span>ssize_t <span style="color:#447fcf">my_udp_recv</span>(<span style="color:#6ab825;font-weight:bold">struct</span> udp_sock *m, <span style="color:#6ab825;font-weight:bold">void</span> *data, <span style="color:#6ab825;font-weight:bold">int</span> size, <span style="color:#6ab825;font-weight:bold">char</span> *filename) {
     ssize_t ret;
-    <span style=color:#6ab825;font-weight:700>long</span> f_size;
+    <span style="color:#6ab825;font-weight:bold">long</span> f_size;
     FILE *f;
-	socklen_t sin_size = <span style=color:#6ab825;font-weight:700>sizeof</span>(<span style=color:#6ab825;font-weight:700>struct</span> sockaddr_in);
+	socklen_t sin_size = <span style="color:#6ab825;font-weight:bold">sizeof</span>(<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in);
 
-    <span style=color:#999;font-style:italic>// Read file
-</span><span style=color:#999;font-style:italic></span>    <span style=color:#6ab825;font-weight:700>if</span> (!(f = fopen(CONFIG(fuzz_file), <span style=color:#ed9d13>&#34;rb&#34;</span>))) {
-        fprintf(stderr, <span style=color:#ed9d13>&#34;[FUZZ] Couldn&#39;t open file</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>);
-        exit(<span style=color:#3677a9>1</span>);
+    <span style="color:#999;font-style:italic">// Read file
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">if</span> (!(f = fopen(CONFIG(fuzz_file), <span style="color:#ed9d13">&#34;rb&#34;</span>))) {
+        fprintf(stderr, <span style="color:#ed9d13">&#34;[FUZZ] Couldn&#39;t open file</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>);
+        exit(<span style="color:#3677a9">1</span>);
     }
   
-    <span style=color:#999;font-style:italic>// Get file length
-</span><span style=color:#999;font-style:italic></span>    fseek(f, <span style=color:#3677a9>0L</span>, SEEK_END);
+    <span style="color:#999;font-style:italic">// Get file length
+</span><span style="color:#999;font-style:italic"></span>    fseek(f, <span style="color:#3677a9">0L</span>, SEEK_END);
     f_size = ftell(f);
     rewind(f);
 
-    ret = fread(data, f_size, <span style=color:#3677a9>1</span>, f);
+    ret = fread(data, f_size, <span style="color:#3677a9">1</span>, f);
     fclose(f);
 	
-    <span style=color:#6ab825;font-weight:700>if</span> (ret == -<span style=color:#3677a9>1</span>) {
-		<span style=color:#6ab825;font-weight:700>if</span> (errno != EAGAIN)
+    <span style="color:#6ab825;font-weight:bold">if</span> (ret == -<span style="color:#3677a9">1</span>) {
+		<span style="color:#6ab825;font-weight:bold">if</span> (errno != EAGAIN)
 			m-&gt;stats.error++;
-		<span style=color:#6ab825;font-weight:700>return</span> ret;
+		<span style="color:#6ab825;font-weight:bold">return</span> ret;
     }
 	
     m-&gt;stats.bytes += f_size;
 	m-&gt;stats.messages++;
 
-	<span style=color:#6ab825;font-weight:700>return</span> f_size;
+	<span style="color:#6ab825;font-weight:bold">return</span> f_size;
 }
-<span style=color:#cd2828;font-weight:700>#endif
+<span style="color:#cd2828;font-weight:bold">#endif
 </span></code></pre></div><p>Easy, right? Now <code>my_udp_recv</code> will read the file specified by <code>filename</code> and store the contents inside <code>data</code>. However,
-this simple modification implied several changes across the whole base.</p><blockquote><p>You can see the whole changes <a href="https://github.com/dorneanu/conntrack-fuzzing/search?utf8=%E2%9C%93&q=udp_recv">here</a>.</p></blockquote><p>Afterwards I was able to compile the code with this new feature:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ git clone https://github.com/dorneanu/conntrack-fuzzing
+this simple modification implied several changes across the whole base.</p>
+<blockquote>
+<p>You can see the whole changes <a href="https://github.com/dorneanu/conntrack-fuzzing/search?utf8=%E2%9C%93&amp;q=udp_recv">here</a>.</p>
+</blockquote>
+<p>Afterwards I was able to compile the code with this new feature:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git clone https://github.com/dorneanu/conntrack-fuzzing
 $ cd conntrack-fuzzing
 $ CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
 [...]
@@ -259,9 +402,12 @@ Daemon mode commands:
 
 [...]
 </code></pre></div><p>Now you can specify a file (<code>-X</code>) which will be used as parameter for <code>my_udp_recv</code>. The &ldquo;daemon&rdquo; will now just read
-the contents of the file, analyze the input and then simply exit.</p><h2 id=generating-input-values>Generating input values</h2><p>Now that I was able to specify files as data input, I had to generate some input examples for the screening process of <code>AFL</code>.
+the contents of the file, analyze the input and then simply exit.</p>
+<h2 id="generating-input-values">Generating input values</h2>
+<p>Now that I was able to specify files as data input, I had to generate some input examples for the screening process of <code>AFL</code>.
 By sniffing enought traffic between 2 productive hosts running <code>conntrackd</code> I got a <strong>lots</strong> of payloads I could then use
-for <code>AFL</code>. All I had to do was to store those values as binary files:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>In [1]: payload = &#34;1000003c5815c1c9000c00000a171f0cc3b265fa000800050000019800050002110000000008000305be0035000800060000001e0008000c7e64b2c3&#34;
+for <code>AFL</code>. All I had to do was to store those values as binary files:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">In [1]: payload = &#34;1000003c5815c1c9000c00000a171f0cc3b265fa000800050000019800050002110000000008000305be0035000800060000001e0008000c7e64b2c3&#34;
 
 In [2]: import binascii
 
@@ -276,13 +422,19 @@ In [4]: !hexdump -C /tmp/input1
 00000020  11 00 00 00 00 08 00 03  05 be 00 35 00 08 00 06  |...........5....|
 00000030  00 00 00 1e 00 08 00 0c  7e 64 b2 c3              |........~d..|
 0000003c
-</code></pre></div><p>For my test cases I&rsquo;ve chosen ca. 4-5 different payloads and stored them as binary files. Now I was ready to run <code>AFL</code>.</p><h2 id=prepare-for-afl>Prepare for AFL</h2><p>Inside the project I&rsquo;ve then created the directory structure for <code>AFL</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ mkdir -p fuzzing/{ftfw,notrack}/input
+</code></pre></div><p>For my test cases I&rsquo;ve chosen ca. 4-5 different payloads and stored them as binary files. Now I was ready to run <code>AFL</code>.</p>
+<h2 id="prepare-for-afl">Prepare for AFL</h2>
+<p>Inside the project I&rsquo;ve then created the directory structure for <code>AFL</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mkdir -p fuzzing/{ftfw,notrack}/input
 </code></pre></div><p>For every sync mode (ftwfw and notrack) I&rsquo;ve then copied the input values into <code>input</code>. As a next step I had to compile the source using
-<code>afl-gcc</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ CC=afl-gcc AFL_USE_ASAN=1 CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
+<code>afl-gcc</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ CC=afl-gcc AFL_USE_ASAN=1 CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
 [...]
 $ make -j 4
 [...]
-</code></pre></div><h2 id=running-afl>Running AFL</h2><p><code>AFL</code> itself had to be ran as <code>root</code> since <code>conntrackd</code> requires privileged permissions:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ echo core &gt;/proc/sys/kernel/core_pattern
+</code></pre></div><h2 id="running-afl">Running AFL</h2>
+<p><code>AFL</code> itself had to be ran as <code>root</code> since <code>conntrackd</code> requires privileged permissions:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ echo core &gt;/proc/sys/kernel/core_pattern
 $ afl-fuzz -i fuzzing/ftfw/input/ -o fuzzing/ftfw/output ./src/conntrackd -C conntrackd.conf -X @@
 [+] You have 2 CPU cores and 1 runnable tasks (utilization: 50%).
 [+] Try parallel jobs - see /usr/local/share/doc/afl/parallel_fuzzing.txt.
@@ -316,18 +468,115 @@ $ afl-fuzz -i fuzzing/ftfw/input/ -o fuzzing/ftfw/output ./src/conntrackd -C con
 [+] All set and ready to roll!
 
 [...]
-</code></pre></div><p>You can also monitor the current input using:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ watch -n1 &#39;cat fuzzing/ftfw/output/.cur_input | hexdump -C&#39;
-</code></pre></div><h2 id=results>Results</h2><p>While the <strong>preparation</strong> steps were indeed time-consuming I think I have definitely improved my <code>gdb</code>
+</code></pre></div><p>You can also monitor the current input using:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ watch -n1 &#39;cat fuzzing/ftfw/output/.cur_input | hexdump -C&#39;
+</code></pre></div><h2 id="results">Results</h2>
+<p>While the <strong>preparation</strong> steps were indeed time-consuming I think I have definitely improved my <code>gdb</code>
 skills looking at the code and trying to understand how things work. Additionally I was able to trace
 the data flow within the code - from the sockets till to the functions where data got analyzed. The
 <strong>fuzzing process</strong> itself was quite straight-forward and mainly managed by <code>AFL</code> itself. Unfortunately
 (depends on the perspective you&rsquo;re looking from) I wasn&rsquo;t able to find any crashes inside <code>conntrack-tools</code>
 which is actually good. By crashing the daemon some network connectivity would have been heavily
 affected. But again: The fact that I wasn&rsquo;t able to find any issues, is no guarantee for secure software.
-Maybe other will have a look at the code and do some <strong>static code analysis</strong>.</p><p>For me personally this was a hell of fun and I&rsquo;m already looking forward to my next fuzzing project. Stay tuned
-and feel free to drop your comments for additional questions/suggestions regarding the steps explained here.</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/10/21/hack.lu-conference-2016/>prev post</a>
-<a href=http://blog.dornea.nu/2016/10/29/ringzer0-ctf-javascript-challenges/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+Maybe other will have a look at the code and do some <strong>static code analysis</strong>.</p>
+<p>For me personally this was a hell of fun and I&rsquo;m already looking forward to my next fuzzing project. Stay tuned
+and feel free to drop your comments for additional questions/suggestions regarding the steps explained here.</p>
+</div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2016/10/21/hack.lu-conference-2016/">prev post</a>
+  <a href="http://blog.dornea.nu/2016/10/29/ringzer0-ctf-javascript-challenges/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

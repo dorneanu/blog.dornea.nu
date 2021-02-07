@@ -1,26 +1,111 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Some words on CSRF and cookies - blog.dornea.nu</title><meta content="Some words on CSRF and cookies - blog.dornea.nu" property="title"><meta content="Some words on CSRF and cookies - blog.dornea.nu" property="og:title"><meta property="og:description" content="Being involved in different projects where web technologies are used, I have to make sure that AppSec related security nightmares are avoided. One of those security nightmare - and in my own oppinion the most complicated one to explain to a non-sec person - is CSRF. I won&rsquo;t go into details since these are freely available. Furthermore I would like to focus on the countermeasures one would implement to prevent CSRF."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/01/26/some-words-on-csrf-and-cookies/"><meta property="article:published_time" content="2016-01-26T00:00:00+00:00"><meta property="article:modified_time" content="2016-01-26T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Some words on CSRF and cookies</div><p class="silver f6 mt1 mb4 post-meta"><time>26 Jan 2016</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> <a href=http://blog.dornea.nu/tags/web class="link silver">web</a> <a href=http://blog.dornea.nu/tags/javascript class="link silver">javascript</a> <a href=http://blog.dornea.nu/tags/csrf class="link silver">csrf</a> ]</p><div class="lh-copy post-content"><p>Being involved in different projects where web technologies are used, I have to make sure that <a href=http://blog.dornea.nu/tag/appsec/>AppSec</a> related security nightmares
-are avoided. One of those security nightmare - and in my own oppinion the most complicated one to explain to a <strong>non-sec</strong> person - is <a href=https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet>CSRF</a>. I won&rsquo;t go into details since these are freely available. Furthermore I would like to focus on the <strong>countermeasures</strong> one would implement to prevent CSRF. In some cases it&rsquo;s suggested to think of some attack scenarios before relying on the implemented solution. But first let&rsquo;s have a look how a typical CSRF attack works like.</p><h2 id=general-idea>General idea</h2><p>Usually we have 3 components involved:</p><p>{% blockdiag
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Some words on CSRF and cookies - blog.dornea.nu</title>
+  <meta content='Some words on CSRF and cookies - blog.dornea.nu' property='title' />
+  <meta content='Some words on CSRF and cookies - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Being involved in different projects where web technologies are used, I have to make sure that AppSec related security nightmares are avoided. One of those security nightmare - and in my own oppinion the most complicated one to explain to a non-sec person - is CSRF. I won&rsquo;t go into details since these are freely available. Furthermore I would like to focus on the countermeasures one would implement to prevent CSRF." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2016/01/26/some-words-on-csrf-and-cookies/" />
+
+
+<meta property="article:published_time" content="2016-01-26T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2016-01-26T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.78.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Some words on CSRF and cookies</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>26 Jan 2016</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a> <a href='http://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='http://blog.dornea.nu/tags/javascript' class="link silver">javascript</a> <a href='http://blog.dornea.nu/tags/csrf' class="link silver">csrf</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>Being involved in different projects where web technologies are used, I have to make sure that <a href="http://blog.dornea.nu/tag/appsec/">AppSec</a> related security nightmares
+are avoided. One of those security nightmare - and in my own oppinion the most complicated one to explain to a <strong>non-sec</strong> person - is <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet">CSRF</a>. I won&rsquo;t go into details since these are freely available. Furthermore I would like to focus on the <strong>countermeasures</strong> one would implement to prevent CSRF. In some cases it&rsquo;s suggested to think of some attack scenarios before relying on the implemented solution. But first let&rsquo;s have a look how a typical CSRF attack works like.</p>
+<h2 id="general-idea">General idea</h2>
+<p>Usually we have 3 components involved:</p>
+<p>{% blockdiag
 seqdiag {
 Attacker;
 Client [label=&ldquo;Client/Browser&rdquo;];
 Server;
 }
-%}</p><p>The <strong>client/browser</strong> communicates with the <strong>server</strong> and the <strong>attacker</strong> will try to <em>lure</em> the user to some previously <strong>prepared site</strong>. This can happen by sending
+%}</p>
+<p>The <strong>client/browser</strong> communicates with the <strong>server</strong> and the <strong>attacker</strong> will try to <em>lure</em> the user to some previously <strong>prepared site</strong>. This can happen by sending
 <strong>mails</strong> with some malicious link or injecting content into a site the user is visiting (e.g. using <strong>iframes</strong>). This way the attack will cause the client/browser
-to fire requests to the server <strong>without</strong> any user interaction. The user behing the client/browser won&rsquo;t notice anything since this will happen in the background by just visiting the site and/or triggering some JavaScript to execute.</p><p>{% blockdiag
+to fire requests to the server <strong>without</strong> any user interaction. The user behing the client/browser won&rsquo;t notice anything since this will happen in the background by just visiting the site and/or triggering some JavaScript to execute.</p>
+<p>{% blockdiag
 seqdiag {
 Attacker;
 Client [label=&ldquo;Client/Browser&rdquo;];
 Server;
-Attacker -> Client [label=&ldquo;Send some link&rdquo;];</p><pre><code>    // Separator
+Attacker -&gt; Client [label=&ldquo;Send some link&rdquo;];</p>
+<pre><code>    // Separator
     === User clicks on link. Browser will start ===
     ... Client opens malicious link ...
     
@@ -29,79 +114,260 @@ Attacker -> Client [label=&ldquo;Send some link&rdquo;];</p><pre><code>    // Se
     
     Client -&gt; Server [label=&quot;GET /change-account-settings&quot;];
 }
-</code></pre><p>%}</p><h2 id=some-example>Some example</h2><p>Now let&rsquo;s think of some <strong>real-world</strong> example. User <strong>Bob</strong> has an account on <code>http://bank.nu</code>. Attacker <strong>Victor</strong> will prepare a site <code>http://attacker.nu</code> which once accessed will load following <strong>iframe</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.html data-lang=.html>&lt;<span style=color:#6ab825;font-weight:700>iframe</span> <span style=color:#bbb>style</span>=<span style=color:#ed9d13>&#34;display:none&#34;</span> <span style=color:#bbb>name</span>=<span style=color:#ed9d13>&#34;csrf-frame&#34;</span>&gt;&lt;/<span style=color:#6ab825;font-weight:700>iframe</span>&gt;
-&lt;<span style=color:#6ab825;font-weight:700>form</span> <span style=color:#bbb>action</span>=<span style=color:#ed9d13>&#34;http://bank.nu/transfer.do&#34;</span> <span style=color:#bbb>method</span>=<span style=color:#ed9d13>&#34;POST&#34;</span> <span style=color:#bbb>id</span>=<span style=color:#ed9d13>&#34;csrf-form&#34;</span>&gt;
-    &lt;<span style=color:#6ab825;font-weight:700>input</span> <span style=color:#bbb>type</span>=<span style=color:#ed9d13>&#34;hidden&#34;</span> <span style=color:#bbb>name</span>=<span style=color:#ed9d13>&#34;acct&#34;</span> <span style=color:#bbb>value</span>=<span style=color:#ed9d13>&#34;Victor&#34;</span>/&gt;
-    &lt;<span style=color:#6ab825;font-weight:700>input</span> <span style=color:#bbb>type</span>=<span style=color:#ed9d13>&#34;hidden&#34;</span> <span style=color:#bbb>name</span>=<span style=color:#ed9d13>&#34;amount&#34;</span> <span style=color:#bbb>value</span>=<span style=color:#ed9d13>&#34;10.000&#34;</span>/&gt;
-    &lt;<span style=color:#6ab825;font-weight:700>input</span> <span style=color:#bbb>type</span>=<span style=color:#ed9d13>&#34;submit&#34;</span> <span style=color:#bbb>value</span>=<span style=color:#ed9d13>&#34;View my pictures&#34;</span>/&gt;
-&lt;/<span style=color:#6ab825;font-weight:700>form</span>&gt;
-&lt;<span style=color:#6ab825;font-weight:700>script</span>&gt;<span style=color:#24909d>document</span>.getElementById(<span style=color:#ed9d13>&#34;csrf-form&#34;</span>).submit()&lt;/<span style=color:#6ab825;font-weight:700>script</span>&gt;
-</code></pre></div><p>In this case the <strong>iframe</strong> ins&rsquo;t visible at all (<code>display:none</code>) and some JavaScript will trigger the submission of the form once the <code>script</code>tag is loaded aka the user enters the site. In this fictional example the form will trigger a <code>POST</code> request which will <strong>transfer</strong> some money to the <strong>attacker</strong> (Victor). Next the <strong>attacker</strong> will send <strong>Bob</strong> a mail with a link to his site <code>http://attacker.nu</code>. Bob will click on this link and the browser will open the link. Untill now nothing happens. Once the browser will load the attackers site, the whole <strong>voodoo</strong> behind CSRF would take place.</p><h2 id=csrf-fundamentals>CSRF fundamentals</h2><p>At this point I&rsquo;d like to slow down things a little bit and focus on some details. In the past people have asked me some questions or made some observations regarding the whole process. Among these (I tried to apply the questions/observations to the previous example):</p><ol><li><em>&ldquo;In a iframe you are able to load stuff (javascript, images etc.) via GET. How do you trigger a <strong>POST</strong> request at all?"</em></li><li><em>&ldquo;The attackers site is not authentificated to <code>http://bank.nu</code>. Your triggered request is not going to work at all."</em></li><li><em>&ldquo;Why should the browser trigger the request once the user visits the attackers site?"</em></li><li><em>&ldquo;We do protect the session cookies by <code>httponly</code> and the <code>secure</code> flag. Why do you think this is going to work?"</em></li></ol><p>Well first let&rsquo;s see <strong>why</strong> this kind of attacks are so powerful. Apparently Bob can only trigger the transaction if he has a <strong>valid session</strong>. Otherwise the bank would
-show some error message that the request is not allowed and a valid session is necessary. The authentification process usually looks like this:</p><p>{% blockdiag
+</code></pre>
+<p>%}</p>
+<h2 id="some-example">Some example</h2>
+<p>Now let&rsquo;s think of some <strong>real-world</strong> example. User <strong>Bob</strong> has an account on <code>http://bank.nu</code>. Attacker <strong>Victor</strong> will prepare a site <code>http://attacker.nu</code> which once accessed will load following <strong>iframe</strong>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.html" data-lang=".html">&lt;<span style="color:#6ab825;font-weight:bold">iframe</span> <span style="color:#bbb">style</span>=<span style="color:#ed9d13">&#34;display:none&#34;</span> <span style="color:#bbb">name</span>=<span style="color:#ed9d13">&#34;csrf-frame&#34;</span>&gt;&lt;/<span style="color:#6ab825;font-weight:bold">iframe</span>&gt;
+&lt;<span style="color:#6ab825;font-weight:bold">form</span> <span style="color:#bbb">action</span>=<span style="color:#ed9d13">&#34;http://bank.nu/transfer.do&#34;</span> <span style="color:#bbb">method</span>=<span style="color:#ed9d13">&#34;POST&#34;</span> <span style="color:#bbb">id</span>=<span style="color:#ed9d13">&#34;csrf-form&#34;</span>&gt;
+    &lt;<span style="color:#6ab825;font-weight:bold">input</span> <span style="color:#bbb">type</span>=<span style="color:#ed9d13">&#34;hidden&#34;</span> <span style="color:#bbb">name</span>=<span style="color:#ed9d13">&#34;acct&#34;</span> <span style="color:#bbb">value</span>=<span style="color:#ed9d13">&#34;Victor&#34;</span>/&gt;
+    &lt;<span style="color:#6ab825;font-weight:bold">input</span> <span style="color:#bbb">type</span>=<span style="color:#ed9d13">&#34;hidden&#34;</span> <span style="color:#bbb">name</span>=<span style="color:#ed9d13">&#34;amount&#34;</span> <span style="color:#bbb">value</span>=<span style="color:#ed9d13">&#34;10.000&#34;</span>/&gt;
+    &lt;<span style="color:#6ab825;font-weight:bold">input</span> <span style="color:#bbb">type</span>=<span style="color:#ed9d13">&#34;submit&#34;</span> <span style="color:#bbb">value</span>=<span style="color:#ed9d13">&#34;View my pictures&#34;</span>/&gt;
+&lt;/<span style="color:#6ab825;font-weight:bold">form</span>&gt;
+&lt;<span style="color:#6ab825;font-weight:bold">script</span>&gt;<span style="color:#24909d">document</span>.getElementById(<span style="color:#ed9d13">&#34;csrf-form&#34;</span>).submit()&lt;/<span style="color:#6ab825;font-weight:bold">script</span>&gt;
+</code></pre></div><p>In this case the <strong>iframe</strong> ins&rsquo;t visible at all (<code>display:none</code>) and some JavaScript will trigger the submission of the form once the <code>script</code>tag is loaded aka the user enters the site. In this fictional example the form will trigger a <code>POST</code> request which will <strong>transfer</strong> some money to the <strong>attacker</strong> (Victor). Next the <strong>attacker</strong> will send <strong>Bob</strong> a mail with a link to his site <code>http://attacker.nu</code>. Bob will click on this link and the browser will open the link. Untill now nothing happens. Once the browser will load the attackers site, the whole <strong>voodoo</strong> behind CSRF would take place.</p>
+<h2 id="csrf-fundamentals">CSRF fundamentals</h2>
+<p>At this point I&rsquo;d like to slow down things a little bit and focus on some details. In the past people have asked me some questions or made some observations regarding the whole process. Among these (I tried to apply the questions/observations to the previous example):</p>
+<ol>
+<li><em>&ldquo;In a iframe you are able to load stuff (javascript, images etc.) via GET. How do you trigger a <strong>POST</strong> request at all?&quot;</em></li>
+<li><em>&ldquo;The attackers site is not authentificated to <code>http://bank.nu</code>. Your triggered request is not going to work at all.&quot;</em></li>
+<li><em>&ldquo;Why should the browser trigger the request once the user visits the attackers site?&quot;</em></li>
+<li><em>&ldquo;We do protect the session cookies by <code>httponly</code> and the <code>secure</code> flag. Why do you think this is going to work?&quot;</em></li>
+</ol>
+<p>Well first let&rsquo;s see <strong>why</strong> this kind of attacks are so powerful. Apparently Bob can only trigger the transaction if he has a <strong>valid session</strong>. Otherwise the bank would
+show some error message that the request is not allowed and a valid session is necessary. The authentification process usually looks like this:</p>
+<p>{% blockdiag
 seqdiag {
 edge_length = 600;
 Client
 Server;
-Client -> Server [label=&ldquo;POST /login&rdquo;];
-Server -> Client [label=&ldquo;200 OK\nSet-Cookie: session=xxxx&rdquo;];
+Client -&gt; Server [label=&ldquo;POST /login&rdquo;];
+Server -&gt; Client [label=&ldquo;200 OK\nSet-Cookie: session=xxxx&rdquo;];
 }
-%}</p><p>The user sends his credentials to the server, the server validates these and sends a <strong>cookie</strong> to the client which serves as authentification characteristic.
+%}</p>
+<p>The user sends his credentials to the server, the server validates these and sends a <strong>cookie</strong> to the client which serves as authentification characteristic.
 Regardless of the expiration time of the cookie, <strong>every time</strong> the browser/client makes a request to the server, the cookie will be sent <strong>automatically</strong> to the server.
-This is a very important one and <strong>often misunderstood</strong> by non-sec people.</p><p>So next time the user wants to visit the site again, the browser will <strong>add</strong> the cookies received from the server to the request:</p><p>{% blockdiag
+This is a very important one and <strong>often misunderstood</strong> by non-sec people.</p>
+<p>So next time the user wants to visit the site again, the browser will <strong>add</strong> the cookies received from the server to the request:</p>
+<p>{% blockdiag
 seqdiag {
 edge_length = 600;
 Client
 Server;
-Client -> Server [label=&ldquo;GET /myaccount\nCookie: session=xxxx\nCookie: bla=foo&rdquo;];
-Server -> Client [label=&ldquo;200 OK&rdquo;];
+Client -&gt; Server [label=&ldquo;GET /myaccount\nCookie: session=xxxx\nCookie: bla=foo&rdquo;];
+Server -&gt; Client [label=&ldquo;200 OK&rdquo;];
 }
-%}</p><p>That in turn means that every time a request is conducted by your browser - whether intended by the user or not - the session cookie will be <strong>always</strong> be sent
-along with the request.</p><h2 id=the-attack>The attack</h2><p>Recalling a few thoughts made some sentences ago, the attack will consist of following steps:</p><ol><li>Send a malicious link to <strong>Bob</strong></li><li>Bob will click the link and the browser will open the malicious site</li><li>The malicious site will trigger a <strong>POST</strong> request to <code>http://bank.nu</code> and try to make a money transfer</li><li>This is going to work <strong>only and if</strong> Bob is logged in (has a valid session cookie) on the bank site</li></ol><p>Trying to be more precise, these are the requests made:</p><p>{% blockdiag
+%}</p>
+<p>That in turn means that every time a request is conducted by your browser - whether intended by the user or not - the session cookie will be <strong>always</strong> be sent
+along with the request.</p>
+<h2 id="the-attack">The attack</h2>
+<p>Recalling a few thoughts made some sentences ago, the attack will consist of following steps:</p>
+<ol>
+<li>Send a malicious link to <strong>Bob</strong></li>
+<li>Bob will click the link and the browser will open the malicious site</li>
+<li>The malicious site will trigger a <strong>POST</strong> request to <code>http://bank.nu</code> and try to make a money transfer</li>
+<li>This is going to work <strong>only and if</strong> Bob is logged in (has a valid session cookie) on the bank site</li>
+</ol>
+<p>Trying to be more precise, these are the requests made:</p>
+<p>{% blockdiag
 seqdiag {
 Attacker;
 User;
 Site [label=&ldquo;http://attacker.nu&rdquo;];
 Bank [label=&ldquo;http://bank.nu&rdquo;];
-Attacker -> User [label=&ldquo;Send link&rdquo;];</p><pre><code>    ... User opens the link ...
+Attacker -&gt; User [label=&ldquo;Send link&rdquo;];</p>
+<pre><code>    ... User opens the link ...
     User -&gt; Site;
     Site -&gt; Bank [label=&quot;POST /transfer.do\nHost: bank.nu\nCookie: session=xxxx&quot;, note = &quot;Request is automatically triggered&quot;];
     Bank -&gt; Site [label=&quot;200 OK&quot;];
 }
-</code></pre><p>%}</p><p>As you have noticed the <strong>session cookie</strong> is part of the POST request. The attackers site <strong>can&rsquo;t</strong> read the cookie due to several reasons:</p><ul><li>the <strong>domain</strong> attribute of the cookie restricts the availability of the cookie only to the <code>bank.nu</code> domain<ul><li>that means that the browser will only set the cookie if the request is made to <code>bank.nu</code></li></ul></li><li>the <strong>httpOnly</strong> flag is set<ul><li>no JavaScript can read the cookie</li></ul></li></ul><p>But the attacker doesn&rsquo;t have to know the cookie. In the case of CSRF he/she will fire up a request assuming that the victim is <strong>authentificated</strong> against <code>bank.nu</code>. If not, the
-attack will have no consequences since the POST request won&rsquo;t be accepted by the server.</p><h2 id=the-defense>The defense</h2><p>Since it is the <strong>natural</strong> behaviour of the browser to add the cookies to some specific requests (in order to tell the server that the user is authentificated),
-the mitigation of such attacks has to be done somewhere else. The <a href=https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#General_Recommendation:_Synchronizer_Token_Pattern>generic solution</a> consists of adding some <strong>random secure token</strong> which has to be:</p><ul><li>unique per user/session</li><li>tied to only <strong>one</strong> session</li><li>generated by a secure PRNG</li></ul><p>The <strong>client</strong> has to provide this token in its requests. The server will reject the request/action if the token is not valid. Sounds simple, isn&rsquo;t it? There are two ways to do it:</p><h3 id=provide-the-token-in-a-hidden-field-synchronizer-token-pattern>Provide the token in a hidden field (Synchronizer Token Pattern)</h3><p>If the client wants to perform an action (like sending a POST request), the server will put inside the <strong>body</strong> content a hidden token which the client has to provide when sending the POST request:</p><p>{% blockdiag
+</code></pre>
+<p>%}</p>
+<p>As you have noticed the <strong>session cookie</strong> is part of the POST request. The attackers site <strong>can&rsquo;t</strong> read the cookie due to several reasons:</p>
+<ul>
+<li>the <strong>domain</strong> attribute of the cookie restricts the availability of the cookie only to the <code>bank.nu</code> domain
+<ul>
+<li>that means that the browser will only set the cookie if the request is made to <code>bank.nu</code></li>
+</ul>
+</li>
+<li>the <strong>httpOnly</strong> flag is set
+<ul>
+<li>no JavaScript can read the cookie</li>
+</ul>
+</li>
+</ul>
+<p>But the attacker doesn&rsquo;t have to know the cookie. In the case of CSRF he/she will fire up a request assuming that the victim is <strong>authentificated</strong> against <code>bank.nu</code>. If not, the
+attack will have no consequences since the POST request won&rsquo;t be accepted by the server.</p>
+<h2 id="the-defense">The defense</h2>
+<p>Since it is the <strong>natural</strong> behaviour of the browser to add the cookies to some specific requests (in order to tell the server that the user is authentificated),
+the mitigation of such attacks has to be done somewhere else. The <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#General_Recommendation:_Synchronizer_Token_Pattern">generic solution</a> consists of adding some <strong>random secure token</strong> which has to be:</p>
+<ul>
+<li>unique per user/session</li>
+<li>tied to only <strong>one</strong> session</li>
+<li>generated by a secure PRNG</li>
+</ul>
+<p>The <strong>client</strong> has to provide this token in its requests. The server will reject the request/action if the token is not valid. Sounds simple, isn&rsquo;t it? There are two ways to do it:</p>
+<h3 id="provide-the-token-in-a-hidden-field-synchronizer-token-pattern">Provide the token in a hidden field (Synchronizer Token Pattern)</h3>
+<p>If the client wants to perform an action (like sending a POST request), the server will put inside the <strong>body</strong> content a hidden token which the client has to provide when sending the POST request:</p>
+<p>{% blockdiag
 seqdiag {
 edge_length = 600;
-Client -> Server [label=&ldquo;GET /transfer&rdquo;];
-Server -> Client [label=&ldquo;200 OK\n\n"];
-Client -> Server [label=&ldquo;POST /transfer.do\n\n[&mldr;]&token=xxx&rdquo;];
-Server -> Client [label=&ldquo;200 OK&rdquo;];
+Client -&gt; Server [label=&ldquo;GET /transfer&rdquo;];
+Server -&gt; Client [label=&ldquo;200 OK\n\n<!-- raw HTML omitted -->&quot;];
+Client -&gt; Server [label=&ldquo;POST /transfer.do\n\n[&hellip;]&amp;token=xxx&rdquo;];
+Server -&gt; Client [label=&ldquo;200 OK&rdquo;];
 }
-%}</p><p>The token should change every time the site is loaded again. That means that the server should <strong>not</strong> accept 2 POST requests with the <strong>same</strong> token value.</p><h3 id=provide-session-based-csrf-token-double-submit-cookies>Provide session based CSRF token (Double Submit Cookies)</h3><p>Once the client has authentificated against the server, the server will send the client a CSRF token which will be used for <strong>every</strong> request. The token value <strong>doesn&rsquo;t change</strong> and remains the same for the whole session.</p><p>{% blockdiag
+%}</p>
+<p>The token should change every time the site is loaded again. That means that the server should <strong>not</strong> accept 2 POST requests with the <strong>same</strong> token value.</p>
+<h3 id="provide-session-based-csrf-token-double-submit-cookies">Provide session based CSRF token (Double Submit Cookies)</h3>
+<p>Once the client has authentificated against the server, the server will send the client a CSRF token which will be used for <strong>every</strong> request. The token value <strong>doesn&rsquo;t change</strong> and remains the same for the whole session.</p>
+<p>{% blockdiag
 seqdiag {
 edge_length = 600;
-Client -> Server [label=&ldquo;POST /login&rdquo;];
-Server -> Client [label=&ldquo;200 OK\nSet-Cookie: session=xxx\nSet-Cookie: token=yyy&rdquo;];</p><pre><code>    ... Client does some actions ...
+Client -&gt; Server [label=&ldquo;POST /login&rdquo;];
+Server -&gt; Client [label=&ldquo;200 OK\nSet-Cookie: session=xxx\nSet-Cookie: token=yyy&rdquo;];</p>
+<pre><code>    ... Client does some actions ...
     
     Client -&gt; Server [label=&quot;POST /transfer.do\nCookie: token=yyy\nCookie: session=xxx\n\n[...]&amp;token=yyy&quot;];
     Server -&gt; Client [label=&quot;200 OK&quot;];
 }
-</code></pre><p>%}</p><p>The interesting thing about this approach is the fact that the token is sent <strong>twice</strong>. The CSRF token is being sent to the client as a <em>cookie</em>.
+</code></pre>
+<p>%}</p>
+<p>The interesting thing about this approach is the fact that the token is sent <strong>twice</strong>. The CSRF token is being sent to the client as a <em>cookie</em>.
 That means that this specific cookie will be sent automatically by the browser when some requests are triggered (<strong>natural</strong> behaviour, remember?).
 At first look this approach doesn&rsquo;t look secure, since the <strong>session</strong> cookie <strong>and</strong> the <strong>csrf</strong> token will be sent automatically by the browser
 in case of a <strong>forged</strong> request. Remember that the <strong>attacker</strong> doesn&rsquo;t have to know the cookie values. He/she just <strong>forges</strong> the request and since the
-server can&rsquo;t distinguish between a <strong>legitimate</strong> and a <strong>forged</strong> request, the attack will be successful.</p><p>However, in the <em>Double Submit Cookies</em> approach the token value <strong>has</strong> to be sent more than once: Either as a <em>GET</em> or <em>POST</em> parameter. So the big question here is: Why is this secure? Well due to the fact that the token value has to be submitted somewhere else, the attacker will have to <strong>read</strong> this value - which is <strong>not possible</strong>. The attacker <em>can</em> forge the request but he can&rsquo;t <em>get</em> the response. The reason therefore is called <strong>SOP</strong> (Same Origin Policy) and prevents <strong>cross-requests</strong> (aka from other domains) to be performed. In our case a script hosted at <code>attacker.nu</code> would <strong>not</strong> be able to get &ldquo;ressources&rdquo; from <code>bank.nu</code> when executed in the browser.</p><p>{% blockdiag
+server can&rsquo;t distinguish between a <strong>legitimate</strong> and a <strong>forged</strong> request, the attack will be successful.</p>
+<p>However, in the <em>Double Submit Cookies</em> approach the token value <strong>has</strong> to be sent more than once: Either as a <em>GET</em> or <em>POST</em> parameter. So the big question here is: Why is this secure? Well due to the fact that the token value has to be submitted somewhere else, the attacker will have to <strong>read</strong> this value - which is <strong>not possible</strong>. The attacker <em>can</em> forge the request but he can&rsquo;t <em>get</em> the response. The reason therefore is called <strong>SOP</strong> (Same Origin Policy) and prevents <strong>cross-requests</strong> (aka from other domains) to be performed. In our case a script hosted at <code>attacker.nu</code> would <strong>not</strong>  be able to get &ldquo;ressources&rdquo; from <code>bank.nu</code> when executed in the browser.</p>
+<p>{% blockdiag
 seqdiag {
 edge_length = 600;
 attacker [label=&ldquo;attacker.nu/evil.js&rdquo;];
 server [label=&ldquo;bank.nu&rdquo;];
-attacker -> server [label=&ldquo;XMLHttpRequest(&lsquo;http://bank.nu/transfer&rsquo;)"];
-server -> attacker [note=&ldquo;Server will send nothing&rdquo;];
+attacker -&gt; server [label=&ldquo;XMLHttpRequest(&lsquo;http://bank.nu/transfer&rsquo;)&quot;];
+server -&gt; attacker [note=&ldquo;Server will send nothing&rdquo;];
 }
-%}</p><p>This is the reason the attacker <strong>can&rsquo;t</strong> read the token value even though he is able to <em>forge</em> requests. Providing the token value <strong>twice</strong> make this approach secure since the attacker can&rsquo;t read the token value and therefore can&rsquo;t forge a valid request (accepted by the server).</p><h2 id=conclusion>Conclusion</h2><p>There are some other patterns I&rsquo;m aware of (there might more!):</p><ul><li><a href=https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Encrypted_Token_Pattern>Encrypted Token Pattern</a></li><li><a href=https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html>token interceptors</a></li></ul><p>But the most valuable &ldquo;take-home-lesson&rdquo; is not about the technical details regarding the solutions. When discussing solutions several things should be always
-considered:</p><ul><li>The browser will <strong>always</strong> send available (regarding to the domain) cookies within the requests (whether its a page, JS, CSS, JPG whatever)</li><li>If <strong>XSS</strong> is possible, you have bigger problems<ul><li><strong>SOP</strong> offers no protection anymore</li></ul></li><li>Make sure the CSRF token is <strong>random</strong> and <strong>unique</strong> per session</li><li>When storing the CSRF token as a <strong>cookie</strong>, make sure you <strong>double</strong> check the value<ul><li>The client <strong>has</strong> to provide the token as a GET/POST parameter</li><li>Don&rsquo;t rely on the validation based on the cookie</li></ul></li></ul></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/01/15/howto-put-nginx-and-php-to-jail-in-debian-8/>prev post</a>
-<a href=http://blog.dornea.nu/2016/02/01/steve-jobs-by-walter-isaacson/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+%}</p>
+<p>This is the reason the attacker <strong>can&rsquo;t</strong> read the token value even though he is able to <em>forge</em> requests. Providing the token value <strong>twice</strong> make this approach secure since the attacker can&rsquo;t read the token value and therefore can&rsquo;t forge a valid request (accepted by the server).</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>There are some other patterns I&rsquo;m aware of (there might more!):</p>
+<ul>
+<li><a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Encrypted_Token_Pattern">Encrypted Token Pattern</a></li>
+<li><a href="https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html">token interceptors</a></li>
+</ul>
+<p>But the most valuable &ldquo;take-home-lesson&rdquo; is not about the technical details regarding the solutions. When discussing solutions several things should be always
+considered:</p>
+<ul>
+<li>The browser will <strong>always</strong> send available (regarding to the domain) cookies within the requests (whether its a page, JS, CSS, JPG whatever)</li>
+<li>If <strong>XSS</strong> is possible, you have bigger problems
+<ul>
+<li><strong>SOP</strong> offers no protection anymore</li>
+</ul>
+</li>
+<li>Make sure the CSRF token is <strong>random</strong> and <strong>unique</strong> per session</li>
+<li>When storing the CSRF token as a <strong>cookie</strong>, make sure you <strong>double</strong> check the value
+<ul>
+<li>The client <strong>has</strong> to provide the token as a GET/POST parameter</li>
+<li>Don&rsquo;t rely on the validation based on the cookie</li>
+</ul>
+</li>
+</ul>
+</div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2016/01/15/howto-put-nginx-and-php-to-jail-in-debian-8/">prev post</a>
+  <a href="http://blog.dornea.nu/2016/02/01/steve-jobs-by-walter-isaacson/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,45 +1,208 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Decode Adobe Flex AMF protocol - blog.dornea.nu</title><meta content="Decode Adobe Flex AMF protocol  - blog.dornea.nu" property="title"><meta content="Decode Adobe Flex AMF protocol  - blog.dornea.nu" property="og:title"><meta property="og:description" content="If you ever had the opportunity to pentest Flash applications you might have had problems analyzing the traffic between the client and the backend. An increasing number of (web) applications is using Adobe Flex at the presentation layer which uses the ActionScript Message Format (AMF) to send data back and forth. One might think that Burp has already built-in decoding functionalities for AMF. Although this is the case I found Burp&rsquo;s decoding to be more confusing than useful."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2015/06/22/decode-adobe-flex-amf-protocol/"><meta property="article:published_time" content="2015-06-22T00:00:00+00:00"><meta property="article:modified_time" content="2015-06-22T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Decode Adobe Flex AMF protocol</div><p class="silver f6 mt1 mb4 post-meta"><time>22 Jun 2015</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/note class="link silver">note</a> <a href=http://blog.dornea.nu/tags/burp class="link silver">burp</a> <a href=http://blog.dornea.nu/tags/web class="link silver">web</a> <a href=http://blog.dornea.nu/tags/network class="link silver">network</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/adobe class="link silver">adobe</a> <a href=http://blog.dornea.nu/tags/flash class="link silver">flash</a> ]</p><div class="lh-copy post-content"><p>If you ever had the opportunity to pentest Flash applications you might have had problems analyzing the traffic between the client
-and the backend. An increasing number of (web) applications is using <a href=http://www.adobe.com/products/flex.html>Adobe Flex</a> at the
-presentation layer which uses the <a href=https://en.wikipedia.org/wiki/Action_Message_Format>ActionScript Message Format (AMF)</a> to send
-data back and forth. One might think that <a href=http://portswigger.net/burp/>Burp</a> has already built-in decoding functionalities
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Decode Adobe Flex AMF protocol  - blog.dornea.nu</title>
+  <meta content='Decode Adobe Flex AMF protocol  - blog.dornea.nu' property='title' />
+  <meta content='Decode Adobe Flex AMF protocol  - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="If you ever had the opportunity to pentest Flash applications you might have had problems analyzing the traffic between the client and the backend. An increasing number of (web) applications is using Adobe Flex at the presentation layer which uses the ActionScript Message Format (AMF) to send data back and forth. One might think that Burp has already built-in decoding functionalities for AMF. Although this is the case I found Burp&rsquo;s decoding to be more confusing than useful." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2015/06/22/decode-adobe-flex-amf-protocol/" />
+
+
+<meta property="article:published_time" content="2015-06-22T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2015-06-22T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.78.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Decode Adobe Flex AMF protocol </div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>22 Jun 2015</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/note' class="link silver">note</a> <a href='http://blog.dornea.nu/tags/burp' class="link silver">burp</a> <a href='http://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='http://blog.dornea.nu/tags/network' class="link silver">network</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='http://blog.dornea.nu/tags/adobe' class="link silver">adobe</a> <a href='http://blog.dornea.nu/tags/flash' class="link silver">flash</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>If you ever had the opportunity to pentest Flash applications you might have had problems analyzing the traffic between the client
+and the backend. An increasing number of (web) applications is using <a href="http://www.adobe.com/products/flex.html">Adobe Flex</a> at the
+presentation layer which uses the <a href="https://en.wikipedia.org/wiki/Action_Message_Format">ActionScript Message Format (AMF)</a> to send
+data back and forth. One might think that <a href="http://portswigger.net/burp/">Burp</a> has already built-in decoding functionalities
 for <em>AMF</em>. Although this is the case I found Burp&rsquo;s decoding to be more confusing than useful. So I&rsquo;ve searched for other
-ways to decode <em>AMF</em> encoded data.</p><p>When looking at the plain-text traffic, you won&rsquo;t see much:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html>...
+ways to decode <em>AMF</em> encoded data.</p>
+<p>When looking at the plain-text traffic, you won&rsquo;t see much:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">...
 Content-Type: application/x-amf
 Content-Length: 1373
 ...
-^@^C^@^@^@^A^@^Dnull^@^C/46^@^@^K&lt;<span style=color:#6ab825;font-weight:700>C6</span>&gt;
+^@^C^@^@^@^A^@^Dnull^@^C/46^@^@^K&lt;<span style="color:#6ab825;font-weight:bold">C6</span>&gt;
 ^@^@^@^A^Q
-&lt;<span style=color:#6ab825;font-weight:700>81</span>&gt;^SOflex.messaging.messages.RemotingMessage^Msource^Soperation       body^QclientId^SmessageId^Oheaders^UtimeToLive^Stimestamp^Wdestination^A^F^]generateReport      ^K^A    ^M^A
+&lt;<span style="color:#6ab825;font-weight:bold">81</span>&gt;^SOflex.messaging.messages.RemotingMessage^Msource^Soperation       body^QclientId^SmessageId^Oheaders^UtimeToLive^Stimestamp^Wdestination^A^F^]generateReport      ^K^A    ^M^A
 ...
-</code></pre></div><p>Well you can save the response body to some file and then analyze the contents. Using <a href=https://github.com/hydralabs/pyamf>pyamf</a>
-I was able to decode the AMF data in way I could easily understand its inner structure. First <em>install</em> pyamf:</p><pre><code>$ pip install pyamf
-</code></pre><p>Then read the request data:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>In [<span style=color:#3677a9>1</span>]: <span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>pyamf</span>
+</code></pre></div><p>Well you can save the response body to some file and then analyze the contents. Using <a href="https://github.com/hydralabs/pyamf">pyamf</a>
+I was able to decode the AMF data in way I could easily understand its inner structure. First <em>install</em> pyamf:</p>
+<pre><code>$ pip install pyamf
+</code></pre>
+<p>Then read the request data:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">1</span>]: <span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span>
 
-In [<span style=color:#3677a9>2</span>]: <span style=color:#6ab825;font-weight:700>with</span> <span style=color:#24909d>open</span>(<span style=color:#ed9d13>&#39;/home/victor/tmp/neu.req&#39;</span>, <span style=color:#ed9d13>&#39;r&#39;</span>) <span style=color:#6ab825;font-weight:700>as</span> f:
+In [<span style="color:#3677a9">2</span>]: <span style="color:#6ab825;font-weight:bold">with</span> <span style="color:#24909d">open</span>(<span style="color:#ed9d13">&#39;/home/victor/tmp/neu.req&#39;</span>, <span style="color:#ed9d13">&#39;r&#39;</span>) <span style="color:#6ab825;font-weight:bold">as</span> f:
     content = f.read()
        ...: 
-</code></pre></div><p>And finally decode that data:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>In [<span style=color:#3677a9>3</span>]: <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>pyamf</span> <span style=color:#6ab825;font-weight:700>import</span> remoting
+</code></pre></div><p>And finally decode that data:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">3</span>]: <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span> <span style="color:#6ab825;font-weight:bold">import</span> remoting
 
-In [<span style=color:#3677a9>4</span>]: decoded = remoting.decode(content)
+In [<span style="color:#3677a9">4</span>]: decoded = remoting.decode(content)
 
-In [<span style=color:#3677a9>5</span>]: <span style=color:#24909d>type</span>(decoded)
-Out[<span style=color:#3677a9>5</span>]: pyamf.remoting.Envelope
+In [<span style="color:#3677a9">5</span>]: <span style="color:#24909d">type</span>(decoded)
+Out[<span style="color:#3677a9">5</span>]: pyamf.remoting.Envelope
 
-In [<span style=color:#3677a9>11</span>]: decoded
-Out[<span style=color:#3677a9>11</span>]: 
-&lt;Envelope amfVersion=<span style=color:#3677a9>3</span>&gt;
- (<span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;/46&#39;</span>, &lt;Request target=<span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;null&#39;</span>&gt;[&lt;RemotingMessage  body=[[{<span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;paramValue&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;identifier&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;ExternalListGUID&#39;</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;type&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;SINGLE_SELECT_DEFAULT&#39;</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;name&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;Options&#39;</span>}, {<span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;paramValue&#39;</span>: <span style=color:#3677a9>5</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;identifier&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;projectversionid&#39;</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;type&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;SINGLE_PROJECT&#39;</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;name&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;Project Version&#39;</span>}, {<span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;paramValue&#39;</span>: True, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;identifier&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;SecurityIssueDetails&#39;</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;type&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;BOOLEAN&#39;</span>, <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;name&#39;</span>: <span style=color:#ed9d13>u</span><span style=color:#ed9d13>&#39;Detailed Report&#39;</span>}
+In [<span style="color:#3677a9">11</span>]: decoded
+Out[<span style="color:#3677a9">11</span>]: 
+&lt;Envelope amfVersion=<span style="color:#3677a9">3</span>&gt;
+ (<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;/46&#39;</span>, &lt;Request target=<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;null&#39;</span>&gt;[&lt;RemotingMessage  body=[[{<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;ExternalListGUID&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_SELECT_DEFAULT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Options&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#3677a9">5</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;projectversionid&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_PROJECT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Project Version&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: True, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SecurityIssueDetails&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;BOOLEAN&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Detailed Report&#39;</span>}
  ...
-</code></pre></div><p>I hope that helped!</p></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2015/02/20/android-remote-sniffing-using-tcpdump-nc-and-wireshark/>prev post</a>
-<a href=http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>
+</code></pre></div><p>I hope that helped!</p>
+</div>
+</main>
+ 
+
+
+
+
+
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2015/02/20/android-remote-sniffing-using-tcpdump-nc-and-wireshark/">prev post</a>
+  <a href="http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+
+</script>
+
+
+
+
+</body>
+</html>

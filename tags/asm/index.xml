@@ -1,11 +1,66 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>asm on blog.dornea.nu</title><link>http://blog.dornea.nu/tags/asm/</link><description>Recent content in asm on blog.dornea.nu</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 09 Dec 2016 00:00:00 +0000</lastBuildDate><atom:link href="http://blog.dornea.nu/tags/asm/index.xml" rel="self" type="application/rss+xml"/><item><title>ringzer0 CTF - Binaries - Introduction to MIPS</title><link>http://blog.dornea.nu/2016/12/09/ringzer0-ctf-binaries-introduction-to-mips/</link><pubDate>Fri, 09 Dec 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/12/09/ringzer0-ctf-binaries-introduction-to-mips/</guid><description>References https://www.cr0.org/paper/mips.elf.external.resolution.txt http://logos.cs.uic.edu/366/notes/mips%20quick%20tutorial.htm</description></item><item><title>ringzer0 CTF - Binaries - Heap Allocator</title><link>http://blog.dornea.nu/2016/11/30/ringzer0-ctf-binaries-heap-allocator/</link><pubDate>Wed, 30 Nov 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/11/30/ringzer0-ctf-binaries-heap-allocator/</guid><description>First let&amp;rsquo;s collect some information about the binary itself:
-$ readelf IntelligenSoftware -h ELF Header: Magic: 7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 Class: ELF64 Data: 2&amp;#39;s complement, little endian Version: 1 (current) OS/ABI: UNIX - System V ABI Version: 0 Type: EXEC (Executable file) Machine: Advanced Micro Devices X86-64 Version: 0x1 Entry point address: 0x400688 Start of program headers: 64 (bytes into file) Start of section headers: 4608 (bytes into file) Flags: 0x0 Size of this header: 64 (bytes) Size of program headers: 56 (bytes) Number of program headers: 9 Size of section headers: 64 (bytes) Number of section headers: 30 Section header string table index: 27 Let&amp;rsquo;s see some code:</description></item><item><title>ringzer0 CTF - Binaries - Time to learn x86 ASM and gdb</title><link>http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/</link><pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/</guid><description>This one was a quite easy one. Using radare let&amp;rsquo;s find more information about the binary:
-$ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a [0x08048380]&amp;gt; iI havecode true pic false canary false nx true crypto false va true intrp /lib/ld-linux.so.2 bintype elf class ELF32 lang c arch x86 bits 32 machine Intel 80386 os linux minopsz 1 maxopsz 16 pcalign 0 subsys linux endian little stripped false static false linenum true lsyms true relocs true rpath NONE binsz 7450 Ok, now let&amp;rsquo;s have a look at the entry point:</description></item><item><title>Testing shellcodes</title><link>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</link><pubDate>Tue, 23 Aug 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</guid><description>While playing some wargames where I had to read a file called flag.txt using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.
-BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 Shellcode ; Shellcode size 82 bytes global _start section .text _start: jmp _push_filename _readfile: ; syscall open file pop rdi ; pop path value ; NULL byte fix xor byte [rdi + 11], 0x41 xor rax, rax add al, 2 xor rsi, rsi ; set O_RDONLY flag syscall ; syscall read file sub sp, 0xfff lea rsi, [rsp] mov rdi, rax xor rdx, rdx mov dx, 0xfff; size to read xor rax, rax syscall ; syscall write to stdout xor rdi, rdi add dil, 1 ; set stdout fd = 1 mov rdx, rax xor rax, rax add al, 1 syscall ; syscall exit xor rax, rax add al, 60 syscall _push_filename: call _readfile path: db &amp;#34;flag.</description></item><item><title>Links of the Week #26</title><link>http://blog.dornea.nu/2014/02/07/links-of-the-week-#26/</link><pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2014/02/07/links-of-the-week-#26/</guid><description>Bitcoins the hard way: Using the raw Bitcoin protocol
-Modern Processors – A 90min guide
-The GSM security model
-Analyzing DarkComet in Memory
-Cryptography Breakthrough Could Make Software Unhackable
-Git tips from the trenches
-I Spent Two Hours Talking With the NSA&amp;rsquo;s Bigwigs. Here&amp;rsquo;s What Has Them Mad
-PRESS RELEASE: IRC NETWORKS UNDER SYSTEMATIC ATTACK FROM GOVERNMENTS</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>asm on blog.dornea.nu</title>
+    <link>http://blog.dornea.nu/tags/asm/</link>
+    <description>Recent content in asm on blog.dornea.nu</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 09 Dec 2016 00:00:00 +0000</lastBuildDate><atom:link href="http://blog.dornea.nu/tags/asm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ringzer0 CTF - Binaries - Introduction to MIPS</title>
+      <link>http://blog.dornea.nu/2016/12/09/ringzer0-ctf-binaries-introduction-to-mips/</link>
+      <pubDate>Fri, 09 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2016/12/09/ringzer0-ctf-binaries-introduction-to-mips/</guid>
+      <description>References  https://www.cr0.org/paper/mips.elf.external.resolution.txt http://logos.cs.uic.edu/366/notes/mips%20quick%20tutorial.htm  </description>
+    </item>
+    
+    <item>
+      <title>ringzer0 CTF - Binaries - Heap Allocator</title>
+      <link>http://blog.dornea.nu/2016/11/30/ringzer0-ctf-binaries-heap-allocator/</link>
+      <pubDate>Wed, 30 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2016/11/30/ringzer0-ctf-binaries-heap-allocator/</guid>
+      <description>First let&amp;rsquo;s collect some information about the binary itself:
+$ readelf IntelligenSoftware -h ELF Header: Magic: 7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 Class: ELF64 Data: 2&amp;#39;s complement, little endian Version: 1 (current) OS/ABI: UNIX - System V ABI Version: 0 Type: EXEC (Executable file) Machine: Advanced Micro Devices X86-64 Version: 0x1 Entry point address: 0x400688 Start of program headers: 64 (bytes into file) Start of section headers: 4608 (bytes into file) Flags: 0x0 Size of this header: 64 (bytes) Size of program headers: 56 (bytes) Number of program headers: 9 Size of section headers: 64 (bytes) Number of section headers: 30 Section header string table index: 27 Let&amp;rsquo;s see some code:</description>
+    </item>
+    
+    <item>
+      <title>ringzer0 CTF - Binaries - Time to learn x86 ASM and gdb</title>
+      <link>http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/</link>
+      <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/</guid>
+      <description>This one was a quite easy one. Using radare let&amp;rsquo;s find more information about the binary:
+$ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a [0x08048380]&amp;gt; iI havecode true pic false canary false nx true crypto false va true intrp /lib/ld-linux.so.2 bintype elf class ELF32 lang c arch x86 bits 32 machine Intel 80386 os linux minopsz 1 maxopsz 16 pcalign 0 subsys linux endian little stripped false static false linenum true lsyms true relocs true rpath NONE binsz 7450 Ok, now let&amp;rsquo;s have a look at the entry point:</description>
+    </item>
+    
+    <item>
+      <title>Testing shellcodes</title>
+      <link>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</link>
+      <pubDate>Tue, 23 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</guid>
+      <description>While playing some wargames where I had to read a file called flag.txt using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.
+BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 Shellcode ; Shellcode size 82 bytes global _start section .text _start: jmp _push_filename _readfile: ; syscall open file pop rdi ; pop path value ; NULL byte fix xor byte [rdi + 11], 0x41 xor rax, rax add al, 2 xor rsi, rsi ; set O_RDONLY flag syscall ; syscall read file sub sp, 0xfff lea rsi, [rsp] mov rdi, rax xor rdx, rdx mov dx, 0xfff; size to read xor rax, rax syscall ; syscall write to stdout xor rdi, rdi add dil, 1 ; set stdout fd = 1 mov rdx, rax xor rax, rax add al, 1 syscall ; syscall exit xor rax, rax add al, 60 syscall _push_filename: call _readfile path: db &amp;#34;flag.</description>
+    </item>
+    
+    <item>
+      <title>Links of the Week #26</title>
+      <link>http://blog.dornea.nu/2014/02/07/links-of-the-week-#26/</link>
+      <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2014/02/07/links-of-the-week-#26/</guid>
+      <description>Bitcoins the hard way: Using the raw Bitcoin protocol
+  Modern Processors – A 90min guide
+  The GSM security model
+  Analyzing DarkComet in Memory
+  Cryptography Breakthrough Could Make Software Unhackable
+  Git tips from the trenches
+  I Spent Two Hours Talking With the NSA&amp;rsquo;s Bigwigs. Here&amp;rsquo;s What Has Them Mad
+  PRESS RELEASE: IRC NETWORKS UNDER SYSTEMATIC ATTACK FROM GOVERNMENTS</description>
+    </item>
+    
+  </channel>
+</rss>
