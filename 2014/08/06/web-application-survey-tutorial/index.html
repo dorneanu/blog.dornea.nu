@@ -1,13 +1,95 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Web Application Survey Tutorial - blog.dornea.nu</title><meta content="Web Application Survey Tutorial - blog.dornea.nu" property="title"><meta content="Web Application Survey Tutorial - blog.dornea.nu" property="og:title"><meta property="og:description" content="Suppose you get a list of some URLs and you are asked to &ldquo;investigate&rdquo; them. The list is full of some random URLs related to your company and nobody knows about. You don&rsquo;t have a clue who is responsible for them nor which applications (if any) are running behind them. Sounds like a cool task, ugh?
-Well in today&rsquo;s post I&rsquo;ll show you how I&rsquo;ve managed it to minimize the process of analyzing each URL manually and saved me a lot of time automatizing things."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/08/06/web-application-survey-tutorial/"><meta property="article:published_time" content="2014-08-06T00:00:00+00:00"><meta property="article:modified_time" content="2014-08-06T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Web Application Survey Tutorial</div><p class="silver f6 mt1 mb4 post-meta"><time>06 Aug 2014</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/ipython class="link silver">ipython</a> <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> <a href=http://blog.dornea.nu/tags/web class="link silver">web</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> ]</p><div class="lh-copy post-content"><p>Suppose you get a list of some URLs and you are asked to &ldquo;investigate&rdquo; them. The list is full of some random URLs related to your company and nobody knows about. You don&rsquo;t have a clue who is responsible for them nor which applications (if any) are running behind them. Sounds like a cool task, ugh?</p><p>Well in today&rsquo;s post I&rsquo;ll show you how I&rsquo;ve managed it to minimize the process of analyzing each URL manually and saved me a lot of time automatizing things.</p><h2 id=setup-environment>Setup environment</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>%pylab inline
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Web Application Survey Tutorial - blog.dornea.nu</title>
+  <meta content='Web Application Survey Tutorial - blog.dornea.nu' property='title' />
+  <meta content='Web Application Survey Tutorial - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Suppose you get a list of some URLs and you are asked to &ldquo;investigate&rdquo; them. The list is full of some random URLs related to your company and nobody knows about. You don&rsquo;t have a clue who is responsible for them nor which applications (if any) are running behind them. Sounds like a cool task, ugh?
+Well in today&rsquo;s post I&rsquo;ll show you how I&rsquo;ve managed it to minimize the process of analyzing each URL manually and saved me a lot of time automatizing things." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2014/08/06/web-application-survey-tutorial/" />
+
+
+<meta property="article:published_time" content="2014-08-06T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2014-08-06T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Web Application Survey Tutorial</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>06 Aug 2014</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a> <a href='http://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>Suppose you get a list of some URLs and you are asked to &ldquo;investigate&rdquo; them. The list is full of some random URLs related to your company and nobody knows about. You don&rsquo;t have a clue who is responsible for them nor which applications (if any) are running behind them. Sounds like a cool task, ugh?</p>
+<p>Well in today&rsquo;s post I&rsquo;ll show you how I&rsquo;ve managed it to minimize the process of analyzing each URL manually and saved me a lot of time automatizing things.</p>
+<h2 id="setup-environment">Setup environment</h2>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%pylab inline
 # &lt;!-- collapse=True --&gt;
 import binascii
 import pandas as pd
@@ -43,7 +125,9 @@ pd.set_option(&#39;display.column_space&#39;, 1000)
 os.chdir(&#34;/root/work/appsurvey&#34;)
 </code></pre></div><pre><code>Populating the interactive namespace from numpy and matplotlib
 height has been deprecated.
-</code></pre><p>First I&rsquo;ll read the list of targets from some CSV file.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># Fetch list of random URLs (found using Google)
+</code></pre>
+<p>First I&rsquo;ll read the list of targets from some CSV file.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Fetch list of random URLs (found using Google)
 response = urllib2.urlopen(&#39;http://files.ianonavy.com/urls.txt&#39;)
 targets_row = response.read()
 
@@ -52,7 +136,17 @@ targets = pd.DataFrame([t for t in targets_row.splitlines()], columns=[&#34;Targ
 print(&#34;First 20 entries in the targets list&#34;)
 targets[:20]
 </code></pre></div><pre><code>First 20 entries in the targets list
-</code></pre><p>Now I&rsquo;ll split the URLs in several parts:</p><ul><li>schema (HTTP, FTP, SSH etc.)</li><li>host</li><li>port</li><li>path</li><li>query (?q=somevalue etc.)</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+</code></pre>
+<!-- raw HTML omitted -->
+<p>Now I&rsquo;ll split the URLs in several parts:</p>
+<ul>
+<li>schema (HTTP, FTP, SSH etc.)</li>
+<li>host</li>
+<li>port</li>
+<li>path</li>
+<li>query (?q=somevalue etc.)</li>
+</ul>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 # Join root domain + suffix
 extract_root_domain =  lambda x: &#39;.&#39;.join(tldextract.extract(x)[1:3])
 
@@ -79,14 +173,18 @@ df_targets.to_csv(&#34;targets_df.csv&#34;, sep=&#34;\t&#34;)
 print(&#34;First 20 Entries&#34;)
 df_targets[:20]
 </code></pre></div><pre><code>First 20 Entries
-</code></pre><h2 id=whois>Whois</h2><p>Now get WHOIS information based on data in <code>df_targets</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
-<span style=color:#6ab825;font-weight:700>if</span> [ ! -d <span style=color:#ed9d13>&#34;WHOIS&#34;</span> ]; <span style=color:#6ab825;font-weight:700>then</span>
+</code></pre>
+<!-- raw HTML omitted -->
+<h2 id="whois">Whois</h2>
+<p>Now get WHOIS information based on data in <code>df_targets</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<span style="color:#6ab825;font-weight:bold">if</span> [ ! -d <span style="color:#ed9d13">&#34;WHOIS&#34;</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
     mkdir WHOIS
-<span style=color:#6ab825;font-weight:700>fi</span>
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># Get unique values
+<span style="color:#6ab825;font-weight:bold">fi</span>
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Get unique values
 uniq_roots = df_targets[&#39;root_domain&#39;].unique()
 uniq_subdomains = df_targets[&#39;host&#39;].unique()
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 
 def date_handler(obj):
     return obj.isoformat() if hasattr(obj, &#39;isoformat&#39;) else obj
@@ -144,11 +242,13 @@ Get WHOIS for	 samuraiblue.com ...
 Get WHOIS for	 openbsd.org ...
 Get WHOIS for	 sysblog.com ...
 Get WHOIS for	 voicesofsafety.com ...
-</code></pre><h2 id=get-all-dns-records>Get all DNS records</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
-<span style=color:#6ab825;font-weight:700>if</span> [ ! -d <span style=color:#ed9d13>&#34;DNS&#34;</span> ]; <span style=color:#6ab825;font-weight:700>then</span>
+</code></pre>
+<h2 id="get-all-dns-records">Get all DNS records</h2>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<span style="color:#6ab825;font-weight:bold">if</span> [ ! -d <span style="color:#ed9d13">&#34;DNS&#34;</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
     mkdir DNS
-<span style=color:#6ab825;font-weight:700>fi</span>
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+<span style="color:#6ab825;font-weight:bold">fi</span>
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 def fetch_dns(domains):
     &#34;&#34;&#34; Fetch all DNS records for specified domains (list) &#34;&#34;&#34;
     for d in domains:
@@ -194,7 +294,10 @@ Dig DNS records for	 samuraiblue.com ...
 Dig DNS records for	 openbsd.org ...
 Dig DNS records for	 sysblog.com ...
 Dig DNS records for	 voicesofsafety.com ...
-</code></pre><h2 id=read-whois-information>Read WHOIS information</h2><p>After collecting the data I&rsquo;ll try to manipulate data in a pythonic way in order to export it later to some useful format like Excel. I&rsquo;ll therefor read the collected data from every single file, merge the data and create a <code>DataFrame</code>.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+</code></pre>
+<h2 id="read-whois-information">Read WHOIS information</h2>
+<p>After collecting the data I&rsquo;ll try to manipulate data in a pythonic way in order to export it later to some useful format like Excel. I&rsquo;ll therefor read the collected data from every single file, merge the data and create a <code>DataFrame</code>.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 from pprint import pprint
 
 # Global DF frames
@@ -260,9 +363,13 @@ Reading WHOIS for	 samuraiblue.com
 Reading WHOIS for	 openbsd.org
 Reading WHOIS for	 sysblog.com
 Reading WHOIS for	 voicesofsafety.com
-</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_whois = pd.concat(frames)
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_whois.set_index([&#39;domain&#39;, &#39;element&#39;, &#39;type&#39;, &#39;field&#39;])
-</code></pre></div><h2 id=read-dns-information>Read DNS information</h2><p>Do the same with the DNS files&mldr;</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+</code></pre>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">df_whois = pd.concat(frames)
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">df_whois.set_index([&#39;domain&#39;, &#39;element&#39;, &#39;type&#39;, &#39;field&#39;])
+</code></pre></div><!-- raw HTML omitted -->
+<h2 id="read-dns-information">Read DNS information</h2>
+<p>Do the same with the DNS files&hellip;</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 from pprint import pprint
 import re
 import traceback
@@ -321,9 +428,13 @@ Reading WHOIS for	 samuraiblue.com
 Reading WHOIS for	 openbsd.org
 Reading WHOIS for	 sysblog.com
 Reading WHOIS for	 voicesofsafety.com
-</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_dns = pd.concat(frames)
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_dns.set_index([&#39;domain&#39;, &#39;dns_record&#39;])
-</code></pre></div><h2 id=connect-to-targets>Connect to targets</h2><p>For every single target I&rsquo;ll connect to it per HTTP(s) using <code>urllib2</code> and store the HTTP headers.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+</code></pre>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">df_dns = pd.concat(frames)
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">df_dns.set_index([&#39;domain&#39;, &#39;dns_record&#39;])
+</code></pre></div><!-- raw HTML omitted -->
+<h2 id="connect-to-targets">Connect to targets</h2>
+<p>For every single target I&rsquo;ll connect to it per HTTP(s) using <code>urllib2</code> and store the HTTP headers.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 import urllib2
 import httplib
 
@@ -448,17 +559,115 @@ Connecting to	 http://www.samuraiblue.com/
 Connecting to	 http://www.openbsd.org/cgi-bin/man.cgi
 Connecting to	 http://www.sysblog.com
 Connecting to	 http://www.voicesofsafety.com
-</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_connection = pd.concat(frames)
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_connection.set_index([&#39;url&#39;, &#39;response&#39;, &#39;header&#39;])
-</code></pre></div><h2 id=save-to-excel>Save to Excel</h2><p>Now feel free to do whatever you want with your DataFrames: Export them to CSV, EXCEL, TXT etc.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>from pandas import ExcelWriter
+</code></pre>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">df_connection = pd.concat(frames)
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">df_connection.set_index([&#39;url&#39;, &#39;response&#39;, &#39;header&#39;])
+</code></pre></div><!-- raw HTML omitted -->
+<h2 id="save-to-excel">Save to Excel</h2>
+<p>Now feel free to do whatever you want with your DataFrames: Export them to CSV, EXCEL, TXT etc.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">from pandas import ExcelWriter
 writer = ExcelWriter(&#39;Excel/output.xls&#39;)
 df_whois.to_excel(writer, &#34;Sheet - WHOIS&#34;)
 df_dns.to_excel(writer, &#34;Sheet - DNS&#34;)
 #df_connection.to_excel(writer, &#34;Sheet - Connections&#34;)
-</code></pre></div><p>Since I wasn&rsquo;t able to export the <code>df_connection</code> to Excel (<code>Exception: Unexpected data type &lt;class 'socket.timeout'></code>) I had to export it to CSV:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_connection.to_csv(&#34;Excel/connection.csv&#34;, sep=&#34;\t&#34;, header=True)
-</code></pre></div></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/08/05/android-dynamic-code-analysis-mastering-droidbox/>prev post</a>
-<a href=http://blog.dornea.nu/2014/08/06/python-for-data-analysis/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+</code></pre></div><p>Since I wasn&rsquo;t able to export the <code>df_connection</code> to Excel (<code>Exception: Unexpected data type &lt;class 'socket.timeout'&gt;</code>) I had to export it to CSV:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">df_connection.to_csv(&#34;Excel/connection.csv&#34;, sep=&#34;\t&#34;, header=True)
+</code></pre></div></div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2014/08/05/android-dynamic-code-analysis-mastering-droidbox/">prev post</a>
+  <a href="http://blog.dornea.nu/2014/08/06/python-for-data-analysis/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

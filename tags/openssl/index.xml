@@ -1,21 +1,95 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>openssl on blog.dornea.nu</title><link>http://blog.dornea.nu/tags/openssl/</link><description>Recent content in openssl on blog.dornea.nu</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 18 Feb 2016 00:00:00 +0000</lastBuildDate><atom:link href="http://blog.dornea.nu/tags/openssl/index.xml" rel="self" type="application/rss+xml"/><item><title>TLS Client authentication using Bitnami Nginx stack</title><link>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</link><pubDate>Thu, 18 Feb 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</guid><description>I&amp;rsquo;ve felt that I have to write it down since it took almost 2 days to find the root cause of:
-[info] 30979#0: *2 client SSL certificate verify error: (18:self signed certificate) while reading client request headers, client: xxx, server: yyy, request: &amp;#34;GET / HTTP/1.1&amp;#34;, host: &amp;#34;yyy&amp;#34; Use nginx stack environment Not generating the certificates inside the Bitnami environment was the root cause - at least I think it is. In your Bitnami installation folder (remember the instructions here) you&amp;rsquo;ll find a small script called use_nginxstack:</description></item><item><title>OpenVPN for paranoids</title><link>http://blog.dornea.nu/2015/11/17/openvpn-for-paranoids/</link><pubDate>Tue, 17 Nov 2015 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2015/11/17/openvpn-for-paranoids/</guid><description>Continuing my admin series this time I&amp;rsquo;d like to setup a VPN using OpenVPN as user-based VPN solution. Unlike IPSec solutions which require IPSec on both (server and client) sides, securing the VPN tunnel by OpenSSL is a more preferable option.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>openssl on blog.dornea.nu</title>
+    <link>http://blog.dornea.nu/tags/openssl/</link>
+    <description>Recent content in openssl on blog.dornea.nu</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Feb 2016 00:00:00 +0000</lastBuildDate><atom:link href="http://blog.dornea.nu/tags/openssl/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TLS Client authentication using Bitnami Nginx stack</title>
+      <link>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</link>
+      <pubDate>Thu, 18 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</guid>
+      <description>I&amp;rsquo;ve felt that I have to write it down since it took almost 2 days to find the root cause of:
+[info] 30979#0: *2 client SSL certificate verify error: (18:self signed certificate) while reading client request headers, client: xxx, server: yyy, request: &amp;#34;GET / HTTP/1.1&amp;#34;, host: &amp;#34;yyy&amp;#34; Use nginx stack environment Not generating the certificates inside the Bitnami environment was the root cause - at least I think it is. In your Bitnami installation folder (remember the instructions here) you&amp;rsquo;ll find a small script called use_nginxstack:</description>
+    </item>
+    
+    <item>
+      <title>OpenVPN for paranoids </title>
+      <link>http://blog.dornea.nu/2015/11/17/openvpn-for-paranoids/</link>
+      <pubDate>Tue, 17 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2015/11/17/openvpn-for-paranoids/</guid>
+      <description>Continuing my admin series this time I&amp;rsquo;d like to setup a VPN using OpenVPN  as user-based VPN solution. Unlike IPSec solutions which require IPSec on both (server and client) sides, securing the VPN tunnel by OpenSSL is a more preferable option.
 In this post I&amp;rsquo;ll try to show which steps have to be taken in order to:
-secure the communication channel use up-to-date (and secure!) TLS configurations prevent information leaks when the VPN tunnel is down At least for the last one some additional steps are required to route your traffic only through the VPN tunnel.</description></item><item><title>Manage PKI using OpenSSL</title><link>http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/</link><pubDate>Fri, 02 Oct 2015 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/</guid><description>In the previous X.509 related post I&amp;rsquo;ve had a look at the internals of a X.509 certficate. This time I want to setup my own PKI using some open source software. This post is a preparation for setting up a VPN using OpenVPN.
+ secure the communication channel use up-to-date (and secure!) TLS configurations prevent information leaks when the VPN tunnel is down  At least for the last one some additional steps are required to route your traffic only through the VPN tunnel.</description>
+    </item>
+    
+    <item>
+      <title>Manage PKI using OpenSSL</title>
+      <link>http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/</link>
+      <pubDate>Fri, 02 Oct 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/</guid>
+      <description>In the previous X.509 related post I&amp;rsquo;ve had a look at the internals of a X.509 certficate. This time I want to setup my own PKI using some open source software. This post is a preparation for setting up a VPN using OpenVPN.
 Before implementing the PKI let&amp;rsquo;s have a look what a PKI should definitely include (make sure you have a look at the Wikipedia entry):
-certificate authority (CA) has a public and a private key used to digitally sign certificates registration authority (RA) verify identify of users requesting information from the CA certificate management system probably the most important component Revision CA types There are several types of CAs:</description></item><item><title>Validating and pinning X.509 certificates</title><link>http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/</link><pubDate>Sun, 24 May 2015 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/</guid><description>In times of NSA, surveillance and data privacy, protecting your data has become an essential part of your every day life. A good understanding of basic principles is half the battle. In this post I just wanted to have look at SSL/TLS from a developer point of view but also from an users one. On the one hand I wanted to use openssl as a CLI utility to inspect and validate X.</description></item><item><title>On Java, OpenSSL, Crypto, Blowfish and stuff</title><link>http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/</link><pubDate>Tue, 01 Jul 2014 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/</guid><description>During some Android malware analysis I came along some Java routines which were meant to decrypt/encrypt some content. Nothing special about it. The key had to be extracted from a file and the encrypted file was in Base64. After unsuccessfully trying openssl in order to decrypt the file I decided to make some further investigations.
-In this article I&amp;rsquo;ll have a look how Python, Java and openssl (command line utility) implement Blowfish in CBC mode.</description></item><item><title>Links of the Week #25</title><link>http://blog.dornea.nu/2014/01/31/links-of-the-week-#25/</link><pubDate>Fri, 31 Jan 2014 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2014/01/31/links-of-the-week-#25/</guid><description> NSA BIOS Backdoor a.k.a. God Mode Malware Part 1: DEITYBOUNCE
-Step-by-Step Guide To Decompiling Android Apps
-Untraceable Blog
-Continuously jam all wifi clients and access points within range
-eduroam WiFi security audit or why it is broken by design
-Java-based malware driving DDoS botnet infects Windows, Mac, Linux device</description></item><item><title>Links of the Week #9</title><link>http://blog.dornea.nu/2013/08/09/links-of-the-week-#9/</link><pubDate>Fri, 09 Aug 2013 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2013/08/09/links-of-the-week-#9/</guid><description>&lt;p>This weeks links&amp;hellip;&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="http://spritesmods.com/?art=hddhack&amp;amp;page=1">Hard disk hacking:&lt;/a> Learn interesting stuff about hard disks&lt;/li>
-&lt;li>&lt;a href="http://securitywatch.pcmag.com/mobile-security/314386-russia-s-massive-android-malware-industry-revealed">Russia’s Massive Malware Industry Revealed&lt;/a>&lt;/li>
-&lt;li>&lt;a href="http://www.zdnet.com/bgp-spoofing-routing-router-phishing-why-nothing-on-the-internet-is-actually-secure-7000019015/">BGP spoofing – why nothing on the internet is actually secure&lt;/a>&lt;/li>
-&lt;li>&lt;a href="http://jaclynkonzelmann.tumblr.com/post/29070457063/why-i-quit-microsoft-to-join-a-5-person-start-up-in">JACLYN KONZELMANN, Why I Quit Microsoft To Join A 5 Person Start Up In Toronto&lt;/a>&lt;/li>
-&lt;li>&lt;a href="http://www.oddly-even.com/2013/07/31/the-largest-photo-ever-taken-of-tokyo-is-zoomable-and-it-is-glorious/">The largest photo ever taken of Tokyo is zoomable, and it is glorious&lt;/a>&lt;/li>
-&lt;li>&lt;a href="http://blog.ivanristic.com/2013/08/configuring-apache-nginx-and-openssl-for-forward-secrecy.html">Configuring Apache, Nginx, and OpenSSL for Forward Secrecy&lt;/a>&lt;/li>
-&lt;li>&lt;a href="http://www.reddit.com/r/netsec/comments/1ju6zh/php_exif_backdoors_generator_using_custom/">HP EXIF Backdoors generator using custom shellcode&lt;/a>&lt;/li>
-&lt;/ul></description></item></channel></rss>
+ certificate authority (CA)  has a public and a private key used to digitally sign certificates   registration authority (RA)  verify identify of users requesting information from the CA   certificate management system  probably the most important component    Revision CA types There are several types of CAs:</description>
+    </item>
+    
+    <item>
+      <title>Validating and pinning X.509 certificates</title>
+      <link>http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/</link>
+      <pubDate>Sun, 24 May 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/</guid>
+      <description>In times of NSA, surveillance and data privacy, protecting your data has become an essential part of your every day life. A good understanding of basic principles is half the battle. In this post I just wanted to have look at SSL/TLS from a developer point of view but also from an users one. On the one hand I wanted to use openssl as a CLI utility to inspect and validate X.</description>
+    </item>
+    
+    <item>
+      <title>On Java, OpenSSL, Crypto, Blowfish and stuff</title>
+      <link>http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/</link>
+      <pubDate>Tue, 01 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/</guid>
+      <description>During some Android malware analysis I came along some Java routines which were meant to decrypt/encrypt some content. Nothing special about it. The key had to be extracted from a file and the encrypted file was in Base64. After unsuccessfully trying openssl in order to decrypt the file I decided to make some further investigations.
+In this article I&amp;rsquo;ll have a look how Python, Java and openssl (command line utility) implement Blowfish in CBC mode.</description>
+    </item>
+    
+    <item>
+      <title>Links of the Week #25</title>
+      <link>http://blog.dornea.nu/2014/01/31/links-of-the-week-#25/</link>
+      <pubDate>Fri, 31 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2014/01/31/links-of-the-week-#25/</guid>
+      <description>    NSA BIOS Backdoor a.k.a. God Mode Malware Part 1: DEITYBOUNCE
+  Step-by-Step Guide To Decompiling Android Apps
+  Untraceable Blog
+  Continuously jam all wifi clients and access points within range
+    eduroam WiFi security audit or why it is broken by design
+    Java-based malware driving DDoS botnet infects Windows, Mac, Linux device
+  </description>
+    </item>
+    
+    <item>
+      <title>Links of the Week #9</title>
+      <link>http://blog.dornea.nu/2013/08/09/links-of-the-week-#9/</link>
+      <pubDate>Fri, 09 Aug 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.dornea.nu/2013/08/09/links-of-the-week-#9/</guid>
+      <description>&lt;p&gt;This weeks links&amp;hellip;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://spritesmods.com/?art=hddhack&amp;amp;page=1&#34;&gt;Hard disk hacking:&lt;/a&gt; Learn interesting stuff about hard disks&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://securitywatch.pcmag.com/mobile-security/314386-russia-s-massive-android-malware-industry-revealed&#34;&gt;Russia’s Massive Malware Industry Revealed&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.zdnet.com/bgp-spoofing-routing-router-phishing-why-nothing-on-the-internet-is-actually-secure-7000019015/&#34;&gt;BGP spoofing – why nothing on the internet is actually secure&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jaclynkonzelmann.tumblr.com/post/29070457063/why-i-quit-microsoft-to-join-a-5-person-start-up-in&#34;&gt;JACLYN KONZELMANN, Why I Quit Microsoft To Join A 5 Person Start Up In Toronto&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.oddly-even.com/2013/07/31/the-largest-photo-ever-taken-of-tokyo-is-zoomable-and-it-is-glorious/&#34;&gt;The largest photo ever taken of Tokyo is zoomable, and it is glorious&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.ivanristic.com/2013/08/configuring-apache-nginx-and-openssl-for-forward-secrecy.html&#34;&gt;Configuring Apache, Nginx, and OpenSSL for Forward Secrecy&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.reddit.com/r/netsec/comments/1ju6zh/php_exif_backdoors_generator_using_custom/&#34;&gt;HP EXIF Backdoors generator using custom shellcode&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

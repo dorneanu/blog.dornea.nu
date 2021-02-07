@@ -1,88 +1,171 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Simple MAC address generator - blog.dornea.nu</title><meta content="Simple MAC address generator - blog.dornea.nu" property="title"><meta content="Simple MAC address generator - blog.dornea.nu" property="og:title"><meta property="og:description" content="Any time you do some security researches you should better spoof/hide your identity. The best way to do that is to spoof/manipulate the MAC address of your interface. I normally do that when doing WiFi stuff: WEP cracking and such stuff. I usually assign some random MAC address to my interfaces to fully hide my identity.
-A MAC address consists of six groups of hexadecimal digits. Each group is separated by hyphens or colons."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2009/10/14/simple-mac-address-generator/"><meta property="article:published_time" content="2009-10-14T00:00:00+00:00"><meta property="article:modified_time" content="2009-10-14T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Simple MAC address generator</div><p class="silver f6 mt1 mb4 post-meta"><time>14 Oct 2009</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> <a href=http://blog.dornea.nu/tags/tools class="link silver">tools</a> ]</p><div class="lh-copy post-content"><p>Any time you do some <strong>security researches</strong> you should better spoof/hide your identity. The best way to do that is to spoof/manipulate the MAC address of your interface. I normally do that when doing WiFi stuff: WEP cracking and such stuff. I usually assign some random MAC address to my interfaces to fully hide my identity.</p><p>A MAC address consists of six groups of hexadecimal digits. Each group is separated by hyphens or colons. Each group consists of 256 possible permutations, e.g. A1, 1F, C3 etc. Since we have 6 groups, you’ll get 256^6 = 2^48 = 281,474,976,710,656 possible MAC addresses.</p><p>I wrote a simple sh (not bash) script which generates MAC addresses using shuffle (you may want to use another randomizing command available on your system). If no arguments are given the script will print out the generated MAC. You can call the script with an additional parameter which should be an existant network interface. In that case the script (you&rsquo;ll need r00t rights) will assign that MAC to the interface.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#cd2828;font-weight:700>#!/bin/sh
-</span><span style=color:#cd2828;font-weight:700></span><span style=color:#999;font-style:italic>#    MACgen - simple MAC address generator</span>
-<span style=color:#999;font-style:italic>#    Copyright (C) 2009 by Victor Dorneanu</span>
-<span style=color:#999;font-style:italic>#</span>
-<span style=color:#999;font-style:italic>#    This program is free software: you can redistribute it and/or modify</span>
-<span style=color:#999;font-style:italic>#    it under the terms of the GNU General Public License as published by</span>
-<span style=color:#999;font-style:italic>#    the Free Software Foundation, either version 3 of the License, or</span>
-<span style=color:#999;font-style:italic>#    (at your option) any later version.</span>
-<span style=color:#999;font-style:italic>#</span>
-<span style=color:#999;font-style:italic>#    This program is distributed in the hope that it will be useful,</span>
-<span style=color:#999;font-style:italic>#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span style=color:#999;font-style:italic>#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span style=color:#999;font-style:italic>#    GNU General Public License for more details.</span>
-<span style=color:#999;font-style:italic>#</span>
-<span style=color:#999;font-style:italic>#    You should have received a copy of the GNU General Public License</span>
-<span style=color:#999;font-style:italic>#    along with this program.  If not, see .</span>
-<span style=color:#999;font-style:italic>#</span>
-<span style=color:#999;font-style:italic>#    Mail: victor[__at__]dornea.nu</span>
-<span style=color:#999;font-style:italic>#    Site: http://dornea.nu</span>
-<span style=color:#999;font-style:italic>#    ----------------------</span>
-<span style=color:#999;font-style:italic># </span>
-<span style=color:#999;font-style:italic>#    USAGE: MACgen.sh [interface]</span>
-<span style=color:#999;font-style:italic>#           If &#34;interface&#34; exists, then the newly generated MAC address will</span>
-<span style=color:#999;font-style:italic>#           be assigned to the given interface. Otherwise the script will just</span>
-<span style=color:#999;font-style:italic>#           print out the MAC address.</span>
-<span style=color:#999;font-style:italic>#</span>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
 
-<span style=color:#999;font-style:italic># Define here randomizing shell command</span>
-<span style=color:#40ffff>SHUFFLE</span>=<span style=color:#ed9d13>`</span>which shuffle<span style=color:#ed9d13>`</span>
-<span style=color:#40ffff>SHUFFLE_OPTS</span>=<span style=color:#ed9d13>&#39;-p 1&#39;</span>
+  <title>Simple MAC address generator - blog.dornea.nu</title>
+  <meta content='Simple MAC address generator - blog.dornea.nu' property='title' />
+  <meta content='Simple MAC address generator - blog.dornea.nu' property='og:title' />
 
-<span style=color:#999;font-style:italic># List of available characters</span>
-<span style=color:#40ffff>list</span>=<span style=color:#ed9d13>&#34;0 1 2 3 4 5 6 7 8 9 A B C D E F&#34;</span>
 
-<span style=color:#999;font-style:italic># How many characters does a MAC address consist of?</span>
-<span style=color:#40ffff>mac_size</span>=<span style=color:#3677a9>12</span>
+<meta property="og:description" content="Any time you do some security researches you should better spoof/hide your identity. The best way to do that is to spoof/manipulate the MAC address of your interface. I normally do that when doing WiFi stuff: WEP cracking and such stuff. I usually assign some random MAC address to my interfaces to fully hide my identity.
+A MAC address consists of six groups of hexadecimal digits. Each group is separated by hyphens or colons." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2009/10/14/simple-mac-address-generator/" />
 
-<span style=color:#999;font-style:italic># Our random MAC address</span>
-<span style=color:#40ffff>generated_mac</span>=<span style=color:#ed9d13>&#34;&#34;</span>
+
+<meta property="article:published_time" content="2009-10-14T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2009-10-14T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Simple MAC address generator</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>14 Oct 2009</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/tools' class="link silver">tools</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>Any time you do some <strong>security researches</strong> you should better spoof/hide your identity. The best way to do that is to spoof/manipulate the MAC address of your interface. I normally do that when doing WiFi stuff: WEP cracking and such stuff. I usually assign some random MAC address to my interfaces to fully hide my identity.</p>
+<p>A MAC address consists of six groups of hexadecimal digits. Each group is separated by hyphens or colons. Each group consists of 256 possible permutations, e.g. A1, 1F, C3 etc. Since we have 6 groups, you’ll get 256^6 = 2^48 = 281,474,976,710,656 possible MAC addresses.</p>
+<p>I wrote a simple sh (not bash) script which generates MAC addresses using shuffle (you may want to use another randomizing command available on your system). If no arguments are given the script will print out the generated MAC. You can call the script with an additional parameter which should be an existant network interface. In that case the script (you&rsquo;ll need r00t rights) will assign that MAC to the interface.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd2828;font-weight:bold">#!/bin/sh
+</span><span style="color:#cd2828;font-weight:bold"></span><span style="color:#999;font-style:italic">#    MACgen - simple MAC address generator</span>
+<span style="color:#999;font-style:italic">#    Copyright (C) 2009 by Victor Dorneanu</span>
+<span style="color:#999;font-style:italic">#</span>
+<span style="color:#999;font-style:italic">#    This program is free software: you can redistribute it and/or modify</span>
+<span style="color:#999;font-style:italic">#    it under the terms of the GNU General Public License as published by</span>
+<span style="color:#999;font-style:italic">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span style="color:#999;font-style:italic">#    (at your option) any later version.</span>
+<span style="color:#999;font-style:italic">#</span>
+<span style="color:#999;font-style:italic">#    This program is distributed in the hope that it will be useful,</span>
+<span style="color:#999;font-style:italic">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span style="color:#999;font-style:italic">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span style="color:#999;font-style:italic">#    GNU General Public License for more details.</span>
+<span style="color:#999;font-style:italic">#</span>
+<span style="color:#999;font-style:italic">#    You should have received a copy of the GNU General Public License</span>
+<span style="color:#999;font-style:italic">#    along with this program.  If not, see .</span>
+<span style="color:#999;font-style:italic">#</span>
+<span style="color:#999;font-style:italic">#    Mail: victor[__at__]dornea.nu</span>
+<span style="color:#999;font-style:italic">#    Site: http://dornea.nu</span>
+<span style="color:#999;font-style:italic">#    ----------------------</span>
+<span style="color:#999;font-style:italic"># </span>
+<span style="color:#999;font-style:italic">#    USAGE: MACgen.sh [interface]</span>
+<span style="color:#999;font-style:italic">#           If &#34;interface&#34; exists, then the newly generated MAC address will</span>
+<span style="color:#999;font-style:italic">#           be assigned to the given interface. Otherwise the script will just</span>
+<span style="color:#999;font-style:italic">#           print out the MAC address.</span>
+<span style="color:#999;font-style:italic">#</span>
+
+<span style="color:#999;font-style:italic"># Define here randomizing shell command</span>
+<span style="color:#40ffff">SHUFFLE</span>=<span style="color:#ed9d13">`</span>which shuffle<span style="color:#ed9d13">`</span>
+<span style="color:#40ffff">SHUFFLE_OPTS</span>=<span style="color:#ed9d13">&#39;-p 1&#39;</span>
+
+<span style="color:#999;font-style:italic"># List of available characters</span>
+<span style="color:#40ffff">list</span>=<span style="color:#ed9d13">&#34;0 1 2 3 4 5 6 7 8 9 A B C D E F&#34;</span>
+
+<span style="color:#999;font-style:italic"># How many characters does a MAC address consist of?</span>
+<span style="color:#40ffff">mac_size</span>=<span style="color:#3677a9">12</span>
+
+<span style="color:#999;font-style:italic"># Our random MAC address</span>
+<span style="color:#40ffff">generated_mac</span>=<span style="color:#ed9d13">&#34;&#34;</span>
 
 generate_mac()
 {
-   <span style=color:#999;font-style:italic># Some internal variable (used for the dots &#34;:&#34;)</span>
-   <span style=color:#40ffff>c</span>=<span style=color:#3677a9>2</span>
+   <span style="color:#999;font-style:italic"># Some internal variable (used for the dots &#34;:&#34;)</span>
+   <span style="color:#40ffff">c</span>=<span style="color:#3677a9">2</span>
 
-   <span style=color:#999;font-style:italic># Permutate list of available characters</span>
-   <span style=color:#6ab825;font-weight:700>while</span> <span style=color:#24909d>true</span> 
-   <span style=color:#6ab825;font-weight:700>do</span>
-      <span style=color:#999;font-style:italic># Loop break condition</span>
-      <span style=color:#6ab825;font-weight:700>if</span> [ <span style=color:#40ffff>$mac_size</span> = <span style=color:#3677a9>0</span> ]; <span style=color:#6ab825;font-weight:700>then</span> <span style=color:#24909d>break</span> 
-      <span style=color:#6ab825;font-weight:700>fi</span>
+   <span style="color:#999;font-style:italic"># Permutate list of available characters</span>
+   <span style="color:#6ab825;font-weight:bold">while</span> <span style="color:#24909d">true</span> 
+   <span style="color:#6ab825;font-weight:bold">do</span>
+      <span style="color:#999;font-style:italic"># Loop break condition</span>
+      <span style="color:#6ab825;font-weight:bold">if</span> [ <span style="color:#40ffff">$mac_size</span> = <span style="color:#3677a9">0</span> ]; <span style="color:#6ab825;font-weight:bold">then</span> <span style="color:#24909d">break</span> 
+      <span style="color:#6ab825;font-weight:bold">fi</span>
 
-      <span style=color:#6ab825;font-weight:700>if</span> [ <span style=color:#40ffff>$c</span> = <span style=color:#3677a9>0</span> ]; <span style=color:#6ab825;font-weight:700>then</span>
-         <span style=color:#40ffff>generated_mac</span>=<span style=color:#40ffff>$generated_mac</span>:<span style=color:#ed9d13>`</span><span style=color:#40ffff>$SHUFFLE</span> <span style=color:#40ffff>$SHUFFLE_OPTS</span> <span style=color:#40ffff>$list</span><span style=color:#ed9d13>`</span>
-         <span style=color:#40ffff>c</span>=<span style=color:#3677a9>2</span>
-      <span style=color:#6ab825;font-weight:700>else</span>
-         <span style=color:#40ffff>generated_mac</span>=<span style=color:#40ffff>$generated_mac</span><span style=color:#ed9d13>`</span><span style=color:#40ffff>$SHUFFLE</span> <span style=color:#40ffff>$SHUFFLE_OPTS</span> <span style=color:#40ffff>$list</span><span style=color:#ed9d13>`</span>
-      <span style=color:#6ab825;font-weight:700>fi</span>
+      <span style="color:#6ab825;font-weight:bold">if</span> [ <span style="color:#40ffff">$c</span> = <span style="color:#3677a9">0</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
+         <span style="color:#40ffff">generated_mac</span>=<span style="color:#40ffff">$generated_mac</span>:<span style="color:#ed9d13">`</span><span style="color:#40ffff">$SHUFFLE</span> <span style="color:#40ffff">$SHUFFLE_OPTS</span> <span style="color:#40ffff">$list</span><span style="color:#ed9d13">`</span>
+         <span style="color:#40ffff">c</span>=<span style="color:#3677a9">2</span>
+      <span style="color:#6ab825;font-weight:bold">else</span>
+         <span style="color:#40ffff">generated_mac</span>=<span style="color:#40ffff">$generated_mac</span><span style="color:#ed9d13">`</span><span style="color:#40ffff">$SHUFFLE</span> <span style="color:#40ffff">$SHUFFLE_OPTS</span> <span style="color:#40ffff">$list</span><span style="color:#ed9d13">`</span>
+      <span style="color:#6ab825;font-weight:bold">fi</span>
 
-      <span style=color:#40ffff>mac_size</span>=<span style=color:#6ab825;font-weight:700>$((</span>mac_size-1<span style=color:#6ab825;font-weight:700>))</span>
-      <span style=color:#40ffff>c</span>=<span style=color:#6ab825;font-weight:700>$((</span>c-1<span style=color:#6ab825;font-weight:700>))</span>
-   <span style=color:#6ab825;font-weight:700>done</span>
+      <span style="color:#40ffff">mac_size</span>=<span style="color:#6ab825;font-weight:bold">$((</span>mac_size-1<span style="color:#6ab825;font-weight:bold">))</span>
+      <span style="color:#40ffff">c</span>=<span style="color:#6ab825;font-weight:bold">$((</span>c-1<span style="color:#6ab825;font-weight:bold">))</span>
+   <span style="color:#6ab825;font-weight:bold">done</span>
 }
 
-<span style=color:#999;font-style:italic># Check if interface argument was supplied</span>
-<span style=color:#6ab825;font-weight:700>if</span> [ -z <span style=color:#40ffff>$1</span> ]; <span style=color:#6ab825;font-weight:700>then</span>
+<span style="color:#999;font-style:italic"># Check if interface argument was supplied</span>
+<span style="color:#6ab825;font-weight:bold">if</span> [ -z <span style="color:#40ffff">$1</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
    generate_mac
-   <span style=color:#24909d>echo</span> <span style=color:#40ffff>$generated_mac</span>
+   <span style="color:#24909d">echo</span> <span style="color:#40ffff">$generated_mac</span>
 
-<span style=color:#999;font-style:italic># Assign MAC to interface</span>
-<span style=color:#6ab825;font-weight:700>else</span>
+<span style="color:#999;font-style:italic"># Assign MAC to interface</span>
+<span style="color:#6ab825;font-weight:bold">else</span>
     generate_mac
-   <span style=color:#ed9d13>`</span>which ifconfig<span style=color:#ed9d13>`</span> <span style=color:#40ffff>$1</span> link <span style=color:#40ffff>$generated_mac</span> active
-    <span style=color:#24909d>echo</span> <span style=color:#ed9d13>&#34;New MAC address for </span><span style=color:#40ffff>$1</span><span style=color:#ed9d13>: </span><span style=color:#40ffff>$generated_mac</span><span style=color:#ed9d13>&#34;</span>
-<span style=color:#6ab825;font-weight:700>fi</span>
-</code></pre></div><p>Feel free to change the script and adapt it to your needs. Some examples:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>root@BlackTiny:~]$ MACgen.sh 
+   <span style="color:#ed9d13">`</span>which ifconfig<span style="color:#ed9d13">`</span> <span style="color:#40ffff">$1</span> link <span style="color:#40ffff">$generated_mac</span> active
+    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;New MAC address for </span><span style="color:#40ffff">$1</span><span style="color:#ed9d13">: </span><span style="color:#40ffff">$generated_mac</span><span style="color:#ed9d13">&#34;</span>
+<span style="color:#6ab825;font-weight:bold">fi</span>
+</code></pre></div><p>Feel free to change the script and adapt it to your needs. Some examples:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@BlackTiny:~]$ MACgen.sh 
 60:17:E8:1C:FF:7C
 [root@BlackTiny:~]$ MACgen.sh
 AE:7C:B6:CE:8B:7A
@@ -100,8 +183,85 @@ ath0: flags=8802 mtu 1500
         media: IEEE802.11 autoselect
         status: no network&lt;/pre&gt;
 
-</code></pre></div></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2009/09/15/some-drupal-peculiarities/>prev post</a>
-<a href=http://blog.dornea.nu/2009/11/14/netbsd-linux-#038-xen-does-it-work/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>
+</code></pre></div></div>
+</main>
+ 
+
+
+
+
+
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2009/09/15/some-drupal-peculiarities/">prev post</a>
+  <a href="http://blog.dornea.nu/2009/11/14/netbsd-linux-#038-xen-does-it-work/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+
+</script>
+
+
+
+
+</body>
+</html>

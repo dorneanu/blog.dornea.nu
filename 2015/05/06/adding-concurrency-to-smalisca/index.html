@@ -1,76 +1,211 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Adding concurrency to smalisca - blog.dornea.nu</title><meta content="Adding concurrency to smalisca - blog.dornea.nu" property="title"><meta content="Adding concurrency to smalisca - blog.dornea.nu" property="og:title"><meta property="og:description" content="When it comes to parallelism Python has some constraints which have to be taken into consideration before starting coding. I think the biggest one has to do with the Global Interpreter Lock which prevents several threads from executing Python bytecodes at once. Nevertheless you may want to apply concurrency patterns to you code in order to achieve more speed. Besides that you may want to use your cores properly otherwise you&rsquo;ll end up like this:"><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2015/05/06/adding-concurrency-to-smalisca/"><meta property="article:published_time" content="2015-05-06T00:00:00+00:00"><meta property="article:modified_time" content="2015-05-06T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Adding concurrency to smalisca</div><p class="silver f6 mt1 mb4 post-meta"><time>06 May 2015</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/smalisca class="link silver">smalisca</a> ]</p><div class="lh-copy post-content"><p>When it comes to parallelism Python has some constraints which have to be taken into consideration
-before starting coding. I think the biggest one has to do with the <a href=https://wiki.python.org/moin/GlobalInterpreterLock>Global Interpreter Lock</a> which prevents several threads from
-executing Python bytecodes at once. Nevertheless you may want to apply <a href=http://en.wikipedia.org/wiki/Concurrency_pattern>concurrency patterns</a> to you code in order to achieve more speed. Besides that
-you may want to use your cores properly otherwise you&rsquo;ll end up like this:</p><p><img src=https://pbs.twimg.com/media/CCjk6ySWYAIBrfc.jpg alt="Parallelism in Action"></p><p>In my specific case I wanted to speed up the process of parsing files (as a major features of <a href=https://github.com/dorneanu/smalisca>smalisca</a>). I&rsquo;ve ended up looking at the <a href=https://docs.python.org/2/library/multiprocessing.html>muliprocessing</a> package which seemed quite promising:</p><blockquote><p>multiprocessing is a package that supports spawning processes using an API similar to the threading module. The multiprocessing package offers both local and remote concurrency, effectively side-stepping the Global Interpreter Lock by using subprocesses instead of threads. Due to this, the multiprocessing module allows the programmer to fully leverage multiple processors on a given machine. It runs on both Unix and Windows.</p></blockquote><p>In the next steps I&rsquo;ll try to document my beginners attempts at <strong>concurrency</strong> in Python.</p><h2 id=the-idea>The idea</h2><p>Using the <code>-l</code> (location) parameter you can specify the location path where <em>smalisca</em> should
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Adding concurrency to smalisca - blog.dornea.nu</title>
+  <meta content='Adding concurrency to smalisca - blog.dornea.nu' property='title' />
+  <meta content='Adding concurrency to smalisca - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="When it comes to parallelism Python has some constraints which have to be taken into consideration before starting coding. I think the biggest one has to do with the Global Interpreter Lock which prevents several threads from executing Python bytecodes at once. Nevertheless you may want to apply concurrency patterns to you code in order to achieve more speed. Besides that you may want to use your cores properly otherwise you&rsquo;ll end up like this:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2015/05/06/adding-concurrency-to-smalisca/" />
+
+
+<meta property="article:published_time" content="2015-05-06T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2015-05-06T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Adding concurrency to smalisca</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>06 May 2015</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/smalisca' class="link silver">smalisca</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>When it comes to parallelism Python has some constraints which have to be taken into consideration
+before starting coding. I think the biggest one has to do with the <a href="https://wiki.python.org/moin/GlobalInterpreterLock">Global Interpreter Lock</a> which prevents several threads from
+executing Python bytecodes at once. Nevertheless you may want to apply <a href="http://en.wikipedia.org/wiki/Concurrency_pattern">concurrency patterns</a> to you code in order to achieve more speed. Besides that
+you may want to use your cores properly otherwise you&rsquo;ll end up like this:</p>
+<p><img src="https://pbs.twimg.com/media/CCjk6ySWYAIBrfc.jpg" alt="Parallelism in Action"></p>
+<p>In my specific case I wanted to speed up the process of parsing files (as a major features of <a href="https://github.com/dorneanu/smalisca">smalisca</a>). I&rsquo;ve ended up looking at the <a href="https://docs.python.org/2/library/multiprocessing.html">muliprocessing</a> package which seemed quite promising:</p>
+<blockquote>
+<p>multiprocessing is a package that supports spawning processes using an API similar to the threading module. The multiprocessing package offers both local and remote concurrency, effectively side-stepping the Global Interpreter Lock by using subprocesses instead of threads. Due to this, the multiprocessing module allows the programmer to fully leverage multiple processors on a given machine. It runs on both Unix and Windows.</p>
+</blockquote>
+<p>In the next steps I&rsquo;ll try to document my beginners attempts at <strong>concurrency</strong> in Python.</p>
+<h2 id="the-idea">The idea</h2>
+<p>Using the <code>-l</code> (location) parameter you can specify the location path where <em>smalisca</em> should
 lookup for files before parsing them and afterwards collecting valuable information. Looking closely
-at the <a href=https://github.com/dorneanu/smalisca/blob/master/smalisca/modules/module_smali_parser.py#L134>code</a> I&rsquo;ve noticed that <code>os.walk</code> already returns a list of &ldquo;some important information about files and directories.&rdquo; The <code>multiprocessing</code> documentation refers to the <code>Pool</code> object:</p><blockquote><p>[&mldr;] is the Pool object which offers a convenient means of parallelizing the execution of a function across multiple input values, distributing the input data across processes (data parallelism).
-[&mldr;]</p></blockquote><p>So I can:</p><ul><li><em>parallelize</em> the execution of a single function</li><li>use the <em>same input data</em> source for each thread/process</li><li><em>distribute</em> the input data across processes</li></ul><p>Ok, that sounds great!</p><h2 id=some-basic-code>Some basic code</h2><p>The basic idea is to &ldquo;walk&rdquo; through files and call a <em>function</em> for every single found file. You&rsquo;d usually start like this:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6ab825;font-weight:700>for</span> root, dirs, files <span style=color:#6ab825;font-weight:700>in</span> os.walk(location):
-    <span style=color:#999;font-style:italic># call here some function(s) to do whatever with the dirs/files</span>
-</code></pre></div><p>But first an input filename list has to be generated:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python> <span style=color:#6ab825;font-weight:700>def</span> <span style=color:#447fcf>get_file_list</span>(folder):
-    <span style=color:#ed9d13>&#34;&#34;&#34; Returns a list of files inside the &lt;folder&gt; directory &#34;&#34;&#34;</span>
+at the <a href="https://github.com/dorneanu/smalisca/blob/master/smalisca/modules/module_smali_parser.py#L134">code</a> I&rsquo;ve noticed that <code>os.walk</code> already returns a list of &ldquo;some important information about files and directories.&rdquo; The <code>multiprocessing</code> documentation refers to the <code>Pool</code> object:</p>
+<blockquote>
+<p>[&hellip;] is the Pool object which offers a convenient means of parallelizing the execution of a function across multiple input values, distributing the input data across processes (data parallelism).
+[&hellip;]</p>
+</blockquote>
+<p>So I can:</p>
+<ul>
+<li><em>parallelize</em> the execution of a single function</li>
+<li>use the <em>same input data</em> source for each thread/process</li>
+<li><em>distribute</em> the input data across processes</li>
+</ul>
+<p>Ok, that sounds great!</p>
+<h2 id="some-basic-code">Some basic code</h2>
+<p>The basic idea is to &ldquo;walk&rdquo; through files and call a <em>function</em> for every single found file. You&rsquo;d usually start like this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">for</span> root, dirs, files <span style="color:#6ab825;font-weight:bold">in</span> os.walk(location):
+    <span style="color:#999;font-style:italic"># call here some function(s) to do whatever with the dirs/files</span>
+</code></pre></div><p>But first an input filename list has to be generated:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"> <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">get_file_list</span>(folder):
+    <span style="color:#ed9d13">&#34;&#34;&#34; Returns a list of files inside the &lt;folder&gt; directory &#34;&#34;&#34;</span>
     file_list = []
 
-    <span style=color:#999;font-style:italic># &#34;Walk&#34; through folder</span>
-    <span style=color:#6ab825;font-weight:700>for</span> root, dirs, files <span style=color:#6ab825;font-weight:700>in</span> os.walk(folder):
-        <span style=color:#6ab825;font-weight:700>for</span> filename <span style=color:#6ab825;font-weight:700>in</span> files:
+    <span style="color:#999;font-style:italic"># &#34;Walk&#34; through folder</span>
+    <span style="color:#6ab825;font-weight:bold">for</span> root, dirs, files <span style="color:#6ab825;font-weight:bold">in</span> os.walk(folder):
+        <span style="color:#6ab825;font-weight:bold">for</span> filename <span style="color:#6ab825;font-weight:bold">in</span> files:
             filepath = os.path.join(root, filename)
 
-            <span style=color:#999;font-style:italic># Check if it&#39;s file</span>
-            <span style=color:#6ab825;font-weight:700>if</span> os.path.isfile(filepath):
+            <span style="color:#999;font-style:italic"># Check if it&#39;s file</span>
+            <span style="color:#6ab825;font-weight:bold">if</span> os.path.isfile(filepath):
                 file_list.append(filepath)
 
-    <span style=color:#6ab825;font-weight:700>return</span> file_list
+    <span style="color:#6ab825;font-weight:bold">return</span> file_list
 </code></pre></div><p>In order to achieve concurrency the initial list has to be splitted into several sub-lists
 which are then distributed to some &ldquo;workers&rdquo; (aka processes). The best way to do this is to
 distribute the sub-lists equally to the number of available CPU cores. Given an initial
-<code>file_list</code> one could do following:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>cpu_cores = multiprocessing.cpu_count()
-<span style=color:#6ab825;font-weight:700>for</span> i <span style=color:#6ab825;font-weight:700>in</span> <span style=color:#24909d>range</span>(<span style=color:#3677a9>0</span>, cpu_cores):
-    sub_list = [file_list[j] <span style=color:#6ab825;font-weight:700>for</span> j <span style=color:#6ab825;font-weight:700>in</span> <span style=color:#24909d>range</span>(<span style=color:#3677a9>0</span>, <span style=color:#24909d>len</span>(file_list)) <span style=color:#6ab825;font-weight:700>if</span> j % cpu_cores == i]
+<code>file_list</code> one could do following:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">cpu_cores = multiprocessing.cpu_count()
+<span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, cpu_cores):
+    sub_list = [file_list[j] <span style="color:#6ab825;font-weight:bold">for</span> j <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(file_list)) <span style="color:#6ab825;font-weight:bold">if</span> j % cpu_cores == i]
 
-    <span style=color:#6ab825;font-weight:700>if</span> <span style=color:#24909d>len</span>(sub_list) &gt; <span style=color:#3677a9>0</span>:
-        <span style=color:#999;font-style:italic># Start new process with sub-list</span>
-</code></pre></div><p>But wait a second&mldr; What should every process do? Well, the answer is quite obvious:
+    <span style="color:#6ab825;font-weight:bold">if</span> <span style="color:#24909d">len</span>(sub_list) &gt; <span style="color:#3677a9">0</span>:
+        <span style="color:#999;font-style:italic"># Start new process with sub-list</span>
+</code></pre></div><p>But wait a second&hellip; What should every process do? Well, the answer is quite obvious:
 For every file in its sub-list, it has to call a certain function. Afterwards the process
-has to somehow return the results to the parent process. But how is this done?</p><h2 id=communication-between-processes>Communication between processes</h2><p>A simple way is to use <code>Queue</code> where you can pass messages back and forth between your processes. In a more complicated example you might use <code>JoinableQueue</code> where you have typical consumer scenario: Processes fetch data, modify it and then push them back into the queue (<a href=http://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem>producer consumer pattern</a>).</p><p>In my case a <code>Queue</code> is perfectly fine. That way I have a safe way of letting the process pushing back the results into the queue, before merging all available results globally.
-Let&rsquo;s have a look at some example:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6ab825;font-weight:700>def</span> <span style=color:#447fcf>process_files</span>(file_list, q):
-    <span style=color:#ed9d13>&#34;&#34;&#34; Proprocess every file in &lt;file_list&gt; and call parse_file() &#34;&#34;&#34;</span>
+has to somehow return the results to the parent process. But how is this done?</p>
+<h2 id="communication-between-processes">Communication between processes</h2>
+<p>A simple way is to use <code>Queue</code> where you can pass messages back and forth between your processes. In a more complicated example you might use <code>JoinableQueue</code> where you have typical consumer scenario: Processes fetch data, modify it and then push them back into the queue (<a href="http://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem">producer consumer pattern</a>).</p>
+<p>In my case a <code>Queue</code> is perfectly fine. That way I have a safe way of letting the process pushing back the results into the queue, before merging all available results globally.
+Let&rsquo;s have a look at some example:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">process_files</span>(file_list, q):
+    <span style="color:#ed9d13">&#34;&#34;&#34; Proprocess every file in &lt;file_list&gt; and call parse_file() &#34;&#34;&#34;</span>
     results = []
-    <span style=color:#6ab825;font-weight:700>try</span>:
-        <span style=color:#6ab825;font-weight:700>for</span> f <span style=color:#6ab825;font-weight:700>in</span> file_list:
-            results.append(parse_file(f, <span style=color:#3677a9>3</span>))
-    <span style=color:#6ab825;font-weight:700>except</span>:
+    <span style="color:#6ab825;font-weight:bold">try</span>:
+        <span style="color:#6ab825;font-weight:bold">for</span> f <span style="color:#6ab825;font-weight:bold">in</span> file_list:
+            results.append(parse_file(f, <span style="color:#3677a9">3</span>))
+    <span style="color:#6ab825;font-weight:bold">except</span>:
         q.put([])
-        <span style=color:#6ab825;font-weight:700>raise</span>
+        <span style="color:#6ab825;font-weight:bold">raise</span>
 
-    <span style=color:#999;font-style:italic># Put results into queue</span>
+    <span style="color:#999;font-style:italic"># Put results into queue</span>
     q.put(results)
 </code></pre></div><p><code>process_files</code> gets a file list (a sub-list from the big list) and a <em>queue</em>. After
 <em>parsing</em> the files, the function will simply <code>put</code> the results into the queue. This
-specific type of queue <em>should</em> be thread and process safe as the documentation states.</p><h2 id=collecting-results>Collecting results</h2><p>After all processes are done doing their job, it&rsquo;s time to collect the results:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>all_results = []
-<span style=color:#6ab825;font-weight:700>for</span> i <span style=color:#6ab825;font-weight:700>in</span> <span style=color:#24909d>range</span>(<span style=color:#3677a9>0</span>, <span style=color:#24909d>len</span>(procs)):
+specific type of queue <em>should</em> be thread and process safe as the documentation states.</p>
+<h2 id="collecting-results">Collecting results</h2>
+<p>After all processes are done doing their job, it&rsquo;s time to collect the results:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">all_results = []
+<span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(procs)):
     all_results.append(q.get())
 </code></pre></div><p><code>q</code> is the queue used by the processes. Just <code>get</code> all collected results and then you&rsquo;re
-ready to go. You can found the whole code <a href=https://gist.github.com/dorneanu/2393d8d03d0ed443baeb>here</a>.</p><p>Ok, I&rsquo;ve shown some introductory example how to use <code>multiprocessing</code> properly by using
+ready to go. You can found the whole code <a href="https://gist.github.com/dorneanu/2393d8d03d0ed443baeb">here</a>.</p>
+<p>Ok, I&rsquo;ve shown some introductory example how to use <code>multiprocessing</code> properly by using
 a very simplified code. Now let&rsquo;s move on to a more (or less) complicated scenrio:
-Implement parallelism for <a href=https://github.com/dorneanu/smalisca>smalisca&rsquo;s</a> <a href=http://smalisca.readthedocs.org/en/latest/parsing.html#page-parsing>parsing</a> features.</p><h2 id=smalisca-and-parallelism>Smalisca and parallelism</h2><p>One of the slowest step within <em>smalisca</em> is parsing. And that&rsquo;s because every directory,
+Implement parallelism for <a href="https://github.com/dorneanu/smalisca">smalisca&rsquo;s</a> <a href="http://smalisca.readthedocs.org/en/latest/parsing.html#page-parsing">parsing</a> features.</p>
+<h2 id="smalisca-and-parallelism">Smalisca and parallelism</h2>
+<p>One of the slowest step within <em>smalisca</em> is parsing. And that&rsquo;s because every directory,
 every file found within it, has to be parsed <em>sequentially</em>. Even from the beginning of
 the development I&rsquo;ve thought <em>concurrency</em> would be a better choice to solve that. Due
-to the priority of other main functionalities this never happened. Till now :)</p><p>As I&rsquo;m writing this text I also implement this new feature into <em>smalisca</em>. Before I&rsquo;ve
-started with the coding part, I had to think about several things:</p><ol><li>Should concurrency be implemented as a <em>core</em> feature of the parsing component?</li><li>Regarding the sub-lists: Should I split <em>file</em> or <em>directory</em> lists?</li><li>How do I collect the results gained from the processes?</li><li>Will there be any major side-effects caused by the concurrency?</li></ol><p>Regarding <strong>1</strong>: Since I want to keep things simple and clean, I like the idea of a controller which <em>controls</em> the parser. <code>SmaliParser</code> should implement everything that has to do with the parsing itself, but the concurrency should be implemented on-top. That&rsquo;s why I&rsquo;ve
-decided to parallelize several <code>SmaliParser</code> instances rather than creating processes inside it.</p><p>Regarding <strong>2</strong>: Due to the fact that the current directory path is used when creating new <code>class</code> objects, I&rsquo;ve decided to split the directory list, distribute the sub-lists equally across the <em>workers</em> and then collect the results.</p><p>Regarding <strong>3</strong>: The answer to this one should be quite obvious. One could use a <code>Queue</code> (a thread-safe one like <code>mutiprocessing.Queue</code>) and <code>put</code> the results of every worker
-into it. Well that&rsquo;s pretty much what I&rsquo;ve done except for the fact that I&rsquo;ve used <strong>proxy</strong> objects instead of directly accessed ones. I&rsquo;ll come to this later one.</p><p>Regarding <strong>4</strong>: I couldn&rsquo;t notice any side-effects.</p><h2 id=the-basic-stuff>The basic stuff</h2><p>I didn&rsquo;t have to write a lot of code. In my case the concurrency has been implemented this way:</p><ul><li>for a given path location, <em>walk</em> the location and return lists of all found directories and files</li><li>split the big list into smaller sub-lists</li><li>every worker/process gets a sub-list</li><li>each worker initiates a <code>SmaliParser</code> instance for every directory in its sub-list</li><li>after <code>SmaliParser</code> finishes its work, the results are pushed into a thread-safe <code>Queue</code></li></ul><p>So basically you&rsquo;ll have a list of directory paths:</p><p>{% graphviz
+to the priority of other main functionalities this never happened. Till now :)</p>
+<p>As I&rsquo;m writing this text I also implement this new feature into <em>smalisca</em>. Before I&rsquo;ve
+started with the coding part, I had to think about several things:</p>
+<ol>
+<li>Should concurrency be implemented as a <em>core</em> feature of the parsing component?</li>
+<li>Regarding the sub-lists: Should I split <em>file</em> or <em>directory</em> lists?</li>
+<li>How do I collect the results gained from the processes?</li>
+<li>Will there be any major side-effects caused by the concurrency?</li>
+</ol>
+<p>Regarding <strong>1</strong>: Since I want to keep things simple and clean, I like the idea of a controller which <em>controls</em> the parser. <code>SmaliParser</code> should implement everything that has to do with the parsing itself, but the concurrency should be implemented on-top. That&rsquo;s why I&rsquo;ve
+decided to parallelize several <code>SmaliParser</code> instances rather than creating processes inside it.</p>
+<p>Regarding <strong>2</strong>: Due to the fact that the current directory path is used when creating new <code>class</code> objects, I&rsquo;ve decided to split the directory list, distribute the sub-lists equally across the <em>workers</em> and then collect the results.</p>
+<p>Regarding <strong>3</strong>: The answer to this one should be quite obvious. One could use a <code>Queue</code> (a thread-safe one like <code>mutiprocessing.Queue</code>) and <code>put</code> the results of every worker
+into it. Well that&rsquo;s pretty much what I&rsquo;ve done except for the fact that I&rsquo;ve used <strong>proxy</strong> objects instead of directly accessed ones. I&rsquo;ll come to this later one.</p>
+<p>Regarding <strong>4</strong>: I couldn&rsquo;t notice any side-effects.</p>
+<h2 id="the-basic-stuff">The basic stuff</h2>
+<p>I didn&rsquo;t have to write a lot of code. In my case the concurrency has been implemented this way:</p>
+<ul>
+<li>for a given path location, <em>walk</em> the location and return lists of all found directories and files</li>
+<li>split the big list into smaller sub-lists</li>
+<li>every worker/process gets a sub-list</li>
+<li>each worker initiates a <code>SmaliParser</code> instance for every directory in its sub-list</li>
+<li>after <code>SmaliParser</code> finishes its work, the results are pushed into a thread-safe <code>Queue</code></li>
+</ul>
+<p>So basically you&rsquo;ll have a list of directory paths:</p>
+<p>{% graphviz
 dot {
 digraph G {
-graph [splines=curve, rankdir = LR, pad=".15", ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=7, height=.5];</p><pre><code>        compound = true;
+graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
+node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=7, height=.5];</p>
+<pre><code>        compound = true;
 
         Bar[label=&quot;{\
               {PATHS \r |\
@@ -84,11 +219,15 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
         }&quot;, width=8];
     }
 }
-</code></pre><p>%}</p><p>And some workers to do the job:</p><p>{% graphviz
+</code></pre>
+<p>%}</p>
+<p>And some workers to do the job:</p>
+<p>{% graphviz
 dot {
 digraph G {
-graph [splines=curve, rankdir = LR, pad=".15", ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p><pre><code>        compound = true;
+graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
+node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p>
+<pre><code>        compound = true;
 
         Workers[label=&quot;{\
               {WORKERS \r |\
@@ -100,11 +239,15 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
         }&quot;, width=8];
     }
 }
-</code></pre><p>%}</p><p>In my case the paths have to be distributed to the workers:</p><p>{% graphviz
+</code></pre>
+<p>%}</p>
+<p>In my case the paths have to be distributed to the workers:</p>
+<p>{% graphviz
 dot {
 digraph G {
-graph [splines=curve, rankdir = LR, pad=".15", ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p><pre><code>        compound = true;
+graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
+node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p>
+<pre><code>        compound = true;
 
         Bar[label=&quot;{\
               {PATHS \r |\
@@ -133,40 +276,45 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
         Bar:p5 -&gt; Workers:w2;
     }
 }
-</code></pre><p>%}</p><p>So let&rsquo;s continue with some code examples. A typical <strong>parser process</strong> would look like this:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6ab825;font-weight:700>class</span> <span style=color:#447fcf;text-decoration:underline>SmaliParserProcess</span>(multiprocessing.Process):
-    <span style=color:#ed9d13>&#34;&#34;&#34;Implements a multiprocessing.Process
-</span><span style=color:#ed9d13>
-</span><span style=color:#ed9d13>    Attributes:
-</span><span style=color:#ed9d13>        dirs (list): List of directory paths
-</span><span style=color:#ed9d13>        files (list): List of file paths
-</span><span style=color:#ed9d13>    &#34;&#34;&#34;</span>
+</code></pre>
+<p>%}</p>
+<p>So let&rsquo;s continue with some code examples. A typical <strong>parser process</strong> would look like this:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">SmaliParserProcess</span>(multiprocessing.Process):
+    <span style="color:#ed9d13">&#34;&#34;&#34;Implements a multiprocessing.Process
+</span><span style="color:#ed9d13">
+</span><span style="color:#ed9d13">    Attributes:
+</span><span style="color:#ed9d13">        dirs (list): List of directory paths
+</span><span style="color:#ed9d13">        files (list): List of file paths
+</span><span style="color:#ed9d13">    &#34;&#34;&#34;</span>
 
-    <span style=color:#6ab825;font-weight:700>def</span> __init__(self, dirs, suffix, result_queue):
+    <span style="color:#6ab825;font-weight:bold">def</span> __init__(self, dirs, suffix, result_queue):
         multiprocessing.Process.__init__(self)
         self.result_queue = result_queue
         self.dirs = dirs
         self.suffix = suffix
 
-    <span style=color:#6ab825;font-weight:700>def</span> <span style=color:#447fcf>run</span>(self):
-        <span style=color:#ed9d13>&#34;&#34;&#34;Runs the process&#34;&#34;&#34;</span>
-        c = <span style=color:#3677a9>0</span>
-        <span style=color:#6ab825;font-weight:700>for</span> d <span style=color:#6ab825;font-weight:700>in</span> self.dirs:
-            log.info(<span style=color:#ed9d13>&#34;</span><span style=color:#ed9d13>%s</span><span style=color:#ed9d13> </span><span style=color:#ed9d13>%d</span><span style=color:#ed9d13>/</span><span style=color:#ed9d13>%d</span><span style=color:#ed9d13> Parsing </span><span style=color:#ed9d13>%s</span><span style=color:#ed9d13> ... &#34;</span> % (self.name, c, <span style=color:#24909d>len</span>(self.dirs), d))
+    <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">run</span>(self):
+        <span style="color:#ed9d13">&#34;&#34;&#34;Runs the process&#34;&#34;&#34;</span>
+        c = <span style="color:#3677a9">0</span>
+        <span style="color:#6ab825;font-weight:bold">for</span> d <span style="color:#6ab825;font-weight:bold">in</span> self.dirs:
+            log.info(<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">%s</span><span style="color:#ed9d13"> </span><span style="color:#ed9d13">%d</span><span style="color:#ed9d13">/</span><span style="color:#ed9d13">%d</span><span style="color:#ed9d13"> Parsing </span><span style="color:#ed9d13">%s</span><span style="color:#ed9d13"> ... &#34;</span> % (self.name, c, <span style="color:#24909d">len</span>(self.dirs), d))
 
-            <span style=color:#999;font-style:italic># Parse directory</span>
+            <span style="color:#999;font-style:italic"># Parse directory</span>
             parser = SmaliParser(d, self.suffix)
             parser.run()
 
-            <span style=color:#999;font-style:italic># Get and save results</span>
+            <span style="color:#999;font-style:italic"># Get and save results</span>
             res = parser.get_results()
             self.result_queue.put(res)
-            c += <span style=color:#3677a9>1</span>
+            c += <span style="color:#3677a9">1</span>
 </code></pre></div><p>A process will have a list of directories to scan plus a results queue where to put
-its individual results.</p><p>{% graphviz
+its individual results.</p>
+<p>{% graphviz
 dot {
 digraph G {
-graph [splines=curve, rankdir = LR, pad=".15", ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p><pre><code>        compound = true;
+graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
+node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p>
+<pre><code>        compound = true;
 
         Workers[label=&quot;{\
               {WORKERS \r |\
@@ -185,69 +333,94 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
         Workers:w4 -&gt; Queue;
     }
 }
-</code></pre><p>%}</p><p>A <strong>controller</strong> should create and create the workers. Afterwards it should collect the
-results:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6ab825;font-weight:700>class</span> <span style=color:#447fcf;text-decoration:underline>ConcurrentParser</span>():
-    <span style=color:#ed9d13>&#34;&#34;&#34;Implements concurrency features
-</span><span style=color:#ed9d13>
-</span><span style=color:#ed9d13>    Attributes:
-</span><span style=color:#ed9d13>        processes (list): List of processes/workers
-</span><span style=color:#ed9d13>        result_queue (Queue): Proxy to some thread-safe queue
-</span><span style=color:#ed9d13>    &#34;&#34;&#34;</span>
+</code></pre>
+<p>%}</p>
+<p>A <strong>controller</strong> should create and create the workers. Afterwards it should collect the
+results:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">ConcurrentParser</span>():
+    <span style="color:#ed9d13">&#34;&#34;&#34;Implements concurrency features
+</span><span style="color:#ed9d13">
+</span><span style="color:#ed9d13">    Attributes:
+</span><span style="color:#ed9d13">        processes (list): List of processes/workers
+</span><span style="color:#ed9d13">        result_queue (Queue): Proxy to some thread-safe queue
+</span><span style="color:#ed9d13">    &#34;&#34;&#34;</span>
 
-    <span style=color:#999;font-style:italic># Use a manager to proxy access to the real queue</span>
+    <span style="color:#999;font-style:italic"># Use a manager to proxy access to the real queue</span>
     multimanager = multiprocessing.Manager()
     result_queue = multimanager.Queue()
 
     processes = []
 
-    <span style=color:#6ab825;font-weight:700>def</span> __init__(self, location, suffix, jobs):
+    <span style="color:#6ab825;font-weight:bold">def</span> __init__(self, location, suffix, jobs):
         self.location = location
         self.suffix = suffix
         self.jobs = jobs
 
-    <span style=color:#6ab825;font-weight:700>def</span> <span style=color:#447fcf>run</span>(self):
-        <span style=color:#ed9d13>&#34;&#34;&#34;Parallelize parsing
-</span><span style=color:#ed9d13>
-</span><span style=color:#ed9d13>        Split input list into sublists according to the number of
-</span><span style=color:#ed9d13>        specified jobs. Create new processes/workers and let them
-</span><span style=color:#ed9d13>        do the parsing job.
-</span><span style=color:#ed9d13>        &#34;&#34;&#34;</span>
-        <span style=color:#999;font-style:italic># Create sub-lists</span>
-        <span style=color:#6ab825;font-weight:700>for</span> i <span style=color:#6ab825;font-weight:700>in</span> <span style=color:#24909d>range</span>(<span style=color:#3677a9>0</span>, self.jobs):
-            sub_list = [self.dirs[j] <span style=color:#6ab825;font-weight:700>for</span> j <span style=color:#6ab825;font-weight:700>in</span> <span style=color:#24909d>range</span>(<span style=color:#3677a9>0</span>, <span style=color:#24909d>len</span>(self.dirs))
-                        <span style=color:#6ab825;font-weight:700>if</span> j % self.jobs == i]
+    <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">run</span>(self):
+        <span style="color:#ed9d13">&#34;&#34;&#34;Parallelize parsing
+</span><span style="color:#ed9d13">
+</span><span style="color:#ed9d13">        Split input list into sublists according to the number of
+</span><span style="color:#ed9d13">        specified jobs. Create new processes/workers and let them
+</span><span style="color:#ed9d13">        do the parsing job.
+</span><span style="color:#ed9d13">        &#34;&#34;&#34;</span>
+        <span style="color:#999;font-style:italic"># Create sub-lists</span>
+        <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, self.jobs):
+            sub_list = [self.dirs[j] <span style="color:#6ab825;font-weight:bold">for</span> j <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(self.dirs))
+                        <span style="color:#6ab825;font-weight:bold">if</span> j % self.jobs == i]
 
-            <span style=color:#999;font-style:italic># Create new process</span>
-            <span style=color:#6ab825;font-weight:700>if</span> <span style=color:#24909d>len</span>(sub_list) &gt; <span style=color:#3677a9>0</span>:
+            <span style="color:#999;font-style:italic"># Create new process</span>
+            <span style="color:#6ab825;font-weight:bold">if</span> <span style="color:#24909d">len</span>(sub_list) &gt; <span style="color:#3677a9">0</span>:
                 p = SmaliParserProcess(sub_list, self.suffix, self.result_queue)
                 self.processes.append(p)
 
-        <span style=color:#999;font-style:italic># Start processes</span>
-        <span style=color:#6ab825;font-weight:700>for</span> p <span style=color:#6ab825;font-weight:700>in</span> self.processes:
+        <span style="color:#999;font-style:italic"># Start processes</span>
+        <span style="color:#6ab825;font-weight:bold">for</span> p <span style="color:#6ab825;font-weight:bold">in</span> self.processes:
             p.start()
 
-        <span style=color:#999;font-style:italic># Exit the completed processes</span>
-        <span style=color:#6ab825;font-weight:700>for</span> p <span style=color:#6ab825;font-weight:700>in</span> self.processes:
+        <span style="color:#999;font-style:italic"># Exit the completed processes</span>
+        <span style="color:#6ab825;font-weight:bold">for</span> p <span style="color:#6ab825;font-weight:bold">in</span> self.processes:
             p.join()
 
-        <span style=color:#999;font-style:italic># Get results</span>
-        results = [self.result_queue.get() <span style=color:#6ab825;font-weight:700>for</span> p <span style=color:#6ab825;font-weight:700>in</span> self.processes]
-</code></pre></div><p>Pretty straightforward, isn&rsquo;t it? Split the lists into sub-lists, assign each worker a sub-list and let them <em>run</em>. Then <em>join</em> the processes and collect the results.</p><h2 id=concurrency-caveats>Concurrency caveats</h2><p>In some initial code I&rsquo;ve had, I was using a simple <code>multiprocessing.Queue()</code> to collect
+        <span style="color:#999;font-style:italic"># Get results</span>
+        results = [self.result_queue.get() <span style="color:#6ab825;font-weight:bold">for</span> p <span style="color:#6ab825;font-weight:bold">in</span> self.processes]
+</code></pre></div><p>Pretty straightforward, isn&rsquo;t it? Split the lists into sub-lists, assign each worker a sub-list and let them <em>run</em>. Then <em>join</em> the processes and collect the results.</p>
+<h2 id="concurrency-caveats">Concurrency caveats</h2>
+<p>In some initial code I&rsquo;ve had, I was using a simple <code>multiprocessing.Queue()</code> to collect
 the results. After some testing I&rsquo;ve noticed that my processes never <strong>terminated</strong>.
 Sometimes (in fact <strong>always</strong>) it&rsquo;s a good idea to take a closer look at the documentation.
-Looking at the <a href=https://docs.python.org/3.1/library/multiprocessing.html#all-platforms>programming guidelines</a> I&rsquo;ve read following:</p><blockquote><p><strong>Joining processes that use queues</strong></p><p>Bear in mind that a process that has put items in a queue will wait before terminating until all the buffered items are fed by the “feeder” thread to the underlying pipe. (The child process can call the Queue.cancel_join_thread() method of the queue to avoid this behaviour.)</p><p>Ä This means that whenever you use a queue you need to make sure that all items which have been put on the queue will eventually be removed before the process is joined. Otherwise you cannot be sure that processes which have put items on the queue will terminate. Remember also that non-daemonic processes will be automatically be joined.</p></blockquote><p>So my previous implementation was prone to a <strong>deadlock</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>...
+Looking at the <a href="https://docs.python.org/3.1/library/multiprocessing.html#all-platforms">programming guidelines</a> I&rsquo;ve read following:</p>
+<blockquote>
+<p><strong>Joining processes that use queues</strong></p>
+<p>Bear in mind that a process that has put items in a queue will wait before terminating until all the buffered items are fed by the “feeder” thread to the underlying pipe. (The child process can call the Queue.cancel_join_thread() method of the queue to avoid this behaviour.)</p>
+<p>Ä This means that whenever you use a queue you need to make sure that all items which have been put on the queue will eventually be removed before the process is joined. Otherwise you cannot be sure that processes which have put items on the queue will terminate. Remember also that non-daemonic processes will be automatically be joined.</p>
+</blockquote>
+<p>So my previous implementation was prone to a <strong>deadlock</strong>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">...
 queue = Queue()
 p = Process(target=f, args=(queue,))
 p.start()
-p.join()                    <span style=color:#999;font-style:italic># this deadlocks</span>
+p.join()                    <span style="color:#999;font-style:italic"># this deadlocks</span>
 obj = queue.get() 
-</code></pre></div><p>OK, leason lerned! And then I&rsquo;ve found this <a href=http://code.activestate.com/lists/python-tutor/99561/>post</a> which deals with <code>multiprocessing.Manager</code>s. In my current code I&rsquo;m also using a <code>Queue</code> but <strong>proxied</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>multimanager = multiprocessing.Manager()
+</code></pre></div><p>OK, leason lerned! And then I&rsquo;ve found this <a href="http://code.activestate.com/lists/python-tutor/99561/">post</a> which deals with <code>multiprocessing.Manager</code>s. In my current code I&rsquo;m also using a <code>Queue</code> but <strong>proxied</strong>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">multimanager = multiprocessing.Manager()
 result_queue = multimanager.Queue()
-</code></pre></div><p>In this case <code>result_queue</code> is also a <code>Queue</code> wrapped by a proxy. As stated <a href=https://docs.python.org/3/library/multiprocessing.html#proxy-objects>here</a>:</p><blockquote><p>A proxy is an object which refers to a shared object which lives (presumably) in a different process. The shared object is said to be the referent of the proxy. Multiple proxy objects may have the same referent.
+</code></pre></div><p>In this case <code>result_queue</code> is also a <code>Queue</code> wrapped by a proxy. As stated <a href="https://docs.python.org/3/library/multiprocessing.html#proxy-objects">here</a>:</p>
+<blockquote>
+<p>A proxy is an object which refers to a shared object which lives (presumably) in a different process. The shared object is said to be the referent of the proxy. Multiple proxy objects may have the same referent.
 ..
-An important feature of proxy objects is that they are picklable so they can be passed between processes. Note, however, that if a proxy is sent to the corresponding manager’s process then unpickling it will produce the referent itself.</p></blockquote><p>Ahhhh! Now that we&rsquo;ve implemented it (hopefully) the clean way, let&rsquo;s have a look at some metrics.</p><h2 id=metrics>Metrics</h2><p>Of course I wanted to somehow measure my improvements. Having that said don&rsquo;t expect <strong>huge</strong> improvements.
-It kind of surprised me too. I&rsquo;ve compared the execution time (<strong>just for the parsing job</strong>) between</p><ul><li><strong>old</strong> and <strong>new</strong> version of smalisca</li><li>using different number of jobs/workers</li></ul><p>I&rsquo;ve used my Laptop (<strong>Dell XPS 13 with Intel Core i7</strong>) for the testings. Using a larger code repository (bigger than the <em>FakeBanker</em> one) I&rsquo;ve first ran the <strong>old</strong> smalisca version (0.1). This what I&rsquo;ve got:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ <span style=color:#24909d>export</span> <span style=color:#40ffff>CMD</span>=<span style=color:#ed9d13>&#34;time smalisca parser -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
-$ <span style=color:#6ab825;font-weight:700>for</span> i in {1..10};<span style=color:#6ab825;font-weight:700>do</span> <span style=color:#24909d>eval</span> <span style=color:#ed9d13>${</span><span style=color:#40ffff>CMD</span><span style=color:#ed9d13>}</span> | grep total; <span style=color:#6ab825;font-weight:700>done</span> 
+An important feature of proxy objects is that they are picklable so they can be passed between processes. Note, however, that if a proxy is sent to the corresponding manager’s process then unpickling it will produce the referent itself.</p>
+</blockquote>
+<p>Ahhhh! Now that we&rsquo;ve implemented it (hopefully) the clean way, let&rsquo;s have a look at some metrics.</p>
+<h2 id="metrics">Metrics</h2>
+<p>Of course I wanted to somehow measure my improvements. Having that said don&rsquo;t expect <strong>huge</strong> improvements.
+It kind of surprised me too. I&rsquo;ve compared the execution time (<strong>just for the parsing job</strong>) between</p>
+<ul>
+<li><strong>old</strong> and <strong>new</strong> version of smalisca</li>
+<li>using different number of jobs/workers</li>
+</ul>
+<p>I&rsquo;ve used my Laptop (<strong>Dell XPS 13 with Intel Core i7</strong>) for the testings. Using a larger code repository (bigger than the <em>FakeBanker</em> one) I&rsquo;ve first ran the <strong>old</strong> smalisca version (0.1). This what I&rsquo;ve got:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time smalisca parser -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+$ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> | grep total; <span style="color:#6ab825;font-weight:bold">done</span> 
 smalisca parser -l  -s java -f sqlite -o   3.61s user 0.11s system 100% cpu 3.712 total
 smalisca parser -l  -s java -f sqlite -o   3.66s user 0.12s system 100% cpu 3.778 total
 smalisca parser -l  -s java -f sqlite -o   3.66s user 0.10s system 100% cpu 3.762 total
@@ -259,20 +432,22 @@ smalisca parser -l  -s java -f sqlite -o   3.63s user 0.12s system 100% cpu 3.74
 smalisca parser -l  -s java -f sqlite -o   3.52s user 0.16s system 100% cpu 3.681 total
 smalisca parser -l  -s java -f sqlite -o   3.55s user 0.11s system 100% cpu 3.658 total
 </code></pre></div><p>As you see it takes ca. <strong>3.5 seconds</strong> to finish the parsing. OK, now what about the
-<strong>concurrent</strong> version of smalisca?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ <span style=color:#24909d>export</span> <span style=color:#40ffff>CMD</span>=<span style=color:#ed9d13>&#34;time ./smalisca-test.py parser --depth 2 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
-$ <span style=color:#6ab825;font-weight:700>for</span> i in {1..10};<span style=color:#6ab825;font-weight:700>do</span> <span style=color:#24909d>eval</span> <span style=color:#ed9d13>${</span><span style=color:#40ffff>CMD</span><span style=color:#ed9d13>}</span> 2&gt;&amp;<span style=color:#3677a9>1</span> /dev/null | grep total; <span style=color:#6ab825;font-weight:700>done</span> 
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.52s user 0.28s system 156% cpu 3.704 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.50s user 0.32s system 155% cpu 3.743 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.59s user 0.29s system 152% cpu 3.864 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.48s user 0.40s system 155% cpu 3.794 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.42s user 0.35s system 155% cpu 3.720 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.79s user 0.32s system 156% cpu 3.904 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.50s user 0.34s system 152% cpu 3.836 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.39s user 0.35s system 150% cpu 3.824 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.58s user 0.31s system 159% cpu 3.684 total
-./smalisca-test.py parser --depth <span style=color:#3677a9>2</span> -l  -s java -f sqlite -o   5.44s user 0.33s system 155% cpu 3.707 total
+<strong>concurrent</strong> version of smalisca?</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 2 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+$ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> 2&gt;&amp;<span style="color:#3677a9">1</span> /dev/null | grep total; <span style="color:#6ab825;font-weight:bold">done</span> 
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.52s user 0.28s system 156% cpu 3.704 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.50s user 0.32s system 155% cpu 3.743 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.59s user 0.29s system 152% cpu 3.864 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.48s user 0.40s system 155% cpu 3.794 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.42s user 0.35s system 155% cpu 3.720 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.79s user 0.32s system 156% cpu 3.904 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.50s user 0.34s system 152% cpu 3.836 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.39s user 0.35s system 150% cpu 3.824 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.58s user 0.31s system 159% cpu 3.684 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.44s user 0.33s system 155% cpu 3.707 total
 </code></pre></div><p><strong>5.5 seconds</strong>!!! It takes <strong>longer</strong>! Obviously the <code>Queue</code> processing and starting new processes increases
-execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p><pre><code>$ export CMD=&quot;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&quot;
+execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p>
+<pre><code>$ export CMD=&quot;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&quot;
 $ for i in {1..10};do eval ${CMD} 2&gt;&amp;1 /dev/null | grep total; done
 ./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.66s user 0.36s system 161% cpu 3.730 total
 ./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.80s user 0.29s system 161% cpu 3.761 total
@@ -284,9 +459,192 @@ $ for i in {1..10};do eval ${CMD} 2&gt;&amp;1 /dev/null | grep total; done
 ./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.63s user 0.31s system 159% cpu 3.724 total
 ./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.73s user 0.35s system 162% cpu 3.747 total
 ./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.43s user 0.34s system 153% cpu 3.764 total
-</code></pre><p>Pretty much the <strong>same</strong> results. And here is the overall results table:</p><table><thead><tr><th>Run</th><th>Non-Concurrent (v0.1)</th><th>Concurrent (v0.1-dev)</th><th>Using Jobs = 8</th></tr></thead><tbody><tr><td>1</td><td>3.61</td><td>5.52</td><td>5.66</td></tr><tr><td>2</td><td>3.66</td><td>5.50</td><td>5.80</td></tr><tr><td>3</td><td>3.66</td><td>5.59</td><td>5.57</td></tr><tr><td>4</td><td>3.64</td><td>5.48</td><td>5.49</td></tr><tr><td>5</td><td>3.67</td><td>5.42</td><td>5.76</td></tr><tr><td>6</td><td>3.56</td><td>5.79</td><td>5.62</td></tr><tr><td>7</td><td>3.55</td><td>5.50</td><td>5.54</td></tr><tr><td>8</td><td>3.63</td><td>5.39</td><td>5.63</td></tr><tr><td>9</td><td>3.52</td><td>5.38</td><td>5.73</td></tr><tr><td>10</td><td>3.55</td><td>5.44</td><td>5.43</td></tr></tbody></table><h2 id=lessons-learned>Lessons learned</h2><ul><li>Concurrency is <strong>NOT</strong> easy</li><li>It may not always have a big (positive) impact on the <strong>performance</strong> of your code</li><li>There are a lot of side-effects (related to concurrency in general) which you&rsquo;ll have to pay attention to</li><li>I need a really <strong>big</strong> code repository to test against in order to make sure I&rsquo;ve implemented it correctly</li><li>Despite all those kind of problems, it&rsquo;s <strong>fun</strong>! :)</li><li>Have a look at the <a href=https://github.com/dorneanu/smalisca/commit/a48a1b9e3eb648baf6547658e06bfe32c094551c>commit details</a> in the <a href=https://github.com/dorneanu/smalisca/tree/develop>develop</a> branch.</li></ul><p>##References</p><ul><li><a href=http://everydayimlearning.blogspot.de/2013/03/multiprocessing-with-python.html>Multiprocessing with Python</a></li><li><a href=https://moinakg.wordpress.com/2013/07/01/parallel-directory-tree-compare-in-python/>Parallel Directory Tree Compare with Python</a></li><li><a href="https://www.binpress.com/tutorial/simple-python-parallelism/121?utm_content=bufferc7776&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer">Simple parallelism with Python</a></li><li><a href=http://pymotw.com/2/multiprocessing/communication.html>Communication between processes</a></li></ul></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2015/04/30/gethostbyname-vs.-getaddrinfo/>prev post</a>
-<a href=http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+</code></pre>
+<p>Pretty much the <strong>same</strong> results. And here is the overall results table:</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Non-Concurrent (v0.1)</th>
+<th>Concurrent (v0.1-dev)</th>
+<th>Using Jobs = 8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>3.61</td>
+<td>5.52</td>
+<td>5.66</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3.66</td>
+<td>5.50</td>
+<td>5.80</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3.66</td>
+<td>5.59</td>
+<td>5.57</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3.64</td>
+<td>5.48</td>
+<td>5.49</td>
+</tr>
+<tr>
+<td>5</td>
+<td>3.67</td>
+<td>5.42</td>
+<td>5.76</td>
+</tr>
+<tr>
+<td>6</td>
+<td>3.56</td>
+<td>5.79</td>
+<td>5.62</td>
+</tr>
+<tr>
+<td>7</td>
+<td>3.55</td>
+<td>5.50</td>
+<td>5.54</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3.63</td>
+<td>5.39</td>
+<td>5.63</td>
+</tr>
+<tr>
+<td>9</td>
+<td>3.52</td>
+<td>5.38</td>
+<td>5.73</td>
+</tr>
+<tr>
+<td>10</td>
+<td>3.55</td>
+<td>5.44</td>
+<td>5.43</td>
+</tr>
+</tbody>
+</table>
+<h2 id="lessons-learned">Lessons learned</h2>
+<ul>
+<li>Concurrency is <strong>NOT</strong> easy</li>
+<li>It may not always have a big (positive) impact on the <strong>performance</strong> of your code</li>
+<li>There are a lot of side-effects (related to concurrency in general) which you&rsquo;ll have to pay attention to</li>
+<li>I need a really <strong>big</strong> code repository to test against in order to make sure I&rsquo;ve implemented it correctly</li>
+<li>Despite all those kind of problems, it&rsquo;s <strong>fun</strong>! :)</li>
+<li>Have a look at the <a href="https://github.com/dorneanu/smalisca/commit/a48a1b9e3eb648baf6547658e06bfe32c094551c">commit details</a> in the <a href="https://github.com/dorneanu/smalisca/tree/develop">develop</a> branch.</li>
+</ul>
+<p>##References</p>
+<ul>
+<li><a href="http://everydayimlearning.blogspot.de/2013/03/multiprocessing-with-python.html">Multiprocessing with Python</a></li>
+<li><a href="https://moinakg.wordpress.com/2013/07/01/parallel-directory-tree-compare-in-python/">Parallel Directory Tree Compare with Python</a></li>
+<li><a href="https://www.binpress.com/tutorial/simple-python-parallelism/121?utm_content=bufferc7776&amp;utm_medium=social&amp;utm_source=twitter.com&amp;utm_campaign=buffer">Simple parallelism with Python</a></li>
+<li><a href="http://pymotw.com/2/multiprocessing/communication.html">Communication between processes</a></li>
+</ul>
+</div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2015/04/30/gethostbyname-vs.-getaddrinfo/">prev post</a>
+  <a href="http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

