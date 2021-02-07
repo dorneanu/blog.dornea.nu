@@ -1,0 +1,320 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Validating and pinning X.509 certificates - blog.dornea.nu</title><meta content="Validating and pinning X.509 certificates - blog.dornea.nu" property="title"><meta content="Validating and pinning X.509 certificates - blog.dornea.nu" property="og:title"><meta property="og:description" content="In times of NSA, surveillance and data privacy, protecting your data has become an essential part of your every day life. A good understanding of basic principles is half the battle. In this post I just wanted to have look at SSL/TLS from a developer point of view but also from an users one. On the one hand I wanted to use openssl as a CLI utility to inspect and validate X."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/"><meta property="article:published_time" content="2015-05-24T00:00:00+00:00"><meta property="article:modified_time" content="2015-05-24T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Validating and pinning X.509 certificates</div><p class="silver f6 mt1 mb4 post-meta"><time>24 May 2015</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/ipython class="link silver">ipython</a> <a href=http://blog.dornea.nu/tags/ssl class="link silver">ssl</a> <a href=http://blog.dornea.nu/tags/x.509 class="link silver">x.509</a> <a href=http://blog.dornea.nu/tags/tls class="link silver">tls</a> <a href=http://blog.dornea.nu/tags/crypto class="link silver">crypto</a> <a href=http://blog.dornea.nu/tags/openssl class="link silver">openssl</a> <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> ]</p><div class="lh-copy post-content"><p>In times of NSA, surveillance and data privacy, protecting your data has become an essential part of your every day life. A good understanding of basic principles is half the battle. In this post I just wanted to have look at SSL/TLS from a developer point of view but also from an users one. On the one hand I wanted to use <code>openssl</code> as a CLI utility to <em>inspect</em> and <em>validate</em> <a href=http://en.wikipedia.org/wiki/X.509>X.509 certificates</a>. On the other hand I wanted to have code I could use in my own projects. I&rsquo;ve found <a href=https://github.com/pyca/pyopenssl>pyOpenSSL</a> to be a quite useful library to use on a regular daily basis. Regardless the programming language you&rsquo;ll find pretty generic ways of <em>validating</em> the certificates and <em>pinning</em> the presented data. For the sake of simplicity I&rsquo;ve chosen to analyze <a href=https://www.google.com>Googles</a> SSL certificate. But first let&rsquo;s start with <strong>certificate pinning</strong>.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># &lt;!-- collapse=True --&gt;</span>
+<span style=color:#999;font-style:italic># Init ipython notebook stuff</span>
+<span style=color:#999;font-style:italic># Import crypto modules</span>
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>ssl</span>
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>OpenSSL</span>
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>socket</span>
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>json</span>
+
+<span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto.Util</span> <span style=color:#6ab825;font-weight:700>import</span> asn1
+<span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>pprint</span> <span style=color:#6ab825;font-weight:700>import</span> pprint
+
+<span style=color:#999;font-style:italic># Import ipython specific modules</span>
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>pandas</span> <span style=color:#6ab825;font-weight:700>as</span> <span style=color:#447fcf;text-decoration:underline>pd</span>
+pd.set_option(<span style=color:#ed9d13>&#39;display.height&#39;</span>, <span style=color:#3677a9>1000</span>)
+pd.set_option(<span style=color:#ed9d13>&#39;display.max_rows&#39;</span>, <span style=color:#3677a9>500</span>)
+pd.set_option(<span style=color:#ed9d13>&#39;display.max_columns&#39;</span>, <span style=color:#3677a9>500</span>)
+pd.set_option(<span style=color:#ed9d13>&#39;display.width&#39;</span>, <span style=color:#3677a9>1000</span>)
+
+%install_ext https://raw.githubusercontent.com/dorneanu/ipython/master/extensions/diagmagic.py
+%load_ext diagmagic
+
+%install_ext https://raw.github.com/cjdrake/ipython-magic/master/gvmagic.py
+%load_ext gvmagic
+</code></pre></div><pre><code>height has been deprecated.
+
+Installed diagmagic.py. To use it, type:
+  %load_ext diagmagic
+Installed gvmagic.py. To use it, type:
+  %load_ext gvmagic
+</code></pre><h2 id=what-is-it>What is it?</h2><p>Having to implement <em>certificate pinning</em> most developers have a poor knowledge about it and the impact it <em>could</em> have on an end-user if not done properly. I think MITM attacks are nowadays widely understood (generally speaking) and developers seem to accept the importance of security measurements against this specific type of attacks. Certificate pinning referrs to the <strong>authenticity</strong> of data and the process of comparing some <em>presented</em> to <em>expected</em> data. Take a look at the <a href=https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning>OWASP site</a> for a more detailed introduction. But first let&rsquo;s have a look how client communicates to a server using a secure (SSL/TLS) channel:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>%%seqdiag 
+// &lt;<span style=color:#a61717;background-color:#e3d2d2>!</span>-- collapse=True --&gt;
+{
+  Client -&gt; Server [label=<span style=color:#ed9d13>&#34;Connect to port 443 ... &#34;</span>];
+  Server -&gt; Client [label=<span style=color:#ed9d13>&#34;Send X.509 certificate&#34;</span>];
+
+  // Separator
+  === Secure Connection ===
+
+  Client -&gt; Server [label=<span style=color:#ed9d13>&#34;GET /index.html&#34;</span>];
+  Server -&gt; Client [label=<span style=color:#ed9d13>&#34;200 OK Success&#34;</span>];
+}
+</code></pre></div><p><img src=output_3_0.png alt=png></p><p>Before establishing the secure connection the client must <strong>validate</strong> the <em>presented</em> certificate.</p><blockquote><p>Regarding the validation: Here I won&rsquo;t go into much details because this is a quite complicated story from a technical point of view.</p></blockquote><p>After the successfull validation the <strong>authenticity</strong> of the server is guaranteed - at least that&rsquo;s what the client is assuming. Now let&rsquo;s have a look what happens during a <strong>MITM attack</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>%%seqdiag 
+// &lt;<span style=color:#a61717;background-color:#e3d2d2>!</span>-- collapse=True --&gt;
+{
+  Client -&gt; Eve [label=<span style=color:#ed9d13>&#34;Connect to port 443 ... &#34;</span>];
+  Eve -&gt; Server [label=<span style=color:#ed9d13>&#34;Connect to port 443 ...&#34;</span>];
+
+  Server -&gt; Eve [label=<span style=color:#ed9d13>&#34;Send Servers certificate&#34;</span>];
+  Eve -&gt; Client [label=<span style=color:#ed9d13>&#34;Send Eves certificate&#34;</span>, color=red];
+
+  // Separator
+  === <span style=color:#ed9d13>&#34;Secure&#34;</span> Connection ===
+
+  Client -&gt; Eve [label=<span style=color:#ed9d13>&#34;GET /index.html&#34;</span>];
+  Eve -&gt; Server [label=<span style=color:#ed9d13>&#34;GET /index.html&#34;</span>];
+  
+  Server -&gt; Eve [label=<span style=color:#ed9d13>&#34;200 OK Success&#34;</span>];
+  Eve -&gt; Client [label=<span style=color:#ed9d13>&#34;200 OK Success&#34;</span>];
+}
+</code></pre></div><p><img src=output_5_0.png alt=png></p><p>As you see the client is presented <strong>Eves</strong> certificate which is the <em>evil</em> one. Now the client has 2 options:</p><ul><li>trust the presented certificate and hope it&rsquo;s from the <strong>Server</strong></li><li><strong>pin the certificate</strong></li></ul><p>In the following I&rsquo;ll take a closer look what&rsquo;s inside the certificate and which options one has to do the pinning.</p><h2 id=inside-the-certificate>Inside the certificate</h2><p>A <a href=http://en.wikipedia.org/wiki/X.509>X.509 certificate</a> usually consists of three main components:</p><ol><li>the <em>certificate</em> itself</li><li>certificate signature <em>algorithm</em></li><li>certificate <em>signature</em></li></ol><p>For the rest of post I&rsquo;ll be analyzing the SSL certificate of <a href=https://www.google.com>www.google.com</a>. Now let&rsquo;s get back to work:</p><h4 id=connection-settings>Connection settings</h4><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># Create new SSL context with several security tunings</span>
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+
+<span style=color:#999;font-style:italic># Allow NO SSLv2</span>
+ssl_context.options |= ssl.OP_NO_SSLv2
+
+<span style=color:#999;font-style:italic># Prevent CRIME attacks (OpenSSL 1.0+)</span>
+ssl_context.options |= <span style=color:#24909d>getattr</span>(ssl._ssl, <span style=color:#ed9d13>&#34;OP_NO_COMPRESSION&#34;</span>, <span style=color:#3677a9>0</span>)
+
+<span style=color:#999;font-style:italic># Allow only good ciphers</span>
+ssl_context.set_ciphers(<span style=color:#ed9d13>&#39;HIGH:!aNULL:!RC4:!DSS&#39;</span>)
+
+<span style=color:#999;font-style:italic># Validate the server certificate</span>
+ssl_context.verify_mode = ssl.CERT_REQUIRED
+
+<span style=color:#999;font-style:italic># Check host name</span>
+ssl_context.check_hostname = True
+
+<span style=color:#999;font-style:italic># Load CA bundle</span>
+<span style=color:#999;font-style:italic># HINT: This path may differ on your system</span>
+ssl_context.load_verify_locations(<span style=color:#ed9d13>&#34;/etc/ssl/certs/ca-certificates.crt&#34;</span>)
+</code></pre></div><h4 id=make-connection>Make connection</h4><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># Define target information</span>
+target_host = <span style=color:#ed9d13>&#34;www.google.com&#34;</span>
+target_port = <span style=color:#3677a9>443</span>
+
+<span style=color:#999;font-style:italic># Create SSL socket</span>
+ssl_socket = ssl_context.wrap_socket(\
+                socket.socket(socket.AF_INET, socket.SOCK_STREAM),\
+                server_hostname=target_host)
+ssl_socket.connect((target_host, target_port))
+</code></pre></div><p>Now that we&rsquo;ve established the socket connection, we can fetch the certificate and do the analysis.</p><h4 id=fetch-the-certificate>Fetch the certificate</h4><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># Fetch human readable certificate</span>
+cert_string = ssl_socket.getpeercert()
+
+<span style=color:#999;font-style:italic># Fetch certificate in PEM format</span>
+cert = ssl.get_server_certificate((target_host, target_port))
+</code></pre></div><blockquote><p>You don&rsquo;t know nothing about <strong>ASN.1</strong>, <strong>DER</strong> or <strong>PEM</strong>? No problem! Just have a look at this <a href=https://tls.mbed.org/kb/cryptography/asn1-key-structures-in-der-and-pem>great article</a>. But to summarize it:
+<em>DER</em> is binary format, its structure is called <em>ASN.1</em>. <em>PEM</em> format is Base64 encoded representation of <em>DER</em>.</p></blockquote><h5 id=pem-format>PEM format</h5><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6ab825;font-weight:700>print</span>(cert)
+</code></pre></div><pre><code>-----BEGIN CERTIFICATE-----
+MIIEdjCCA16gAwIBAgIIX7v8fExu/5IwDQYJKoZIhvcNAQEFBQAwSTELMAkGA1UE
+BhMCVVMxEzARBgNVBAoTCkdvb2dsZSBJbmMxJTAjBgNVBAMTHEdvb2dsZSBJbnRl
+cm5ldCBBdXRob3JpdHkgRzIwHhcNMTUwNTA2MTAyOTI1WhcNMTUwODA0MDAwMDAw
+WjBoMQswCQYDVQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwN
+TW91bnRhaW4gVmlldzETMBEGA1UECgwKR29vZ2xlIEluYzEXMBUGA1UEAwwOd3d3
+Lmdvb2dsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDbQYCq
+uMXjaNFVmagkNkToVsTlNpP17Hzps7nJVT+cNcu/bV4mREEG8oRZU1KERHPza3gd
+4PmzInZxcMzi90wUoZIQhyMCdCtLDc2cSshJ3TaZM9unjrMzgTT5VhDnoTb72r8W
+yqdYvY4wp2cvdfkaLpUirYVYkKww8bMemjXHMzBYHiAdDTLY6sBenM0+t7zfLRTl
+t+JTZEx/bK/a7lEkHNFvCn2IW+MYt+668xVYw2TnBhXIJlo0ZrP5Vpa43qIRoykd
+4vUVUk3scHyS7XhnDEU/D7IjW6BCWIB4/GrgCMezRTSRPYXufU2aQB9iwAlto7yD
+HJW71m3BTUxDaxBnAgMBAAGjggFBMIIBPTAdBgNVHSUEFjAUBggrBgEFBQcDAQYI
+KwYBBQUHAwIwGQYDVR0RBBIwEIIOd3d3Lmdvb2dsZS5jb20waAYIKwYBBQUHAQEE
+XDBaMCsGCCsGAQUFBzAChh9odHRwOi8vcGtpLmdvb2dsZS5jb20vR0lBRzIuY3J0
+MCsGCCsGAQUFBzABhh9odHRwOi8vY2xpZW50czEuZ29vZ2xlLmNvbS9vY3NwMB0G
+A1UdDgQWBBSMXZKKlB2MmLIyeqTTdGAZ7y+vRjAMBgNVHRMBAf8EAjAAMB8GA1Ud
+IwQYMBaAFErdBhYbvPZotXb1gba7Yhq6WoEvMBcGA1UdIAQQMA4wDAYKKwYBBAHW
+eQIFATAwBgNVHR8EKTAnMCWgI6Ahhh9odHRwOi8vcGtpLmdvb2dsZS5jb20vR0lB
+RzIuY3JsMA0GCSqGSIb3DQEBBQUAA4IBAQBkJo403MR1GQekBQ5zJCAAcwEuJYn6
+oDokSqvR+6Wh6O7L9mBLAkQOkg/uqfGZ8R5KbUSDbnEWl6OboJero8cp9dMnQjck
+fZa661zDPoRDWegFm9aZMQLcdnPBi/TI9aEFuUOQLvCk31CrHVFyfSwznBYUZ+Yt
+4qxu44/AxEfmLT7p0CF3Y/NvcA2fGRbckj2+3tONI+FTEH/V/SIwRmyXag2/GbPt
+RhahlBFXh6VobK8dbFtql6P4+x//7+ze0tXaMRoRsOQfjwWmD6SaA13JJOo8/oBQ
+aUYdqnU+Mgkfro7CDpEjOucBzZbsSevm9vPQMhExdju6pKf+nC0bz+7T
+-----END CERTIFICATE-----
+</code></pre><h5 id=text-format>TEXT format</h5><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>pprint(cert_string)
+</code></pre></div><pre><code>{'OCSP': ('http://clients1.google.com/ocsp',),
+ 'caIssuers': ('http://pki.google.com/GIAG2.crt',),
+ 'crlDistributionPoints': ('http://pki.google.com/GIAG2.crl',),
+ 'issuer': ((('countryName', 'US'),),
+            (('organizationName', 'Google Inc'),),
+            (('commonName', 'Google Internet Authority G2'),)),
+ 'notAfter': 'Aug  4 00:00:00 2015 GMT',
+ 'notBefore': 'May  6 10:29:25 2015 GMT',
+ 'serialNumber': '5FBBFC7C4C6EFF92',
+ 'subject': ((('countryName', 'US'),),
+             (('stateOrProvinceName', 'California'),),
+             (('localityName', 'Mountain View'),),
+             (('organizationName', 'Google Inc'),),
+             (('commonName', 'www.google.com'),)),
+ 'subjectAltName': (('DNS', 'www.google.com'),),
+ 'version': 3}
+</code></pre><blockquote><p>Have a look at <a href=http://www.zytrax.com/tech/survival/ssl.html>this site</a> for great explanations regarding the properties.</p></blockquote><p>From an attackers perspective generating certificates that contain the same data is easy peasy. So while doing the certificate pinning you shouldn&rsquo;t rely on these values. Furthermore rely on data that can not be manipulated or data that has been generated randomly. Of course there is still a risk with &ldquo;pseudo-random&rdquo; data in case of insecure <a href=http://en.wikipedia.org/wiki/Pseudorandom_number_generator>PRNGs</a>. Or don&rsquo;t you remember this <a href=http://article.gmane.org/gmane.linux.debian.security.announce/1614>one</a> anymore? :)</p><h2 id=certificate-pinning>Certificate pinning</h2><p>When it comes to pinning you&rsquo;ll have different options what to &ldquo;pin&rdquo; for. Let&rsquo;s have a look how this is done using <em>Python</em>, but the procedure should apply to other programming languages as well. First let&rsquo;s do some conversions and extract data we&rsquo;re interested in.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto.PublicKey</span> <span style=color:#6ab825;font-weight:700>import</span> RSA
+<span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>base64</span> <span style=color:#6ab825;font-weight:700>import</span> b64decode
+
+<span style=color:#999;font-style:italic># Convert PEM format to x509 Object</span>
+x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
+
+<span style=color:#999;font-style:italic># Convert x509 object to ASN1</span>
+x509_asn1 = OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_ASN1, x509)
+
+<span style=color:#999;font-style:italic># Convert x509 object to PEM</span>
+x509_pem = OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, x509)
+
+<span style=color:#999;font-style:italic># Decode the certificate</span>
+der = asn1.DerSequence()
+der.decode(x509_asn1)
+
+<span style=color:#999;font-style:italic># Store the components</span>
+der_cert = der[<span style=color:#3677a9>0</span>]     <span style=color:#999;font-style:italic># certificate</span>
+der_algo = der[<span style=color:#3677a9>1</span>]     <span style=color:#999;font-style:italic># signing algorithm</span>
+der_sign = der[<span style=color:#3677a9>2</span>]     <span style=color:#999;font-style:italic># certificate signature</span>
+
+der_sign_in=asn1.DerObject()
+der_sign_in.decode(der_sign)
+der_sign_payload = der_sign_in.payload
+cert_sign = der_sign_payload[<span style=color:#3677a9>1</span>:]
+
+<span style=color:#999;font-style:italic># Extract the signing certificate algorithm</span>
+sign_algo = x509.get_signature_algorithm() 
+</code></pre></div><h3 id=pin-the-certificate>Pin the certificate</h3><p>You can of course check of the X.509 properties you&rsquo;ve seen before, but you should not rely on these values. Instead use a digest (e.g. SHA-1, SHA-256 etc.) to <strong>fingerprint</strong> the certificate. If the generated fingerprint is exactly the one you have <em>expected</em> then you can trust the certificate. However certificates may change at regular time intervals, so you&rsquo;ll have to adapt your <em>expected</em> fingerprint value every time this happens. Pinning the <em>public key</em> is a much better solution.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#999;font-style:italic># Write x509 (PEM format) to file</span>
+f = <span style=color:#24909d>open</span>(<span style=color:#ed9d13>&#39;/tmp/pyopenssl/www.google.com.cert.pem&#39;</span>,<span style=color:#ed9d13>&#39;w&#39;</span>)
+f.write(x509_pem.decode(<span style=color:#ed9d13>&#34;utf-8&#34;</span>))
+f.close()
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#999;font-style:italic># Show certificate fingerprint using openssl</span>
+openssl x509 -fingerprint -inform PEM -in  /tmp/pyopenssl/www.google.com.cert.pem -sha256  | grep Fingerprint
+</code></pre></div><pre><code>SHA256 Fingerprint=16:3D:A3:9A:7C:8F:4E:C4:79:59:5E:30:A8:82:2C:A7:58:CD:0A:6B:87:EF:7B:43:10:5A:97:C3:93:90:98:D8
+</code></pre><p>Using this <em>fingerprint</em> you could now verify the authencity of the <em>presented</em> certificate. Besides checking the fingerprint you should check if:</p><ul><li>the certificate is NULL (this happens when the server has no certificate)</li><li>the certificates length > 0</li><li>? (did i miss sth?)</li></ul><h3 id=pin-the-public-key>Pin the public key</h3><p>I&rsquo;ll first extract the <strong>public key</strong> from the certificate and print it in a human readable way.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto.PublicKey</span> <span style=color:#6ab825;font-weight:700>import</span> RSA
+
+<span style=color:#999;font-style:italic># Extract the public key</span>
+pub_key = x509.get_pubkey()
+
+<span style=color:#999;font-style:italic># Print the public key in TEXT formatboru</span>
+pub_key_text = OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_TEXT, pub_key)
+
+<span style=color:#999;font-style:italic># Convert to ASN1</span>
+pub_key_asn1 = OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_ASN1, pub_key)
+
+<span style=color:#999;font-style:italic># Convert key to DER format</span>
+pub_der = asn1.DerSequence()
+pub_der.decode(pub_key_asn1)
+
+<span style=color:#999;font-style:italic># Construct RSA key</span>
+<span style=color:#999;font-style:italic># In Python 3 you no longer use &#34;long&#34; -&gt; Use &#34;int&#34; instead</span>
+b = RSA.construct((<span style=color:#24909d>int</span>(pub_der._seq[<span style=color:#3677a9>1</span>]), <span style=color:#24909d>int</span>(pub_der._seq[<span style=color:#3677a9>2</span>])))
+
+<span style=color:#999;font-style:italic># Print public key information</span>
+<span style=color:#6ab825;font-weight:700>print</span>(pub_key_text.decode(<span style=color:#ed9d13>&#34;utf-8&#34;</span>))
+</code></pre></div><pre><code>Public-Key: (2048 bit)
+Modulus:
+    00:db:41:80:aa:b8:c5:e3:68:d1:55:99:a8:24:36:
+    44:e8:56:c4:e5:36:93:f5:ec:7c:e9:b3:b9:c9:55:
+    3f:9c:35:cb:bf:6d:5e:26:44:41:06:f2:84:59:53:
+    52:84:44:73:f3:6b:78:1d:e0:f9:b3:22:76:71:70:
+    cc:e2:f7:4c:14:a1:92:10:87:23:02:74:2b:4b:0d:
+    cd:9c:4a:c8:49:dd:36:99:33:db:a7:8e:b3:33:81:
+    34:f9:56:10:e7:a1:36:fb:da:bf:16:ca:a7:58:bd:
+    8e:30:a7:67:2f:75:f9:1a:2e:95:22:ad:85:58:90:
+    ac:30:f1:b3:1e:9a:35:c7:33:30:58:1e:20:1d:0d:
+    32:d8:ea:c0:5e:9c:cd:3e:b7:bc:df:2d:14:e5:b7:
+    e2:53:64:4c:7f:6c:af:da:ee:51:24:1c:d1:6f:0a:
+    7d:88:5b:e3:18:b7:ee:ba:f3:15:58:c3:64:e7:06:
+    15:c8:26:5a:34:66:b3:f9:56:96:b8:de:a2:11:a3:
+    29:1d:e2:f5:15:52:4d:ec:70:7c:92:ed:78:67:0c:
+    45:3f:0f:b2:23:5b:a0:42:58:80:78:fc:6a:e0:08:
+    c7:b3:45:34:91:3d:85:ee:7d:4d:9a:40:1f:62:c0:
+    09:6d:a3:bc:83:1c:95:bb:d6:6d:c1:4d:4c:43:6b:
+    10:67
+Exponent: 65537 (0x10001)
+</code></pre><p>Let&rsquo;s check that with <code>openssl</code> output:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+openssl x509 -inform PEM -in /tmp/pyopenssl/www.google.com.cert.pem -pubkey -noout &gt; /tmp/pyopenssl/pubkey.pem
+openssl rsa -inform PEM -pubin -in /tmp/pyopenssl/pubkey.pem -modulus 2&gt;1 | grep Modulus
+</code></pre></div><pre><code>Modulus=DB4180AAB8C5E368D15599A8243644E856C4E53693F5EC7CE9B3B9C9553F9C35CBBF6D5E26444106F284595352844473F36B781DE0F9B322767170CCE2F74C14A19210872302742B4B0DCD9C4AC849DD369933DBA78EB3338134F95610E7A136FBDABF16CAA758BD8E30A7672F75F91A2E9522AD855890AC30F1B31E9A35C73330581E201D0D32D8EAC05E9CCD3EB7BCDF2D14E5B7E253644C7F6CAFDAEE51241CD16F0A7D885BE318B7EEBAF31558C364E70615C8265A3466B3F95696B8DEA211A3291DE2F515524DEC707C92ED78670C453F0FB2235BA042588078FC6AE008C7B34534913D85EE7D4D9A401F62C0096DA3BC831C95BBD66DC14D4C436B1067
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#999;font-style:italic># Dump the public key</span>
+openssl asn1parse -dump -in /tmp/pyopenssl/pubkey.pem
+</code></pre></div><pre><code>    0:d=0  hl=4 l= 290 cons: SEQUENCE          
+    4:d=1  hl=2 l=  13 cons: SEQUENCE          
+    6:d=2  hl=2 l=   9 prim: OBJECT            :rsaEncryption
+   17:d=2  hl=2 l=   0 prim: NULL              
+   19:d=1  hl=4 l= 271 prim: BIT STRING        
+      0000 - 00 30 82 01 0a 02 82 01-01 00 db 41 80 aa b8 c5   .0.........A....
+      0010 - e3 68 d1 55 99 a8 24 36-44 e8 56 c4 e5 36 93 f5   .h.U..$6D.V..6..
+      0020 - ec 7c e9 b3 b9 c9 55 3f-9c 35 cb bf 6d 5e 26 44   .|....U?.5..m^&amp;D
+      0030 - 41 06 f2 84 59 53 52 84-44 73 f3 6b 78 1d e0 f9   A...YSR.Ds.kx...
+      0040 - b3 22 76 71 70 cc e2 f7-4c 14 a1 92 10 87 23 02   .&quot;vqp...L.....#.
+      0050 - 74 2b 4b 0d cd 9c 4a c8-49 dd 36 99 33 db a7 8e   t+K...J.I.6.3...
+      0060 - b3 33 81 34 f9 56 10 e7-a1 36 fb da bf 16 ca a7   .3.4.V...6......
+      0070 - 58 bd 8e 30 a7 67 2f 75-f9 1a 2e 95 22 ad 85 58   X..0.g/u....&quot;..X
+      0080 - 90 ac 30 f1 b3 1e 9a 35-c7 33 30 58 1e 20 1d 0d   ..0....5.30X. ..
+      0090 - 32 d8 ea c0 5e 9c cd 3e-b7 bc df 2d 14 e5 b7 e2   2...^..&gt;...-....
+      00a0 - 53 64 4c 7f 6c af da ee-51 24 1c d1 6f 0a 7d 88   SdL.l...Q$..o.}.
+      00b0 - 5b e3 18 b7 ee ba f3 15-58 c3 64 e7 06 15 c8 26   [.......X.d....&amp;
+      00c0 - 5a 34 66 b3 f9 56 96 b8-de a2 11 a3 29 1d e2 f5   Z4f..V......)...
+      00d0 - 15 52 4d ec 70 7c 92 ed-78 67 0c 45 3f 0f b2 23   .RM.p|..xg.E?..#
+      00e0 - 5b a0 42 58 80 78 fc 6a-e0 08 c7 b3 45 34 91 3d   [.BX.x.j....E4.=
+      00f0 - 85 ee 7d 4d 9a 40 1f 62-c0 09 6d a3 bc 83 1c 95   ..}M.@.b..m.....
+      0100 - bb d6 6d c1 4d 4c 43 6b-10 67 02 03 01 00 01      ..m.MLCk.g.....
+</code></pre><p>So one could also check the RSA <strong>modulus</strong> against an <em>expected</em> value. Furthermore you could <strong>hash</strong> the whole public key and then check values:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+sha256sum /tmp/pyopenssl/pubkey.pem
+</code></pre></div><pre><code>618a8d05fce8d0f8f790e0a2fbaaf739ff7049e7da087520e81a31d0af81513a  /tmp/pyopenssl/pubkey.pem
+</code></pre><h2 id=validate-certificate>Validate certificate</h2><p>Get the <em>trust chain</em>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+openssl s_client -showcerts -connect www.google.com:443  | grep -e <span style=color:#ed9d13>&#34;s:&#34;</span> -e <span style=color:#ed9d13>&#34;i:&#34;</span>
+</code></pre></div><pre><code> 0 s:/C=US/ST=California/L=Mountain View/O=Google Inc/CN=www.google.com
+   i:/C=US/O=Google Inc/CN=Google Internet Authority G2
+ 1 s:/C=US/O=Google Inc/CN=Google Internet Authority G2
+   i:/C=US/O=GeoTrust Inc./CN=GeoTrust Global CA
+ 2 s:/C=US/O=GeoTrust Inc./CN=GeoTrust Global CA
+   i:/C=US/O=Equifax/OU=Equifax Secure Certificate Authority
+
+
+depth=2 C = US, O = GeoTrust Inc., CN = GeoTrust Global CA
+verify error:num=20:unable to get local issuer certificate
+DONE
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>%%dot
+// &lt;<span style=color:#a61717;background-color:#e3d2d2>!</span>-- collapse=True --&gt;
+digraph trie {
+    rankdir=<span style=color:#ed9d13>&#34;TR&#34;</span>;
+    graph [label=<span style=color:#ed9d13>&#34;</span><span style=color:#ed9d13>\n\n</span><span style=color:#ed9d13>Chain of trust for www.google.com&#34;</span>];
+    node [shape = <span style=color:#ed9d13>&#34;Mrecord&#34;</span>, width=<span style=color:#3677a9>6</span>];
+    equifax [label=<span style=color:#ed9d13>&#34;{Subject:  GeoTrust Global CA \l | Issuer: Equifax Secure Certificate Authority \l }&#34;</span>, color=<span style=color:#ed9d13>&#34;grey&#34;</span>];
+    geotrust [label=<span style=color:#ed9d13>&#34;{Subject:  Google Internet Authority G2 \l | Issuer: GeoTrust Global CA \l }&#34;</span>, color=<span style=color:#ed9d13>&#34;grey&#34;</span>];
+    g2 [label=<span style=color:#ed9d13>&#34;{Subject: google.com \l | Issuer: Google Internet Authority G2 \l }&#34;</span>, color=<span style=color:#ed9d13>&#34;grey&#34;</span>];
+    google_site [label=<span style=color:#ed9d13>&#34;www.google.com \l&#34;</span>, color=<span style=color:#ed9d13>&#34;red&#34;</span>];
+    
+    root [width=<span style=color:#3677a9>2</span>, shape=<span style=color:#ed9d13>&#34;none&#34;</span>];
+    leaf [width=<span style=color:#3677a9>2</span>, shape=<span style=color:#ed9d13>&#34;none&#34;</span>];
+    
+    equifax -&gt; geotrust;
+    root -&gt; equifax [arrowsize=.<span style=color:#3677a9>5</span>, weight=<span style=color:#3677a9>2.</span>];
+    geotrust -&gt; g2;
+    g2 -&gt; google_site;
+    leaf -&gt; google_site [arrowsize=.<span style=color:#3677a9>5</span>, weight=<span style=color:#3677a9>2.</span>];
+    
+    <span style=color:#3677a9>0</span> [shape=<span style=color:#ed9d13>&#34;none&#34;</span>, width=<span style=color:#3677a9>1</span>];
+    <span style=color:#3677a9>1</span> [shape=<span style=color:#ed9d13>&#34;none&#34;</span>, width=<span style=color:#3677a9>1</span>];
+    <span style=color:#3677a9>2</span> [shape=<span style=color:#ed9d13>&#34;none&#34;</span>, width=<span style=color:#3677a9>1</span>];
+    
+    {rank = same; root; equifax}
+    {rank = same; g2, <span style=color:#3677a9>0</span>}
+    {rank = same; geotrust, <span style=color:#3677a9>1</span>}
+    {rank = same; leaf; google_site}
+    
+}
+</code></pre></div><p><img src=output_41_0.svg alt=svg></p><p>First of all you&rsquo;ll notice that there has been some problem regarding the validation:</p><pre><code>verify error:num=20:unable to get local issuer certificate
+</code></pre><p>This has to do with the fact that <code>openssl</code> doesn&rsquo;t provide a list of trusted certs by default. You&rsquo;ll have to specify it manually:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash 
+openssl s_client -showcerts -connect www.google.com:443 -CApath /etc/ssl/certs 2&gt; /dev/null | grep <span style=color:#ed9d13>&#34;Verify&#34;</span>
+</code></pre></div><pre><code>    Verify return code: 0 (ok)
+</code></pre><p>Ok, so that looks much better. Now let&rsquo;s <strong>verify</strong> the chain:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash 
+openssl verify -CApath /etc/ssl/certs /tmp/pyopenssl/www.google.com.pem | grep <span style=color:#ed9d13>&#34;error&#34;</span>
+</code></pre></div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
+</code></pre><p>Hmm&mldr;Strange error message, even though I&rsquo;ve specified the path where to lookup the certs. Another try:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt /tmp/pyopenssl/www.google.com.pem | grep <span style=color:#ed9d13>&#34;error&#34;</span>
+</code></pre></div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
+</code></pre><p>Strange! After some Googling, I&rsquo;ve found <a href=http://goobbe.com/questions/4022708/how-to-verify-certificate-chain-with-openssl>this</a>. So let&rsquo;s give it another try:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt <span style=color:#ed9d13>\
+</span><span style=color:#ed9d13></span>       -untrusted /tmp/pyopenssl/www.google.com.pem /tmp/pyopenssl/www.google.com.pem | grep <span style=color:#ed9d13>&#34;error&#34;</span>
+</code></pre></div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
+</code></pre><blockquote><p>If you have any ideas how to solve this, just drop me a line!</p></blockquote><h2 id=conclusion>Conclusion</h2><p><strong>Certificate pinning</strong> is a useful step towards authenticity verfication of a X.509 certificate. Keep in mind that <strong>MITM</strong> attacks are no rarity anymore and should be always be taken into consideration. Do <strong>not</strong> just validate the certificate. Make sure it is the one you&rsquo;ve been <strong>expecting</strong> while connecting to your site/SSL-backend. Use <strong>fingerprints</strong> (in general <strong>digests</strong>) which you can always compute on the <strong>presented</strong> information and compare it against an expected value.</p><h3 id=references>References</h3><ul><li><a href=http://www.artur-rodrigues.com/tech/2013/08/19/verifying-x509-signatures-in-python.html>Verifying x509 signatures in Python</a></li><li><a href=http://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python>How can I retrieve the TLS/SSL peer certificate of a remote host using python?</a></li><li><a href=https://www.ietf.org/rfc/rfc3280.txt>Internet X.509 Public Key Infrastructure</a></li><li><a href=http://stackoverflow.com/questions/27599985/verify-errorcode-20-unable-to-get-local-issuer-certificate/27606964#27606964>Verify errorcode = 20 : unable to get local issuer certificate</a></li></ul></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2015/05/06/adding-concurrency-to-smalisca/>prev post</a>
+<a href=http://blog.dornea.nu/2015/07/01/debugging-android-native-shared-libraries/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

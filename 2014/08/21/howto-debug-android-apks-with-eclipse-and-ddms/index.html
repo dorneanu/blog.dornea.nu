@@ -1,0 +1,156 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>HowTo: Debug Android APKs with Eclipse and DDMS - blog.dornea.nu</title><meta content="HowTo: Debug Android APKs with Eclipse and DDMS - blog.dornea.nu" property="title"><meta content="HowTo: Debug Android APKs with Eclipse and DDMS - blog.dornea.nu" property="og:title"><meta property="og:description" content="Simply out of necessity I&rsquo;ve written this mini-tutorial how debug android APKs using Eclipse and DDMS. After hours of wild googling these are the steps to make your APK debuggable under Eclipse. I&rsquo;ll be using the FakeBanker APK reverse-engineered in previous articles.
+Revisions  UPDATE 2014-12-09:  Before looking at the next steps, make sure you&rsquo;ll have a look at ADUS. It will help you with the automation of several steps described in this post."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/08/21/howto-debug-android-apks-with-eclipse-and-ddms/"><meta property="article:published_time" content="2014-08-21T00:00:00+00:00"><meta property="article:modified_time" content="2014-08-21T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">HowTo: Debug Android APKs with Eclipse and DDMS</div><p class="silver f6 mt1 mb4 post-meta"><time>21 Aug 2014</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/android class="link silver">android</a> <a href=http://blog.dornea.nu/tags/eclipse class="link silver">eclipse</a> <a href=http://blog.dornea.nu/tags/java class="link silver">java</a> <a href=http://blog.dornea.nu/tags/debug class="link silver">debug</a> <a href=http://blog.dornea.nu/tags/howto class="link silver">howto</a> <a href=http://blog.dornea.nu/tags/mobile class="link silver">mobile</a> <a href=http://blog.dornea.nu/tags/fakebanker class="link silver">fakebanker</a> <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> ]</p><div class="lh-copy post-content"><p>Simply out of necessity I&rsquo;ve written this mini-tutorial how debug android APKs using Eclipse and <a href=http://developer.android.com/tools/debugging/ddms.html>DDMS</a>.
+After hours of wild googling these are the steps to make your APK debuggable under Eclipse. I&rsquo;ll be using the <code>FakeBanker</code> APK reverse-engineered in previous <a href=http://blog.dornea.nu/tag/android/>articles</a>.</p><h2 id=revisions>Revisions</h2><ul><li><em><strong>UPDATE 2014-12-09</strong></em>:</li></ul><p>Before looking at the next steps, make sure you&rsquo;ll have a look at <a href=http://adus.dev.dornea.nu/>ADUS</a>. It will help you with the automation of several steps described in this post. Added some additional infos regarding the breakpoints.</p><h2 id=dump-the-apk>Dump the APK</h2><p>First of all make sure you&rsquo;ll have the latest version of <code>apktool</code>. I&rsquo;ve compiled it by myself:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>
+<span style=color:#999;font-style:italic># git clone git://github.com/iBotPeaches/Apktool.git</span>
+oCloning into <span style=color:#ed9d13>&#39;Apktool&#39;</span>...    
+remote: Counting objects: 9605, <span style=color:#6ab825;font-weight:700>done</span>.
+remote: Compressing objects: 100% (3622/3622), <span style=color:#6ab825;font-weight:700>done</span>.
+remote: Total <span style=color:#3677a9>9605</span> (delta 4556), reused <span style=color:#3677a9>9494</span> (delta 4502)
+Receiving objects: 100% (9605/9605), 34.27 MiB | 3.89 MiB/s, <span style=color:#6ab825;font-weight:700>done</span>.
+Resolving deltas: 100% (4556/4556), <span style=color:#6ab825;font-weight:700>done</span>.
+Checking connectivity... <span style=color:#6ab825;font-weight:700>done</span>.
+
+<span style=color:#999;font-style:italic># cd Apktool</span>
+<span style=color:#999;font-style:italic># ./gradlew build fatJar</span>
+[o...]
+</code></pre></div><p>Afterwards you&rsquo;ll get a new fresh <code>apktool</code> to use within the next steps:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># find . -name &#34;apktool-cli.jar&#34;</span>
+./obrut.apktool/apktool-cli/build/libs/apktool-cli.jar
+
+<span style=color:#999;font-style:italic># cp ./brut.apktool/apktool-cli/build/libs/apktool-cli.jar /tmp</span>
+</code></pre></div><p>After having installed the right tool it&rsquo;s time to dump the APK contents:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># java -jar /tmp/apktool-cli.jar d -d FakeBanker.apk -o source</span>
+I: Using Apktool 2.0.0-3d2e93-SNAPSHOT on FakeBanker.apk
+I: Loading resource table...
+I: Loading resource table...
+I: Decoding AndroidManifest.xml with resources...
+I: Loading resource table from file: /home/victor/apktool/framework/1.apk
+I: Regular manifest package...
+I: Decoding file-resources...
+I: Decoding values */* XMLs...
+I: Baksmaling classes.dex...
+I: Copying assets and libs...
+I: Copying unknown files...
+I: Copying original files...
+</code></pre></div><p>Afterwards I got following file structure:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>tree -L <span style=color:#3677a9>2</span> <span style=color:#24909d>source</span> 
+<span style=color:#24909d>source</span>
+├── AndroidManifest.xml
+├── apktool.yml
+├── original
+│   ├── AndroidManifest.xml
+│   └── META-INF
+├── res
+│   ├── drawable-hdpi
+│   ├── drawable-ldpi
+│   ├── drawable-mdpi
+│   ├── drawable-xhdpi
+│   ├── layout
+│   ├── menu
+│   ├── raw
+│   └── values
+└── smali
+    ├── android
+    └── com
+
+<span style=color:#3677a9>14</span> directories, <span style=color:#3677a9>3</span> files
+</code></pre></div><h2 id=make-apk-debuggable>Make APK debuggable</h2><p>After dumping the APK now you&rsquo;ll have to mark your APK as debuggable. There are several ways in order to achieve that:</p><ul><li>manually</li><li>using apktool</li></ul><p>If you want to do it manually open the <code>AndroidManifest.xml</code> file and search for the <code>application</code> tag. Then insert new attribute <code>android:debuggable='true'</code> like I did:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml>...
+<span style=color:#6ab825;font-weight:700>&lt;application</span> <span style=color:#bbb>android:theme=</span><span style=color:#ed9d13>&#34;@style/AppTheme&#34;</span> <span style=color:#bbb>android:label=</span><span style=color:#ed9d13>&#34;@string/app_name&#34;</span> <span style=color:#bbb>android:icon=</span><span style=color:#ed9d13>&#34;@drawable/ic_launcher1&#34;</span> <span style=color:#bbb>android:debuggable=</span><span style=color:#ed9d13>&#34;true&#34;</span> <span style=color:#bbb>android:allowBackup=</span><span style=color:#ed9d13>&#34;false&#34;</span><span style=color:#6ab825;font-weight:700>&gt;</span>
+...
+</code></pre></div><h2 id=build-new-app>Build new APP</h2><p>Now you&rsquo;re ready to build you new debuggable APK using <code>apktool</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>java -jar /tmp/apktool-cli.jar b -d <span style=color:#24909d>source</span> FakeBanker.Debug.apk
+I: Using Apktool 2.0.0-3d2e93-SNAPSHOT on <span style=color:#24909d>source</span>
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+Warning: AndroidManifest.xml already defines debuggable (in http://schemas.android.com/apk/res/android); using existing value in manifest.
+I: Building apk file...
+</code></pre></div><p>A few explanations regarding the parameters:</p><ul><li><code>b</code><ul><li>run apktool in <strong>build</strong> mode</li></ul></li><li><code>-d</code><ul><li>make APK debuggable (this is the 2nd way I was previously talking about)</li></ul></li></ul><h2 id=extract-sources>Extract sources</h2><p>I&rsquo;ll be using <code>jd-gui</code> to <strong>undex</strong> the dex files inside the newly created package. First let&rsquo;s unpack <code>FakeBanker.Debug.apk</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># unzip FakeBanker.Debug.apk -d unpacked</span>
+Archive:  FakeBanker.Debug.apk
+ extracting: unpacked/res/drawable-hdpi/ic_launcher1.png  
+ extracting: unpacked/res/drawable-hdpi/logo.png  
+ extracting: unpacked/res/drawable-ldpi/ic_launcher1.png  
+ extracting: unpacked/res/drawable-mdpi/ic_launcher1.png  
+ extracting: unpacked/res/drawable-xhdpi/ic_launcher1.png  
+  inflating: unpacked/res/layout/actup.xml  
+  inflating: unpacked/res/layout/main.xml  
+  inflating: unpacked/res/layout/main2.xml  
+  inflating: unpacked/res/menu/main.xml  
+ extracting: unpacked/res/raw/blfs.key  
+  inflating: unpacked/res/raw/config.cfg  
+  inflating: unpacked/AndroidManifest.xml  
+  inflating: unpacked/classes.dex    
+  inflating: unpacked/resources.arsc  
+</code></pre></div><p>Let <code>dex2jar</code> do its job:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># cd unpacked</span>
+<span style=color:#999;font-style:italic># dex2jar classes.dex</span>
+dex2jar classes.dex -&gt; classes-dex2jar.jar
+</code></pre></div><p>Now open the jar file using <code>jd-gui</code> and save the sources as zip like I did:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/jd-gui.png>http://dl.dornea.nu/img/2014/eclipse-ddms/jd-gui.png</a> %}</p><h2 id=sign-the-apk>Sign the APK</h2><p>In order to push your APK to the device you&rsquo;ll have to <strong>sign</strong> it. I&rsquo;ll therefor using a test <a href=http://developer.android.com/tools/publishing/app-signing.html>certificate</a>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># git clone https://github.com/appium/sign</span>
+Cloning into <span style=color:#ed9d13>&#39;sign&#39;</span>...
+remote: Counting objects: 49, <span style=color:#6ab825;font-weight:700>done</span>.
+remote: Total <span style=color:#3677a9>49</span> (delta 0), reused <span style=color:#3677a9>0</span> (delta 0)
+Unpacking objects: 100% (49/49), <span style=color:#6ab825;font-weight:700>done</span>.
+Checking connectivity... <span style=color:#6ab825;font-weight:700>done</span>.
+</code></pre></div><p>Now let&rsquo;s sign it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># java -jar sign/dist/signapk.jar sign/testkey.x509.pem sign/testkey.pk8 FakeBanker.Debug.apk FakeBanker.Debug.Signed.apk          </span>
+</code></pre></div><h2 id=install-the-apk>Install the APK</h2><p>Having signed the APK now you&rsquo;re ready to push it to your device and have some fun.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># adb devices -l  </span>
+List of devices attached 
+emulator-5554          device product:sdk model:sdk device:generic
+
+<span style=color:#999;font-style:italic># adb install FakeBanker.Debug.Signed.apk</span>
+<span style=color:#3677a9>1628</span> KB/s (<span style=color:#3677a9>219033</span> bytes in 0.131s)
+    pkg: /data/local/tmp/FakeBanker.Debug.Signed.apk
+Success
+</code></pre></div><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/app_installed.png>http://dl.dornea.nu/img/2014/eclipse-ddms/app_installed.png</a> %}</p><h2 id=add-sources>Add sources</h2><p>We&rsquo;ll add the Java sources to the <code>source</code> directory structure:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># mkdir source/src</span>
+<span style=color:#999;font-style:italic># unzip classes-dex2jar.src.zip -d source/src </span>
+Archive:  classes-dex2jar.src.zip
+   creating: source/src/android/
+   creating: source/src/android/support/
+...
+</code></pre></div><p>The new directory structure will be:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># tree -L 2 source </span>
+<span style=color:#24909d>source</span>
+├── AndroidManifest.xml
+├── apktool.yml
+├── bin
+│   ├── android
+│   └── com
+├── build
+│   └── apk
+├── dist
+│   └── FakeBanker.apk
+├── original
+│   ├── AndroidManifest.xml
+│   └── META-INF
+├── res
+│   ├── drawable-hdpi
+│   ├── drawable-ldpi
+│   ├── drawable-mdpi
+│   ├── drawable-xhdpi
+│   ├── layout
+│   ├── menu
+│   ├── raw
+│   └── values
+├── smali
+│   ├── android
+│   └── com
+└── src
+    ├── android
+    └── com
+
+<span style=color:#3677a9>23</span> directories, <span style=color:#3677a9>4</span> files
+</code></pre></div><h2 id=debug-settings>Debug settings</h2><p>I had to active the debug settings for my targeted app. Go to <code>Device Settings</code> -> <code>Select debug app</code>. Also make sure you have <code>Wait for debugger</code> activated.
+This will prevent your app starting before any debugger gets connected to it.</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/app_select_debug_app.png>http://dl.dornea.nu/img/2014/eclipse-ddms/app_select_debug_app.png</a> %}</p><h2 id=setup-eclipse>Setup Eclipse</h2><p>First of all make sure you have the <a href=http://developer.android.com/tools/sdk/eclipse-adt.html>ADT</a> along with the <a href=http://developer.android.com/sdk/index.html>Android SDK</a> installed. Now let&rsquo;s move on:</p><h4 id=create-new-java-project>Create new Java project</h4><p>First create a new <em>Java</em> project and use <code>source</code> as the location of the project.</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_create_java_project.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_create_java_project.png</a> %}</p><h4 id=add-src-folder-to-build-path>Add src folder to build path</h4><p>Make sure the <code>src</code> folder is added as a source location to the build path.</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_project_src.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_project_src.png</a> %}</p><h4 id=check-project-properties>Check project properties</h4><p>You could also check the project properties by clicking on it and then <code>ALT+Enter</code>. You should have sth similar to:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_project_properties_build_path.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_project_properties_build_path.png</a> %}</p><h2 id=set-breakpoints>Set breakpoints</h2><p>Having set up the Eclipse environment let&rsquo;s add some breakpoints.</p><h3 id=update-2014-12-09>UPDATE 2014-12-09</h3><p><strong>Important note</strong>: As stated <a href=https://code.google.com/p/android-apktool/wiki/SmaliDebugging>here</a> you should pay attention <strong>where</strong> you set your breakpoint:</p><blockquote><p>You must select line with some instruction, you can&rsquo;t set breakpoint on lines starting with &ldquo;.&rdquo;, &ldquo;:&rdquo; or &ldquo;#&rdquo;.</p></blockquote><p>So be careful whet choosing your breakpoints otherwise you might ask yourself why your code doesn&rsquo;t get debugged.</p><h3 id=debug-oncreate>Debug onCreate</h3><p>First search for <strong>onCreate</strong> in all files:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_search_on_create.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_search_on_create.png</a> %}</p><p>Eclipse found several matches:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_found_oncreate.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_found_oncreate.png</a> %}</p><p>We&rsquo;ll now concentrate on <code>MainActivity.java</code> and set a breakpoint:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_set_breakpoint.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_set_breakpoint.png</a> %}</p><p>Switching the perspective to <code>Debug</code> you should be able to see your breakpoints (marked in red):</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_view_breakpoints.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_view_breakpoints.png</a> %}</p><h2 id=run-application>Run application</h2><p>Before running our application we&rsquo;ll have a look at the already running processes on the device:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_running_processes.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_running_processes.png</a> %}</p><p>After starting the application in the <code>AVD</code> you&rsquo;ll notice a new process:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_running_processes_after_app_start.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_running_processes_after_app_start.png</a> %}</p><p>The red &ldquo;bug&rdquo; indicates that the process isn&rsquo;t being debugged yet. Meanwhile the app waits for some debugger
+to get connected:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/app_waiting_for_debugger.png>http://dl.dornea.nu/img/2014/eclipse-ddms/app_waiting_for_debugger.png</a> %}</p><h4 id=debug-configuration>Debug configuration</h4><p>In order to be able to debug process you&rsquo;ll have to add a new debug configuration:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_configuration.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_configuration.png</a> %}</p><p>When setting up the configuration pay attention to the <strong>port</strong> your debugger should connect to. Make sure it matches with the port pair previously
+seen in the running process list (marked in red):</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_set_port.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_set_port.png</a> %}</p><p>Now click on <strong>Debug</strong> and you&rsquo;re ready to go. Take a look at the running processes. You&rsquo;ll notice sth changed:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_running.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_running.png</a> %}</p><p>The bug is now &ldquo;green&rdquo; meaning you&rsquo;re ready to debug your application.</p><h2 id=trigger-breakpoint>Trigger breakpoint</h2><p>We&rsquo;ve previously set a breakpoint at the <code>onCreate</code> method. Now that the application is running I had to &ldquo;trigger&rdquo; that breakpoint. Switching to my AVD I took
+a look at the application and filled in the fields:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/app_enter_click.png>http://dl.dornea.nu/img/2014/eclipse-ddms/app_enter_click.png</a> %}</p><p>Afterwards I&rsquo;ve clicked <em>Enter</em>. Switching back to Eclipse I got following picture:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_hold_on_breakpoint.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_hold_on_breakpoint.png</a> %}</p><p>The execution stopped at the breakpoint. Success! Now I&rsquo;ve typed F6 (Step over) and the execution moved on:</p><p>{% img <a href=http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_stepin.png>http://dl.dornea.nu/img/2014/eclipse-ddms/eclipse_debug_stepin.png</a> %}</p><h2 id=conclusion>Conclusion</h2><p>Using great tools like <code>apktool</code> and <code>dex2jar</code> you can prepare your APK to inspect it dynamically in Eclipse. I think Eclipse (along with ADT) is a very powerful tool
+when it comes to dynamic analysis. I can easily switch between code parts and analyze the execution flow. Keep in mind that when the original is <em>obfuscated</em> you may
+want to debug <strong>smali</strong> code. In that case make sure you add the <strong>smali</strong> order instead of the <strong>src</strong> one (described earlier). For any questions feel free to write comments
+below.</p><h2 id=references>References</h2><ul><li><a href=http://www.programering.com/a/MjM5UTMwATg.html>http://www.programering.com/a/MjM5UTMwATg.html</a></li><li><a href=http://resources.infosecinstitute.com/android-hacking-security-part-6-exploiting-debuggable-android-applications/>http://resources.infosecinstitute.com/android-hacking-security-part-6-exploiting-debuggable-android-applications/</a></li></ul></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/08/06/python-for-data-analysis/>prev post</a>
+<a href=http://blog.dornea.nu/2014/08/28/using-jquery-datatables-with-ipython/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

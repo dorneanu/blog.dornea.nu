@@ -1,0 +1,213 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Migrate this blog from Octopress to Pelican - blog.dornea.nu</title><meta content="Migrate this blog from Octopress to Pelican - blog.dornea.nu" property="title"><meta content="Migrate this blog from Octopress to Pelican - blog.dornea.nu" property="og:title"><meta property="og:description" content="A few weeks ago I&rsquo;be migrated my whole blog from Wordpress to Octopress. Meanwhile I&rsquo;ve discovered Pelican which is the Pythonic alternative to Octopress. To be honest: The main reason I&rsquo;m using Pelican instead of Octopress is the ability to import/include IPython notebooks.
+After I&rsquo;ve set up my blog using Octopress I only had a bunge of Markdown files. So let&rsquo;s get started.
+Generate metadata for content %%bash cp ~/work/blog/octopress/source/_posts/*.markdown ~/work/blog/pelican/content/markdown/ %%bash ls -c ~/work/blog/pelican/content/markdown/ | head -n 10 2014-05-27-berlinsides-0x05."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/06/18/migrate-this-blog-from-octopress-to-pelican/"><meta property="article:published_time" content="2014-06-18T00:00:00+00:00"><meta property="article:modified_time" content="2014-06-18T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Migrate this blog from Octopress to Pelican</div><p class="silver f6 mt1 mb4 post-meta"><time>18 Jun 2014</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/blog class="link silver">blog</a> <a href=http://blog.dornea.nu/tags/ipython class="link silver">ipython</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/pelican class="link silver">pelican</a> <a href=http://blog.dornea.nu/tags/octopress class="link silver">octopress</a> ]</p><div class="lh-copy post-content"><p>A few weeks ago I&rsquo;be migrated my whole blog from Wordpress to Octopress. Meanwhile I&rsquo;ve discovered <code>Pelican</code> which is the Pythonic alternative to Octopress. To be honest: The main reason I&rsquo;m using Pelican instead of Octopress is the ability to import/include <code>IPython notebooks</code>.</p><p>After I&rsquo;ve set up my blog using Octopress I only had a bunge of <code>Markdown</code> files. So let&rsquo;s get started.</p><h2 id=generate-metadata-for-content>Generate metadata for content</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+cp ~/work/blog/octopress/source/_posts/*.markdown ~/work/blog/pelican/content/markdown/
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+ls -c ~/work/blog/pelican/content/markdown/ | head -n <span style=color:#3677a9>10</span>
+</code></pre></div><pre><code>2014-05-27-berlinsides-0x05.markdown
+2014-06-02-googles-xss-game-solutions.markdown
+2014-05-20-howto-write-pentest-reports-the-easy-way.markdown
+2014-05-15-test2.markdown
+2014-01-31-links-of-the-week-25-2.markdown
+2014-02-07-links-of-the-week-26.markdown
+2014-02-14-links-of-the-week-27.markdown
+2014-03-07-unfancy-dashboard-using-matplotlib.markdown
+2014-05-04-howto-create-docs-with-sphinx.markdown
+2014-01-23-24h-android-sniffing-using-tcpdump.markdown
+</code></pre><h2 id=awk-script-for-doing-the-main-job>AWK script for doing the main job</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>%%writefile ~/work/blog/pelican/content/transform.awk
+{
+    # Date
+    if ( $0 ~ /^date(.*)$/ ) {
+        # Get date
+        match($0, /^date: ([0-9]{4}\-[0-9]{2}\-[0-9]{2}).*$/, ary)
+        print &#34;Date: &#34; ary[1]; 
+
+    # Title 
+    } else if ( $0 ~ /^title(.*)$/) {
+        match($0, /^title: (.*)$/, ary)
+
+        # Remove single/double quotes
+        gsub(/&#39;/, &#34;&#34;, ary[1]);
+        gsub(/&#34;/, &#34;&#34;, ary[1]);
+        print &#34;Title: &#34; ary[1];
+
+    # Author
+    } else if ( $0 ~ /^author(.*)$/) {
+        match($0, /^author: (.*)$/, ary)
+        print &#34;Author: &#34; ary[1];
+
+    # Handle available categories as tags
+    } else if ($0 ~ /^categories:.*$/) {
+        printf &#34;Tags: &#34;
+        
+        # Array index
+        i = 0;
+
+        # Read next line until new meta tag is found
+        while ((getline line ) &gt; 0) {
+            # Read until new meta tag is found
+            if ((line !~ /^.*\-.*$/) || (line ~ /^\-\-\-$/)) {
+                output_string = &#34;&#34;
+                # Print categories and the next exit loop
+                for (j=0; j&lt;i; j++)
+                    
+                    # Is this the last category
+                    if (j+1 &lt; i) 
+                        output_string = output_string tolower(categories[j]) &#34;, &#34;
+
+                    # Last category
+                    else
+                        output_string = output_string tolower(categories[j])
+       
+                # Remove last &#34;,&#34; and add default category
+                printf &#34;%s\n&#34;, output_string
+                printf &#34;Category: blog\n\n&#34;
+                break
+            }
+
+            # Extract category
+            match(line, /^.*\- (.*)$/, ary)
+            categories[i] = ary[1]
+
+            # Increase index
+            i++;
+        }
+
+    }
+}
+
+</code></pre></div><pre><code>Overwriting /home/victor/work/blog/pelican/content/transform.awk
+</code></pre><h2 id=extract-the-metdata-and-generate-the-meta-files>Extract the metdata and generate the meta files</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#24909d>cd</span> ~/work/blog/pelican/
+<span style=color:#6ab825;font-weight:700>for</span> i in content/markdown/*.markdown; <span style=color:#6ab825;font-weight:700>do</span> 
+    cat <span style=color:#40ffff>$i</span> | gawk -f content/transform.awk &gt; <span style=color:#40ffff>$i</span>-meta
+<span style=color:#6ab825;font-weight:700>done</span>
+
+ls -c content/markdown/*-meta | head -n <span style=color:#3677a9>10</span>
+</code></pre></div><pre><code>content/markdown/blogging-with-the-ipython-notebook-example.markdown-meta
+content/markdown/2014-06-02-googles-xss-game-solutions.markdown-meta
+content/markdown/2014-05-27-berlinsides-0x05.markdown-meta
+content/markdown/2014-05-20-howto-write-pentest-reports-the-easy-way.markdown-meta
+content/markdown/2014-05-15-test2.markdown-meta
+content/markdown/2014-05-04-howto-create-docs-with-sphinx.markdown-meta
+content/markdown/2014-03-07-unfancy-dashboard-using-matplotlib.markdown-meta
+content/markdown/2014-02-14-links-of-the-week-27.markdown-meta
+content/markdown/2014-02-07-links-of-the-week-26.markdown-meta
+content/markdown/2014-01-31-links-of-the-week-25-2.markdown-meta
+</code></pre><h2 id=sample-meta-data-output>Sample meta data output</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+
+find ~/work/blog/pelican/content/markdown/*-meta -name <span style=color:#ed9d13>&#34;2014-05-*&#34;</span> -exec cat {} <span style=color:#ed9d13>\;</span>
+</code></pre></div><pre><code>Title: HowTo: Create docs with sphinx
+Author: Victor
+Date: 2014-05-04
+Tags: coding, howto
+Category: blog
+
+Title: Test2
+Date: 2014-05-15
+Tags: 
+Category: blog
+
+Title: HowTo: Write pentest reports the easy way
+Date: 2014-05-20
+Tags: 
+Category: blog
+
+Title: BerlinSides 0x05
+Date: 2014-05-27
+Tags: events, hacking, security
+Category: blog
+</code></pre><h2 id=delete-old-metadata>Delete old metadata</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#24909d>cd</span> ~/work/blog/pelican/content/markdown
+<span style=color:#6ab825;font-weight:700>for</span> i in *.markdown; <span style=color:#6ab825;font-weight:700>do</span>
+    cat <span style=color:#40ffff>$i</span> | sed <span style=color:#ed9d13>&#39;/^---$/,/^---$/d&#39;</span> &gt; <span style=color:#40ffff>$i</span>-sed
+<span style=color:#6ab825;font-weight:700>done</span>
+</code></pre></div><h2 id=insert-new-metadata-info-file>Insert new metadata info file</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#24909d>cd</span> ~/work/blog/pelican/content/markdown
+<span style=color:#6ab825;font-weight:700>for</span> i in *.markdown; <span style=color:#6ab825;font-weight:700>do</span>
+    cat <span style=color:#40ffff>$i</span>-meta &gt; <span style=color:#40ffff>$i</span>-final; cat <span style=color:#40ffff>$i</span>-sed &gt;&gt; <span style=color:#40ffff>$i</span>-final;
+<span style=color:#6ab825;font-weight:700>done</span>
+</code></pre></div><h2 id=sample-final-output>Sample final output</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#24909d>cd</span> ~/work/blog/pelican/content/markdown
+find . -name <span style=color:#ed9d13>&#34;2014-05*.markdown-final&#34;</span> -exec head -n <span style=color:#3677a9>10</span> {} <span style=color:#ed9d13>\;</span>
+</code></pre></div><pre><code>Title: Test2
+Date: 2014-05-15
+Tags: 
+Category: blog
+
+
+
+# Motivation
+
+I've started this little project since I was mainly interested in the data my
+Title: HowTo: Create docs with sphinx
+Author: Victor
+Date: 2014-05-04
+Tags: coding, howto
+Category: blog
+
+
+In this post I&amp;#8217;d like to show some handy way to improve your process of documentating your project.
+Since we all know documentation is a **must** you might have wondered how to handle that
+without any big efforts. In fact it would be great if you could write your code along with the
+Title: HowTo: Write pentest reports the easy way
+Date: 2014-05-20
+Tags: 
+Category: blog
+
+
+In this post I'll try to share an idea I've had regarding pentest reports. Most of you surely have
+their own methods and tools to create nice looking reports after have done some pentesting.
+Since I try to keep things simple I'll give you a rough idea how this could be done without Excel &amp; Co.
+
+Title: BerlinSides 0x05
+Date: 2014-05-27
+Tags: events, hacking, security
+Category: blog
+
+
+The [**BerlinSides**](http://berlinsides.org/) is a conference from hacker for hacker. This years motto was: **...you ain't listening**.
+All my greetings go to:
+
+* [nullsecurity.net](http://nullsecurity.net)
+</code></pre><h2 id=replace-some-strings>Replace some strings</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#24909d>cd</span> ~/work/blog/pelican/content/markdown
+
+<span style=color:#999;font-style:italic># Insert some dummy text for missing attributes in img tags</span>
+<span style=color:#6ab825;font-weight:700>for</span> i in *.markdown-final; <span style=color:#6ab825;font-weight:700>do</span>
+    sed -i <span style=color:#ed9d13>&#39;s/alt=\&#34;\&#34;/alt=\&#34;image description\&#34;/g&#39;</span> <span style=color:#40ffff>$i</span>
+<span style=color:#6ab825;font-weight:700>done</span>
+</code></pre></div><h2 id=rename-files-and-delete-bullshit>Rename files and delete bullshit</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#24909d>cd</span> ~/work/blog/pelican/content/markdown
+rm *.markdown-sed
+rm *.markdown-meta
+rm *.markdown
+
+<span style=color:#6ab825;font-weight:700>for</span> i in *.markdown-final; <span style=color:#6ab825;font-weight:700>do</span>
+    mv <span style=color:#40ffff>$i</span> <span style=color:#ed9d13>`</span>basename <span style=color:#40ffff>$i</span> <span style=color:#ed9d13>&#34;.markdown-final&#34;</span><span style=color:#ed9d13>`</span>.markdown
+<span style=color:#6ab825;font-weight:700>done</span>
+
+</code></pre></div><h2 id=generate-new-content>Generate new content</h2><p>Supposing you have already setup your pelican blog now you can run:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#24909d>cd</span> ~/work/blog/pelican/
+
+<span style=color:#24909d>source</span> env/bin/activate
+make html
+</code></pre></div><pre><code>pelican /home/victor/work/blog/pelican/content -o /home/victor/work/blog/pelican/output -s /home/victor/work/blog/pelican/pelicanconf.py 
+
+ ** Writing styles to _nb_header.html: this should be included in the theme. **
+
+Done: Processed 124 articles and 1 pages in 6.38 seconds.
+</code></pre><h2 id=the-end>The End</h2><p>I hope you have enjoyed this one. If you have any questions regarding the process, don&rsquo;t hesitate and leave a comment.</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/06/02/googles-xss-game-solutions/>prev post</a>
+<a href=http://blog.dornea.nu/2014/06/29/whatsapp-bot/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

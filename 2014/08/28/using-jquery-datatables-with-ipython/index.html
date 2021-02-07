@@ -1,0 +1,150 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Using JQuery DataTables with IPython - blog.dornea.nu</title><meta content="Using JQuery DataTables with IPython - blog.dornea.nu" property="title"><meta content="Using JQuery DataTables with IPython - blog.dornea.nu" property="og:title"><meta property="og:description" content="I thought this might be interesting enough to share with you. Every time I&rsquo;m working with DataFrames I somehow miss the search feature: I&rsquo;d like to search for certain patterns inside the columns and rows. I used to use JQuery DataTables for netgrafio. But I couldn&rsquo;t find any simple way to integrate it with IPython. Well it was easier than I thought.
+Extensions # <!-- collapse=True --> from IPython import display from IPython."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/08/28/using-jquery-datatables-with-ipython/"><meta property="article:published_time" content="2014-08-28T00:00:00+00:00"><meta property="article:modified_time" content="2014-08-28T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Using JQuery DataTables with IPython</div><p class="silver f6 mt1 mb4 post-meta"><time>28 Aug 2014</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/ipython class="link silver">ipython</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/jquery class="link silver">jquery</a> <a href=http://blog.dornea.nu/tags/javascript class="link silver">javascript</a> ]</p><div class="lh-copy post-content"><p>I thought this might be interesting enough to share with you. Every time I&rsquo;m working with DataFrames I somehow miss the search feature: I&rsquo;d like to search for certain patterns inside the columns and rows. I used to use <a href=https://datatables.net>JQuery DataTables</a> for <a href=http://dornea.nu/projects/netgrafio>netgrafio</a>. But I couldn&rsquo;t find any simple way to integrate it with IPython. Well it was easier than I thought.</p><h2 id=extensions>Extensions</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+from IPython import display
+from IPython.core.magic import register_cell_magic, Magics, magics_class, cell_magic
+import jinja2
+
+# Create jinja cell magic (http://nbviewer.ipython.org/urls/gist.github.com/bj0/5343292/raw/23a0845ee874827e3635edb0bf5701710a537bfc/jinja2.ipynb)
+@magics_class
+class JinjaMagics(Magics):
+    &#39;&#39;&#39;Magics class containing the jinja2 magic and state&#39;&#39;&#39;
+    
+    def __init__(self, shell):
+        super(JinjaMagics, self).__init__(shell)
+        
+        # create a jinja2 environment to use for rendering
+        # this can be modified for desired effects (ie: using different variable syntax)
+        self.env = jinja2.Environment(loader=jinja2.FileSystemLoader(&#39;.&#39;))
+        
+        # possible output types
+        self.display_functions = dict(html=display.HTML, 
+                                      latex=display.Latex,
+                                      json=display.JSON,
+                                      pretty=display.Pretty,
+                                      display=display.display)
+
+    
+    @cell_magic
+    def jinja(self, line, cell):
+        &#39;&#39;&#39;
+        jinja2 cell magic function.  Contents of cell are rendered by jinja2, and 
+        the line can be used to specify output type.
+
+        ie: &#34;%%jinja html&#34; will return the rendered cell wrapped in an HTML object.
+        &#39;&#39;&#39;
+        f = self.display_functions.get(line.lower().strip(), display.display)
+        
+        tmp = self.env.from_string(cell)
+        rend = tmp.render(dict((k,v) for (k,v) in self.shell.user_ns.items() 
+                                        if not k.startswith(&#39;_&#39;) and k not in self.shell.user_ns_hidden))
+        
+        return f(rend)
+        
+    
+ip = get_ipython()
+ip.register_magics(JinjaMagics)
+</code></pre></div><h2 id=datatable-function>DataTable function</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># &lt;!-- collapse=True --&gt;
+import uuid
+
+def DataTable(df):
+    &#34;&#34;&#34; Prints a pandas.DataFrame as JQuery DataTables &#34;&#34;&#34;
+    from IPython.display import HTML
+    # Generate random container name
+    id_container = uuid.uuid1()
+    output = &#34;&#34;&#34;
+        &lt;div id=&#34;datatable-container-%s&#34;&gt;
+            &lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css&#34;&gt;
+            &lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css&#34;&gt;
+            &lt;script type=&#34;text/javascript&#34; charset=&#34;utf8&#34; src=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js&#34;&gt;&lt;/script&gt;
+
+            &lt;script type=&#34;text/javascript&#34;&gt;
+                var url = window.location.href;
+                
+                if(url.indexOf(&#34;localhost:9999&#34;) != -1){
+                    $(&#39;#datatable-container-%s table.datatable&#39;).dataTable();
+                } else {
+                    $.getScript(&#34;http://code.jquery.com/jquery-1.11.1.min.js&#34;);
+                    $(document).ready(function() {
+                        $(&#39;#datatable-container-%s table.datatable&#39;).dataTable();
+                    });
+                }
+                
+            &lt;/script&gt;
+            &lt;!-- Insert table below --&gt;
+            %s
+        &lt;/div&gt;
+    &#34;&#34;&#34; % (id_container, id_container, id_container, df.to_html(index=False, classes=&#34;datatable dataframe&#34;))
+    return HTML(output)
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><p>I know the code is not perfect, but at least it works for me. Now let&rsquo;s create some random DataFrame:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>import pandas as pd
+import urllib2
+from yurl import URL
+
+
+# Fetch list of random URLs (found using Google)
+response = urllib2.urlopen(&#39;http://files.ianonavy.com/urls.txt&#39;)
+targets_row = response.read()
+
+# Create DataFrame
+targets = pd.DataFrame([t for t in targets_row.splitlines()], columns=[&#34;Target&#34;])
+
+# Join root domain + suffix
+extract_root_domain =  lambda x: &#39;.&#39;.join(tldextract.extract(x)[1:3])
+
+target_columns = [&#39;scheme&#39;, &#39;userinfo&#39;, &#39;host&#39;, &#39;port&#39;, &#39;path&#39;, &#39;query&#39;, &#39;fragment&#39;, &#39;decoded&#39;]
+target_component = [list(URL(t)) for t in targets[&#39;Target&#39;]]
+
+# Create data frame
+df_targets = pd.DataFrame(target_component, columns=target_columns)
+</code></pre></div><h3 id=classic-html-output>Classic HTML output</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>df_targets[:20]
+</code></pre></div><h3 id=jquery-datatables-output>JQuery DataTables output</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>DataTable(df_targets[:20])
+</code></pre></div><pre><code>    &lt;div id=&quot;datatable-container-aab341ae-2f8d-11e4-95d5-52540086692e&quot;&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css&quot;&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css&quot;&gt;
+        &lt;script type=&quot;text/javascript&quot; charset=&quot;utf8&quot; src=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js&quot;&gt;&lt;/script&gt;
+
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            var url = window.location.href;
+
+            if(url.indexOf(&quot;localhost:9999&quot;) != -1){
+                $('#datatable-container-aab341ae-2f8d-11e4-95d5-52540086692e table.datatable').dataTable();
+            } else {
+                $.getScript(&quot;http://code.jquery.com/jquery-1.11.1.min.js&quot;);
+                $(document).ready(function() {
+                    $('#datatable-container-aab341ae-2f8d-11e4-95d5-52540086692e table.datatable').dataTable();
+                });
+            }
+
+        &lt;/script&gt;
+        &lt;!-- Insert table below --&gt;
+        &lt;table border=&quot;1&quot; class=&quot;dataframe datatable dataframe&quot;&gt;
+</code></pre><h3 id=jinja2-cellmagic>Jinja2 cellmagic</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>html_output = DataTable(df_targets[:20])
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>%%jinja html
+&lt;div id=&#34;table-container&#34;&gt;
+    {{ html_output }}
+&lt;/div&gt;
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>html_output
+</code></pre></div><pre><code>    &lt;div id=&quot;datatable-container-3b6a2692-2f8c-11e4-95d5-52540086692e&quot;&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css&quot;&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css&quot;&gt;
+        &lt;script type=&quot;text/javascript&quot; charset=&quot;utf8&quot; src=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js&quot;&gt;&lt;/script&gt;
+
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            $('#datatable-container-3b6a2692-2f8c-11e4-95d5-52540086692e table.datatable').dataTable();
+        &lt;/script&gt;
+        &lt;!-- Insert table below --&gt;
+        &lt;table border=&quot;1&quot; class=&quot;dataframe datatable dataframe&quot;&gt;
+</code></pre><p>Easy isn&rsquo;t it? Thx for sharing.</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/08/21/howto-debug-android-apks-with-eclipse-and-ddms/>prev post</a>
+<a href=http://blog.dornea.nu/2014/09/12/howto-androguard-with-docker/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

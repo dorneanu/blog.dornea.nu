@@ -1,0 +1,270 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>ringzer0 CTF - Binaries - Time to learn x86 ASM and gdb - blog.dornea.nu</title><meta content="ringzer0 CTF - Binaries - Time to learn x86 ASM and gdb - blog.dornea.nu" property="title"><meta content="ringzer0 CTF - Binaries - Time to learn x86 ASM and gdb - blog.dornea.nu" property="og:title"><meta property="og:description" content="This one was a quite easy one. Using radare let&rsquo;s find more information about the binary:
+$ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a [0x08048380]> iI havecode true pic false canary false nx true crypto false va true intrp /lib/ld-linux.so.2 bintype elf class ELF32 lang c arch x86 bits 32 machine Intel 80386 os linux minopsz 1 maxopsz 16 pcalign 0 subsys linux endian little stripped false static false linenum true lsyms true relocs true rpath NONE binsz 7450 Ok, now let&rsquo;s have a look at the entry point:"><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/"><meta property="article:published_time" content="2016-11-29T00:00:00+00:00"><meta property="article:modified_time" content="2016-11-29T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - Binaries - Time to learn x86 ASM and gdb</div><p class="silver f6 mt1 mb4 post-meta"><time>29 Nov 2016</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/ringzer0 class="link silver">ringzer0</a> <a href=http://blog.dornea.nu/tags/ctf class="link silver">ctf</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> <a href=http://blog.dornea.nu/tags/asm class="link silver">asm</a> <a href=http://blog.dornea.nu/tags/x86 class="link silver">x86</a> <a href=http://blog.dornea.nu/tags/sploitfun class="link silver">sploitfun</a> ]</p><div class="lh-copy post-content"><p>This one was a quite easy one. Using radare let&rsquo;s find more information about the binary:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a
+
+[0x08048380]&gt; iI
+havecode true
+pic      false
+canary   false
+nx       true
+crypto   false
+va       true
+intrp    /lib/ld-linux.so.2
+bintype  elf
+class    ELF32
+lang     c
+arch     x86
+bits     32
+machine  Intel 80386
+os       linux
+minopsz  1
+maxopsz  16
+pcalign  0
+subsys   linux
+endian   little
+stripped false
+static   false
+linenum  true
+lsyms    true
+relocs   true
+rpath    NONE
+binsz    7450
+</code></pre></div><p>Ok, now let&rsquo;s have a look at the <strong>entry point</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>[0x08048380]&gt; pdf @ sym.main
+;-- main:
+/ (fcn) sym.main 231
+   sym.main ();
+           ; var int local_4h_2 @ ebp-0x4
+           ; var int local_4h @ esp+0x4
+           ; var int local_8h @ esp+0x8
+           ; var int local_1ch @ esp+0x1c
+           ; arg int arg_2ch @ esp+0x2c
+           ; JMP XREF from 0x08048397 (entry0)
+           ; DATA XREF from 0x08048397 (entry0)
+           0x0804846c      55             push ebp
+           0x0804846d      89e5           mov ebp, esp
+           0x0804846f      57             push edi
+           0x08048470      83e4f0         and esp, 0xfffffff0
+           0x08048473      83ec30         sub esp, 0x30               ; &#39;0&#39;
+           0x08048476      c744242c0000.  mov dword [esp + arg_2ch], 0
+           0x0804847e      c70424180000.  mov dword [esp], 0x18       ; [0x18:4]=0x8048380 sym._start
+           0x08048485      e8a6feffff     call sym.imp.malloc        ;  void *malloc(size_t size);
+           0x0804848a      8944242c       mov dword [esp + arg_2ch], eax
+           0x0804848e      c74424081800.  mov dword [esp + local_8h], 0x18 ; [0x18:4]=0x8048380 sym._start
+           0x08048496      c74424040000.  mov dword [esp + local_4h], 0
+           0x0804849e      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484a2      890424         mov dword [esp], eax
+           0x080484a5      e8c6feffff     call sym.imp.memset
+           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484ae      c700464c4147   mov dword [eax], 0x47414c46 ; [0x47414c46:4]=-1
+           0x080484b4      c740042d3430.  mov dword [eax + 4], 0x3930342d ; [0x3930342d:4]=-1
+           0x080484bb      66c740083200   mov word [eax + 8], 0x32    ; &#39;2&#39; ; [0x32:2]=27 ; &#39;2&#39;
+           0x080484c1      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484c5      c744241cffff.  mov dword [esp + local_1ch], 0xffffffff ; [0xffffffff:4]=-1 LEA edi ; edi
+           0x080484cd      89c2           mov edx, eax
+           0x080484cf      b800000000     mov eax, 0
+           0x080484d4      8b4c241c       mov ecx, dword [esp + local_1ch] ; [0x1c:4]=52
+           0x080484d8      89d7           mov edi, edx
+           0x080484da      f2ae           repne scasb al, byte es:[edi]
+           0x080484dc      89c8           mov eax, ecx
+           0x080484de      f7d0           not eax
+           0x080484e0      8d50ff         lea edx, [eax - 1]
+           0x080484e3      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484e7      01d0           add eax, edx
+           0x080484e9      c70038343975   mov dword [eax], 0x75393438 ; [0x75393438:4]=-1
+           0x080484ef      c74004696f32.  mov dword [eax + 4], 0x6a326f69 ; [0x6a326f69:4]=-1
+           0x080484f6      66c740086600   mov word [eax + 8], 0x66    ; &#39;f&#39; ; [0x66:2]=0 ; &#39;f&#39;
+           0x080484fc      c70424f88504.  mov dword [esp], str.Loading... ; [0x80485f8:4]=0x64616f4c LEA str.Loading... ; &#34;Loading...&#34; @ 0x80485f8
+           0x08048503      e838feffff     call sym.imp.puts
+           0x08048508      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x0804850c      c744241cffff.  mov dword [esp + local_1ch], 0xffffffff ; [0xffffffff:4]=-1 LEA edi ; edi
+           0x08048514      89c2           mov edx, eax
+           0x08048516      b800000000     mov eax, 0
+           0x0804851b      8b4c241c       mov ecx, dword [esp + local_1ch] ; [0x1c:4]=52
+           0x0804851f      89d7           mov edi, edx
+           0x08048521      f2ae           repne scasb al, byte es:[edi]
+           0x08048523      89c8           mov eax, ecx
+           0x08048525      f7d0           not eax
+           0x08048527      8d50ff         lea edx, [eax - 1]
+           0x0804852a      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x0804852e      01d0           add eax, edx
+           0x08048530      c7006b6c736a   mov dword [eax], 0x6a736c6b ; [0x6a736c6b:4]=-1
+           0x08048536      c74004346b6c.  mov dword [eax + 4], 0x6c6b34 ; [0x6c6b34:4]=-1
+           0x0804853d      c70424038604.  mov dword [esp], str.Where_is_the_flag_ ; [0x8048603:4]=0x72656857 LEA str.Where_is_the_flag_ ; &#34;Where is the flag?&#34; @ 0x8048603
+           0x08048544      e8f7fdffff     call sym.imp.puts
+           0x08048549      b800000000     mov eax, 0
+           0x0804854e      8b7dfc         mov edi, dword [ebp - local_4h_2]
+           0x08048551      c9             leave
+           0x08048552      c3             ret
+
+</code></pre></div><p>Indeed, this is a lot of information. Let&rsquo;s dissect the programm&rsquo;s flow:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>           0x0804846c      55             push ebp
+           0x0804846d      89e5           mov ebp, esp
+           0x0804846f      57             push edi
+           0x08048470      83e4f0         and esp, 0xfffffff0
+           0x08048473      83ec30         sub esp, 0x30               ; &#39;0&#39;
+</code></pre></div><p>This looks like a function <strong>prologue</strong>: Save the <strong>stack base pointer</strong>, allocate additional stack place (0x30).</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>           0x08048476      c744242c0000.  mov dword [esp + arg_2ch], 0
+           0x0804847e      c70424180000.  mov dword [esp], 0x18       ; [0x18:4]=0x8048380 sym._start
+           0x08048485      e8a6feffff     call sym.imp.malloc        ;  void *malloc(size_t size);
+</code></pre></div><p>Allocate some heap using <code>malloc</code> &mldr;</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>           0x0804848a      8944242c       mov dword [esp + arg_2ch], eax
+           0x0804848e      c74424081800.  mov dword [esp + local_8h], 0x18 ; [0x18:4]=0x8048380 sym._start
+           0x08048496      c74424040000.  mov dword [esp + local_4h], 0
+           0x0804849e      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484a2      890424         mov dword [esp], eax
+           0x080484a5      e8c6feffff     call sym.imp.memset
+</code></pre></div><p>The syntax for <code>memset</code> looks like this:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c>SYNOPSIS
+    <span style=color:#6ab825;font-weight:700>void</span> *<span style=color:#447fcf>memset</span>(<span style=color:#6ab825;font-weight:700>void</span> *s, <span style=color:#6ab825;font-weight:700>int</span> c, size_t n);
+
+DESCRIPTION
+   The memset() function fills the first n bytes of the memory area pointed to by s with the constant byte c.
+
+RETURN VALUE
+  The memset() function returns a pointer to the memory area s.
+</code></pre></div><p>Since we&rsquo;re dealing with <code>x86</code> (<a href=http://wiki.osdev.org/Calling_Conventions>this site</a> is very good) the
+arguments for <code>memset</code> are being pushed into the stack:</p><p>{% graphviz
+dot {
+digraph G {</p><pre><code>        // Define layout
+        graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
+        rankdir=LR;
+        node [shape=&quot;record&quot;];
+        rank=same;
+	 
+        // Define pointers
+        rsp [
+            label=&quot;&lt;p&gt; $rsp \l&quot;, height=&quot;0.1&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+        ];
+        rbp [
+            label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+        ];
+	 
+        rsp_4 [
+            label=&quot;&lt;p&gt; $rsp + 4 \l&quot;, height=&quot;0.01&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+        ];
+	 
+	 
+        rsp_8 [
+            label=&quot;&lt;p&gt; $rsp + 8 \l&quot;, height=&quot;0.01&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+        ];
+	 
+        // rsp_12 [
+        // 	label=&quot;&lt;p&gt; $rsp + 12 \l&quot;, height=&quot;0.01&quot;,
+        // 	color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+        // ];
+	 
+        // Define stack
+        stack [
+            width=&quot;3&quot;,
+            label=&quot;&lt;p&gt;\nStack\n\n | &lt;bp&gt;\n...\n\n | &lt;8&gt;0x8 \l | &lt;4&gt;0x0  \l | &lt;0&gt;pointer to memory allocated by malloc() \l&quot;
+        ];
+	   
+	   
+        // Pointer -&gt; Stack edges
+        rbp:p -&gt; stack:bp [style=dotted];
+        rsp:p -&gt; stack:0 [style=dotted];
+        rsp_4:p -&gt; stack:4 [style=invis];
+        rsp_8:p -&gt; stack:8 [style=invis];
+    }
+}
+</code></pre><p>%}</p><p>So <code>memset</code> will set the value &ldquo;0&rdquo; 8 times at the address pointed by <code>eax</code>. Afterwards
+some values will be <code>mov</code>ed into the previously allocated memory range:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484ae      c700464c4147   mov dword [eax], 0x47414c46 ; [0x47414c46:4]=-1
+           0x080484b4      c740042d3430.  mov dword [eax + 4], 0x3930342d ; [0x3930342d:4]=-1
+           0x080484bb      66c740083200   mov word [eax + 8], 0x32    ; &#39;2&#39; ; [0x32:2]=27 ; &#39;2&#39;
+           0x080484c1      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484c5      c744241cffff.  mov dword [esp + local_1ch], 0xffffffff ; [0xffffffff:4]=-1 LEA edi ; edi
+           0x080484cd      89c2           mov edx, eax
+           0x080484cf      b800000000     mov eax, 0
+           0x080484d4      8b4c241c       mov ecx, dword [esp + local_1ch] ; [0x1c:4]=52
+           0x080484d8      89d7           mov edi, edx
+           0x080484da      f2ae           repne scasb al, byte es:[edi]
+           0x080484dc      89c8           mov eax, ecx
+           0x080484de      f7d0           not eax
+           0x080484e0      8d50ff         lea edx, [eax - 1]
+           0x080484e3      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+           0x080484e7      01d0           add eax, edx
+           0x080484e9      c70038343975   mov dword [eax], 0x75393438 ; [0x75393438:4]=-1
+           0x080484ef      c74004696f32.  mov dword [eax + 4], 0x6a326f69 ; [0x6a326f69:4]=-1
+           0x080484f6      66c740086600   mov word [eax + 8], 0x66    ; &#39;f&#39; ; [0x66:2]=0 ; &#39;f&#39;
+           0x080484fc      c70424f88504.  mov dword [esp], str.Loading... ; [0x80485f8:4]=0x64616f4c LEA str.Loading... ; &#34;Loading...&#34; @ 0x80485f8
+</code></pre></div><p>At this point I&rsquo;ll switch to <strong>dynamic analysis</strong> and therefore <strong>run</strong> the code:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ gdb 88eb31060c4abd0931878bf7d2dd8c1a
+...
+gef&gt; b *0x080484aa
+gef&gt; r
+</code></pre></div><p>Now from <code>0x080484aa</code> through <code>0x080484fc</code> you can <code>s</code> (step) the opcodes. Then pay attention to the stack. You
+should have sth like:</p><p>{% graphviz
+dot {
+digraph G {</p><pre><code>        // Define layout
+        graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
+        rankdir=LR;
+        node [shape=&quot;record&quot;];
+        rank=same;
+	 
+        // Define pointers
+        rsp [
+            label=&quot;&lt;p&gt; $rsp \l&quot;, height=&quot;0.1&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+        ];
+        rbp [
+            label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+        ];
+	 
+        rsp_4 [
+            label=&quot;&lt;p&gt; $rsp + 4 \l&quot;, height=&quot;0.01&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+        ];
+	 
+	 
+        rsp_8 [
+            label=&quot;&lt;p&gt; $rsp + 8 \l&quot;, height=&quot;0.01&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+        ];
+	 
+        rsp_12 [
+            label=&quot;&lt;p&gt; $rsp + 12 \l&quot;, height=&quot;0.01&quot;,
+            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+        ];
+	 
+        // Define stack
+        stack [
+            width=&quot;3&quot;,
+            label=&quot;&lt;p&gt;\nStack\n\n | &lt;bp&gt;\n...\n\n | &lt;12&gt;0x080485b2  \l | &lt;8&gt;0x18 \l | &lt;4&gt;0x0  \l | &lt;0&gt;0x0804b008 \l&quot;
+        ];
+	   
+        // Define values
+        val [
+            width=&quot;5&quot;,color=blue,
+            label=&quot;&lt;p&gt;\nValues\n\n | \n...\n\n | &lt;1&gt;FLAG-4092849uio2jf \l | &lt;2&gt;(__libc_csu_init+82): add esi,0x1 \l&quot;
+        ];
+	   
+	   
+        // Pointer -&gt; Stack edges
+        rbp:p -&gt; stack:bp [style=dotted];
+        rsp:p -&gt; stack:0 [style=dotted];
+        rsp_4:p -&gt; stack:4 [style=invis];
+        rsp_8:p -&gt; stack:8 [style=invis];
+        rsp_12:p -&gt; stack:12 [style=invis];
+	 
+        // Trick to have everything horizontally aligned
+        stack:p -&gt; val:p [style=invis];
+	   
+        // Stack -&gt; Values edges
+        edge[style=dotted];
+        stack:0 -&gt; val:1 [color=red];
+        stack:12 -&gt; val:2;
+    }
+}
+</code></pre><p>%}</p><p>Bingo. So the flag is <code>FLAG-4092849uio2jf</code>.</p></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/10/30/ringzer0-ctf-sysadmin-linux/>prev post</a>
+<a href=http://blog.dornea.nu/2016/11/30/ringzer0-ctf-binaries-heap-allocator/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>
