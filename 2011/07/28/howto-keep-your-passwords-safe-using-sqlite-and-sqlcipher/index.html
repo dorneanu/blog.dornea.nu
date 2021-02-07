@@ -1,127 +1,24 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>HowTo: Keep your passwords safe using SQLite and SQLCipher - blog.dornea.nu</title>
-  <meta content='HowTo: Keep your passwords safe using SQLite and SQLCipher - blog.dornea.nu' property='title' />
-  <meta content='HowTo: Keep your passwords safe using SQLite and SQLCipher - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="I was recently doing some hacks and realized that there must be a way to store gained information in a secure manner. I usually encrypt sensitive information (like passwords, accounts etc.) using GPG. But that&rsquo;s quite unhandy: You always need your private key and the encrypted data is stored unencrypted on the device (unless you&rsquo;re using full disk encryption which shouldn&rsquo;t be a problem since data is stored encrypted on the device)." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/" />
-
-
-<meta property="article:published_time" content="2011-07-28T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2011-07-28T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">HowTo: Keep your passwords safe using SQLite and SQLCipher</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>28 Jul 2011</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/crypto' class="link silver">crypto</a> <a href='http://blog.dornea.nu/tags/sqlite' class="link silver">sqlite</a> <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/sql' class="link silver">sql</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>I was recently doing some hacks and realized that there must be a way to store gained information in a secure manner. I usually encrypt sensitive information (like passwords, accounts etc.) using GPG. But that&rsquo;s quite unhandy: You always need your private key and the encrypted data is stored unencrypted on the device (unless you&rsquo;re using full disk encryption which shouldn&rsquo;t be a problem since data is stored encrypted on the device). Like you probably also do, I have several account types: Mail, SSH, FTP, LDAP etc. Finding a good structure to store all that information could be a headache. Besides that you usually have several <code>organizations</code> offering specific services: Firm A offers Service 1 and Service 2; Firm B also offers Service 1 but on different port and so on&hellip;</p>
-<p>Pondering about all this stuff, I came up with an idea which might be useful to some of you: Relational Database Management Systems (RDBMS). The concept should be able to:</p>
-<ul>
-<li>store ALL information in ONE place</li>
-<li>provide simple functionalities in order to ADD, DELETE, MODIFY data</li>
-<li>encrypt ALL data</li>
-</ul>
-<p>Well these are the requirements. What about real-life tools to satisfy them?</p>
-<h2 id="sqlite">SQLite</h2>
-<blockquote>
-<p>&ldquo;SQLite is a software library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine. SQLite is the most widely deployed SQL database engine in the world. The source code for SQLite is in the public domain.&rdquo; (Source: <!-- raw HTML omitted --><a href="http://www.sqlite.org">http://www.sqlite.org</a><!-- raw HTML omitted -->)</p>
-</blockquote>
-<p>What does this mean?</p>
-<ul>
-<li>We got relations! Enjoy the magic of simple SQL queries.</li>
-<li>No configuration! You don&rsquo;t have to configure any server nor the SQL client. Just create the DB and you&rsquo;re done.</li>
-<li>The data base is stored in ONE file.</li>
-<li>You can have multiple data bases within each file.</li>
-</ul>
-<p>Pretty much for a DB! The really cool thing about SQLite is the fact that there are no additional steps required in order to create and maintain the DB. I really like PostgreSQL/MySQL &amp; Co. but the whole configuration process is driving me nuts. With SQLite you just create the file, put some schema to it and you&rsquo;re done. Last but not least: It&rsquo;s fast! Although the document is outdated you could have a look at the speed comparsion <!-- raw HTML omitted -->here<!-- raw HTML omitted -->.</p>
-<h2 id="database-schema">Database schema</h2>
-<p>Now let&rsquo;s have a closer look at the interna of our DB. Let&rsquo;s start with the simplest table: the <strong>organization</strong> table.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">TABLE</span> <span style="color:#ed9d13">&#34;organization&#34;</span> (
-    <span style="color:#ed9d13">&#34;id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">PRIMARY</span> <span style="color:#6ab825;font-weight:bold">KEY</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;name&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>HowTo: Keep your passwords safe using SQLite and SQLCipher - blog.dornea.nu</title><meta content="HowTo: Keep your passwords safe using SQLite and SQLCipher - blog.dornea.nu" property="title"><meta content="HowTo: Keep your passwords safe using SQLite and SQLCipher - blog.dornea.nu" property="og:title"><meta property="og:description" content="I was recently doing some hacks and realized that there must be a way to store gained information in a secure manner. I usually encrypt sensitive information (like passwords, accounts etc.) using GPG. But that&rsquo;s quite unhandy: You always need your private key and the encrypted data is stored unencrypted on the device (unless you&rsquo;re using full disk encryption which shouldn&rsquo;t be a problem since data is stored encrypted on the device)."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2011/07/28/howto-keep-your-passwords-safe-using-sqlite-and-sqlcipher/"><meta property="article:published_time" content="2011-07-28T00:00:00+00:00"><meta property="article:modified_time" content="2011-07-28T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">HowTo: Keep your passwords safe using SQLite and SQLCipher</div><p class="silver f6 mt1 mb4 post-meta"><time>28 Jul 2011</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/crypto class="link silver">crypto</a> <a href=http://blog.dornea.nu/tags/sqlite class="link silver">sqlite</a> <a href=http://blog.dornea.nu/tags/howto class="link silver">howto</a> <a href=http://blog.dornea.nu/tags/sql class="link silver">sql</a> ]</p><div class="lh-copy post-content"><p>I was recently doing some hacks and realized that there must be a way to store gained information in a secure manner. I usually encrypt sensitive information (like passwords, accounts etc.) using GPG. But that&rsquo;s quite unhandy: You always need your private key and the encrypted data is stored unencrypted on the device (unless you&rsquo;re using full disk encryption which shouldn&rsquo;t be a problem since data is stored encrypted on the device). Like you probably also do, I have several account types: Mail, SSH, FTP, LDAP etc. Finding a good structure to store all that information could be a headache. Besides that you usually have several <code>organizations</code> offering specific services: Firm A offers Service 1 and Service 2; Firm B also offers Service 1 but on different port and so on&mldr;</p><p>Pondering about all this stuff, I came up with an idea which might be useful to some of you: Relational Database Management Systems (RDBMS). The concept should be able to:</p><ul><li>store ALL information in ONE place</li><li>provide simple functionalities in order to ADD, DELETE, MODIFY data</li><li>encrypt ALL data</li></ul><p>Well these are the requirements. What about real-life tools to satisfy them?</p><h2 id=sqlite>SQLite</h2><blockquote><p>&ldquo;SQLite is a software library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine. SQLite is the most widely deployed SQL database engine in the world. The source code for SQLite is in the public domain.&rdquo; (Source: <a href=http://www.sqlite.org>http://www.sqlite.org</a>)</p></blockquote><p>What does this mean?</p><ul><li>We got relations! Enjoy the magic of simple SQL queries.</li><li>No configuration! You don&rsquo;t have to configure any server nor the SQL client. Just create the DB and you&rsquo;re done.</li><li>The data base is stored in ONE file.</li><li>You can have multiple data bases within each file.</li></ul><p>Pretty much for a DB! The really cool thing about SQLite is the fact that there are no additional steps required in order to create and maintain the DB. I really like PostgreSQL/MySQL & Co. but the whole configuration process is driving me nuts. With SQLite you just create the file, put some schema to it and you&rsquo;re done. Last but not least: It&rsquo;s fast! Although the document is outdated you could have a look at the speed comparsion here.</p><h2 id=database-schema>Database schema</h2><p>Now let&rsquo;s have a closer look at the interna of our DB. Let&rsquo;s start with the simplest table: the <strong>organization</strong> table.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>TABLE</span> <span style=color:#ed9d13>&#34;organization&#34;</span> (
+    <span style=color:#ed9d13>&#34;id&#34;</span> <span style=color:#6ab825;font-weight:700>INTEGER</span> <span style=color:#6ab825;font-weight:700>PRIMARY</span> <span style=color:#6ab825;font-weight:700>KEY</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+    <span style=color:#ed9d13>&#34;name&#34;</span> <span style=color:#6ab825;font-weight:700>TEXT</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>
 );
-</code></pre></div><p>That should do the job since you need only the organizations name and some primary key. Usually an organization offers serveral services. So we&rsquo;ll create the 2nd table: the <strong>service</strong> table.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">TABLE</span> <span style="color:#ed9d13">&#34;service&#34;</span> (
-    <span style="color:#ed9d13">&#34;id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">PRIMARY</span> <span style="color:#6ab825;font-weight:bold">KEY</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;host&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;port&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;organization_id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
+</code></pre></div><p>That should do the job since you need only the organizations name and some primary key. Usually an organization offers serveral services. So we&rsquo;ll create the 2nd table: the <strong>service</strong> table.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>TABLE</span> <span style=color:#ed9d13>&#34;service&#34;</span> (
+    <span style=color:#ed9d13>&#34;id&#34;</span> <span style=color:#6ab825;font-weight:700>INTEGER</span> <span style=color:#6ab825;font-weight:700>PRIMARY</span> <span style=color:#6ab825;font-weight:700>KEY</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+    <span style=color:#ed9d13>&#34;host&#34;</span> <span style=color:#6ab825;font-weight:700>TEXT</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+    <span style=color:#ed9d13>&#34;port&#34;</span> <span style=color:#6ab825;font-weight:700>INTEGER</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+    <span style=color:#ed9d13>&#34;organization_id&#34;</span> <span style=color:#6ab825;font-weight:700>INTEGER</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
 
-    <span style="color:#6ab825;font-weight:bold">CONSTRAINT</span> fk_service_organization_id <span style="color:#6ab825;font-weight:bold">FOREIGN</span> <span style="color:#6ab825;font-weight:bold">KEY</span> (organization_id) <span style="color:#6ab825;font-weight:bold">REFERENCES</span> <span style="color:#447fcf">organization</span>(id)
+    <span style=color:#6ab825;font-weight:700>CONSTRAINT</span> fk_service_organization_id <span style=color:#6ab825;font-weight:700>FOREIGN</span> <span style=color:#6ab825;font-weight:700>KEY</span> (organization_id) <span style=color:#6ab825;font-weight:700>REFERENCES</span> <span style=color:#447fcf>organization</span>(id)
 );
-</code></pre></div><p>Assuming we have <code>Firm A</code> in our organization table, then its services will be stored in this way:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sqlite&gt; SELECT * FROM organization;
+</code></pre></div><p>Assuming we have <code>Firm A</code> in our organization table, then its services will be stored in this way:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>sqlite&gt; SELECT * FROM organization;
 id          name
 ----------  ----------
 1           Firm A
@@ -130,31 +27,23 @@ sqlite&gt; SELECT * FROM service;
 id          host         port        organization_id
 ----------  -----------  ----------  ---------------
 1           smtp.a.com   25          1
-</code></pre></div><p>I think you got the point. You&rsquo;ll need a PK (primary key) , a host (actually this should be called <code>url</code>), a port number and the organization ID offering the service.</p>
-<p>By now the schema was quite simple. We got the organization and its services. The <strong>account</strong> will interfere with both of them. First let&rsquo;s have a look the table:</p>
-<!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">TABLE</span> <span style="color:#ed9d13">&#34;account&#34;</span> (
-        <span style="color:#ed9d13">&#34;id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">PRIMARY</span> <span style="color:#6ab825;font-weight:bold">KEY</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;created&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;expires&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;user&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;passwd&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span>,
-        <span style="color:#ed9d13">&#34;service_id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
+</code></pre></div><p>I think you got the point. You&rsquo;ll need a PK (primary key) , a host (actually this should be called <code>url</code>), a port number and the organization ID offering the service.</p><p>By now the schema was quite simple. We got the organization and its services. The <strong>account</strong> will interfere with both of them. First let&rsquo;s have a look the table:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>TABLE</span> <span style=color:#ed9d13>&#34;account&#34;</span> (
+        <span style=color:#ed9d13>&#34;id&#34;</span> <span style=color:#6ab825;font-weight:700>INTEGER</span> <span style=color:#6ab825;font-weight:700>PRIMARY</span> <span style=color:#6ab825;font-weight:700>KEY</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+        <span style=color:#ed9d13>&#34;created&#34;</span> <span style=color:#6ab825;font-weight:700>TEXT</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+        <span style=color:#ed9d13>&#34;expires&#34;</span> <span style=color:#6ab825;font-weight:700>TEXT</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+        <span style=color:#ed9d13>&#34;user&#34;</span> <span style=color:#6ab825;font-weight:700>TEXT</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+        <span style=color:#ed9d13>&#34;passwd&#34;</span> <span style=color:#6ab825;font-weight:700>TEXT</span>,
+        <span style=color:#ed9d13>&#34;service_id&#34;</span> <span style=color:#6ab825;font-weight:700>INTEGER</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
 
-        <span style="color:#6ab825;font-weight:bold">CONSTRAINT</span> fk_account_service_id <span style="color:#6ab825;font-weight:bold">FOREIGN</span> <span style="color:#6ab825;font-weight:bold">KEY</span> (service_id) <span style="color:#6ab825;font-weight:bold">REFERENCES</span> <span style="color:#447fcf">service</span>(id)
+        <span style=color:#6ab825;font-weight:700>CONSTRAINT</span> fk_account_service_id <span style=color:#6ab825;font-weight:700>FOREIGN</span> <span style=color:#6ab825;font-weight:700>KEY</span> (service_id) <span style=color:#6ab825;font-weight:700>REFERENCES</span> <span style=color:#447fcf>service</span>(id)
 );
-</code></pre></div><p>I think the attributes are self-explanatory. Here are some sample entries:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sqlite&gt; SELECT * FROM accounts;
+</code></pre></div><p>I think the attributes are self-explanatory. Here are some sample entries:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>sqlite&gt; SELECT * FROM accounts;
 id          created     expires     user                    passwd      host         port
 ----------  ----------  ----------  ----------------------  ----------  -----------  ----------
 1           2011-07-23  2012-07-26  victor.dorneanu@blab    XXXXXX      smtp.kjs.de  25
 2           2011-07-23  2012-07-26  victor.dorneanu@bla2    XXXXXX      pop3.kjs.de  995
 3           2011-07-23  2012-07-26  victor@gmail            XXXXXX      smtp.gmail.  25
-</code></pre></div><h2 id="entity-relationship-modell">Entity-Relationship-Modell</h2>
-<p>This is for the ER-Modell freaks among you&hellip;</p>
-<p><img src="http://dl.dornea.nu/img/2011/255/er-modell.png" alt="ER model"></p>
-<p>Graphviz code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">graph ER {
+</code></pre></div><h2 id=entity-relationship-modell>Entity-Relationship-Modell</h2><p>This is for the ER-Modell freaks among you&mldr;</p><p><img src=http://dl.dornea.nu/img/2011/255/er-modell.png alt="ER model"></p><p>Graphviz code:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>graph ER {
     node [shape=box, style=filled, color=yellow]; organization; service; account;
     node [shape=ellipse, style=filled, color=green]; acc_id; created; expires; user; passwd; org_id; org_name; serv_id; host;
     port;
@@ -185,24 +74,10 @@ id          created     expires     user                    passwd      host    
 ER Modell (dornea.nu)&#34;;
     fontsize=9;
 }
-</code></pre></div><h2 id="security">Security</h2>
-<p>Ok. So we got our DB, our tables and inserted some dummy data. What about security? What if our SQLite file gets in the wrong hands? <!-- raw HTML omitted -->SQLCipher<!-- raw HTML omitted --> could help us to minimize the potential impact. What is it?</p>
-<blockquote>
-<p>&ldquo;SQLCipher is an SQLite xtension that provides transparent 256-bit AES encryption of database files. Pages are encrypted before being written to disk and are decrypted when read back. Due to the small footprint and great performance it’s ideal for protecting embedded application databases and is well suited for mobile development.&rdquo;&quot; (Source: <!-- raw HTML omitted --><a href="http://sqlcipher.net/">http://sqlcipher.net/</a><!-- raw HTML omitted -->)</p>
-</blockquote>
-<p>Advantages:</p>
-<ul>
-<li>EVERYTHING is encrypted</li>
-<li>you have a small percentage of overhead (for encryption routines): 5-15%</li>
-<li>uses OpenSSL crypto library</li>
-<li>good security (CBC mode, key derivation)</li>
-</ul>
-<p>In order to use SQLCipher you&rsquo;ll have to build the SQLite package with the enhanced features. Just follow the instructions on <!-- raw HTML omitted --><a href="http://sqlcipher.net/introduction/">http://sqlcipher.net/introduction/</a><!-- raw HTML omitted --> and use following command to configure and build the package:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">./configure --prefix=/usr/local --enable-tempstore=yes CFLAGS=&#34;-DSQLITE_HAS_CODEC&#34; LDFLAGS=&#34;-lcrypto&#34;
+</code></pre></div><h2 id=security>Security</h2><p>Ok. So we got our DB, our tables and inserted some dummy data. What about security? What if our SQLite file gets in the wrong hands? SQLCipher could help us to minimize the potential impact. What is it?</p><blockquote><p>&ldquo;SQLCipher is an SQLite xtension that provides transparent 256-bit AES encryption of database files. Pages are encrypted before being written to disk and are decrypted when read back. Due to the small footprint and great performance it’s ideal for protecting embedded application databases and is well suited for mobile development.&rdquo;" (Source: <a href=http://sqlcipher.net/>http://sqlcipher.net/</a>)</p></blockquote><p>Advantages:</p><ul><li>EVERYTHING is encrypted</li><li>you have a small percentage of overhead (for encryption routines): 5-15%</li><li>uses OpenSSL crypto library</li><li>good security (CBC mode, key derivation)</li></ul><p>In order to use SQLCipher you&rsquo;ll have to build the SQLite package with the enhanced features. Just follow the instructions on <a href=http://sqlcipher.net/introduction/>http://sqlcipher.net/introduction/</a> and use following command to configure and build the package:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>./configure --prefix=/usr/local --enable-tempstore=yes CFLAGS=&#34;-DSQLITE_HAS_CODEC&#34; LDFLAGS=&#34;-lcrypto&#34;
 make
 make install
-</code></pre></div><p>Then you should have a working binary in /usr/local/bin. I suggest you create a new encrypted DB rather than encrypt an existing one. There are several <!-- raw HTML omitted -->hints<!-- raw HTML omitted --> how to do this, but I recommend you starting with a new fresh DB. Let&rsquo;s get started:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/local/bin/sqlite3 new_db.db
+</code></pre></div><p>Then you should have a working binary in /usr/local/bin. I suggest you create a new encrypted DB rather than encrypt an existing one. There are several hints how to do this, but I recommend you starting with a new fresh DB. Let&rsquo;s get started:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ /usr/local/bin/sqlite3 new_db.db
 SQLite version 3.7.2
 Enter &#34;.help&#34; for instructions
 Enter SQL statements terminated with a &#34;;&#34;
@@ -210,8 +85,7 @@ sqlite&gt; PRAGMA key = &#39;crackme&#39;;
 sqlite&gt; PRAGMA cipher = &#39;aes-256-cfb&#39;;
 sqlite&gt; PRAGMA kdf_iter = &#39;1000&#39;;
 sqlite&gt;
-</code></pre></div><p>Now you&rsquo;re ready to create your DB schema. I&rsquo;d create some SQL file, set the DB key and afterwards create the table. Create some new file (e.g. dump.sql) and paste these line to it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">PRAGMA key = &#39;crackme&#39;;
+</code></pre></div><p>Now you&rsquo;re ready to create your DB schema. I&rsquo;d create some SQL file, set the DB key and afterwards create the table. Create some new file (e.g. dump.sql) and paste these line to it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>PRAGMA key = &#39;crackme&#39;;
 PRAGMA cipher = &#39;aes-256-cfb&#39;;
 PRAGMA kdf_iter = &#39;1000&#39;;
 BEGIN TRANSACTION;
@@ -242,16 +116,14 @@ CREATE TABLE &#34;account&#34; (
 );
 
 END TRANSACTION;
-</code></pre></div><p>Then create your encrypted DB using:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/local/bin/sqlite3 -init dump.sql encrypted.db
+</code></pre></div><p>Then create your encrypted DB using:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ /usr/local/bin/sqlite3 -init dump.sql encrypted.db
 SQLite version 3.7.2
 Enter &#34;.help&#34; for instructions
 Enter SQL statements terminated with a &#34;;&#34;
 sqlite&gt; .tables
 account       organization  service
 sqlite&gt;
-</code></pre></div><p>Voila! Is the file <code>encrypted.db</code> really encrypted? Let&rsquo;s have a look:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ file encrypted.db
+</code></pre></div><p>Voila! Is the file <code>encrypted.db</code> really encrypted? Let&rsquo;s have a look:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ file encrypted.db
 encrypted.db: data
 $ hexdump -C encrypted.db
 00000000  e4 2a cd 22 4f d4 30 a6  b7 95 9c 28 19 f5 4a 45  |.*.&#34;O.0....(..JE|
@@ -315,105 +187,9 @@ $ hexdump -C encrypted.db
 000003a0  29 48 f4 4a 5c 1a d5 92  d3 1a 9d 9d d2 d9 8e 77  |)H.J..........w|
 000003b0  b5 63 0d 59 c7 8d d7 f5  f6 42 7c 45 cb dd 05 05  |.c.Y.....B|E....|
 ...
-</code></pre></div><p>As you can see, there is a lot of &hellip; garbage inside the file! No SQL commands, nothing!</p>
-<h2 id="end">End</h2>
-<p>I hope you&rsquo;ve enjoyed this one as much as I did. Don&rsquo;t hesitate to write comments and keep it clean.</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2011/06/28/howto-convert-mts-to-mkv-using-tsmuxer-and-ffmpeg/">prev post</a>
-  <a href="http://blog.dornea.nu/2011/11/07/howto-redmine-lighttpd-with-debian/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>As you can see, there is a lot of &mldr; garbage inside the file! No SQL commands, nothing!</p><h2 id=end>End</h2><p>I hope you&rsquo;ve enjoyed this one as much as I did. Don&rsquo;t hesitate to write comments and keep it clean.</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2011/06/28/howto-convert-mts-to-mkv-using-tsmuxer-and-ffmpeg/>prev post</a>
+<a href=http://blog.dornea.nu/2011/11/07/howto-redmine-lighttpd-with-debian/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

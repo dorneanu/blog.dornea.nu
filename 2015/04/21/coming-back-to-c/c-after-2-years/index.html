@@ -1,301 +1,106 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>Coming back to C/C&#43;&#43; after 2 years - blog.dornea.nu</title>
-  <meta content='Coming back to C/C&#43;&#43; after 2 years - blog.dornea.nu' property='title' />
-  <meta content='Coming back to C/C&#43;&#43; after 2 years - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="After years of python hacking and all kind of projects (like netgrafio or smalisca) I wanted to do more low-level stuff and refresh my C/C&#43;&#43; skills. I&rsquo;ll try to describe how it feels like coming back to C/C&#43;&#43; after 2 years of coding abstinence.
-It&rsquo;s low.. Very low Having started a new project I didn&rsquo;t feel like I&rsquo;ve forgotten everything. It just felt strange to declare functions and use header files." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2015/04/21/coming-back-to-c/c-after-2-years/" />
-
-
-<meta property="article:published_time" content="2015-04-21T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2015-04-21T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">Coming back to C/C&#43;&#43; after 2 years</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>21 Apr 2015</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/c' class="link silver">c</a> <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>After years of <a href="http://blog.dornea.nu/tag/python/">python</a> hacking and all kind of projects (like
-<a href="https://github.com/dorneanu/netgrafio">netgrafio</a> or <a href="https://github.com/dorneanu/smalisca">smalisca</a>) I wanted to do more low-level stuff and refresh my C/C++ skills. I&rsquo;ll try to describe how it feels like coming back to C/C++ after 2 years of coding abstinence.</p>
-<h3 id="its-low-very-low">It&rsquo;s low.. Very low</h3>
-<p>Having started a new project I didn&rsquo;t feel like I&rsquo;ve forgotten everything. It just felt strange to
-<strong>declare</strong> functions and use <strong>header</strong> files. After initial difficulties I was able to run my code and compile it using <code>-Wall</code> without any warnings. Perfect.</p>
-<p>The project itself is about implementing SSL/TLS in C since I&rsquo;ve never done that before. The executable
-will take an <em>UR</em>L and optionally a <em>proxy</em> as arguments:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ./main -u http://blog.dornea.nu/ -p http://username:password@localhost:8080
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Coming back to C/C++ after 2 years - blog.dornea.nu</title><meta content="Coming back to C/C++ after 2 years - blog.dornea.nu" property="title"><meta content="Coming back to C/C++ after 2 years - blog.dornea.nu" property="og:title"><meta property="og:description" content="After years of python hacking and all kind of projects (like netgrafio or smalisca) I wanted to do more low-level stuff and refresh my C/C++ skills. I&rsquo;ll try to describe how it feels like coming back to C/C++ after 2 years of coding abstinence.
+It&rsquo;s low.. Very low Having started a new project I didn&rsquo;t feel like I&rsquo;ve forgotten everything. It just felt strange to declare functions and use header files."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2015/04/21/coming-back-to-c/c-after-2-years/"><meta property="article:published_time" content="2015-04-21T00:00:00+00:00"><meta property="article:modified_time" content="2015-04-21T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Coming back to C/C++ after 2 years</div><p class="silver f6 mt1 mb4 post-meta"><time>21 Apr 2015</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/c class="link silver">c</a> <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> ]</p><div class="lh-copy post-content"><p>After years of <a href=http://blog.dornea.nu/tag/python/>python</a> hacking and all kind of projects (like
+<a href=https://github.com/dorneanu/netgrafio>netgrafio</a> or <a href=https://github.com/dorneanu/smalisca>smalisca</a>) I wanted to do more low-level stuff and refresh my C/C++ skills. I&rsquo;ll try to describe how it feels like coming back to C/C++ after 2 years of coding abstinence.</p><h3 id=its-low-very-low>It&rsquo;s low.. Very low</h3><p>Having started a new project I didn&rsquo;t feel like I&rsquo;ve forgotten everything. It just felt strange to
+<strong>declare</strong> functions and use <strong>header</strong> files. After initial difficulties I was able to run my code and compile it using <code>-Wall</code> without any warnings. Perfect.</p><p>The project itself is about implementing SSL/TLS in C since I&rsquo;ve never done that before. The executable
+will take an <em>UR</em>L and optionally a <em>proxy</em> as arguments:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ./main -u http://blog.dornea.nu/ -p http://username:password@localhost:8080
 </code></pre></div><p>The very first problem I&rsquo;ve encountered was <strong>parsing</strong>. While in Python you usually have pretty good
 string operations you can apply on your string, in C you have to take of everything. In my case
-I had to parse the proxy argument for its specific parts:</p>
-<ul>
-<li>schema</li>
-<li>username</li>
-<li>password</li>
-<li>domain name</li>
-<li>port</li>
-</ul>
-<p>And if that wasn&rsquo;t enought, I also have to take care about <strong>error handling</strong> in case the proxy URL is malformed.  Speaking of <em>error handling</em>: It was indeed tempted to think of some <code>try .. catch</code> construct. Naaah! I remember &hellip; The typical construct you should use:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">if</span> (not sth) {
-    <span style="color:#999;font-style:italic">// this is very bad
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">return</span> &lt;whatever&gt;
-} <span style="color:#6ab825;font-weight:bold">else</span> {
-    <span style="color:#999;font-style:italic">// This is was ok
-</span><span style="color:#999;font-style:italic"></span>}
-</code></pre></div><p>Ok. What about <strong>logging</strong>? I remember having implemented some <strong>macros</strong> in the past and finally found this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#cd2828;font-weight:bold">#define log_err(M, ...) fprintf(stderr, &#34;ERROR: \t(%s:%d: errno: %s) &#34; M &#34;\n&#34;,\     
-</span><span style="color:#cd2828;font-weight:bold"></span>                       __FILE__, __LINE__, clean_errno(), <span style="color:#a61717;background-color:#e3d2d2">##</span>__VA_ARGS__) 
+I had to parse the proxy argument for its specific parts:</p><ul><li>schema</li><li>username</li><li>password</li><li>domain name</li><li>port</li></ul><p>And if that wasn&rsquo;t enought, I also have to take care about <strong>error handling</strong> in case the proxy URL is malformed. Speaking of <em>error handling</em>: It was indeed tempted to think of some <code>try .. catch</code> construct. Naaah! I remember &mldr; The typical construct you should use:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#6ab825;font-weight:700>if</span> (not sth) {
+    <span style=color:#999;font-style:italic>// this is very bad
+</span><span style=color:#999;font-style:italic></span>    <span style=color:#6ab825;font-weight:700>return</span> &lt;whatever&gt;
+} <span style=color:#6ab825;font-weight:700>else</span> {
+    <span style=color:#999;font-style:italic>// This is was ok
+</span><span style=color:#999;font-style:italic></span>}
+</code></pre></div><p>Ok. What about <strong>logging</strong>? I remember having implemented some <strong>macros</strong> in the past and finally found this:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#cd2828;font-weight:700>#define log_err(M, ...) fprintf(stderr, &#34;ERROR: \t(%s:%d: errno: %s) &#34; M &#34;\n&#34;,\     
+</span><span style=color:#cd2828;font-weight:700></span>                       __FILE__, __LINE__, clean_errno(), <span style=color:#a61717;background-color:#e3d2d2>##</span>__VA_ARGS__) 
 
-<span style="color:#cd2828;font-weight:bold">#define log_warn(M, ...) fprintf(stderr, &#34;WARN: \t(%s:%d: errno: %s) &#34; M &#34;\n&#34;,\
-</span><span style="color:#cd2828;font-weight:bold">                        __FILE__, __LINE__, clean_errno(), ##__VA_ARGS__) 
-</span></code></pre></div><p>Great! At that point if was able to pass arguments to my executable and do some string parsing.</p>
-<h3 id="pointers--and-more-pointers">Pointers .. and more pointers</h3>
-<p>I do know some pointers arithmetics. But coming back from <strong>objects</strong> to <strong>pointers</strong> was a big
+<span style=color:#cd2828;font-weight:700>#define log_warn(M, ...) fprintf(stderr, &#34;WARN: \t(%s:%d: errno: %s) &#34; M &#34;\n&#34;,\
+</span><span style=color:#cd2828;font-weight:700>                        __FILE__, __LINE__, clean_errno(), ##__VA_ARGS__) 
+</span></code></pre></div><p>Great! At that point if was able to pass arguments to my executable and do some string parsing.</p><h3 id=pointers--and-more-pointers>Pointers .. and more pointers</h3><p>I do know some pointers arithmetics. But coming back from <strong>objects</strong> to <strong>pointers</strong> was a big
 mindset change. Almost everything is a pointer to some data structure, to some memory region etc.
 Using pointers the right way has always been a challenge. Let&rsquo;s first have a look at some struct
-I&rsquo;m using to collect information and store global accessible data:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">typedef</span> <span style="color:#6ab825;font-weight:bold">struct</span> globalargs {
-    <span style="color:#6ab825;font-weight:bold">char</span> *prog;
-    <span style="color:#6ab825;font-weight:bold">char</span> *url;
-    <span style="color:#6ab825;font-weight:bold">char</span> *proxy_uri;
-    <span style="color:#6ab825;font-weight:bold">int</span> port;
-    <span style="color:#6ab825;font-weight:bold">int</span> verbose;
-    <span style="color:#6ab825;font-weight:bold">int</span> debug;
+I&rsquo;m using to collect information and store global accessible data:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#6ab825;font-weight:700>typedef</span> <span style=color:#6ab825;font-weight:700>struct</span> globalargs {
+    <span style=color:#6ab825;font-weight:700>char</span> *prog;
+    <span style=color:#6ab825;font-weight:700>char</span> *url;
+    <span style=color:#6ab825;font-weight:700>char</span> *proxy_uri;
+    <span style=color:#6ab825;font-weight:700>int</span> port;
+    <span style=color:#6ab825;font-weight:700>int</span> verbose;
+    <span style=color:#6ab825;font-weight:700>int</span> debug;
 
-    <span style="color:#999;font-style:italic">/* Proxy settings */</span>
-    <span style="color:#6ab825;font-weight:bold">char</span> *proxy_username;
-    <span style="color:#6ab825;font-weight:bold">char</span> *proxy_password;
-    <span style="color:#6ab825;font-weight:bold">char</span> *proxy_host;
-    <span style="color:#6ab825;font-weight:bold">int</span>  proxy_port;
+    <span style=color:#999;font-style:italic>/* Proxy settings */</span>
+    <span style=color:#6ab825;font-weight:700>char</span> *proxy_username;
+    <span style=color:#6ab825;font-weight:700>char</span> *proxy_password;
+    <span style=color:#6ab825;font-weight:700>char</span> *proxy_host;
+    <span style=color:#6ab825;font-weight:700>int</span>  proxy_port;
 
 } globalargs;
 </code></pre></div><p>So we&rsquo;ve got pointers everywhere. I use this struct to collect the CLI arguments using <code>getopt</code>. Besides that
 I&rsquo;m using <code>globalargs</code> to store information which should be available in all &ldquo;modules&rdquo; (I don&rsquo;t have any yet but
-just for the explanation &hellip;). But let me explain this using some example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
-</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
-</span><span style="color:#cd2828;font-weight:bold"></span>
-<span style="color:#6ab825;font-weight:bold">typedef</span> <span style="color:#6ab825;font-weight:bold">struct</span> myStruct {
-    <span style="color:#6ab825;font-weight:bold">char</span> *username;
-    <span style="color:#6ab825;font-weight:bold">char</span> *password;
+just for the explanation &mldr;). But let me explain this using some example:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdio.h&gt;</span><span style=color:#cd2828;font-weight:700>
+</span><span style=color:#cd2828;font-weight:700>#include</span> <span style=color:#cd2828;font-weight:700>&lt;stdlib.h&gt;</span><span style=color:#cd2828;font-weight:700>
+</span><span style=color:#cd2828;font-weight:700></span>
+<span style=color:#6ab825;font-weight:700>typedef</span> <span style=color:#6ab825;font-weight:700>struct</span> myStruct {
+    <span style=color:#6ab825;font-weight:700>char</span> *username;
+    <span style=color:#6ab825;font-weight:700>char</span> *password;
 } myStruct;
 
-<span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">change_username1</span> (<span style="color:#6ab825;font-weight:bold">char</span> *username) {
-    <span style="color:#6ab825;font-weight:bold">char</span> *tmp_username = <span style="color:#ed9d13">&#34;username1&#34;</span>;
+<span style=color:#6ab825;font-weight:700>void</span> <span style=color:#447fcf>change_username1</span> (<span style=color:#6ab825;font-weight:700>char</span> *username) {
+    <span style=color:#6ab825;font-weight:700>char</span> *tmp_username = <span style=color:#ed9d13>&#34;username1&#34;</span>;
     username = tmp_username;
 }
 
-<span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">change_username2</span> (<span style="color:#6ab825;font-weight:bold">char</span> **username) {
-    <span style="color:#6ab825;font-weight:bold">char</span> *tmp_username = <span style="color:#ed9d13">&#34;username2&#34;</span>;
+<span style=color:#6ab825;font-weight:700>void</span> <span style=color:#447fcf>change_username2</span> (<span style=color:#6ab825;font-weight:700>char</span> **username) {
+    <span style=color:#6ab825;font-weight:700>char</span> *tmp_username = <span style=color:#ed9d13>&#34;username2&#34;</span>;
     *username = tmp_username;
 }
 
-<span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">main</span> (<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv) {
+<span style=color:#6ab825;font-weight:700>int</span> <span style=color:#447fcf>main</span> (<span style=color:#6ab825;font-weight:700>int</span> argc, <span style=color:#6ab825;font-weight:700>char</span> **argv) {
     myStruct *ms;
-    <span style="color:#6ab825;font-weight:bold">char</span> *a = <span style="color:#ed9d13">&#34;username0&#34;</span>;
+    <span style=color:#6ab825;font-weight:700>char</span> *a = <span style=color:#ed9d13>&#34;username0&#34;</span>;
 
-    <span style="color:#6ab825;font-weight:bold">if</span> (!(ms = malloc(<span style="color:#6ab825;font-weight:bold">sizeof</span>(myStruct)))) {
-        printf(<span style="color:#ed9d13">&#34;Failed allocating memory!&#34;</span>);
-        <span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
+    <span style=color:#6ab825;font-weight:700>if</span> (!(ms = malloc(<span style=color:#6ab825;font-weight:700>sizeof</span>(myStruct)))) {
+        printf(<span style=color:#ed9d13>&#34;Failed allocating memory!&#34;</span>);
+        <span style=color:#6ab825;font-weight:700>return</span> -<span style=color:#3677a9>1</span>;
     }
 
     ms-&gt;username = a;
-    printf(<span style="color:#ed9d13">&#34;Username: %s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, ms-&gt;username);
+    printf(<span style=color:#ed9d13>&#34;Username: %s</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, ms-&gt;username);
 
-    <span style="color:#999;font-style:italic">// First change
-</span><span style="color:#999;font-style:italic"></span>    change_username1(ms-&gt;username);
-    printf(<span style="color:#ed9d13">&#34;Username: %s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, ms-&gt;username);
+    <span style=color:#999;font-style:italic>// First change
+</span><span style=color:#999;font-style:italic></span>    change_username1(ms-&gt;username);
+    printf(<span style=color:#ed9d13>&#34;Username: %s</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, ms-&gt;username);
 
-    <span style="color:#999;font-style:italic">// 2nd change
-</span><span style="color:#999;font-style:italic"></span>    change_username2(&amp;ms-&gt;username);
-    printf(<span style="color:#ed9d13">&#34;Username: %s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, ms-&gt;username);
+    <span style=color:#999;font-style:italic>// 2nd change
+</span><span style=color:#999;font-style:italic></span>    change_username2(&amp;ms-&gt;username);
+    printf(<span style=color:#ed9d13>&#34;Username: %s</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, ms-&gt;username);
 
-    <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">0</span>;
+    <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#3677a9>0</span>;
 }
-</code></pre></div><p>When compiled and executed this produces following output:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gcc -Wall -o n n.c &amp;&amp; ./n
+</code></pre></div><p>When compiled and executed this produces following output:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ gcc -Wall -o n n.c &amp;&amp; ./n
 Username: username0
 Username: username0
 Username: username2
 </code></pre></div><p>As you might have noticed <code>change_usernam1</code> doesn&rsquo;t really change the <code>username</code> in the <code>myStruct</code> structure.
 Using <strong>pointers to pointers</strong> I was able to make my desired change. What did I learn from this particular case?
-I should definitely improve my pointer arithmetics :)</p>
-<h3 id="memory-management">Memory management</h3>
-<p>For almost every data structure memory has to be allocated. While this in OOP (object oriented programming) is usually done
+I should definitely improve my pointer arithmetics :)</p><h3 id=memory-management>Memory management</h3><p>For almost every data structure memory has to be allocated. While this in OOP (object oriented programming) is usually done
 by just creating a new instance of a new object, in C everything has to be done &ldquo;manually&rdquo;. In our example allocating memory
-for <code>myStruct</code> should be easy and straight forward:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">...
-    <span style="color:#6ab825;font-weight:bold">if</span> (!(ms = malloc(<span style="color:#6ab825;font-weight:bold">sizeof</span>(myStruct)))) {
-        printf(<span style="color:#ed9d13">&#34;Failed allocating memory!&#34;</span>);
-        <span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
+for <code>myStruct</code> should be easy and straight forward:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c>...
+    <span style=color:#6ab825;font-weight:700>if</span> (!(ms = malloc(<span style=color:#6ab825;font-weight:700>sizeof</span>(myStruct)))) {
+        printf(<span style=color:#ed9d13>&#34;Failed allocating memory!&#34;</span>);
+        <span style=color:#6ab825;font-weight:700>return</span> -<span style=color:#3677a9>1</span>;
     }
 ...
-</code></pre></div><p>And don&rsquo;t forget to <code>free</code> your memory! That&rsquo;s it for now. Now happy (C) coding!</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2015/03/18/usd-ag-hacker-challenge-2015-solutions/">prev post</a>
-  <a href="http://blog.dornea.nu/2015/04/30/gethostbyname-vs.-getaddrinfo/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>And don&rsquo;t forget to <code>free</code> your memory! That&rsquo;s it for now. Now happy (C) coding!</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2015/03/18/usd-ag-hacker-challenge-2015-solutions/>prev post</a>
+<a href=http://blog.dornea.nu/2015/04/30/gethostbyname-vs.-getaddrinfo/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

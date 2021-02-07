@@ -1,95 +1,12 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>24h Android sniffing using tcpdump - IPython Notebook Version - blog.dornea.nu</title>
-  <meta content='24h Android sniffing using tcpdump - IPython Notebook Version - blog.dornea.nu' property='title' />
-  <meta content='24h Android sniffing using tcpdump - IPython Notebook Version - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="Motivation I&rsquo;ve started this little project since I was mainly interested in the data my smartphone is sending all the time without my knowledge. I have a bunch of apps installed on my phone and I have absolutely no ideea which (kind of) data is beeing transfered to the Internet all day long. I thought I&rsquo;d be a great ideea to monitor/sniff my data interface (3G, Edge etc. NOT Wifi) for 24h during my normal daily phone usage." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2014/01/23/24h-android-sniffing-using-tcpdump-ipython-notebook-version/" />
-
-
-<meta property="article:published_time" content="2014-01-23T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2014-01-23T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">24h Android sniffing using tcpdump - IPython Notebook Version</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>23 Jan 2014</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='http://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/iptables' class="link silver">iptables</a> <a href='http://blog.dornea.nu/tags/sqlite' class="link silver">sqlite</a> <a href='http://blog.dornea.nu/tags/google' class="link silver">google</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><h1 id="motivation">Motivation</h1>
-<p>I&rsquo;ve started this little project since I was mainly interested in the data my smartphone is sending all the time without my knowledge. I have a bunch of apps installed on my phone and I have absolutely no ideea which (kind of) data is beeing transfered to the Internet all day long. I thought I&rsquo;d be a great ideea to monitor/sniff my data interface (3G, Edge etc. NOT Wifi) for 24h during my normal daily phone usage.</p>
-<h1 id="sniff-environment">Sniff environment</h1>
-<p>I&rsquo;ve used my Samsung Note 1 (GT N7000) as sniffing device. At the moment I use a customized ROM (slimbean) with root access. In order to be to use sniffing tools on my phone I had to work in a chrooted environment like &ldquo;Debian on Android&rdquo;. This way I was given access to phones data interfaces and I was ready to go.</p>
-<pre><code>u0_a99@android:/ $ deb
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>24h Android sniffing using tcpdump - IPython Notebook Version - blog.dornea.nu</title><meta content="24h Android sniffing using tcpdump - IPython Notebook Version - blog.dornea.nu" property="title"><meta content="24h Android sniffing using tcpdump - IPython Notebook Version - blog.dornea.nu" property="og:title"><meta property="og:description" content="Motivation I&rsquo;ve started this little project since I was mainly interested in the data my smartphone is sending all the time without my knowledge. I have a bunch of apps installed on my phone and I have absolutely no ideea which (kind of) data is beeing transfered to the Internet all day long. I thought I&rsquo;d be a great ideea to monitor/sniff my data interface (3G, Edge etc. NOT Wifi) for 24h during my normal daily phone usage."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/01/23/24h-android-sniffing-using-tcpdump-ipython-notebook-version/"><meta property="article:published_time" content="2014-01-23T00:00:00+00:00"><meta property="article:modified_time" content="2014-01-23T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">24h Android sniffing using tcpdump - IPython Notebook Version</div><p class="silver f6 mt1 mb4 post-meta"><time>23 Jan 2014</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/android class="link silver">android</a> <a href=http://blog.dornea.nu/tags/hacking class="link silver">hacking</a> <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> <a href=http://blog.dornea.nu/tags/ipython class="link silver">ipython</a> <a href=http://blog.dornea.nu/tags/iptables class="link silver">iptables</a> <a href=http://blog.dornea.nu/tags/sqlite class="link silver">sqlite</a> <a href=http://blog.dornea.nu/tags/google class="link silver">google</a> ]</p><div class="lh-copy post-content"><h1 id=motivation>Motivation</h1><p>I&rsquo;ve started this little project since I was mainly interested in the data my smartphone is sending all the time without my knowledge. I have a bunch of apps installed on my phone and I have absolutely no ideea which (kind of) data is beeing transfered to the Internet all day long. I thought I&rsquo;d be a great ideea to monitor/sniff my data interface (3G, Edge etc. NOT Wifi) for 24h during my normal daily phone usage.</p><h1 id=sniff-environment>Sniff environment</h1><p>I&rsquo;ve used my Samsung Note 1 (GT N7000) as sniffing device. At the moment I use a customized ROM (slimbean) with root access. In order to be to use sniffing tools on my phone I had to work in a chrooted environment like &ldquo;Debian on Android&rdquo;. This way I was given access to phones data interfaces and I was ready to go.</p><pre><code>u0_a99@android:/ $ deb
 e2fsck 1.41.11 (14-Mar-2010)
 /storage/sdcard1/debian-kit/debian.img: recovering journal
 /storage/sdcard1/debian-kit/debian.img: clean, 55210/170752 files, 426942/512000 blocks
@@ -101,10 +18,8 @@ rmnet0    Link encap:Point-to-Point Protocol
       TX packets:30841 errors:0 dropped:0 overruns:0 carrier:0
       collisions:0 txqueuelen:1000 
       RX bytes:34233580 (32.6 MiB)  TX bytes:5906191 (5.6 MiB)
-</code></pre>
-<p>Initially I wanted to use tshark for the sniffing part but it didn&rsquo;t work quite well. So I came back to old school tcpdump.
-Since my data interface was going done all the time I had to make sure that tcpdump was restarted as soon as the data interface was online again. I used the following script:</p>
-<pre><code>root@debian-on-android:~# cat monitor.sh 
+</code></pre><p>Initially I wanted to use tshark for the sniffing part but it didn&rsquo;t work quite well. So I came back to old school tcpdump.
+Since my data interface was going done all the time I had to make sure that tcpdump was restarted as soon as the data interface was online again. I used the following script:</p><pre><code>root@debian-on-android:~# cat monitor.sh 
 #!/bin/bash
 
 DATE=`date +&quot;%Y-%m-%d-%s&quot;`
@@ -113,28 +28,22 @@ while true;
 do 
     tcpdump -i rmnet0 -np -w output-`date +&quot;%Y-%m-%d-%s&quot;`.pcap; sleep 10 
 done
-</code></pre>
-<p>I&rsquo;ve fired up my script and after 24 hours I had these outputs:</p>
-<pre><code>root@debian-on-android:~# ls -l output-2014-01-1*
+</code></pre><p>I&rsquo;ve fired up my script and after 24 hours I had these outputs:</p><pre><code>root@debian-on-android:~# ls -l output-2014-01-1*
 -rw-r--r--. 1 root root    24907 Jan 18 12:53 output-2014-01-18-1390049466.pcap
 -rw-r--r--. 1 root root     2881 Jan 18 12:55 output-2014-01-18-1390049736.pcap
 -rw-r--r--. 1 root root 14963016 Jan 18 14:02 output-2014-01-18-1390049777.pcap
 -rw-r--r--. 1 root root 54695690 Jan 19 14:03 output-2014-01-18-1390053867.pcap
 -rw-r--r--. 1 root root 12492822 Jan 19 16:27 output-2014-01-19-1390140216.pcap
 root@debian-on-android:~# 
-</code></pre>
-<h1 id="merge-pcap-files">Merge pcap files</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mergecap -F libpcap -a output-* -w merged.pcap
-</code></pre></div><h1 id="convert-pcap-to-sqlite3-db">Convert pcap to SQLite3 DB</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
+</code></pre><h1 id=merge-pcap-files>Merge pcap files</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ mergecap -F libpcap -a output-* -w merged.pcap
+</code></pre></div><h1 id=convert-pcap-to-sqlite3-db>Convert pcap to SQLite3 DB</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
 
 # Tshark generated files
 DNS_QUERIES  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/dns_queries.csv&#34;
 CONNECTIONS  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/connections.csv&#34;
 HTTP_TRAFFIC = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/http_traffic.csv&#34;
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h1 id="extract-valuable-information-from-pcap-file">Extract valuable information from pcap file</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h1 id=extract-valuable-information-from-pcap-file>Extract valuable information from pcap file</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
               -T fields  -e frame.number -e frame.time -e dns.qry.name -e dns.resp.addr &gt; $DNS_QUERIES
     
 connections = !tshark -r $PCAP_FILE -E header=y -E separator=\; -T fields -e frame.number \
@@ -143,12 +52,12 @@ connections = !tshark -r $PCAP_FILE -E header=y -E separator=\; -T fields -e fra
 http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fields \
               -e frame.number -e frame.time -e ip.dst -e http.request.method -e http.request.uri -e http.user_agent \
               -e http.response.code  -e http.response.phrase -e http.content_length -e data -e text &gt; $HTTP_TRAFFIC
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import sqlite3 as sql
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>import sqlite3 as sql
 con = sql.connect(&#34;:memory:&#34;)
 cur = con.cursor()
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import binascii
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>import binascii
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -199,19 +108,16 @@ dns_df.head(5)
 #unique_dns = dns_df.groupby(&#39;DNS Query&#39;)[&#39;DNS Response&#39;].nunique().reset_index()
 #unique_dns.columns = [&#39;DNS&#39;, &#39;# DNS Queries&#39;]
 #unique_dns.sort([&#39;# DNS Queries&#39;], ascending=False).head(10)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h1 id="top-dns-queries">Top DNS queries</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p1 = pdsql.read_frame(&#34;&#34;&#34;
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h1 id=top-dns-queries>Top DNS queries</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p1 = pdsql.read_frame(&#34;&#34;&#34;
     SELECT COUNT(dns_response) AS &#39;# DNS Responses&#39;, dns_query AS &#39;DNS to lookup&#39; 
     FROM dns GROUP BY dns_query 
     ORDER by 1 DESC
 &#34;&#34;&#34;, con)
 #print(p1.head(100).to_string())
 p1.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p_testing = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(c.dst),c.dst, c.dstport, c.frame_protocols FROM connection AS c 
     JOIN dns AS d ON c.dst=d.dns_response
     WHERE c.dst == &#34;173.194.70.95&#34; AND c.dst NOT LIKE &#34;10.%&#34;
@@ -226,10 +132,8 @@ p_testing = pdsql.read_frame(&#34;&#34;&#34;
     ORDER by 1 DESC
 &#34;&#34;&#34;, con)
 p_testing.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h1 id="top-connections">Top connections</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p2 = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h1 id=top-connections>Top connections</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p2 = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(c.dst), d.dns_query, c.dstport, c.frame_protocols FROM connection AS c 
     JOIN dns AS d ON c.dst=d.dns_response
     WHERE c.frame_protocols LIKE &#34;sll:ip:tcp:%&#34;
@@ -237,9 +141,8 @@ p_testing.head(100)
     ORDER by 1 DESC
 &#34;&#34;&#34;, con)
 p2.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p_testing = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT  frame_number, frame_protocols
     FROM connection
     WHERE frame_protocols LIKE &#39;sll:ip:tcp%xml%&#39;
@@ -248,20 +151,16 @@ p2.head(100)
 &#34;&#34;&#34;, con)
 #print(p1.head(100).to_string())
 p_testing.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h1 id="used-protocols">Used protocols</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_proto = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h1 id=used-protocols>Used protocols</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p_proto = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(frame_protocols), frame_protocols
     FROM connection
     GROUP by frame_protocols
     ORDER BY 1 DESC
 &#34;&#34;&#34;, con)
 p_proto.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h1 id="used-destination-ports">Used destination ports</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_ports = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h1 id=used-destination-ports>Used destination ports</h1><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p_ports = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(c.dstport), c.dstport
     FROM connection AS c
     JOIN dns AS d ON c.dst = d.dns_response
@@ -270,11 +169,8 @@ p_proto.head(100)
 &#34;&#34;&#34;, con)
 #print(p1.head(100).to_string())
 p_ports.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h1 id="http-connections">HTTP Connections</h1>
-<h2 id="http-methods">HTTP Methods</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_http_methods = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h1 id=http-connections>HTTP Connections</h1><h2 id=http-methods>HTTP Methods</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p_http_methods = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(request_method), request_method
     FROM http
     GROUP by request_method
@@ -282,9 +178,7 @@ p_ports.head(100)
 &#34;&#34;&#34;, con)
 #print(p1.head(100).to_string())
 p_http_methods.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<h2 id="user-agents">User Agents</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_user_agents = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><h2 id=user-agents>User Agents</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p_user_agents = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(user_agent), user_agent
     FROM http
     GROUP by user_agent
@@ -292,10 +186,8 @@ p_http_methods.head(100)
 &#34;&#34;&#34;, con)
 #print(p1.head(100).to_string())
 p_user_agents.head(100)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h2 id="get-requests">GET Requests</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h2 id=get-requests>GET Requests</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p3 = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT h.frame_number, h.ip_dst, d.dns_query, h.request_method, h.request_uri, h.user_agent FROM http AS  h
     JOIN dns AS d ON h.ip_dst = d.dns_response
     WHERE lower(h.request_method) == &#39;get&#39; AND
@@ -320,115 +212,19 @@ p_user_agents.head(100)
     ORDER by d.dns_query
 &#34;&#34;&#34;, con)
 p3.head(500)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><h2 id="post-requests">POST Requests</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div><h2 id=post-requests>POST Requests</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>p3 = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT h.frame_number, d.dns_query, h.request_uri, h.data, h.text FROM http AS  h
     JOIN dns AS d ON h.ip_dst = d.dns_response
     WHERE lower(h.request_method) == &#39;post&#39;
     ORDER by h.ip_dst    
 &#34;&#34;&#34;, con)
 p3.head(500)
-</code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div></div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2014/01/17/links-of-the-week-#23/">prev post</a>
-  <a href="http://blog.dornea.nu/2014/01/23/24h-android-sniffing-using-tcpdump/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>
+</code></pre></div></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/01/17/links-of-the-week-#23/>prev post</a>
+<a href=http://blog.dornea.nu/2014/01/23/24h-android-sniffing-using-tcpdump/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

@@ -1,191 +1,29 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>No DNAT to localhost - blog.dornea.nu</title>
-  <meta content='No DNAT to localhost - blog.dornea.nu' property='title' />
-  <meta content='No DNAT to localhost - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="Doing a simple port forwarding is actually a simple task:
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>No DNAT to localhost - blog.dornea.nu</title><meta content="No DNAT to localhost - blog.dornea.nu" property="title"><meta content="No DNAT to localhost - blog.dornea.nu" property="og:title"><meta property="og:description" content="Doing a simple port forwarding is actually a simple task:
 $ iptables -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080 This would redirect all traffic from 80 to 8080. But if you have some firewall activated, you&rsquo;ll have to allow both ports:
-$ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW Otherwise the port forwarding won&rsquo;t work. But this is not the use case you want to achieve." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2016/01/20/no-dnat-to-localhost/" />
-
-
-<meta property="article:published_time" content="2016-01-20T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2016-01-20T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">No DNAT to localhost</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>20 Jan 2016</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/note' class="link silver">note</a> <a href='http://blog.dornea.nu/tags/iptables' class="link silver">iptables</a> <a href='http://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>Doing a simple <strong>port forwarding</strong> is actually a simple task:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ iptables -A PREROUTING -p tcp --dport <span style="color:#3677a9">80</span> -j REDIRECT --to-ports <span style="color:#3677a9">8080</span>
-</code></pre></div><p>This would redirect all traffic from <code>80</code> to <code>8080</code>. But if you have some <strong>firewall</strong> activated, you&rsquo;ll have to <strong>allow</strong> both ports:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ iptables -A INPUT -p tcp --dport <span style="color:#3677a9">80</span> -j ALLOW
-$ iptables -A INPUT -p tcp --dport <span style="color:#3677a9">8080</span> -j ALLOW
+$ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW Otherwise the port forwarding won&rsquo;t work. But this is not the use case you want to achieve."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/01/20/no-dnat-to-localhost/"><meta property="article:published_time" content="2016-01-20T00:00:00+00:00"><meta property="article:modified_time" content="2016-01-20T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">No DNAT to localhost</div><p class="silver f6 mt1 mb4 post-meta"><time>20 Jan 2016</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/note class="link silver">note</a> <a href=http://blog.dornea.nu/tags/iptables class="link silver">iptables</a> <a href=http://blog.dornea.nu/tags/linux class="link silver">linux</a> <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> ]</p><div class="lh-copy post-content"><p>Doing a simple <strong>port forwarding</strong> is actually a simple task:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.bash data-lang=.bash>$ iptables -A PREROUTING -p tcp --dport <span style=color:#3677a9>80</span> -j REDIRECT --to-ports <span style=color:#3677a9>8080</span>
+</code></pre></div><p>This would redirect all traffic from <code>80</code> to <code>8080</code>. But if you have some <strong>firewall</strong> activated, you&rsquo;ll have to <strong>allow</strong> both ports:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.bash data-lang=.bash>$ iptables -A INPUT -p tcp --dport <span style=color:#3677a9>80</span> -j ALLOW
+$ iptables -A INPUT -p tcp --dport <span style=color:#3677a9>8080</span> -j ALLOW
 </code></pre></div><p>Otherwise the port forwarding won&rsquo;t work. But this is not the use case you want to achieve. In most cases you want to <strong>redirect</strong>
 traffic from one port (let&rsquo;s say <code>80</code>) from an external interface to another IP address (let&rsquo;s say <code>10.0.0.1:8080</code>). Using <strong>DNAT</strong> this
-actually pretty easy to implement:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ iptables -t nat -A PREROUTING -p tcp --dport <span style="color:#3677a9">80</span> -j DNAT --to-destination 10.0.0.1:8080
+actually pretty easy to implement:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.bash data-lang=.bash>$ iptables -t nat -A PREROUTING -p tcp --dport <span style=color:#3677a9>80</span> -j DNAT --to-destination 10.0.0.1:8080
 </code></pre></div><p>For a full example have a look at <a href="http://stackoverflow.com/questions/14212807/iptables-forward-request-on-different-interfaces-and-port?answertab=votes#tab-top">this stackoverflow</a>.
-However in my case I wanted to do DNAT to the <strong>loopback</strong> interface which didn&rsquo;t work (<a href="http://lists.netfilter.org/pipermail/netfilter/2004-August/055074.html">this answer</a> confirms this). Using <strong>REDIRECT</strong> is also a pretty bad idea since I had to allow access to both ports (which is kind of stupid).</p>
-<p>So&hellip; How to solve the problem? Using <a href="https://en.wikipedia.org/wiki/Inetdhttps://en.wikipedia.org/wiki/Inetd">inetd</a>. I&rsquo;ve installed <a href="http://www.boutell.com/rinetd/">rinetd</a> and configured the port forwarding:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ apt-get install rinetd
+However in my case I wanted to do DNAT to the <strong>loopback</strong> interface which didn&rsquo;t work (<a href=http://lists.netfilter.org/pipermail/netfilter/2004-August/055074.html>this answer</a> confirms this). Using <strong>REDIRECT</strong> is also a pretty bad idea since I had to allow access to both ports (which is kind of stupid).</p><p>So&mldr; How to solve the problem? Using <a href=https://en.wikipedia.org/wiki/Inetdhttps://en.wikipedia.org/wiki/Inetd>inetd</a>. I&rsquo;ve installed <a href=http://www.boutell.com/rinetd/>rinetd</a> and configured the port forwarding:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.bash data-lang=.bash>$ apt-get install rinetd
 $ cat /etc/rinetd.conf
 [...]
-<span style="color:#999;font-style:italic"># bindadress    bindport  connectaddress  connectport</span>
-&lt;external ip&gt;   <span style="color:#3677a9">80</span>          127.0.0.1       <span style="color:#3677a9">8080</span>
+<span style=color:#999;font-style:italic># bindadress    bindport  connectaddress  connectport</span>
+&lt;external ip&gt;   <span style=color:#3677a9>80</span>          127.0.0.1       <span style=color:#3677a9>8080</span>
 [...]
 $ service rinetd restart
-</code></pre></div><p>I hope this would prevent others from spending their whole day on doing DNAT to localhost.</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/">prev post</a>
-  <a href="http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>I hope this would prevent others from spending their whole day on doing DNAT to localhost.</p></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/>prev post</a>
+<a href=http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>

@@ -1,122 +1,26 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>HowTo: Full-Encrypt data using Gentoo,Luks and initramfs - blog.dornea.nu</title>
-  <meta content='HowTo: Full-Encrypt data using Gentoo,Luks and initramfs - blog.dornea.nu' property='title' />
-  <meta content='HowTo: Full-Encrypt data using Gentoo,Luks and initramfs - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="Since last post many things have changed. No more NetBSD on my laptop (this has to do with several things, I&rsquo;ll write about in a future post): I had to fall in love with Gentoo! I&rsquo;ll try to give you some quick overview related to this posts title: Encryption under Gentoo using Luks.
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>HowTo: Full-Encrypt data using Gentoo,Luks and initramfs - blog.dornea.nu</title><meta content="HowTo: Full-Encrypt data using Gentoo,Luks and initramfs - blog.dornea.nu" property="title"><meta content="HowTo: Full-Encrypt data using Gentoo,Luks and initramfs - blog.dornea.nu" property="og:title"><meta property="og:description" content="Since last post many things have changed. No more NetBSD on my laptop (this has to do with several things, I&rsquo;ll write about in a future post): I had to fall in love with Gentoo! I&rsquo;ll try to give you some quick overview related to this posts title: Encryption under Gentoo using Luks.
 There are serveral (good!) tutorials out there. Among these I&rsquo;ve used:
-&lt;td&gt; There you&#39;ll get a lot of information related to the topic." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2011/03/07/howto-full-encrypt-data-using-gentooluks-and-initramfs/" />
-
-
-<meta property="article:published_time" content="2011-03-07T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2011-03-07T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">HowTo: Full-Encrypt data using Gentoo,Luks and initramfs</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>07 Mar 2011</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/crypto' class="link silver">crypto</a> <a href='http://blog.dornea.nu/tags/gentoo' class="link silver">gentoo</a> <a href='http://blog.dornea.nu/tags/luks' class="link silver">luks</a> <a href='http://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>Since last post many things have changed. No more NetBSD on my laptop (this has to do with several things, I&rsquo;ll write about in a future post): I had to fall in love with Gentoo! I&rsquo;ll try to give you some quick overview related to this posts title: Encryption under Gentoo using Luks.</p>
-<p>There are serveral (good!) tutorials out there. Among these I&rsquo;ve used:</p>
-<!-- raw HTML omitted -->
-<pre><code>&lt;td&gt;
+<td> There you'll get a lot of information related to the topic."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2011/03/07/howto-full-encrypt-data-using-gentooluks-and-initramfs/"><meta property="article:published_time" content="2011-03-07T00:00:00+00:00"><meta property="article:modified_time" content="2011-03-07T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">HowTo: Full-Encrypt data using Gentoo,Luks and initramfs</div><p class="silver f6 mt1 mb4 post-meta"><time>07 Mar 2011</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/howto class="link silver">howto</a> <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/crypto class="link silver">crypto</a> <a href=http://blog.dornea.nu/tags/gentoo class="link silver">gentoo</a> <a href=http://blog.dornea.nu/tags/luks class="link silver">luks</a> <a href=http://blog.dornea.nu/tags/admin class="link silver">admin</a> ]</p><div class="lh-copy post-content"><p>Since last post many things have changed. No more NetBSD on my laptop (this has to do with several things, I&rsquo;ll write about in a future post): I had to fall in love with Gentoo! I&rsquo;ll try to give you some quick overview related to this posts title: Encryption under Gentoo using Luks.</p><p>There are serveral (good!) tutorials out there. Among these I&rsquo;ve used:</p><pre><code>&lt;td&gt;
   There you'll get a lot of information related to the topic. I've basically followed the same steps as described in the HowTo. However I didn't get any functionable system at all. Especially the initramfs part seems to be buggy. Therefore: Follow the steps ín the article &lt;strong&gt;except&lt;/strong&gt; the initramfs part!
 &lt;/td&gt;
-</code></pre>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<pre><code>&lt;td&gt;
+</code></pre><pre><code>&lt;td&gt;
   Really good explanations. If you want some technical background to this whole thing, this is the place to be.
 &lt;/td&gt;
-</code></pre>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<pre><code>&lt;td&gt;
+</code></pre><pre><code>&lt;td&gt;
   Another nice howto I've found.
 &lt;/td&gt;
-</code></pre>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<pre><code>&lt;td&gt;
+</code></pre><pre><code>&lt;td&gt;
   As already mentioned above, you'll get into troubles if you don't have a working initramfs. Follow this link to get detailed information how to create your own - as I did! - initramfs and how to adapt it to your needs.
 &lt;/td&gt;
-</code></pre>
-<!-- raw HTML omitted -->
-<p>There is no need for additional explanations! Just follow the instructions in the tutorial and you&rsquo;re done.</p>
-<h2 id="my-initramfs">My initramfs</h2>
-<p>Here is my initramfs structure I&rsquo;m using:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ tree
+</code></pre><p>There is no need for additional explanations! Just follow the instructions in the tutorial and you&rsquo;re done.</p><h2 id=my-initramfs>My initramfs</h2><p>Here is my initramfs structure I&rsquo;m using:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ tree
 .
 â”œâ”€â”€ bin
 â”‚   â”œâ”€â”€ busybox
@@ -142,8 +46,7 @@ type="image/x-icon"/>
     â””â”€â”€ bin
 
 15 directories, 7 files
-</code></pre></div><p>Make sure all <strong>binaries</strong> are <strong>statically</strong> linked. And this is my <strong>init script</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat init 
+</code></pre></div><p>Make sure all <strong>binaries</strong> are <strong>statically</strong> linked. And this is my <strong>init script</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ cat init 
 #!/bin/busybox sh
 
 # Some useful functions
@@ -187,106 +90,11 @@ umount -l /sys
 
 # Start new system
 exec switch_root /new-root /sbin/init || rescue_shell
-</code></pre></div><p>Don&rsquo;t forget to copy your <strong>keys</strong> to */root/keys/ *and rename them properly. Afterwards all you have to do is to create the initramfs file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cd /usr/src/initramfs
+</code></pre></div><p>Don&rsquo;t forget to copy your <strong>keys</strong> to */root/keys/ *and rename them properly. Afterwards all you have to do is to create the initramfs file:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ cd /usr/src/initramfs
 $ find . -print0 | cpio --null -ov --format=newc | gzip -9 &gt; /boot/initramfs.cpio.gz
-</code></pre></div><p>That&rsquo;s all!</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2011/02/26/think-before-you-type-part-2/">prev post</a>
-  <a href="http://blog.dornea.nu/2011/03/19/my-own-cheap-nas-#8211-the-openwrt-way/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>That&rsquo;s all!</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2011/02/26/think-before-you-type-part-2/>prev post</a>
+<a href=http://blog.dornea.nu/2011/03/19/my-own-cheap-nas-#8211-the-openwrt-way/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

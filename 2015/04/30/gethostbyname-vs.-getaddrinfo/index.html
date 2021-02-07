@@ -1,206 +1,43 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>gethostbyname vs. getaddrinfo - blog.dornea.nu</title>
-  <meta content='gethostbyname vs. getaddrinfo - blog.dornea.nu' property='title' />
-  <meta content='gethostbyname vs. getaddrinfo - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="After started coding in C again I&rsquo;ve had a look at some basic network stuff like: socket(), connect() etc. In order to resolve domain names, one was used to use gethostbyname(). I&rsquo;ve used this function in all my previous C projects but this one seems to be out-dated as the main page states:
-The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are obsolete. Applications should use getaddrinfo(3), getnameinfo(3), and gai_strerror(3) instead.  The really bad thing about gethostbyname is the fact that it doesn&rsquo;t support IPv6." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2015/04/30/gethostbyname-vs.-getaddrinfo/" />
-
-
-<meta property="article:published_time" content="2015-04-30T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2015-04-30T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">gethostbyname vs. getaddrinfo</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>30 Apr 2015</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/c' class="link silver">c</a> <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>After started coding in C <a href="http://blog.dornea.nu/2015/04/21/coming-back-to-cc-after-2-years">again</a> I&rsquo;ve had a look
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>gethostbyname vs. getaddrinfo - blog.dornea.nu</title><meta content="gethostbyname vs. getaddrinfo - blog.dornea.nu" property="title"><meta content="gethostbyname vs. getaddrinfo - blog.dornea.nu" property="og:title"><meta property="og:description" content="After started coding in C again I&rsquo;ve had a look at some basic network stuff like: socket(), connect() etc. In order to resolve domain names, one was used to use gethostbyname(). I&rsquo;ve used this function in all my previous C projects but this one seems to be out-dated as the main page states:
+The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are obsolete. Applications should use getaddrinfo(3), getnameinfo(3), and gai_strerror(3) instead.  The really bad thing about gethostbyname is the fact that it doesn&rsquo;t support IPv6."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2015/04/30/gethostbyname-vs.-getaddrinfo/"><meta property="article:published_time" content="2015-04-30T00:00:00+00:00"><meta property="article:modified_time" content="2015-04-30T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">gethostbyname vs. getaddrinfo</div><p class="silver f6 mt1 mb4 post-meta"><time>30 Apr 2015</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/c class="link silver">c</a> <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> ]</p><div class="lh-copy post-content"><p>After started coding in C <a href=http://blog.dornea.nu/2015/04/21/coming-back-to-cc-after-2-years>again</a> I&rsquo;ve had a look
 at some basic network stuff like: <strong>socket()</strong>, <strong>connect()</strong> etc. In order to resolve domain names, one was used to
 use <strong>gethostbyname()</strong>. I&rsquo;ve used this function in all my previous C projects but this one seems to be out-dated as
-the main page states:</p>
-<pre><code>The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are obsolete.  
+the main page states:</p><pre><code>The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are obsolete.  
 Applications should use getaddrinfo(3), getnameinfo(3), and gai_strerror(3) instead.
-</code></pre>
-<p>The really bad thing about <strong>gethostbyname</strong> is the fact that it doesn&rsquo;t support IPv6. Besides that you would then load
-the results into a <em>struct sockaddr_in</em>  and use it for your futher calls. A better option is <strong>getaddrinfo()</strong> which
-supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. Perfect!</p>
-<p>So what do you need? First you&rsquo;ll need some variables:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">int</span> status;
-<span style="color:#6ab825;font-weight:bold">char</span> ip_addr[INET6_ADDRSTRLEN];
-<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in *remote;
-<span style="color:#6ab825;font-weight:bold">struct</span> addrinfo hints, *res, *p;
-</code></pre></div><p>And then the call:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">if</span> ((status=getaddrinfo(server_hostname, port, &amp;hints, &amp;res)) != <span style="color:#3677a9">0</span>) {
-    log_err(<span style="color:#ed9d13">&#34;getaddrinfo failed: %s&#34;</span>, gai_strerror(status));
-    <span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
+</code></pre><p>The really bad thing about <strong>gethostbyname</strong> is the fact that it doesn&rsquo;t support IPv6. Besides that you would then load
+the results into a <em>struct sockaddr_in</em> and use it for your futher calls. A better option is <strong>getaddrinfo()</strong> which
+supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. Perfect!</p><p>So what do you need? First you&rsquo;ll need some variables:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#6ab825;font-weight:700>int</span> status;
+<span style=color:#6ab825;font-weight:700>char</span> ip_addr[INET6_ADDRSTRLEN];
+<span style=color:#6ab825;font-weight:700>struct</span> sockaddr_in *remote;
+<span style=color:#6ab825;font-weight:700>struct</span> addrinfo hints, *res, *p;
+</code></pre></div><p>And then the call:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#6ab825;font-weight:700>if</span> ((status=getaddrinfo(server_hostname, port, &amp;hints, &amp;res)) != <span style=color:#3677a9>0</span>) {
+    log_err(<span style=color:#ed9d13>&#34;getaddrinfo failed: %s&#34;</span>, gai_strerror(status));
+    <span style=color:#6ab825;font-weight:700>return</span> -<span style=color:#3677a9>1</span>;
 }
 
-</code></pre></div><p><code>res</code> is a linked list which has to be looped to fetch the results:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">while</span> (p = res; p != <span style="color:#24909d">NULL</span>; p = p-&gt;ai_next) {
-    <span style="color:#6ab825;font-weight:bold">void</span> *addr;
-    remote = (<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in *)p-&gt;ai_addr;
+</code></pre></div><p><code>res</code> is a linked list which has to be looped to fetch the results:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#6ab825;font-weight:700>while</span> (p = res; p != <span style=color:#24909d>NULL</span>; p = p-&gt;ai_next) {
+    <span style=color:#6ab825;font-weight:700>void</span> *addr;
+    remote = (<span style=color:#6ab825;font-weight:700>struct</span> sockaddr_in *)p-&gt;ai_addr;
     addr = &amp;(remote-&gt;sin_addr);
 
-    <span style="color:#999;font-style:italic">// Convert IP to string
-</span><span style="color:#999;font-style:italic"></span>    inet_ntop(p-&gt;ai_family, addr, ip_addr, <span style="color:#6ab825;font-weight:bold">sizeof</span>(ip_addr));
+    <span style=color:#999;font-style:italic>// Convert IP to string
+</span><span style=color:#999;font-style:italic></span>    inet_ntop(p-&gt;ai_family, addr, ip_addr, <span style=color:#6ab825;font-weight:700>sizeof</span>(ip_addr));
 
-    printf(<span style="color:#ed9d13">&#34;%s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, ip_addr);
+    printf(<span style=color:#ed9d13>&#34;%s</span><span style=color:#ed9d13>\n</span><span style=color:#ed9d13>&#34;</span>, ip_addr);
 }
-</code></pre></div><p>Now you could create your socket, connect to the host, read data and so on:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">if</span> ((socketfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol)) &lt; <span style="color:#3677a9">0</span>) {
-    log_err(<span style="color:#ed9d13">&#34;Failed creating socket!&#34;</span>);
-    <span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
-</code></pre></div></div>
-</main>
- 
-
-
-
-
-
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2015/04/21/coming-back-to-c/c-after-2-years/">prev post</a>
-  <a href="http://blog.dornea.nu/2015/05/06/adding-concurrency-to-smalisca/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>Now you could create your socket, connect to the host, read data and so on:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#6ab825;font-weight:700>if</span> ((socketfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol)) &lt; <span style=color:#3677a9>0</span>) {
+    log_err(<span style=color:#ed9d13>&#34;Failed creating socket!&#34;</span>);
+    <span style=color:#6ab825;font-weight:700>return</span> -<span style=color:#3677a9>1</span>;
+</code></pre></div></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2015/04/21/coming-back-to-c/c-after-2-years/>prev post</a>
+<a href=http://blog.dornea.nu/2015/05/06/adding-concurrency-to-smalisca/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>

@@ -1,122 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>Gentoo, systemd, consolekit, udev and some failed system update - blog.dornea.nu</title>
-  <meta content='Gentoo, systemd, consolekit, udev and some failed system update - blog.dornea.nu' property='title' />
-  <meta content='Gentoo, systemd, consolekit, udev and some failed system update - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="OK, first some explanations:
- systemd is a modern sysvinit &amp; RC replacement for Linux systems. It is supported in Gentoo as an alternate init system. (Source: http://wiki.gentoo.org/wiki/Systemd) ConsoleKit is a framework for defining and tracking users, login sessions, and seats. (Source:http://wiki.gentoo.org/wiki/ConsoleKit) udev is the device manager for the Linux kernel. Primarily, it manages device nodes in /devand handles all user space actions when adding/removing devices. Also have a look at eudeva gentoo fork of udev." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2013/08/10/gentoo-systemd-consolekit-udev-and-some-failed-system-update/" />
-
-
-<meta property="article:published_time" content="2013-08-10T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2013-08-10T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">Gentoo, systemd, consolekit, udev and some failed system update</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>10 Aug 2013</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/misc' class="link silver">misc</a> <a href='http://blog.dornea.nu/tags/wtf' class="link silver">wtf</a> <a href='http://blog.dornea.nu/tags/gentoo' class="link silver">gentoo</a> <a href='http://blog.dornea.nu/tags/systemd' class="link silver">systemd</a> <a href='http://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='http://blog.dornea.nu/tags/update' class="link silver">update</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>OK, first some explanations:</p>
-<ul>
-<li><strong>systemd</strong> is a modern sysvinit &amp; RC replacement for Linux systems. It is supported in Gentoo as an alternate init system. (Source: <a href="http://wiki.gentoo.org/wiki/Systemd">http://wiki.gentoo.org/wiki/Systemd)</a></li>
-<li><strong>ConsoleKit</strong> is a framework for defining and tracking users, login sessions, and seats. (Source:<a href="http://wiki.gentoo.org/wiki/ConsoleKit"> http://wiki.gentoo.org/wiki/ConsoleKit)</a></li>
-<li><strong>udev</strong> is the device manager for the Linux kernel. Primarily, it manages device nodes in <!-- raw HTML omitted -->/dev<!-- raw HTML omitted --> and handles all user space actions when adding/removing devices. Also have a look at <!-- raw HTML omitted -->eudev<!-- raw HTML omitted --> a gentoo fork of udev. (Source: <a href="http://wiki.gentoo.org/wiki/Udev">http://wiki.gentoo.org/wiki/Udev)</a></li>
-</ul>
-<p>At first look they don&rsquo;t seem to have sth in common. These are some other facts:</p>
-<ul>
-<li><em>systemd</em> and <em>udev</em> don&rsquo;t like each other</li>
-<li><em>systemd</em> conflicts with <em>consolekit</em></li>
-<li><em>consolekit</em> is not longer maintained</li>
-<li><em>systemd</em> *is* <em>udev</em> (as systemd somehow includes udev)</li>
-<li><em>polkit</em> depends on <em>consolekit</em> and they will both pull eath other</li>
-<li><em>consolekit</em> has been replaced by logind which is being provided by <em>systemd</em></li>
-<li>&hellip;and top of that <em>OpenRC</em> is somehow also involved in this whole thing.</li>
-</ul>
-<p>As you may have noticed: THIS IS A WHOLE BUNCH OF BULLSHIT GOING ON! I just wanted to update my Gentoo system and got stucked in some stupid conflicts between the mentioned packets. It took about one day to solve it (after reading lots of forum threads of people complaining about the same thing). Check:</p>
-<ul>
-<li><a href="http://forums.gentoo.org/viewtopic-t-920340-start-0.html" title="Force Disable ConsoleKit?">Force Disable Consolekit</a></li>
-<li><a href="http://forums.gentoo.org/viewtopic-t-917584.html">Want to get rid of *kits. What should I be careful about?</a></li>
-<li><a href="http://forums.gentoo.org/viewtopic-p-7367906.html">SOLVED gnome3 systemd udev and many other things</a></li>
-</ul>
-<p>Be sure you read them. They&rsquo;ve helped me a lot to understand this whole topic. So after all this is how I was able to solve it:</p>
-<ul>
-<li>Remove all USE flags related to consolekit:</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># euse -D consolekit policykit upower udisks
-</code></pre></div><ul>
-<li>Make sure you have a <code>clean</code> /etc/make.conf. Here is mine:</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># These settings were set by the catalyst build script that automatically
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Gentoo, systemd, consolekit, udev and some failed system update - blog.dornea.nu</title><meta content="Gentoo, systemd, consolekit, udev and some failed system update - blog.dornea.nu" property="title"><meta content="Gentoo, systemd, consolekit, udev and some failed system update - blog.dornea.nu" property="og:title"><meta property="og:description" content="OK, first some explanations:
+ systemd is a modern sysvinit & RC replacement for Linux systems. It is supported in Gentoo as an alternate init system. (Source: http://wiki.gentoo.org/wiki/Systemd) ConsoleKit is a framework for defining and tracking users, login sessions, and seats. (Source:http://wiki.gentoo.org/wiki/ConsoleKit) udev is the device manager for the Linux kernel. Primarily, it manages device nodes in /devand handles all user space actions when adding/removing devices. Also have a look at eudeva gentoo fork of udev."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2013/08/10/gentoo-systemd-consolekit-udev-and-some-failed-system-update/"><meta property="article:published_time" content="2013-08-10T00:00:00+00:00"><meta property="article:modified_time" content="2013-08-10T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Gentoo, systemd, consolekit, udev and some failed system update</div><p class="silver f6 mt1 mb4 post-meta"><time>10 Aug 2013</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/misc class="link silver">misc</a> <a href=http://blog.dornea.nu/tags/wtf class="link silver">wtf</a> <a href=http://blog.dornea.nu/tags/gentoo class="link silver">gentoo</a> <a href=http://blog.dornea.nu/tags/systemd class="link silver">systemd</a> <a href=http://blog.dornea.nu/tags/linux class="link silver">linux</a> <a href=http://blog.dornea.nu/tags/update class="link silver">update</a> ]</p><div class="lh-copy post-content"><p>OK, first some explanations:</p><ul><li><strong>systemd</strong> is a modern sysvinit & RC replacement for Linux systems. It is supported in Gentoo as an alternate init system. (Source: <a href=http://wiki.gentoo.org/wiki/Systemd>http://wiki.gentoo.org/wiki/Systemd)</a></li><li><strong>ConsoleKit</strong> is a framework for defining and tracking users, login sessions, and seats. (Source:<a href=http://wiki.gentoo.org/wiki/ConsoleKit> http://wiki.gentoo.org/wiki/ConsoleKit)</a></li><li><strong>udev</strong> is the device manager for the Linux kernel. Primarily, it manages device nodes in /dev and handles all user space actions when adding/removing devices. Also have a look at eudev a gentoo fork of udev. (Source: <a href=http://wiki.gentoo.org/wiki/Udev>http://wiki.gentoo.org/wiki/Udev)</a></li></ul><p>At first look they don&rsquo;t seem to have sth in common. These are some other facts:</p><ul><li><em>systemd</em> and <em>udev</em> don&rsquo;t like each other</li><li><em>systemd</em> conflicts with <em>consolekit</em></li><li><em>consolekit</em> is not longer maintained</li><li><em>systemd</em> *is* <em>udev</em> (as systemd somehow includes udev)</li><li><em>polkit</em> depends on <em>consolekit</em> and they will both pull eath other</li><li><em>consolekit</em> has been replaced by logind which is being provided by <em>systemd</em></li><li>&mldr;and top of that <em>OpenRC</em> is somehow also involved in this whole thing.</li></ul><p>As you may have noticed: THIS IS A WHOLE BUNCH OF BULLSHIT GOING ON! I just wanted to update my Gentoo system and got stucked in some stupid conflicts between the mentioned packets. It took about one day to solve it (after reading lots of forum threads of people complaining about the same thing). Check:</p><ul><li><a href=http://forums.gentoo.org/viewtopic-t-920340-start-0.html title="Force Disable ConsoleKit?">Force Disable Consolekit</a></li><li><a href=http://forums.gentoo.org/viewtopic-t-917584.html>Want to get rid of *kits. What should I be careful about?</a></li><li><a href=http://forums.gentoo.org/viewtopic-p-7367906.html>SOLVED gnome3 systemd udev and many other things</a></li></ul><p>Be sure you read them. They&rsquo;ve helped me a lot to understand this whole topic. So after all this is how I was able to solve it:</p><ul><li>Remove all USE flags related to consolekit:</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># euse -D consolekit policykit upower udisks
+</code></pre></div><ul><li>Make sure you have a <code>clean</code> /etc/make.conf. Here is mine:</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># These settings were set by the catalyst build script that automatically
 # built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more
 # detailed example.
@@ -145,10 +37,7 @@ FEATURES=&#34;-userfetch&#34;
 #   euse - bug #474574
 #   euses and ufed - bug #478318
 PORTDIR=&#34;/usr/portage&#34;
-</code></pre></div><ul>
-<li>Make sure you have selected the right profile</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># eselect profile list
+</code></pre></div><ul><li>Make sure you have selected the right profile</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># eselect profile list
 Available profile symlink targets:
   [1]   default/linux/amd64/13.0
   [2]   default/linux/amd64/13.0/selinux
@@ -164,109 +53,19 @@ Available profile symlink targets:
   [12]  hardened/linux/amd64/no-multilib/selinux
   [13]  hardened/linux/amd64/x32
   [14]  hardened/linux/uclibc/amd64
-</code></pre></div><ul>
-<li>Adjust profile settings</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># cd /etc/portage/profile
+</code></pre></div><ul><li>Adjust profile settings</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># cd /etc/portage/profile
 # cat use.force
 -consolekit
 # cat use.mask
 consolekit
 -systemd
-</code></pre></div><ul>
-<li>Remove udev, consolekit and polkit</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -aC udev consolekit polkit
-</code></pre></div><ul>
-<li>Now you should be able to install systemd</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -pv systemd
-</code></pre></div><ul>
-<li>Now update your system</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge --keep-going --jobs 4 --update --newuse --ask --deep --with-bdeps=y @world
-</code></pre></div><p>Additional steps to clean up your system:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -a --depclean
+</code></pre></div><ul><li>Remove udev, consolekit and polkit</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># emerge -aC udev consolekit polkit
+</code></pre></div><ul><li>Now you should be able to install systemd</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># emerge -pv systemd
+</code></pre></div><ul><li>Now update your system</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># emerge --keep-going --jobs 4 --update --newuse --ask --deep --with-bdeps=y @world
+</code></pre></div><p>Additional steps to clean up your system:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># emerge -a --depclean
 # revdep-rebuild -- -q --keep-going
-</code></pre></div></div>
-</main>
- 
-
-
-
-
-
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2013/08/09/links-of-the-week-#8/">prev post</a>
-  <a href="http://blog.dornea.nu/2013/08/23/links-of-the-week-#10/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2013/08/09/links-of-the-week-#8/>prev post</a>
+<a href=http://blog.dornea.nu/2013/08/23/links-of-the-week-#10/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>

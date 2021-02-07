@@ -1,210 +1,26 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>HowTo: SSH-Tunnel over CorkScrew using Tor - blog.dornea.nu</title>
-  <meta content='HowTo: SSH-Tunnel over CorkScrew using Tor - blog.dornea.nu' property='title' />
-  <meta content='HowTo: SSH-Tunnel over CorkScrew using Tor - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="Nowadays it seems like we&rsquo;re loosing our privacy and are being taped by video cameras all over. The same applies to Internet surveillance: By daily traffic analysis you can find out who is talking to whom over a public network. This traffic allows others to track your click behaviour and interests. So if any mailicious guy has access to your network traffic (@work, @home …) he will try to find more information about you, like e." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2009/08/05/howto-ssh-tunnel-over-corkscrew-using-tor/" />
-
-
-<meta property="article:published_time" content="2009-08-05T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2009-08-05T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">HowTo: SSH-Tunnel over CorkScrew using Tor</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>05 Aug 2009</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/ssh' class="link silver">ssh</a> <a href='http://blog.dornea.nu/tags/tor' class="link silver">tor</a> <a href='http://blog.dornea.nu/tags/tools' class="link silver">tools</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>Nowadays it seems like we&rsquo;re loosing our privacy and are being taped by video cameras all over. The same applies to Internet surveillance: By daily traffic analysis you can find out who is talking to whom over a public network. This traffic allows others to track your click behaviour and interests. So if any mailicious guy has access to your network traffic (@work, @home …) he will try to find more information about you, like e.g. the sites you visit, the server(s) you own… The other way around: You don&rsquo;t want anybody else (host provider etc.) to know from which IP&rsquo;s you&rsquo;ve connected to your server! Proxies are very useful and cover up your traces. This <strong>paranoid</strong> way of thinking might have several reasons&hellip; You just might want to keep your identity secret, right? Privacy at its best!? Well here is an approach how to do that.</p>
-<h2 id="a-ssh-">a) SSH &hellip;</h2>
-<p>Supposing you have installed SSH, you might have a look at <code>~/.ssh/config</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Host *
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>HowTo: SSH-Tunnel over CorkScrew using Tor - blog.dornea.nu</title><meta content="HowTo: SSH-Tunnel over CorkScrew using Tor - blog.dornea.nu" property="title"><meta content="HowTo: SSH-Tunnel over CorkScrew using Tor - blog.dornea.nu" property="og:title"><meta property="og:description" content="Nowadays it seems like we&rsquo;re loosing our privacy and are being taped by video cameras all over. The same applies to Internet surveillance: By daily traffic analysis you can find out who is talking to whom over a public network. This traffic allows others to track your click behaviour and interests. So if any mailicious guy has access to your network traffic (@work, @home …) he will try to find more information about you, like e."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2009/08/05/howto-ssh-tunnel-over-corkscrew-using-tor/"><meta property="article:published_time" content="2009-08-05T00:00:00+00:00"><meta property="article:modified_time" content="2009-08-05T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">HowTo: SSH-Tunnel over CorkScrew using Tor</div><p class="silver f6 mt1 mb4 post-meta"><time>05 Aug 2009</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/hacking class="link silver">hacking</a> <a href=http://blog.dornea.nu/tags/howto class="link silver">howto</a> <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/ssh class="link silver">ssh</a> <a href=http://blog.dornea.nu/tags/tor class="link silver">tor</a> <a href=http://blog.dornea.nu/tags/tools class="link silver">tools</a> ]</p><div class="lh-copy post-content"><p>Nowadays it seems like we&rsquo;re loosing our privacy and are being taped by video cameras all over. The same applies to Internet surveillance: By daily traffic analysis you can find out who is talking to whom over a public network. This traffic allows others to track your click behaviour and interests. So if any mailicious guy has access to your network traffic (@work, @home …) he will try to find more information about you, like e.g. the sites you visit, the server(s) you own… The other way around: You don&rsquo;t want anybody else (host provider etc.) to know from which IP&rsquo;s you&rsquo;ve connected to your server! Proxies are very useful and cover up your traces. This <strong>paranoid</strong> way of thinking might have several reasons&mldr; You just might want to keep your identity secret, right? Privacy at its best!? Well here is an approach how to do that.</p><h2 id=a-ssh->a) SSH &mldr;</h2><p>Supposing you have installed SSH, you might have a look at <code>~/.ssh/config</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>Host *
 HashKnownHosts yes
 StrictHostKeyChecking no
 Host [your host]
 User [your user]
 Port [hosts port]
 ...
-</code></pre></div><p>Since the SSH client itself is not able to make connections over proxies, a 3rd party tool is required. Of course you could use the <code>-D</code> flag to create a SOCKS proxy. If so, all localhost connections using that proxy will be made first through the host you just connected by SSH. Indeed, you might use SOCKS 4/5 proxies but this is far behind the scope of this paper. I&rsquo;ll focus now only on HTTP/HTTPS proxies.</p>
-<h2 id="b-ssh-over-corkscrew-">b) SSH over CorkScrew &hellip;</h2>
-<p>Corkscrew enables you to run SSH connections over HTTP/HTTPS proxies. You can find it <a href="http://www.agroman.net/corkscrew/">here</a></p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">corkscrew 2.0 (agroman@agroman.net)
+</code></pre></div><p>Since the SSH client itself is not able to make connections over proxies, a 3rd party tool is required. Of course you could use the <code>-D</code> flag to create a SOCKS proxy. If so, all localhost connections using that proxy will be made first through the host you just connected by SSH. Indeed, you might use SOCKS 4/5 proxies but this is far behind the scope of this paper. I&rsquo;ll focus now only on HTTP/HTTPS proxies.</p><h2 id=b-ssh-over-corkscrew->b) SSH over CorkScrew &mldr;</h2><p>Corkscrew enables you to run SSH connections over HTTP/HTTPS proxies. You can find it <a href=http://www.agroman.net/corkscrew/>here</a></p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>corkscrew 2.0 (agroman@agroman.net)
 usage: corkscrew &amp;lt; proxyhost &amp;gt; &amp;lt; proxyport &amp;gt; &amp;lt; desthost &amp;gt; &amp;lt; destport &amp;gt; [authfile]
-</code></pre></div><p>At this point you can add following line to your SSH config file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ProxyCommand [path/to/corkscrew] [proxy host] [proxy port] %h %p
-</code></pre></div><p>The &ldquo;%h&rdquo; (host) and &ldquo;%p&rdquo; (port) options will automatically be replaced by SSH with the actual destination host and port. There is no magic behind that line. It just tells the SSH client to make the connection using an external application, in our case CorkScrew. Afterwards you should be able to connect to your host by running:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ssh [your host]
-</code></pre></div><p>If no error messages arise, then you successfully connected to your host using an external HTTP/HTTPS proxy!</p>
-<h2 id="c-ssh-over-corkscrew-using-tor">c) SSH over CorkScrew using Tor!</h2>
-<p>This paper wouldn&rsquo;t have been complete, if I didn&rsquo;t mention the <a href="http://www.torproject.org/">Tor</a> + <a href="http://www.privoxy.org/">Privoxy</a> suite. If you need help compilling/installing them, just grab some help on Google. If you succeeded in configuring Tor and Privoxy, then you can run them on your local system. Tor should be running on port <strong>9050</strong>, Privoxy on <strong>8118</strong> (check out the configuration files). If everything went well, you should now have a web proxy running on port <strong>8118</strong>. You can use it within Firefox, wget, curl, links, lynx etc. Let&rsquo;s go back to our SSH tunnel. After making sure Tor and Privoxy are running you should add this line to your SSH config file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ProxyCommand [path/to/corkscrew] localhost 8118 %h %p
-</code></pre></div><p>That&rsquo;s all! I hope you enjoyed this one. Cya next time and enjoy your privacy!</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2009/07/31/icmpknock-icmp-port-knocking-server/">prev post</a>
-  <a href="http://blog.dornea.nu/2009/08/12/fu-here-i-come/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>At this point you can add following line to your SSH config file:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>ProxyCommand [path/to/corkscrew] [proxy host] [proxy port] %h %p
+</code></pre></div><p>The &ldquo;%h&rdquo; (host) and &ldquo;%p&rdquo; (port) options will automatically be replaced by SSH with the actual destination host and port. There is no magic behind that line. It just tells the SSH client to make the connection using an external application, in our case CorkScrew. Afterwards you should be able to connect to your host by running:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ssh [your host]
+</code></pre></div><p>If no error messages arise, then you successfully connected to your host using an external HTTP/HTTPS proxy!</p><h2 id=c-ssh-over-corkscrew-using-tor>c) SSH over CorkScrew using Tor!</h2><p>This paper wouldn&rsquo;t have been complete, if I didn&rsquo;t mention the <a href=http://www.torproject.org/>Tor</a> + <a href=http://www.privoxy.org/>Privoxy</a> suite. If you need help compilling/installing them, just grab some help on Google. If you succeeded in configuring Tor and Privoxy, then you can run them on your local system. Tor should be running on port <strong>9050</strong>, Privoxy on <strong>8118</strong> (check out the configuration files). If everything went well, you should now have a web proxy running on port <strong>8118</strong>. You can use it within Firefox, wget, curl, links, lynx etc. Let&rsquo;s go back to our SSH tunnel. After making sure Tor and Privoxy are running you should add this line to your SSH config file:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>ProxyCommand [path/to/corkscrew] localhost 8118 %h %p
+</code></pre></div><p>That&rsquo;s all! I hope you enjoyed this one. Cya next time and enjoy your privacy!</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2009/07/31/icmpknock-icmp-port-knocking-server/>prev post</a>
+<a href=http://blog.dornea.nu/2009/08/12/fu-here-i-come/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

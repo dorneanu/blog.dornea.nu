@@ -1,139 +1,46 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>Disect Android APKs like a Pro - Static code analysis - blog.dornea.nu</title>
-  <meta content='Disect Android APKs like a Pro - Static code analysis - blog.dornea.nu' property='title' />
-  <meta content='Disect Android APKs like a Pro - Static code analysis - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="I&rsquo;ve started writing this IPython notebook in order to make myself more comfortable with Android and its SDK. Due to some personal interests I thought I could also have a look at the available RE tools and learn more about their pros &amp; cos. In particular I had a closer look at AndroGuard which seems to be good at:
- Reverse engineering, Malware and goodware analysis of Android applications &hellip; and more (ninja !" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2014/07/07/disect-android-apks-like-a-pro-static-code-analysis/" />
-
-
-<meta property="article:published_time" content="2014-07-07T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2014-07-07T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">Disect Android APKs like a Pro - Static code analysis</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>07 Jul 2014</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='http://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/code' class="link silver">code</a> <a href='http://blog.dornea.nu/tags/sca' class="link silver">sca</a> <a href='http://blog.dornea.nu/tags/androguard' class="link silver">androguard</a> <a href='http://blog.dornea.nu/tags/re' class="link silver">re</a> <a href='http://blog.dornea.nu/tags/mobile' class="link silver">mobile</a> <a href='http://blog.dornea.nu/tags/fakebanker' class="link silver">fakebanker</a> <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>I&rsquo;ve started writing this <a href="http://ipython.org/notebook.html">IPython notebook</a> in order to make myself more comfortable with Android and its SDK. Due to some personal interests I thought I could also have a look at the available <a href="http://en.wikipedia.org/wiki/Reverse_engineering">RE</a> tools and learn more about their pros &amp; cos. In particular I had a closer look at <a href="https://code.google.com/p/androguard/"><strong>AndroGuard</strong></a> which seems to be good at:</p>
-<blockquote>
-<p>Reverse engineering, Malware and goodware analysis of Android applications &hellip; and more (ninja !)</p>
-</blockquote>
-<p>I was charmed but its capabilities and the pythonic art of handling with APKs. In the 2nd step I&rsquo;ve needed a malware to play it, so I had a look at <a href="http://contagiominidump.blogspot.de/">Contagio Mobile</a>. There I&rsquo;ve randomly chosen a malware and got stucked with <a href="http://contagiominidump.blogspot.de/2014/05/android-fake-banker.html">Fake Banker</a>. There are some technical details about the malware itself gained during automated tests which can be read <a href="http://www.apk-analyzer.net/analysis/646/3752/0/html">here</a>.</p>
-<p>This article will only deal with the <strong>static source code analysis</strong> of the malware. A 2nd part dedicated to the <strong>dynamic analysis</strong> is planed as well.</p>
-<h3 id="start-kali-linux">Start Kali Linux</h3>
-<p>Stay safe and run the stuff isolated:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">➜  ~  virsh -c qemu:///system           
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Disect Android APKs like a Pro - Static code analysis - blog.dornea.nu</title><meta content="Disect Android APKs like a Pro - Static code analysis - blog.dornea.nu" property="title"><meta content="Disect Android APKs like a Pro - Static code analysis - blog.dornea.nu" property="og:title"><meta property="og:description" content="I&rsquo;ve started writing this IPython notebook in order to make myself more comfortable with Android and its SDK. Due to some personal interests I thought I could also have a look at the available RE tools and learn more about their pros & cos. In particular I had a closer look at AndroGuard which seems to be good at:
+ Reverse engineering, Malware and goodware analysis of Android applications &mldr; and more (ninja !"><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/07/07/disect-android-apks-like-a-pro-static-code-analysis/"><meta property="article:published_time" content="2014-07-07T00:00:00+00:00"><meta property="article:modified_time" content="2014-07-07T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Disect Android APKs like a Pro - Static code analysis</div><p class="silver f6 mt1 mb4 post-meta"><time>07 Jul 2014</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/android class="link silver">android</a> <a href=http://blog.dornea.nu/tags/hacking class="link silver">hacking</a> <a href=http://blog.dornea.nu/tags/networking class="link silver">networking</a> <a href=http://blog.dornea.nu/tags/security class="link silver">security</a> <a href=http://blog.dornea.nu/tags/ipython class="link silver">ipython</a> <a href=http://blog.dornea.nu/tags/code class="link silver">code</a> <a href=http://blog.dornea.nu/tags/sca class="link silver">sca</a> <a href=http://blog.dornea.nu/tags/androguard class="link silver">androguard</a> <a href=http://blog.dornea.nu/tags/re class="link silver">re</a> <a href=http://blog.dornea.nu/tags/mobile class="link silver">mobile</a> <a href=http://blog.dornea.nu/tags/fakebanker class="link silver">fakebanker</a> <a href=http://blog.dornea.nu/tags/appsec class="link silver">appsec</a> ]</p><div class="lh-copy post-content"><p>I&rsquo;ve started writing this <a href=http://ipython.org/notebook.html>IPython notebook</a> in order to make myself more comfortable with Android and its SDK. Due to some personal interests I thought I could also have a look at the available <a href=http://en.wikipedia.org/wiki/Reverse_engineering>RE</a> tools and learn more about their pros & cos. In particular I had a closer look at <a href=https://code.google.com/p/androguard/><strong>AndroGuard</strong></a> which seems to be good at:</p><blockquote><p>Reverse engineering, Malware and goodware analysis of Android applications &mldr; and more (ninja !)</p></blockquote><p>I was charmed but its capabilities and the pythonic art of handling with APKs. In the 2nd step I&rsquo;ve needed a malware to play it, so I had a look at <a href=http://contagiominidump.blogspot.de/>Contagio Mobile</a>. There I&rsquo;ve randomly chosen a malware and got stucked with <a href=http://contagiominidump.blogspot.de/2014/05/android-fake-banker.html>Fake Banker</a>. There are some technical details about the malware itself gained during automated tests which can be read <a href=http://www.apk-analyzer.net/analysis/646/3752/0/html>here</a>.</p><p>This article will only deal with the <strong>static source code analysis</strong> of the malware. A 2nd part dedicated to the <strong>dynamic analysis</strong> is planed as well.</p><h3 id=start-kali-linux>Start Kali Linux</h3><p>Stay safe and run the stuff isolated:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>➜  ~  virsh -c qemu:///system           
 
 Welcome to virsh, the virtualization interactive terminal.
 
-Type:  <span style="color:#ed9d13">&#39;help&#39;</span> <span style="color:#6ab825;font-weight:bold">for</span> <span style="color:#24909d">help</span> with commands
-       <span style="color:#ed9d13">&#39;quit&#39;</span> to quit
+Type:  <span style=color:#ed9d13>&#39;help&#39;</span> <span style=color:#6ab825;font-weight:700>for</span> <span style=color:#24909d>help</span> with commands
+       <span style=color:#ed9d13>&#39;quit&#39;</span> to quit
 
-virsh <span style="color:#999;font-style:italic"># </span>
-virsh <span style="color:#999;font-style:italic"># list --all</span>
+virsh <span style=color:#999;font-style:italic># </span>
+virsh <span style=color:#999;font-style:italic># list --all</span>
  Id    Name                           State
 ----------------------------------------------------
- <span style="color:#3677a9">2</span>     Ubuntu.GitLab                  running
+ <span style=color:#3677a9>2</span>     Ubuntu.GitLab                  running
  -     Linux.Kali                     shut off
  -     Ubuntu.Tracks                  shut off
  -     Windows7                       shut off
 
-virsh <span style="color:#999;font-style:italic"># start Linux.Kali</span>
+virsh <span style=color:#999;font-style:italic># start Linux.Kali</span>
 Domain Linux.Kali started
 
-</code></pre></div><p>Now we&rsquo;re ready to login:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">➜  ~  ssh kali.local
-victor@kali.local<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>s password: 
-Linux kali 3.7-trunk-amd64 <span style="color:#999;font-style:italic">#1 SMP Debian 3.7.2-0+kali8 x86_64</span>
+</code></pre></div><p>Now we&rsquo;re ready to login:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>➜  ~  ssh kali.local
+victor@kali.local<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>s password: 
+Linux kali 3.7-trunk-amd64 <span style=color:#999;font-style:italic>#1 SMP Debian 3.7.2-0+kali8 x86_64</span>
 
 The programs included with the Kali GNU/Linux system are free software;
-the exact distribution terms <span style="color:#6ab825;font-weight:bold">for</span> each program are described in the
+the exact distribution terms <span style=color:#6ab825;font-weight:700>for</span> each program are described in the
 individual files in /usr/share/doc/*/copyright.
 
 Kali GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
 permitted by applicable law.
-</code></pre></div><h3 id="install-sdk">Install SDK</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(env)root@kali:~/work/apk/SDK# wget http://dl.google.com/android/android-sdk_r22.6.2-linux.tgz
+</code></pre></div><h3 id=install-sdk>Install SDK</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(env)root@kali:~/work/apk/SDK# wget http://dl.google.com/android/android-sdk_r22.6.2-linux.tgz
 (env)root@kali:~/work/apk/SDK# tar -zxf android-sdk_r22.6.2-linux.tgz
-(env)root@kali:~/work/apk/SDK# <span style="color:#24909d">export</span> <span style="color:#40ffff">PATH</span>=<span style="color:#40ffff">$PATH</span>:/root/work/apk/SDK/android-sdk-linux/tools(env)root@kali:~/work/apk/SDK# which monitor
+(env)root@kali:~/work/apk/SDK# <span style=color:#24909d>export</span> <span style=color:#40ffff>PATH</span>=<span style=color:#40ffff>$PATH</span>:/root/work/apk/SDK/android-sdk-linux/tools(env)root@kali:~/work/apk/SDK# which monitor
 /root/work/apk/SDK/android-sdk-linux/tools/monitor
-</code></pre></div><blockquote>
-<p>Make sure you have the <strong>ia32-libs</strong> installed.</p>
-</blockquote>
-<h3 id="setup-path">Setup PATH</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import os
+</code></pre></div><blockquote><p>Make sure you have the <strong>ia32-libs</strong> installed.</p></blockquote><h3 id=setup-path>Setup PATH</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>import os
 import sys
 
 # Adjust PYTHONPATH
@@ -146,8 +53,7 @@ os.environ[&#39;PATH&#39;] = new_path
 
 # Change working directory
 os.chdir(&#34;/root/work/apk/&#34;)
-</code></pre></div><h3 id="setup-ipython-settings">Setup IPython settings</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%pylab inline
+</code></pre></div><h3 id=setup-ipython-settings>Setup IPython settings</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>%pylab inline
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -158,18 +64,11 @@ from IPython.display import display_pretty, display_html, display_jpeg, display_
 import androlyze as anz
 #import corae.bytecodes.dvm as dvm
 </code></pre></div><pre><code>Populating the interactive namespace from numpy and matplotlib
-</code></pre>
-<h2 id="get-malicious-apks">Get malicious APKs</h2>
-<p>Now that you got everything running it&rsquo;s time to get some <strong>malicious</strong> APKs to play with. On <a href="http://contagiominidump.blogspot.de/">contagio mobile</a> you&rsquo;ll get tons of malicious files to look at. I&rsquo;ve decided to look at the <a href="http://www.mediafire.com/download/e938k6t3y6ul1yy/FakeBankerAPKs.zip">Fake Banker</a>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(env)root@kali:~/work/apk/DroidBox/APK# wget http://www.mediafire.com/download/e938k6t3y6ul1yy/FakeBankerAPKs.zip
-</code></pre></div><p>Now you&rsquo;ll have to extract the archive. As mentioned on the site you&rsquo;ll have to contact the sites maintainer in order to get the password for the files. Thanks to <a href="https://twitter.com/snowfl0w">@snowfl0w</a> for providing me the password.</p>
-<blockquote>
-<p><strong>NOTE</strong>: The ordinary unzip command will fail to extract the files. You should install <em>p7zip</em>.</p>
-</blockquote>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(env)root@kali:~/work/apk/DroidBox/APK# 7z e FakeBankerAPKs.zip 
+</code></pre><h2 id=get-malicious-apks>Get malicious APKs</h2><p>Now that you got everything running it&rsquo;s time to get some <strong>malicious</strong> APKs to play with. On <a href=http://contagiominidump.blogspot.de/>contagio mobile</a> you&rsquo;ll get tons of malicious files to look at. I&rsquo;ve decided to look at the <a href=http://www.mediafire.com/download/e938k6t3y6ul1yy/FakeBankerAPKs.zip>Fake Banker</a>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(env)root@kali:~/work/apk/DroidBox/APK# wget http://www.mediafire.com/download/e938k6t3y6ul1yy/FakeBankerAPKs.zip
+</code></pre></div><p>Now you&rsquo;ll have to extract the archive. As mentioned on the site you&rsquo;ll have to contact the sites maintainer in order to get the password for the files. Thanks to <a href=https://twitter.com/snowfl0w>@snowfl0w</a> for providing me the password.</p><blockquote><p><strong>NOTE</strong>: The ordinary unzip command will fail to extract the files. You should install <em>p7zip</em>.</p></blockquote><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(env)root@kali:~/work/apk/DroidBox/APK# 7z e FakeBankerAPKs.zip 
 
 7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
-p7zip Version 9.20 (<span style="color:#40ffff">locale</span>=en_US.UTF-8,Utf16=on,HugeFiles=on,1 CPU)
+p7zip Version 9.20 (<span style=color:#40ffff>locale</span>=en_US.UTF-8,Utf16=on,HugeFiles=on,1 CPU)
 
 Processing archive: FakeBankerAPKs.zip
 
@@ -181,28 +80,17 @@ Extracting  aac4d15741abe0ee9b4afe78be090599
 
 Everything is Ok
 
-Files: <span style="color:#3677a9">3</span>
-Size:       <span style="color:#3677a9">629877</span>
-Compressed: <span style="color:#3677a9">622336</span>
-</code></pre></div><h2 id="scratch-the-surface">Scratch the surface</h2>
-<p>In this section we&rsquo;ll have a brief look at the APK(s):</p>
-<ul>
-<li>Which files does the APK contain?</li>
-<li>How is the APK built?</li>
-<li>Can we find some vital information e.g. permissions the APK will have when installed on the device?</li>
-<li>What about other ressources?</li>
-</ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Change CWD
+Files: <span style=color:#3677a9>3</span>
+Size:       <span style=color:#3677a9>629877</span>
+Compressed: <span style=color:#3677a9>622336</span>
+</code></pre></div><h2 id=scratch-the-surface>Scratch the surface</h2><p>In this section we&rsquo;ll have a brief look at the APK(s):</p><ul><li>Which files does the APK contain?</li><li>How is the APK built?</li><li>Can we find some vital information e.g. permissions the APK will have when installed on the device?</li><li>What about other ressources?</li></ul><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># Change CWD
 os.chdir(&#34;/root/work/apk/DroidBox/APK&#34;)
-</code></pre></div><h3 id="check-apks-contents">Check APKs contents</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#6ab825;font-weight:bold">for</span> i in *; <span style="color:#6ab825;font-weight:bold">do</span> file <span style="color:#40ffff">$i</span>; <span style="color:#6ab825;font-weight:bold">done</span>
+</code></pre></div><h3 id=check-apks-contents>Check APKs contents</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#6ab825;font-weight:700>for</span> i in *; <span style=color:#6ab825;font-weight:700>do</span> file <span style=color:#40ffff>$i</span>; <span style=color:#6ab825;font-weight:700>done</span>
 </code></pre></div><pre><code>7276e76298c50d2ee78271cf5114a176: Zip archive data, at least v2.0 to extract
 a15b704743f53d3edb9cdd1182ca78d1: Zip archive data, at least v2.0 to extract
 aac4d15741abe0ee9b4afe78be090599: Zip archive data, at least v2.0 to extract
-</code></pre>
-<h3 id="zippped-files">Zippped files</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><h3 id=zippped-files>Zippped files</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 unzip -l 7276e76298c50d2ee78271cf5114a176
 </code></pre></div><pre><code>Archive:  7276e76298c50d2ee78271cf5114a176
 signed by SignApk
@@ -227,15 +115,11 @@ signed by SignApk
      3196  2008-02-29 05:33   resources.arsc
 ---------                     -------
    449584                     17 files
-</code></pre>
-<h2 id="dump-apks-content-with-apktool">Dump APKs content with apktool</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><h2 id=dump-apks-content-with-apktool>Dump APKs content with apktool</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 cp 7276e76298c50d2ee78271cf5114a176 FakeBanker.apk
 java -jar /root/work/bin/apktool1.5.2/apktool.jar d 7276e76298c50d2ee78271cf5114a176 output
 </code></pre></div><pre><code>Destination directory (/root/work/apk/DroidBox/APK/output) already exists. Use -f switch if you want to overwrite it.
-</code></pre>
-<h3 id="androidmanifestxml">AndroidManifest.xml</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><h3 id=androidmanifestxml>AndroidManifest.xml</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 cat output/AndroidManifest.xml
 </code></pre></div><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;manifest android:versionCode=&quot;1&quot; android:versionName=&quot;1.0&quot; package=&quot;com.gmail.xpack&quot;
@@ -280,9 +164,7 @@ cat output/AndroidManifest.xml
         &lt;/activity&gt;
     &lt;/application&gt;
 &lt;/manifest&gt;
-</code></pre>
-<h3 id="check-for-media">Check for media</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">media_paths = !find output -regextype posix-egrep -regex &#34;^.*\.(png|jpg|jpeg|gif|bmp)$&#34;
+</code></pre><h3 id=check-for-media>Check for media</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>media_paths = !find output -regextype posix-egrep -regex &#34;^.*\.(png|jpg|jpeg|gif|bmp)$&#34;
 display(media_paths)
 for p in media_paths:
     display(Image(filename=p))
@@ -291,16 +173,9 @@ for p in media_paths:
  'output/res/drawable-xhdpi/ic_launcher1.png',
  'output/res/drawable-hdpi/logo.png',
  'output/res/drawable-hdpi/ic_launcher1.png']
-</code></pre>
-<p><img src="output_23_1.png" alt="png"></p>
-<p><img src="output_23_2.png" alt="png"></p>
-<p><img src="output_23_3.png" alt="png"></p>
-<p><img src="output_23_4.png" alt="png"></p>
-<p><img src="output_23_5.png" alt="png"></p>
-<h3 id="directory-structure">Directory structure</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#999;font-style:italic"># Ignore smali directory</span>
-tree -f -I <span style="color:#ed9d13">&#34;smali&#34;</span> output/
+</code></pre><p><img src=output_23_1.png alt=png></p><p><img src=output_23_2.png alt=png></p><p><img src=output_23_3.png alt=png></p><p><img src=output_23_4.png alt=png></p><p><img src=output_23_5.png alt=png></p><h3 id=directory-structure>Directory structure</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+<span style=color:#999;font-style:italic># Ignore smali directory</span>
+tree -f -I <span style=color:#ed9d13>&#34;smali&#34;</span> output/
 </code></pre></div><pre><code>output
 ├── output/AndroidManifest.xml
 ├── output/apktool.yml
@@ -330,28 +205,18 @@ tree -f -I <span style="color:#ed9d13">&#34;smali&#34;</span> output/
         └── output/res/values/styles.xml
 
 9 directories, 17 files
-</code></pre>
-<h3 id="first-findings">First findings</h3>
-<p>Having a look at the <em>AndroidManifest.xml</em> file itself you can see that we have a <em>MessageReceiver</em> with a quite high priority:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"> <span style="color:#6ab825;font-weight:bold">&lt;receiver</span> <span style="color:#bbb">android:name=</span><span style="color:#ed9d13">&#34;com.gmail.xbroadcast.MessageReceiver&#34;</span><span style="color:#6ab825;font-weight:bold">&gt;</span>
-            <span style="color:#6ab825;font-weight:bold">&lt;intent-filter</span> <span style="color:#bbb">android:priority=</span><span style="color:#ed9d13">&#34;999&#34;</span><span style="color:#6ab825;font-weight:bold">&gt;</span>
-                <span style="color:#6ab825;font-weight:bold">&lt;action</span> <span style="color:#bbb">android:name=</span><span style="color:#ed9d13">&#34;android.provider.Telephony.SMS_RECEIVED&#34;</span> <span style="color:#6ab825;font-weight:bold">/&gt;</span>
-            <span style="color:#6ab825;font-weight:bold">&lt;/intent-filter&gt;</span>
- <span style="color:#6ab825;font-weight:bold">&lt;/receiver&gt;</span>
-</code></pre></div><p>That looks very suspicious as well. What about the main <strong>entry point</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"> <span style="color:#6ab825;font-weight:bold">&lt;activity</span> <span style="color:#bbb">android:label=</span><span style="color:#ed9d13">&#34;@string/app_name&#34;</span> <span style="color:#bbb">android:name=</span><span style="color:#ed9d13">&#34;com.gmail.xpack.MainActivity&#34;</span><span style="color:#6ab825;font-weight:bold">&gt;</span>
-            <span style="color:#6ab825;font-weight:bold">&lt;intent-filter&gt;</span>
-                <span style="color:#6ab825;font-weight:bold">&lt;action</span> <span style="color:#bbb">android:name=</span><span style="color:#ed9d13">&#34;android.intent.action.MAIN&#34;</span> <span style="color:#6ab825;font-weight:bold">/&gt;</span>
-                <span style="color:#6ab825;font-weight:bold">&lt;category</span> <span style="color:#bbb">android:name=</span><span style="color:#ed9d13">&#34;android.intent.category.LAUNCHER&#34;</span> <span style="color:#6ab825;font-weight:bold">/&gt;</span>
-            <span style="color:#6ab825;font-weight:bold">&lt;/intent-filter&gt;</span>
- <span style="color:#6ab825;font-weight:bold">&lt;/activity&gt;</span>
-</code></pre></div><p>So obviously the class <em>com.gmail.xpack.MainActivity</em> contains the main entry point. In the next steps we will have a closer look at the code. Besides that there are 2 files which might be interesting:</p>
-<ul>
-<li><code>output/res/raw/blfs.key</code></li>
-<li><code>output/res/raw/config.cfg</code></li>
-</ul>
-<h2 id="static-code-analysis-using-androguard">Static code analysis using AndroGuard</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Use AndroGuard to static analysis
+</code></pre><h3 id=first-findings>First findings</h3><p>Having a look at the <em>AndroidManifest.xml</em> file itself you can see that we have a <em>MessageReceiver</em> with a quite high priority:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml> <span style=color:#6ab825;font-weight:700>&lt;receiver</span> <span style=color:#bbb>android:name=</span><span style=color:#ed9d13>&#34;com.gmail.xbroadcast.MessageReceiver&#34;</span><span style=color:#6ab825;font-weight:700>&gt;</span>
+            <span style=color:#6ab825;font-weight:700>&lt;intent-filter</span> <span style=color:#bbb>android:priority=</span><span style=color:#ed9d13>&#34;999&#34;</span><span style=color:#6ab825;font-weight:700>&gt;</span>
+                <span style=color:#6ab825;font-weight:700>&lt;action</span> <span style=color:#bbb>android:name=</span><span style=color:#ed9d13>&#34;android.provider.Telephony.SMS_RECEIVED&#34;</span> <span style=color:#6ab825;font-weight:700>/&gt;</span>
+            <span style=color:#6ab825;font-weight:700>&lt;/intent-filter&gt;</span>
+ <span style=color:#6ab825;font-weight:700>&lt;/receiver&gt;</span>
+</code></pre></div><p>That looks very suspicious as well. What about the main <strong>entry point</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml> <span style=color:#6ab825;font-weight:700>&lt;activity</span> <span style=color:#bbb>android:label=</span><span style=color:#ed9d13>&#34;@string/app_name&#34;</span> <span style=color:#bbb>android:name=</span><span style=color:#ed9d13>&#34;com.gmail.xpack.MainActivity&#34;</span><span style=color:#6ab825;font-weight:700>&gt;</span>
+            <span style=color:#6ab825;font-weight:700>&lt;intent-filter&gt;</span>
+                <span style=color:#6ab825;font-weight:700>&lt;action</span> <span style=color:#bbb>android:name=</span><span style=color:#ed9d13>&#34;android.intent.action.MAIN&#34;</span> <span style=color:#6ab825;font-weight:700>/&gt;</span>
+                <span style=color:#6ab825;font-weight:700>&lt;category</span> <span style=color:#bbb>android:name=</span><span style=color:#ed9d13>&#34;android.intent.category.LAUNCHER&#34;</span> <span style=color:#6ab825;font-weight:700>/&gt;</span>
+            <span style=color:#6ab825;font-weight:700>&lt;/intent-filter&gt;</span>
+ <span style=color:#6ab825;font-weight:700>&lt;/activity&gt;</span>
+</code></pre></div><p>So obviously the class <em>com.gmail.xpack.MainActivity</em> contains the main entry point. In the next steps we will have a closer look at the code. Besides that there are 2 files which might be interesting:</p><ul><li><code>output/res/raw/blfs.key</code></li><li><code>output/res/raw/config.cfg</code></li></ul><h2 id=static-code-analysis-using-androguard>Static code analysis using AndroGuard</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># Use AndroGuard to static analysis
 # Have a look at https://code.google.com/p/androguard/wiki/RE for some introduction
 #a = anz.APK(&#39;KC.apk&#39;)
 a, d, dx = anz.AnalyzeAPK(&#39;FakeBanker.apk&#39;,decompiler=&#39;dex2jar&#39;)
@@ -363,9 +228,7 @@ d.set_vmanalysis( dx )
 d.set_gvmanalysis( gx )
 &#34;&#34;&#34;
 </code></pre></div><pre><code>'\nd = anz.DalvikVMFormat(a.get_dex())\ndx = anz.VMAnalysis( d )\ngx = anz.GVMAnalysis( dx, None )\nd.set_vmanalysis( dx )\nd.set_gvmanalysis( gx )\n'
-</code></pre>
-<h3 id="analyze-the-manifest-file">Analyze the manifest file</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">a.files
+</code></pre><h3 id=analyze-the-manifest-file>Analyze the manifest file</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>a.files
 </code></pre></div><pre><code>{'AndroidManifest.xml': 'Unknown',
  'META-INF/CERT.RSA': 'Unknown',
  'META-INF/CERT.SF': 'Unknown',
@@ -383,8 +246,7 @@ d.set_gvmanalysis( gx )
  'res/raw/blfs.key': 'Unknown',
  'res/raw/config.cfg': 'Unknown',
  'resources.arsc': 'Unknown'}
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">a.permissions
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>a.permissions
 </code></pre></div><pre><code>['android.permission.RECEIVE_BOOT_COMPLETED',
  'android.permission.READ_SMS',
  'android.permission.RECEIVE_SMS',
@@ -392,23 +254,18 @@ d.set_gvmanalysis( gx )
  'android.permission.READ_PHONE_STATE',
  'android.permission.ACCESS_COARSE_LOCATION',
  'android.permission.ACCESS_NETWORK_STATE']
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">a.get_activities()
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>a.get_activities()
 </code></pre></div><pre><code>['com.gmail.xpack.MainActivity', 'com.gmail.xpack.ActUpdate']
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">a.get_services()
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>a.get_services()
 </code></pre></div><pre><code>['com.gmail.xservices.XService', 'com.gmail.xservices.XSmsIncom']
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">a.get_receivers()
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>a.get_receivers()
 </code></pre></div><pre><code>['com.gmail.xbroadcast.OnBootReceiver',
  'com.gmail.xbroadcast.MessageReceiver',
  'com.gmail.xservices.XRepeat',
  'com.gmail.xservices.XUpdate']
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">a.get_main_activity()
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>a.get_main_activity()
 </code></pre></div><pre><code>u'com.gmail.xpack.MainActivity'
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xpack_MainActivity.METHOD_onCreate.source()
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>d.CLASS_Lcom_gmail_xpack_MainActivity.METHOD_onCreate.source()
 </code></pre></div><pre><code>    protected void onCreate(android.os.Bundle p5)
     {
         super.onCreate(p5);
@@ -418,9 +275,7 @@ d.set_gvmanalysis( gx )
         this.startService(new android.content.Intent(&quot;XMainProcessStart&quot;).putExtra(&quot;name&quot;, &quot;value&quot;));
         return;
     }
-</code></pre>
-<p>Ok let&rsquo;s have a look at <strong>com.gmail.xlibs.myFunctions</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">methods = d.CLASS_Lcom_gmail_xlibs_myFunctions.get_methods()
+</code></pre><p>Ok let&rsquo;s have a look at <strong>com.gmail.xlibs.myFunctions</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>methods = d.CLASS_Lcom_gmail_xlibs_myFunctions.get_methods()
 for m in methods: print(m.get_name())
 </code></pre></div><pre><code>&lt;init&gt;
 IntToStr
@@ -446,9 +301,7 @@ setVar
 setVar
 setVarsList
 typeInternetConnection
-</code></pre>
-<p>Having a look at the whole class you can see that there are a <em>lot</em> of methods. But this one looks very interesting:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_setK12.source()
+</code></pre><p>Having a look at the whole class you can see that there are a <em>lot</em> of methods. But this one looks very interesting:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_setK12.source()
 </code></pre></div><pre><code>    public static String setK12(String p4, android.content.Context p5)
     {
         String v2;
@@ -460,16 +313,7 @@ typeInternetConnection
         }
         return v2;
     }
-</code></pre>
-<h2 id="decrypting-stuff">Decrypting stuff</h2>
-<p>Apparently there is an encryption routine (<em>Blowfish</em>) used for some <em>stuff</em>. In this case a new class <code>v2</code> is initialized. The constructor gets several parameters:</p>
-<ul>
-<li>content of <code>BLFSK</code> (<code>v1</code>)</li>
-<li>base64 (I thing this sort of flag)</li>
-<li>&ldquo;1234578&rdquo; (Looks like some IV)</li>
-</ul>
-<p>Let&rsquo;s have a look at the <strong>Blowfish</strong> class:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_init.source()
+</code></pre><h2 id=decrypting-stuff>Decrypting stuff</h2><p>Apparently there is an encryption routine (<em>Blowfish</em>) used for some <em>stuff</em>. In this case a new class <code>v2</code> is initialized. The constructor gets several parameters:</p><ul><li>content of <code>BLFSK</code> (<code>v1</code>)</li><li>base64 (I thing this sort of flag)</li><li>&ldquo;1234578&rdquo; (Looks like some IV)</li></ul><p>Let&rsquo;s have a look at the <strong>Blowfish</strong> class:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_init.source()
 </code></pre></div><pre><code>    public Blowfish(String p2, String p3, String p4)
     {
         this.IV = &quot;12345678&quot;;
@@ -479,43 +323,31 @@ typeInternetConnection
         this.in_out_format = p3;
         return;
     }
-</code></pre>
-<p><code>p2</code> (the first argument) is the key. Looking one step before let&rsquo;s find out what&rsquo;s inside the <code>BLFSK</code> variable. First let&rsquo;s see where the variable is beeing used:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">z = dx.tainted_variables.get_string(&#34;BLFSK&#34;)
+</code></pre><p><code>p2</code> (the first argument) is the key. Looking one step before let&rsquo;s find out what&rsquo;s inside the <code>BLFSK</code> variable. First let&rsquo;s see where the variable is beeing used:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>z = dx.tainted_variables.get_string(&#34;BLFSK&#34;)
 if z: z.show_paths(d)
 </code></pre></div><pre><code>R 62 Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
 R 17c Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
 R e8 Lcom/gmail/xlibs/myFunctions;-&gt;getSecond (Landroid/content/Context;)V
 R 0 Lcom/gmail/xlibs/myFunctions;-&gt;setK12 (Ljava/lang/String; Landroid/content/Context;)Ljava/lang/String;
-</code></pre>
-<p>Let&rsquo;s search for some content/files:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-find output -name <span style="color:#ed9d13">&#34;blfs*&#34;</span>
+</code></pre><p>Let&rsquo;s search for some content/files:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+find output -name <span style=color:#ed9d13>&#34;blfs*&#34;</span>
 </code></pre></div><pre><code>output/res/raw/blfs.key
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 cat output/res/raw/blfs.key
 </code></pre></div><pre><code>NfvnkjlnvkjKCNXKDKLFHSKD:LJmdklsXKLNDS:&lt;XObcniuaebkjxbcz
-</code></pre>
-<p>Well that looks like a key to me :). What else can we find inside <code>output/res/raw</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><p>Well that looks like a key to me :). What else can we find inside <code>output/res/raw</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 ls -l output/res/raw
 </code></pre></div><pre><code>total 8
 -rw-r--r-- 1 root root   56 Jun 25 13:26 blfs.key
 -rw-r--r-- 1 root root 1048 Jun 25 13:26 config.cfg
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 cat output/res/raw/config.cfg
 </code></pre></div><pre><code>HoBbgAt+xT9vXJUlyhYYAVOx5Oy4XSMLyc7JC+ly5a1tbUtWvFMny2yqavP9D9GT0ogg2U4LN5FZE8/0Y2duLgE7dfXLPcaeXKoIuTmJ4LBiUjS0OokxUPMOrJYCTCx2oWGmdHJqohz7QlbqnZPWch9BvjiWG3TeXKDkjrPKohMswoPA/EVQy3is6XBBfqYKoExCDci14mcoHfnbw1V+YAJlwONpjn1dmzVkJLVQ4ZEbg2WPD5LnXwhdGkhVXF4kS/pHk+6h4ZVd4CMcG7kbWpe7f/dbBX3zJ2NXP+E+MxYW/MTYrNRBMQIfZbuhGmsULXjpHb16R19NZvV4qQwi68KrFbc5hZyfSkWUwD50t2O3o9mSQB3/IlqzzA7VE3XxrsUkZQcBYEixFshSTN+lywZwohooyjGiPEhof7k08bo3YgkDh/8vMR1rttvUKs0xTdQtLF8iER8GDCt6ZUtG0+Lf2G+THOw/Azp/ipC3JJ7Rcj0m1uTj3AAjwfK69rcbtCTP6q5qV8pDEtSr3foU7KZvjCXJL/8TVvZozttjoHnJhI3x5KGKLrczoavKsbiR0iI3ncwGTI5CQ7uZwfMkB5Q2Y4M7oDFTurCPT3iRAvhUQN3Ah8TKAyzwACUlCk9nA2A7H9IFfTgI2QvaXQlNxkPeZMh+iOYImUELMSbNQ1HpsaF1Bbymg6vWTgvyViVsAjf+Y22y+n0eFJicsLPzc9GNs6bCgPCIDVRr2iLoiXjP8AE4gQUdxfqCQ1JtvBfWXmB4kAWb1ciuqsE1Zff+aahnT1Qbet1vA6g9DsTLuumqX0tjmCD/E50eL48Bz0etthaS7RbJiIpg3SU9Lio1GmZeYBB9/4FW4CB1M+cH9jjjKmj4sXUwcLrBDgD+JvCEc7VGxdLj/Ori631mkWvRtlKC4sIOLlHQEDwRcXDgvLnAKZYG65Tm4a5gr490Yco1QSKxeMkMKvMitGQS87ObKaqr30nfXZHMwdWLc6Q437aVyOxc9GvxGC7qmtnYU4Pw5alh1XKtXdjY4EGsVhk/MQ==
-</code></pre>
-<p>I&rsquo;ve checked that content and it&rsquo;s <strong>base64</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><p>I&rsquo;ve checked that content and it&rsquo;s <strong>base64</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 base64 -d output/res/raw/config.cfg &gt; output/res/raw/config.cfg.raw
 file output/res/raw/config.cfg.raw
 </code></pre></div><pre><code>output/res/raw/config.cfg.raw: data
-</code></pre>
-<p>Ok. Now let&rsquo;s decrypt that file. But first let&rsquo;s have a look at the used encryption parameters:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_encrypt.source()
+</code></pre><p>Ok. Now let&rsquo;s decrypt that file. But first let&rsquo;s have a look at the used encryption parameters:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_encrypt.source()
 </code></pre></div><pre><code>    public String encrypt(String p10)
     {
         try {
@@ -539,9 +371,7 @@ file output/res/raw/config.cfg.raw
         }
         return v7;
     }
-</code></pre>
-<p>So we have <strong>Blowfish</strong> with <a href="http://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher-block_chaining_.28CBC.29"><strong>CBC</strong></a>. The <strong>decryption</strong> method:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_decrypt.source()
+</code></pre><p>So we have <strong>Blowfish</strong> with <a href=http://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher-block_chaining_.28CBC.29><strong>CBC</strong></a>. The <strong>decryption</strong> method:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_decrypt.source()
 </code></pre></div><pre><code>    public String decrypt(String p9)
     {
         try {
@@ -565,9 +395,7 @@ file output/res/raw/config.cfg.raw
         v6 = new String(v1);
         return v6;
     }
-</code></pre>
-<p>As I&rsquo;ve looked into the code I&rsquo;ve noticed that a new <code>Blowfish</code> class is initiated in <em>com/xlibs/myFunctions.class</em>.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getFirst.source()
+</code></pre><p>As I&rsquo;ve looked into the code I&rsquo;ve noticed that a new <code>Blowfish</code> class is initiated in <em>com/xlibs/myFunctions.class</em>.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getFirst.source()
 </code></pre></div><pre><code>    public static void getFirst(android.content.Context p14)
     {
         if (com.gmail.xlibs.myFunctions.getVar(&quot;RID&quot;, 0, p14) == 0) {
@@ -608,31 +436,9 @@ file output/res/raw/config.cfg.raw
         }
         return;
     }
-</code></pre>
-<p>Especially this line is very interesting:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">com.<span style="color:#bbb">gmail</span>.<span style="color:#bbb">xlibs</span>.<span style="color:#bbb">myFunctions</span>.<span style="color:#bbb">parseXml</span>(<span style="color:#6ab825;font-weight:bold">new</span> com.<span style="color:#bbb">gmail</span>.<span style="color:#bbb">xlibs</span>.<span style="color:#bbb">Blowfish</span>(v5, <span style="color:#ed9d13">&#34;base64&#34;</span>, <span style="color:#ed9d13">&#34;12345678&#34;</span>).<span style="color:#bbb">decrypt</span>(com.<span style="color:#bbb">gmail</span>.<span style="color:#bbb">xlibs</span>.<span style="color:#bbb">myFunctions</span>.<span style="color:#bbb">getRawData</span>(1.<span style="color:#bbb">754581157260185e</span>+38, 1, p14)), p14);
-</code></pre></div><p>Obviously the encrypted file has some XML content which has to be parsed first. The <em>parseXML</em> function requires a String parameter containing the XML code. The XML code has to be first decrypted:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#6ab825;font-weight:bold">new</span> com.<span style="color:#bbb">gmail</span>.<span style="color:#bbb">xlibs</span>.<span style="color:#bbb">Blowfish</span>(v5, <span style="color:#ed9d13">&#34;base64&#34;</span>, <span style="color:#ed9d13">&#34;12345678&#34;</span>)
-</code></pre></div><p>This will create a new <code>Blowfish</code> object where the parameters are set as shown below:</p>
-<ul>
-<li><code>v5</code>
-<ul>
-<li>String v5 = com.gmail.xlibs.myFunctions.getRawData(1.754580954436089e+38, 0, p14);</li>
-</ul>
-</li>
-<li><code>base64</code>
-<ul>
-<li>Format of ciphertext to be decrypted</li>
-</ul>
-</li>
-<li><code>12345678</code>
-<ul>
-<li>The IV used for the Blowfish cipher</li>
-</ul>
-</li>
-</ul>
-<p><code>v5</code> contains the encryption key. This is have to be loaded first using <code>getRawData</code>. Let&rsquo;s have a look at it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getRawData.source()
+</code></pre><p>Especially this line is very interesting:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>com.<span style=color:#bbb>gmail</span>.<span style=color:#bbb>xlibs</span>.<span style=color:#bbb>myFunctions</span>.<span style=color:#bbb>parseXml</span>(<span style=color:#6ab825;font-weight:700>new</span> com.<span style=color:#bbb>gmail</span>.<span style=color:#bbb>xlibs</span>.<span style=color:#bbb>Blowfish</span>(v5, <span style=color:#ed9d13>&#34;base64&#34;</span>, <span style=color:#ed9d13>&#34;12345678&#34;</span>).<span style=color:#bbb>decrypt</span>(com.<span style=color:#bbb>gmail</span>.<span style=color:#bbb>xlibs</span>.<span style=color:#bbb>myFunctions</span>.<span style=color:#bbb>getRawData</span>(1.<span style=color:#bbb>754581157260185e</span>+38, 1, p14)), p14);
+</code></pre></div><p>Obviously the encrypted file has some XML content which has to be parsed first. The <em>parseXML</em> function requires a String parameter containing the XML code. The XML code has to be first decrypted:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#6ab825;font-weight:700>new</span> com.<span style=color:#bbb>gmail</span>.<span style=color:#bbb>xlibs</span>.<span style=color:#bbb>Blowfish</span>(v5, <span style=color:#ed9d13>&#34;base64&#34;</span>, <span style=color:#ed9d13>&#34;12345678&#34;</span>)
+</code></pre></div><p>This will create a new <code>Blowfish</code> object where the parameters are set as shown below:</p><ul><li><code>v5</code><ul><li>String v5 = com.gmail.xlibs.myFunctions.getRawData(1.754580954436089e+38, 0, p14);</li></ul></li><li><code>base64</code><ul><li>Format of ciphertext to be decrypted</li></ul></li><li><code>12345678</code><ul><li>The IV used for the Blowfish cipher</li></ul></li></ul><p><code>v5</code> contains the encryption key. This is have to be loaded first using <code>getRawData</code>. Let&rsquo;s have a look at it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getRawData.source()
 </code></pre></div><pre><code>    public static String getRawData(int p9, int p10, android.content.Context p11)
     {
         java.io.InputStream v4 = p11.getResources().openRawResource(p9);
@@ -656,59 +462,32 @@ file output/res/raw/config.cfg.raw
         }
         v4.close();
     }
-</code></pre>
-<p>The first argument <code>p9</code> is a shared preference and contains the name of the file the content should be read from. Using another decompiler l I had a look at the <code>getFirst</code> method and found this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">...
+</code></pre><p>The first argument <code>p9</code> is a shared preference and contains the name of the file the content should be read from. Using another decompiler l I had a look at the <code>getFirst</code> method and found this:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>...
 String str1 = getRawData(2130968576, 0, paramContext);
 String str2 = getRawData(2130968577, 1, paramContext);
-parseXml(<span style="color:#6ab825;font-weight:bold">new</span> Blowfish(str1, <span style="color:#ed9d13">&#34;base64&#34;</span>, <span style="color:#ed9d13">&#34;12345678&#34;</span>).<span style="color:#bbb">decrypt</span>(str2), paramContext);
+parseXml(<span style=color:#6ab825;font-weight:700>new</span> Blowfish(str1, <span style=color:#ed9d13>&#34;base64&#34;</span>, <span style=color:#ed9d13>&#34;12345678&#34;</span>).<span style=color:#bbb>decrypt</span>(str2), paramContext);
 ...
-</code></pre></div><p>Now what are those numbers: 2130968576 and 2130968577? Those are ressource identifier. If we hex them we&rsquo;ll have:</p>
-<pre><code>hex(2130968576) = 7f040000 and 
+</code></pre></div><p>Now what are those numbers: 2130968576 and 2130968577? Those are ressource identifier. If we hex them we&rsquo;ll have:</p><pre><code>hex(2130968576) = 7f040000 and 
 hex(2130968577) = 7f040001
-</code></pre>
-<p>Let&rsquo;s search the files for this pattern:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-grep -r <span style="color:#ed9d13">&#34;7f040000&#34;</span> output/* &amp;&amp; grep -r <span style="color:#ed9d13">&#34;7f040001&#34;</span> output/*
+</code></pre><p>Let&rsquo;s search the files for this pattern:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+grep -r <span style=color:#ed9d13>&#34;7f040000&#34;</span> output/* &amp;&amp; grep -r <span style=color:#ed9d13>&#34;7f040001&#34;</span> output/*
 </code></pre></div><pre><code>output/res/values/public.xml:    &lt;public type=&quot;raw&quot; name=&quot;blfs&quot; id=&quot;0x7f040000&quot; /&gt;
 output/smali/com/gmail/xpack/R$raw.smali:.field public static final blfs:I = 0x7f040000
 output/res/values/public.xml:    &lt;public type=&quot;raw&quot; name=&quot;config&quot; id=&quot;0x7f040001&quot; /&gt;
 output/smali/com/gmail/xlibs/myFunctions.smali:    const v11, 0x7f040001
 output/smali/com/gmail/xpack/R$raw.smali:.field public static final config:I = 0x7f040001
-</code></pre>
-<p>So those numbers are indeed ressources. What kind of?</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-grep <span style="color:#ed9d13">&#34;7f04000&#34;</span> output/smali/com/gmail/xpack/R<span style="color:#ed9d13">\$</span>raw.smali
+</code></pre><p>So those numbers are indeed ressources. What kind of?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
+grep <span style=color:#ed9d13>&#34;7f04000&#34;</span> output/smali/com/gmail/xpack/R<span style=color:#ed9d13>\$</span>raw.smali
 </code></pre></div><pre><code>.field public static final blfs:I = 0x7f040000
 .field public static final config:I = 0x7f040001
-</code></pre>
-<p><strong>Bingo</strong>! Now we know that:</p>
-<pre><code>2130968576 -&gt; 7f040000 -&gt; blfs.key
+</code></pre><p><strong>Bingo</strong>! Now we know that:</p><pre><code>2130968576 -&gt; 7f040000 -&gt; blfs.key
 2130968577 -&gt; 7f040000 -&gt; blfs.cfg
-</code></pre>
-<p>So let&rsquo;s summarize some things:</p>
-<ul>
-<li><strong>getFirst()</strong> calls <strong>getRawData</strong> twice
-<ol>
-<li><code>getRawData(&quot;blfs.key&quot;, 0, paramContext);</code></li>
-<li><code>getRawData(&quot;config.cg&quot;, 1, paramContext);</code></li>
-</ol>
-</li>
-</ul>
-<p>In getRawData() there is no magic happing: Some file stream is created and then the conten is read. <strong>BUT</strong>: There is one catch about it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#6ab825;font-weight:bold">if</span> (p10 != 0) {
+</code></pre><p>So let&rsquo;s summarize some things:</p><ul><li><strong>getFirst()</strong> calls <strong>getRawData</strong> twice<ol><li><code>getRawData("blfs.key", 0, paramContext);</code></li><li><code>getRawData("config.cg", 1, paramContext);</code></li></ol></li></ul><p>In getRawData() there is no magic happing: Some file stream is created and then the conten is read. <strong>BUT</strong>: There is one catch about it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#6ab825;font-weight:700>if</span> (p10 != 0) {
      v6 = v5;
-} <span style="color:#6ab825;font-weight:bold">else</span> {
-    v6 = com.<span style="color:#bbb">gmail</span>.<span style="color:#bbb">xlibs</span>.<span style="color:#bbb">Blowfish</span>.<span style="color:#bbb">byte2hex</span>(v5.<span style="color:#bbb">getBytes</span>()).<span style="color:#bbb">substring</span>(0, 50);
+} <span style=color:#6ab825;font-weight:700>else</span> {
+    v6 = com.<span style=color:#bbb>gmail</span>.<span style=color:#bbb>xlibs</span>.<span style=color:#bbb>Blowfish</span>.<span style=color:#bbb>byte2hex</span>(v5.<span style=color:#bbb>getBytes</span>()).<span style=color:#bbb>substring</span>(0, 50);
 }
-</code></pre></div><p><code>p10</code> is the 2nd argument given to getRawData. If you pay attention you may notice that if <code>p10</code> == 1 nothing special will happen. Otherwise (content of blfs.key is read out) there are some string manipulations taking place. This took me a while to notice it and was the reason I couldn&rsquo;t decrypt the config.cfg. This is what it does with the content of <code>blfs.key</code>:</p>
-<ul>
-<li>convert string to byte array</li>
-<li>convert byte array to hex string</li>
-<li>take only the first 50 bytes</li>
-</ul>
-<p>In the end <code>v6</code> will contain the decryption key. Using <a href="https://www.dlitz.net/software/pycrypto/">PyCrypto</a> we&rsquo;ll try to decrypt the content in Python:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">from Crypto.Cipher import Blowfish
+</code></pre></div><p><code>p10</code> is the 2nd argument given to getRawData. If you pay attention you may notice that if <code>p10</code> == 1 nothing special will happen. Otherwise (content of blfs.key is read out) there are some string manipulations taking place. This took me a while to notice it and was the reason I couldn&rsquo;t decrypt the config.cfg. This is what it does with the content of <code>blfs.key</code>:</p><ul><li>convert string to byte array</li><li>convert byte array to hex string</li><li>take only the first 50 bytes</li></ul><p>In the end <code>v6</code> will contain the decryption key. Using <a href=https://www.dlitz.net/software/pycrypto/>PyCrypto</a> we&rsquo;ll try to decrypt the content in Python:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>from Crypto.Cipher import Blowfish
 from Crypto import Random
 from struct import pack
 from binascii import hexlify, unhexlify
@@ -734,9 +513,7 @@ message = cipher.decrypt(ciphertext)
 
 message
 </code></pre></div><pre><code>'&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;\n          &lt;config&gt;\n            &lt;data rid=&quot;25&quot; \n                  shnum10=&quot;&quot; shtext10=&quot;&quot; shnum5=&quot;&quot; shtext5=&quot;&quot; shnum3=&quot;&quot; shtext3=&quot;&quot; shnum1=&quot;&quot; shtext1=&quot;&quot; \n                  del_dev=&quot;0&quot; \n                  url_main=&quot;http://best-invest-int.com/gallery/3.php;http://citroen-club.ch/images/3.php&quot; \n                  url_data=&quot;http://best-invest-int.com/gallery/1.php;http://citroen-club.ch/images/1.php&quot; \n                  url_sms=&quot;http://best-invest-int.com/gallery/2.php;http://citroen-club.ch/images/2.php&quot;\n                  url_log=&quot;http://best-invest-int.com/gallery/4.php;http://citroen-club.ch/images/4.php&quot;\n                  download_domain=&quot;certificates-security.com&quot;\n                  ready_to_bind=&quot;0&quot; /&gt;\n            \n          &lt;/config&gt;\x05\x05\x05\x05\x05'
-</code></pre>
-<p>Yeay! Now a more structured look at the XML:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">from lxml import etree
+</code></pre><p>Yeay! Now a more structured look at the XML:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>from lxml import etree
 import xml.etree.ElementTree as ET
 
 # Remove dirty characters
@@ -757,10 +534,7 @@ for sample in data:
 # Show attributes found in /config/data
 df = pd.DataFrame(frame, columns=[&#39;Attribute&#39;, &#39;Value&#39;])
 df
-</code></pre></div><!-- raw HTML omitted -->
-<h2 id="inspect-malwares-config">Inspect malwares config</h2>
-<p>Looks interesting. Are those URLs still available?</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import urllib2
+</code></pre></div><h2 id=inspect-malwares-config>Inspect malwares config</h2><p>Looks interesting. Are those URLs still available?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>import urllib2
  
 # Get URLs from DataFrame (only the valid ones)
 urls = df[&#39;Value&#39;][10:19].tolist()
@@ -808,15 +582,12 @@ resp
    'Fri, 04 Jul 2014 08:31:12 GMT'),
   ('content-type', 'text/html; charset=iso-8859-1'),
   ('server', 'Apache')]}
-</code></pre>
-<p>Hmmm.. Nothing special. The servers might have been patched meanwhile against this malware. I hope we&rsquo;re going to see more when doing the dynamic analysis.</p>
-<h2 id="control-flow-graph-cfg">Control Flow Graph (CFG)</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre><p>Hmmm.. Nothing special. The servers might have been patched meanwhile against this malware. I hope we&rsquo;re going to see more when doing the dynamic analysis.</p><h2 id=control-flow-graph-cfg>Control Flow Graph (CFG)</h2><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>%%bash
 mkdir DEX
 cp 7276e76298c50d2ee78271cf5114a176 DEX
-<span style="color:#24909d">cd</span> DEX
+<span style=color:#24909d>cd</span> DEX
 unzip 7276e76298c50d2ee78271cf5114a176
-<span style="color:#24909d">cd</span> ..
+<span style=color:#24909d>cd</span> ..
 </code></pre></div><pre><code>Archive:  7276e76298c50d2ee78271cf5114a176
 signed by SignApk
   inflating: META-INF/MANIFEST.MF    
@@ -836,8 +607,7 @@ signed by SignApk
  extracting: res/raw/blfs.key        
   inflating: res/raw/config.cfg      
   inflating: resources.arsc          
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import hashlib
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>import hashlib
 import StringIO, pydot
 from IPython.display import Image
 from androguard.core.bytecodes.dvm import *
@@ -869,8 +639,7 @@ def create_graph(data, output):
     graph = pydot.graph_from_dot_data(buff)
     
     return graph
-</code></pre></div><h3 id="comgmailxlibsmyfunctions-getfirst">com.gmail.xlibs.myFunctions: getFirst()</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Definition:  d.get_method_descriptor(self, class_name, method_name, descriptor)
+</code></pre></div><h3 id=comgmailxlibsmyfunctions-getfirst>com.gmail.xlibs.myFunctions: getFirst()</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># Definition:  d.get_method_descriptor(self, class_name, method_name, descriptor)
 # 
 # Examples for method descriptors:
 #   R 62 Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
@@ -883,22 +652,16 @@ buff_dot = method2dot(x.get_method(m))
 
 graph = create_graph(buff_dot, &#34;png&#34;)
 Image(graph.create_png())
-</code></pre></div><p><img src="output_79_0.png" alt="png"></p>
-<h3 id="comgmailxlibsmyfunctions-getsecond">com.gmail.xlibs.myFunctions: getSecond()</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">m = d.get_method_descriptor(&#34;Lcom/gmail/xlibs/myFunctions;&#34;, &#34;getSecond&#34;, &#34;(Landroid/content/Context;)V&#34;)
+</code></pre></div><p><img src=output_79_0.png alt=png></p><h3 id=comgmailxlibsmyfunctions-getsecond>com.gmail.xlibs.myFunctions: getSecond()</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>m = d.get_method_descriptor(&#34;Lcom/gmail/xlibs/myFunctions;&#34;, &#34;getSecond&#34;, &#34;(Landroid/content/Context;)V&#34;)
 buff_dot = method2dot(x.get_method(m))
 
 graph = create_graph(buff_dot, &#34;png&#34;)
 Image(graph.create_png())
-</code></pre></div><p><img src="output_81_0.png" alt="png"></p>
-<h3 id="comgmailxservices-xrepeat">com.gmail.xservices: XRepeat</h3>
-<p><code>getFirst</code> and <code>getSecond</code> are both called from the class <code>com.gmail.xservices.XRepeat</code> in the method <code>doInBackground</code>. Let&rsquo;s search for the appropriate <em>method descriptor</em>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># We should have a list of PathP objects which represent where a specific method is called:
+</code></pre></div><p><img src=output_81_0.png alt=png></p><h3 id=comgmailxservices-xrepeat>com.gmail.xservices: XRepeat</h3><p><code>getFirst</code> and <code>getSecond</code> are both called from the class <code>com.gmail.xservices.XRepeat</code> in the method <code>doInBackground</code>. Let&rsquo;s search for the appropriate <em>method descriptor</em>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># We should have a list of PathP objects which represent where a specific method is called:
 paths = x.tainted_packages.search_methods(&#34;.&#34;, &#34;onReceive&#34;, &#34;.&#34;)
 paths
 </code></pre></div><pre><code>[&lt;androguard.core.analysis.analysis.PathP instance at 0x101a5290&gt;]
-</code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Get the class manager from the VM
+</code></pre><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># Get the class manager from the VM
 cm = d.get_class_manager()
 
 src = []
@@ -912,17 +675,12 @@ df_src = pd.DataFrame(src, columns=[&#39;From&#39;, &#39;Method&#39;, &#39;Type&
 df_dst = pd.DataFrame(dst, columns=[&#39;To&#39;, &#39;Method&#39;, &#39;Type&#39;])
 display_html(df_src)
 display_html(df_dst)
-</code></pre></div><!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">m = d.get_method_descriptor(&#34;Lcom/gmail/xservices/XRepeat;&#34;, &#34;onReceive&#34;, &#34;(Landroid/content/Context; Landroid/content/Intent;)V&#34;)
+</code></pre></div><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>m = d.get_method_descriptor(&#34;Lcom/gmail/xservices/XRepeat;&#34;, &#34;onReceive&#34;, &#34;(Landroid/content/Context; Landroid/content/Intent;)V&#34;)
 
 buff_dot = method2dot(x.get_method(m))
 graph = create_graph(buff_dot, &#34;png&#34;)
 Image(graph.create_png())
-</code></pre></div><p><img src="output_86_0.png" alt="png"></p>
-<h2 id="conclusion">Conclusion</h2>
-<p>I&rsquo;ve found cool new ways how to analyze an APK using python tools. <strong>AndroGuard</strong> seems to be a quite good framework to work it. Although I&rsquo;ve managed it to get <em>almost</em> everything working, I must say that the project itself (and its components!) aren&rsquo;t well documented. Then I had several errors like this one:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># ~/work/bin/androguard/androdd.py -i FakeBanker.apk -f PNG -o neu</span>
+</code></pre></div><p><img src=output_86_0.png alt=png></p><h2 id=conclusion>Conclusion</h2><p>I&rsquo;ve found cool new ways how to analyze an APK using python tools. <strong>AndroGuard</strong> seems to be a quite good framework to work it. Although I&rsquo;ve managed it to get <em>almost</em> everything working, I must say that the project itself (and its components!) aren&rsquo;t well documented. Then I had several errors like this one:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># ~/work/bin/androguard/androdd.py -i FakeBanker.apk -f PNG -o neu</span>
 Dump information FakeBanker.apk in neu
 Clean directory neu
 Analysis ... End
@@ -930,114 +688,20 @@ Decompilation ... End
 ERROR: module pydot not found
 Dump Landroid/support/v4/app/FragmentManager; &lt;init&gt; ()V ... PNG ...
 Traceback (most recent call last):
-  File <span style="color:#ed9d13">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 222, in &lt;module&gt;
+  File <span style=color:#ed9d13>&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 222, in &lt;module&gt;
     main(options, arguments)
-  File <span style="color:#ed9d13">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 207, in main~~~~
+  File <span style=color:#ed9d13>&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 207, in main~~~~
     export_apps_to_format(options.input, a, options.output, options.limit, options.jar, options.decompiler, options.format)
-  File <span style="color:#ed9d13">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 180, in export_apps_to_format
-    method2format(filename + <span style="color:#ed9d13">&#34;.&#34;</span> + format, format, None, buff)
-  File <span style="color:#ed9d13">&#34;/root/work/bin/androguard/androguard/core/bytecode.py&#34;</span>, line 338, in method2format
-    error(<span style="color:#ed9d13">&#34;module pydot not found&#34;</span>)
-  File <span style="color:#ed9d13">&#34;/root/work/bin/androguard/androguard/core/androconf.py&#34;</span>, line 270, in error
+  File <span style=color:#ed9d13>&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 180, in export_apps_to_format
+    method2format(filename + <span style=color:#ed9d13>&#34;.&#34;</span> + format, format, None, buff)
+  File <span style=color:#ed9d13>&#34;/root/work/bin/androguard/androguard/core/bytecode.py&#34;</span>, line 338, in method2format
+    error(<span style=color:#ed9d13>&#34;module pydot not found&#34;</span>)
+  File <span style=color:#ed9d13>&#34;/root/work/bin/androguard/androguard/core/androconf.py&#34;</span>, line 270, in error
     raise()
 TypeError: exceptions must be old-style classes or derived from BaseException, not tuple
-</code></pre></div><p>But I don&rsquo;t want to complain about the project. In fact I think its the most comprehensive tool bundle out there for analytical purposes. If you know better alternatives just let me know about it. In the <strong>next part</strong> I&rsquo;ll be writing about <strong>dynamic code analysis</strong>. So stay tuned :)</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/">prev post</a>
-  <a href="http://blog.dornea.nu/2014/08/05/android-dynamic-code-analysis-mastering-droidbox/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>But I don&rsquo;t want to complain about the project. In fact I think its the most comprehensive tool bundle out there for analytical purposes. If you know better alternatives just let me know about it. In the <strong>next part</strong> I&rsquo;ll be writing about <strong>dynamic code analysis</strong>. So stay tuned :)</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/>prev post</a>
+<a href=http://blog.dornea.nu/2014/08/05/android-dynamic-code-analysis-mastering-droidbox/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

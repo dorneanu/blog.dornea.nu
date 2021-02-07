@@ -1,281 +1,182 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>HowTo: Create docs with sphinx - blog.dornea.nu</title>
-  <meta content='HowTo: Create docs with sphinx - blog.dornea.nu' property='title' />
-  <meta content='HowTo: Create docs with sphinx - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="In this post I&rsquo;d like to show some handy way to improve your process of documentating your project. Since we all know documentation is a must you might have wondered how to handle that without any big efforts. In fact it would be great if you could write your code along with the documentation and extract it later on for publishing.
-Meet sphinx It is a tool that you&rsquo;ll love! Being more technical:" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2014/05/04/howto-create-docs-with-sphinx/" />
-
-
-<meta property="article:published_time" content="2014-05-04T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2014-05-04T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">HowTo: Create docs with sphinx</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>04 May 2014</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>In this post I&rsquo;d like to show some handy way to improve your process of documentating your project.
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>HowTo: Create docs with sphinx - blog.dornea.nu</title><meta content="HowTo: Create docs with sphinx - blog.dornea.nu" property="title"><meta content="HowTo: Create docs with sphinx - blog.dornea.nu" property="og:title"><meta property="og:description" content="In this post I&rsquo;d like to show some handy way to improve your process of documentating your project. Since we all know documentation is a must you might have wondered how to handle that without any big efforts. In fact it would be great if you could write your code along with the documentation and extract it later on for publishing.
+Meet sphinx It is a tool that you&rsquo;ll love! Being more technical:"><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/05/04/howto-create-docs-with-sphinx/"><meta property="article:published_time" content="2014-05-04T00:00:00+00:00"><meta property="article:modified_time" content="2014-05-04T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">HowTo: Create docs with sphinx</div><p class="silver f6 mt1 mb4 post-meta"><time>04 May 2014</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/howto class="link silver">howto</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> ]</p><div class="lh-copy post-content"><p>In this post I&rsquo;d like to show some handy way to improve your process of documentating your project.
 Since we all know documentation is a <strong>must</strong> you might have wondered how to handle that
 without any big efforts. In fact it would be great if you could write your code along with the
-documentation and extract it later on for publishing.</p>
-<h2 id="meet-a-hrefhttpsphinx-docorgsphinxa">Meet <!-- raw HTML omitted -->sphinx<!-- raw HTML omitted --></h2>
-<p>It is a tool that you&rsquo;ll love! Being more technical:</p>
-<blockquote>
-<p>It was originally created for the new Python documentation,
+documentation and extract it later on for publishing.</p><h2 id=meet-a-hrefhttpsphinx-docorgsphinxa>Meet sphinx</h2><p>It is a tool that you&rsquo;ll love! Being more technical:</p><blockquote><p>It was originally created for the new Python documentation,
 and it has excellent facilities for the documentation of Python projects,
-but C/C++ is already supported as well, and it is planned to add special support for other languages as well.</p>
-</blockquote>
-<p>I have found this tool reading some documentation on <a href="https://readthedocs.org/">readthedocs.org</a>. I was very impressed
-how <a href="http://sphinx-doc.org/tutorial.html">easy</a> you could document your code and build a documentation format upon on your
-needs:</p>
-<ul>
-<li><a href="http://sphinx-doc.org/latest/builders.html#sphinx.builders.latex.LaTeXBuilder">LatexPDF</a></li>
-<li><a href="http://sphinx-doc.org/latest/builders.html#sphinx.builders.html.SingleFileHTMLBuilder">SingleHTML</a></li>
-<li><a href="http://sphinx-doc.org/latest/builders.html#sphinx.builders.epub.EpubBuilder">EPUB</a></li>
-<li>and many <a href="http://sphinx-doc.org/latest/builders.html">more</a></li>
-</ul>
-<h2 id="quickstart">Quickstart</h2>
-<h3 id="install-tools">Install tools</h3>
-<p>First of create a new <a href="http://www.virtualenv.org/en/latest/">virtualenv</a> environment:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir doku
+but C/C++ is already supported as well, and it is planned to add special support for other languages as well.</p></blockquote><p>I have found this tool reading some documentation on <a href=https://readthedocs.org/>readthedocs.org</a>. I was very impressed
+how <a href=http://sphinx-doc.org/tutorial.html>easy</a> you could document your code and build a documentation format upon on your
+needs:</p><ul><li><a href=http://sphinx-doc.org/latest/builders.html#sphinx.builders.latex.LaTeXBuilder>LatexPDF</a></li><li><a href=http://sphinx-doc.org/latest/builders.html#sphinx.builders.html.SingleFileHTMLBuilder>SingleHTML</a></li><li><a href=http://sphinx-doc.org/latest/builders.html#sphinx.builders.epub.EpubBuilder>EPUB</a></li><li>and many <a href=http://sphinx-doc.org/latest/builders.html>more</a></li></ul><h2 id=quickstart>Quickstart</h2><h3 id=install-tools>Install tools</h3><p>First of create a new <a href=http://www.virtualenv.org/en/latest/>virtualenv</a> environment:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ mkdir doku
 $ virtualenv doku
-Using base prefix &amp;<span style="color:#999;font-style:italic">#039;/usr&amp;#039;</span>
+Using base prefix &amp;<span style=color:#999;font-style:italic>#039;/usr&amp;#039;</span>
 New python executable in doku/bin/python3
 Also creating executable in doku/bin/python
 Installing setuptools, pip...done.
-</code></pre></div><p>Then activate it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">source</span> doku/bin/activate
-â  tmp  <span style="color:#24909d">source</span> doku/bin/activate
-(doku)â  tmp  <span style="color:#24909d">cd</span> doku
+</code></pre></div><p>Then activate it:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ <span style=color:#24909d>source</span> doku/bin/activate
+â  tmp  <span style=color:#24909d>source</span> doku/bin/activate
+(doku)â  tmp  <span style=color:#24909d>cd</span> doku
 (doku)â  doku  ls -l
-total <span style="color:#3677a9">12</span>
-drwxr-xr-x <span style="color:#3677a9">2</span> victor users <span style="color:#3677a9">4096</span> May  <span style="color:#3677a9">4</span> 13:37 bin
-drwxr-xr-x <span style="color:#3677a9">2</span> victor users <span style="color:#3677a9">4096</span> May  <span style="color:#3677a9">4</span> 13:37 include
-drwxr-xr-x <span style="color:#3677a9">3</span> victor users <span style="color:#3677a9">4096</span> May  <span style="color:#3677a9">4</span> 13:37 lib
-</code></pre></div><p>Now you&rsquo;ll have to install <strong>sphinx</strong> using <strong>pip</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku) pip install sphinx
+total <span style=color:#3677a9>12</span>
+drwxr-xr-x <span style=color:#3677a9>2</span> victor users <span style=color:#3677a9>4096</span> May  <span style=color:#3677a9>4</span> 13:37 bin
+drwxr-xr-x <span style=color:#3677a9>2</span> victor users <span style=color:#3677a9>4096</span> May  <span style=color:#3677a9>4</span> 13:37 include
+drwxr-xr-x <span style=color:#3677a9>3</span> victor users <span style=color:#3677a9>4096</span> May  <span style=color:#3677a9>4</span> 13:37 lib
+</code></pre></div><p>Now you&rsquo;ll have to install <strong>sphinx</strong> using <strong>pip</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(doku) pip install sphinx
 Downloading/unpacking sphinx
   Downloading Sphinx-1.2.2-py33-none-any.whl (1.1MB): 1.1MB downloaded
 Downloading/unpacking docutils&gt;=0.10 (from sphinx)
   Downloading docutils-0.11.tar.gz (1.6MB): 1.6MB downloaded
-  Running setup.py (path:/home/victor/tmp/doku/build/docutils/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package docutils
+  Running setup.py (path:/home/victor/tmp/doku/build/docutils/setup.py) egg_info <span style=color:#6ab825;font-weight:700>for</span> package docutils
 
-warning: no files found matching <span style="color:#ed9d13">&#39;MANIFEST&#39;</span>
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;extras&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.cvsignore&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*~&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.DS_Store&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
+warning: no files found matching <span style=color:#ed9d13>&#39;MANIFEST&#39;</span>
+warning: no files found matching <span style=color:#ed9d13>&#39;*&#39;</span> under directory <span style=color:#ed9d13>&#39;extras&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;.cvsignore&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyc&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*~&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;.DS_Store&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
 Downloading/unpacking Jinja2&gt;=2.3 (from sphinx)
   Downloading Jinja2-2.7.2.tar.gz (378kB): 378kB downloaded
-  Running setup.py (path:/home/victor/tmp/doku/build/Jinja2/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package Jinja2
+  Running setup.py (path:/home/victor/tmp/doku/build/Jinja2/setup.py) egg_info <span style=color:#6ab825;font-weight:700>for</span> package Jinja2
 
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;custom_fixers&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs/_build&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
+warning: no files found matching <span style=color:#ed9d13>&#39;*&#39;</span> under directory <span style=color:#ed9d13>&#39;custom_fixers&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*&#39;</span> found under directory <span style=color:#ed9d13>&#39;docs/_build&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyc&#39;</span> found under directory <span style=color:#ed9d13>&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyc&#39;</span> found under directory <span style=color:#ed9d13>&#39;docs&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyo&#39;</span> found under directory <span style=color:#ed9d13>&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyo&#39;</span> found under directory <span style=color:#ed9d13>&#39;docs&#39;</span>
 Downloading/unpacking Pygments&gt;=1.2 (from sphinx)
   Downloading Pygments-1.6.tar.gz (1.4MB): 1.4MB downloaded
-  Running setup.py (path:/home/victor/tmp/doku/build/Pygments/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package Pygments
+  Running setup.py (path:/home/victor/tmp/doku/build/Pygments/setup.py) egg_info <span style=color:#6ab825;font-weight:700>for</span> package Pygments
 
 Downloading/unpacking markupsafe (from Jinja2&gt;=2.3-&gt;sphinx)
   Downloading MarkupSafe-0.21.tar.gz
-  Running setup.py (path:/home/victor/tmp/doku/build/markupsafe/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package markupsafe
+  Running setup.py (path:/home/victor/tmp/doku/build/markupsafe/setup.py) egg_info <span style=color:#6ab825;font-weight:700>for</span> package markupsafe
 
 Installing collected packages: sphinx, docutils, Jinja2, Pygments, markupsafe
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> docutils
+  Running setup.py install <span style=color:#6ab825;font-weight:700>for</span> docutils
 Skipping implicit fixer: buffer
 Skipping implicit fixer: idioms
 Skipping implicit fixer: set_literal
 Skipping implicit fixer: ws_comma
-copy/convert <span style="color:#24909d">test</span> suite
-changing mode of build/scripts-3.4/rst2html.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2s5.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2latex.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2xetex.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2man.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2xml.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2pseudoxml.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rstpep2html.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2odt.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2odt_prepstyles.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
+copy/convert <span style=color:#24909d>test</span> suite
+changing mode of build/scripts-3.4/rst2html.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2s5.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2latex.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2xetex.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2man.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2xml.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2pseudoxml.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rstpep2html.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2odt.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
+changing mode of build/scripts-3.4/rst2odt_prepstyles.py from <span style=color:#3677a9>644</span> to <span style=color:#3677a9>755</span>
 
-warning: no files found matching <span style="color:#ed9d13">&#39;MANIFEST&#39;</span>
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;extras&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.cvsignore&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*~&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.DS_Store&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-changing mode of /home/victor/tmp/doku/bin/rstpep2html.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2xml.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2pseudoxml.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2html.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2odt_prepstyles.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2latex.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2man.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2odt.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2xetex.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2s5.py to <span style="color:#3677a9">755</span>
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> Jinja2
+warning: no files found matching <span style=color:#ed9d13>&#39;MANIFEST&#39;</span>
+warning: no files found matching <span style=color:#ed9d13>&#39;*&#39;</span> under directory <span style=color:#ed9d13>&#39;extras&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;.cvsignore&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyc&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*~&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;.DS_Store&#39;</span> found under directory <span style=color:#ed9d13>&#39;*&#39;</span>
+changing mode of /home/victor/tmp/doku/bin/rstpep2html.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2xml.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2pseudoxml.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2html.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2odt_prepstyles.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2latex.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2man.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2odt.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2xetex.py to <span style=color:#3677a9>755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2s5.py to <span style=color:#3677a9>755</span>
+  Running setup.py install <span style=color:#6ab825;font-weight:700>for</span> Jinja2
 
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;custom_fixers&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs/_build&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> Pygments
+warning: no files found matching <span style=color:#ed9d13>&#39;*&#39;</span> under directory <span style=color:#ed9d13>&#39;custom_fixers&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*&#39;</span> found under directory <span style=color:#ed9d13>&#39;docs/_build&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyc&#39;</span> found under directory <span style=color:#ed9d13>&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyc&#39;</span> found under directory <span style=color:#ed9d13>&#39;docs&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyo&#39;</span> found under directory <span style=color:#ed9d13>&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span style=color:#ed9d13>&#39;*.pyo&#39;</span> found under directory <span style=color:#ed9d13>&#39;docs&#39;</span>
+  Running setup.py install <span style=color:#6ab825;font-weight:700>for</span> Pygments
 Skipping implicit fixer: buffer
 Skipping implicit fixer: idioms
 Skipping implicit fixer: set_literal
 Skipping implicit fixer: ws_comma
 
 Installing pygmentize script to /home/victor/tmp/doku/bin
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> markupsafe
+  Running setup.py install <span style=color:#6ab825;font-weight:700>for</span> markupsafe
 
-building <span style="color:#ed9d13">&#39;markupsafe._speedups&#39;</span> extension
-gcc -pthread -Wno-unused-result -Werror=declaration-after-statement -DDYNAMIC_ANNOTATIONS_ENABLED=<span style="color:#3677a9">1</span> -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -march=x86-64 -mtune=generic -O2 -pipe -fstack-protector --param=ssp-buffer-size=<span style="color:#3677a9">4</span> -fPIC -I/usr/include/python3.4m -c markupsafe/_speedups.c -o build/temp.linux-x86_64-3.4/markupsafe/_speedups.o
+building <span style=color:#ed9d13>&#39;markupsafe._speedups&#39;</span> extension
+gcc -pthread -Wno-unused-result -Werror=declaration-after-statement -DDYNAMIC_ANNOTATIONS_ENABLED=<span style=color:#3677a9>1</span> -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -march=x86-64 -mtune=generic -O2 -pipe -fstack-protector --param=ssp-buffer-size=<span style=color:#3677a9>4</span> -fPIC -I/usr/include/python3.4m -c markupsafe/_speedups.c -o build/temp.linux-x86_64-3.4/markupsafe/_speedups.o
 gcc -pthread -shared -Wl,-O1,--sort-common,--as-needed,-z,relro build/temp.linux-x86_64-3.4/markupsafe/_speedups.o -L/usr/lib -lpython3.4m -o build/lib.linux-x86_64-3.4/markupsafe/_speedups.cpython-34m.so
 Successfully installed sphinx docutils Jinja2 Pygments markupsafe
 Cleaning up...
 (doku) doku
-</code></pre></div><p>Now you should be ready to go.</p>
-<h3 id="create-new-documentation-dir-structure">Create new documentation dir structure</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  doku  mkdir my_documentation
+</code></pre></div><p>Now you should be ready to go.</p><h3 id=create-new-documentation-dir-structure>Create new documentation dir structure</h3><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(doku)â  doku  mkdir my_documentation
 (doku)â  doku  sphinx-quickstart
 Welcome to the Sphinx 1.2.2 quickstart utility.
 
-Please enter values <span style="color:#6ab825;font-weight:bold">for</span> the following settings (just press Enter to
-accept a default value, <span style="color:#6ab825;font-weight:bold">if</span> one is given in brackets).
+Please enter values <span style=color:#6ab825;font-weight:700>for</span> the following settings (just press Enter to
+accept a default value, <span style=color:#6ab825;font-weight:700>if</span> one is given in brackets).
 
-Enter the root path <span style="color:#6ab825;font-weight:bold">for</span> documentation.
-&gt; Root path <span style="color:#6ab825;font-weight:bold">for</span> the documentation [.]: my_documentation
+Enter the root path <span style=color:#6ab825;font-weight:700>for</span> documentation.
+&gt; Root path <span style=color:#6ab825;font-weight:700>for</span> the documentation [.]: my_documentation
 
-You have two options <span style="color:#6ab825;font-weight:bold">for</span> placing the build directory <span style="color:#6ab825;font-weight:bold">for</span> Sphinx output.
-Either, you use a directory <span style="color:#ed9d13">&#34;_build&#34;</span> within the root path, or you separate
-<span style="color:#ed9d13">&#34;source&#34;</span> and <span style="color:#ed9d13">&#34;build&#34;</span> directories within the root path.
-&gt; Separate <span style="color:#24909d">source</span> and build directories (y/n) [n]: n
+You have two options <span style=color:#6ab825;font-weight:700>for</span> placing the build directory <span style=color:#6ab825;font-weight:700>for</span> Sphinx output.
+Either, you use a directory <span style=color:#ed9d13>&#34;_build&#34;</span> within the root path, or you separate
+<span style=color:#ed9d13>&#34;source&#34;</span> and <span style=color:#ed9d13>&#34;build&#34;</span> directories within the root path.
+&gt; Separate <span style=color:#24909d>source</span> and build directories (y/n) [n]: n
 
-Inside the root directory, two more directories will be created; <span style="color:#ed9d13">&#34;_templates&#34;</span>
-<span style="color:#6ab825;font-weight:bold">for</span> custom HTML templates and <span style="color:#ed9d13">&#34;_static&#34;</span> <span style="color:#6ab825;font-weight:bold">for</span> custom stylesheets and other static
-files. You can enter another prefix (such as <span style="color:#ed9d13">&#34;.&#34;</span>) to replace the underscore.
-&gt; Name prefix <span style="color:#6ab825;font-weight:bold">for</span> templates and static dir [_]:
+Inside the root directory, two more directories will be created; <span style=color:#ed9d13>&#34;_templates&#34;</span>
+<span style=color:#6ab825;font-weight:700>for</span> custom HTML templates and <span style=color:#ed9d13>&#34;_static&#34;</span> <span style=color:#6ab825;font-weight:700>for</span> custom stylesheets and other static
+files. You can enter another prefix (such as <span style=color:#ed9d13>&#34;.&#34;</span>) to replace the underscore.
+&gt; Name prefix <span style=color:#6ab825;font-weight:700>for</span> templates and static dir [_]:
 
 The project name will occur in several places in the built documentation.
 &gt; Project name: My Documentation
 &gt; Author name(s): Victor
 
-Sphinx has the notion of a <span style="color:#ed9d13">&#34;version&#34;</span> and a <span style="color:#ed9d13">&#34;release&#34;</span> <span style="color:#6ab825;font-weight:bold">for</span> the
-software. Each version can have multiple releases. For example, <span style="color:#6ab825;font-weight:bold">for</span>
-Python the version is something like 2.5 or 3.0, <span style="color:#6ab825;font-weight:bold">while</span> the release is
-something like 2.5.1 or 3.0a1.  If you don<span style="color:#ed9d13">&#39;t need this dual structure,
-</span><span style="color:#ed9d13">just set both to the same value.
-</span><span style="color:#ed9d13">&gt; Project version: 0.1
-</span><span style="color:#ed9d13">&gt; Project release [0.1]: 0.1.0
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">The file name suffix for source files. Commonly, this is either &#34;.txt&#34;
-</span><span style="color:#ed9d13">or &#34;.rst&#34;.  Only files with this suffix are considered documents.
-</span><span style="color:#ed9d13">&gt; Source file suffix [.rst]:
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">One document is special in that it is considered the top node of the
-</span><span style="color:#ed9d13">&#34;contents tree&#34;, that is, it is the root of the hierarchical structure
-</span><span style="color:#ed9d13">of the documents. Normally, this is &#34;index&#34;, but if your &#34;index&#34;
-</span><span style="color:#ed9d13">document is a custom template, you can also set this to another filename.
-</span><span style="color:#ed9d13">&gt; Name of your master document (without suffix) [index]:
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">Sphinx can also add configuration for epub output:
-</span><span style="color:#ed9d13">&gt; Do you want to use the epub builder (y/n) [n]: n
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">Please indicate if you want to use one of the following Sphinx extensions:
-</span><span style="color:#ed9d13">&gt; autodoc: automatically insert docstrings from modules (y/n) [n]: y
-</span><span style="color:#ed9d13">&gt; doctest: automatically test code snippets in doctest blocks (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; intersphinx: link between Sphinx documentation of different projects (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; todo: write &#34;todo&#34; entries that can be shown or hidden on build (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; coverage: checks for documentation coverage (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; pngmath: include math, rendered as PNG images (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; mathjax: include math, rendered in the browser by MathJax (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; ifconfig: conditional inclusion of content based on config values (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; viewcode: include links to the source code of documented Python objects (y/n) [n]: n
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">A Makefile and a Windows command file can be generated for you so that you
-</span><span style="color:#ed9d13">only have to run e.g. `make html&#39;</span> instead of invoking sphinx-build
+Sphinx has the notion of a <span style=color:#ed9d13>&#34;version&#34;</span> and a <span style=color:#ed9d13>&#34;release&#34;</span> <span style=color:#6ab825;font-weight:700>for</span> the
+software. Each version can have multiple releases. For example, <span style=color:#6ab825;font-weight:700>for</span>
+Python the version is something like 2.5 or 3.0, <span style=color:#6ab825;font-weight:700>while</span> the release is
+something like 2.5.1 or 3.0a1.  If you don<span style=color:#ed9d13>&#39;t need this dual structure,
+</span><span style=color:#ed9d13>just set both to the same value.
+</span><span style=color:#ed9d13>&gt; Project version: 0.1
+</span><span style=color:#ed9d13>&gt; Project release [0.1]: 0.1.0
+</span><span style=color:#ed9d13>
+</span><span style=color:#ed9d13>The file name suffix for source files. Commonly, this is either &#34;.txt&#34;
+</span><span style=color:#ed9d13>or &#34;.rst&#34;.  Only files with this suffix are considered documents.
+</span><span style=color:#ed9d13>&gt; Source file suffix [.rst]:
+</span><span style=color:#ed9d13>
+</span><span style=color:#ed9d13>One document is special in that it is considered the top node of the
+</span><span style=color:#ed9d13>&#34;contents tree&#34;, that is, it is the root of the hierarchical structure
+</span><span style=color:#ed9d13>of the documents. Normally, this is &#34;index&#34;, but if your &#34;index&#34;
+</span><span style=color:#ed9d13>document is a custom template, you can also set this to another filename.
+</span><span style=color:#ed9d13>&gt; Name of your master document (without suffix) [index]:
+</span><span style=color:#ed9d13>
+</span><span style=color:#ed9d13>Sphinx can also add configuration for epub output:
+</span><span style=color:#ed9d13>&gt; Do you want to use the epub builder (y/n) [n]: n
+</span><span style=color:#ed9d13>
+</span><span style=color:#ed9d13>Please indicate if you want to use one of the following Sphinx extensions:
+</span><span style=color:#ed9d13>&gt; autodoc: automatically insert docstrings from modules (y/n) [n]: y
+</span><span style=color:#ed9d13>&gt; doctest: automatically test code snippets in doctest blocks (y/n) [n]: n
+</span><span style=color:#ed9d13>&gt; intersphinx: link between Sphinx documentation of different projects (y/n) [n]: n
+</span><span style=color:#ed9d13>&gt; todo: write &#34;todo&#34; entries that can be shown or hidden on build (y/n) [n]: n
+</span><span style=color:#ed9d13>&gt; coverage: checks for documentation coverage (y/n) [n]: n
+</span><span style=color:#ed9d13>&gt; pngmath: include math, rendered as PNG images (y/n) [n]: n
+</span><span style=color:#ed9d13>&gt; mathjax: include math, rendered in the browser by MathJax (y/n) [n]: n
+</span><span style=color:#ed9d13>&gt; ifconfig: conditional inclusion of content based on config values (y/n) [n]: n
+</span><span style=color:#ed9d13>&gt; viewcode: include links to the source code of documented Python objects (y/n) [n]: n
+</span><span style=color:#ed9d13>
+</span><span style=color:#ed9d13>A Makefile and a Windows command file can be generated for you so that you
+</span><span style=color:#ed9d13>only have to run e.g. `make html&#39;</span> instead of invoking sphinx-build
 directly.
 &gt; Create Makefile? (y/n) [y]:
-&gt; Create Windows <span style="color:#24909d">command</span> file? (y/n) [y]: n
+&gt; Create Windows <span style=color:#24909d>command</span> file? (y/n) [y]: n
 
 Creating file my_documentation/conf.py.
 Creating file my_documentation/index.rst.
@@ -284,23 +185,21 @@ Creating file my_documentation/Makefile.
 Finished: An initial directory structure has been created.
 
 You should now populate your master file my_documentation/index.rst and create other documentation
-<span style="color:#24909d">source</span> files. Use the Makefile to build the docs, like so:
+<span style=color:#24909d>source</span> files. Use the Makefile to build the docs, like so:
    make builder
-where <span style="color:#ed9d13">&#34;builder&#34;</span> is one of the supported builders, e.g. html, latex or linkcheck.
-</code></pre></div><h3 id="create-some-builds">Create some builds</h3>
-<p>Now you can call <strong>make</strong> to build your desired documentation format:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  make
-Please use <span style="color:#ed9d13">`</span>make &lt;target&gt;<span style="color:#a61717;background-color:#e3d2d2">&#39;</span> where &lt;target&gt; is one of
+where <span style=color:#ed9d13>&#34;builder&#34;</span> is one of the supported builders, e.g. html, latex or linkcheck.
+</code></pre></div><h3 id=create-some-builds>Create some builds</h3><p>Now you can call <strong>make</strong> to build your desired documentation format:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(doku)â  my_documentation  make
+Please use <span style=color:#ed9d13>`</span>make &lt;target&gt;<span style=color:#a61717;background-color:#e3d2d2>&#39;</span> where &lt;target&gt; is one of
   html       to make standalone HTML files
   dirhtml    to make HTML files named index.html in directories
   singlehtml to make a single large HTML file
   pickle     to make pickle files
   json       to make JSON files
-  htmlhelp   to make HTML files and a HTML <span style="color:#24909d">help</span> project
+  htmlhelp   to make HTML files and a HTML <span style=color:#24909d>help</span> project
   qthelp     to make HTML files and a qthelp project
   devhelp    to make HTML files and a Devhelp project
   epub       to make an epub
-  latex      to make LaTeX files, you can <span style="color:#24909d">set</span> <span style="color:#40ffff">PAPER</span>=a4 or <span style="color:#40ffff">PAPER</span>=letter
+  latex      to make LaTeX files, you can <span style=color:#24909d>set</span> <span style=color:#40ffff>PAPER</span>=a4 or <span style=color:#40ffff>PAPER</span>=letter
   latexpdf   to make LaTeX files and run them through pdflatex
   latexpdfja to make LaTeX files and run them through platex/dvipdfmx
   text       to make text files
@@ -310,55 +209,52 @@ Please use <span style="color:#ed9d13">`</span>make &lt;target&gt;<span style="c
   gettext    to make PO message catalogs
   changes    to make an overview of all changed/added/deprecated items
   xml        to make Docutils-native XML files
-  pseudoxml  to make pseudoxml-XML files <span style="color:#6ab825;font-weight:bold">for</span> display purposes
-  linkcheck  to check all external links <span style="color:#6ab825;font-weight:bold">for</span> integrity
-  doctest    to run all doctests embedded in the documentation (<span style="color:#6ab825;font-weight:bold">if</span> enabled)
-</code></pre></div><p>Let&rsquo;s try with <strong>html</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  make html
+  pseudoxml  to make pseudoxml-XML files <span style=color:#6ab825;font-weight:700>for</span> display purposes
+  linkcheck  to check all external links <span style=color:#6ab825;font-weight:700>for</span> integrity
+  doctest    to run all doctests embedded in the documentation (<span style=color:#6ab825;font-weight:700>if</span> enabled)
+</code></pre></div><p>Let&rsquo;s try with <strong>html</strong>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(doku)â  my_documentation  make html
 sphinx-build -b html -d _build/doctrees   . _build/html
 Making output directory...
 Running Sphinx v1.2.2
-loading pickled environment... failed: [Errno 2] No such file or directory: <span style="color:#ed9d13">&#39;/home/victor/tmp/doku/my_documentation/_build/doctrees/environment.pickle&#39;</span>
-building [html]: targets <span style="color:#6ab825;font-weight:bold">for</span> <span style="color:#3677a9">1</span> <span style="color:#24909d">source</span> files that are out of date
-updating environment: <span style="color:#3677a9">1</span> added, <span style="color:#3677a9">0</span> changed, <span style="color:#3677a9">0</span> removed
+loading pickled environment... failed: [Errno 2] No such file or directory: <span style=color:#ed9d13>&#39;/home/victor/tmp/doku/my_documentation/_build/doctrees/environment.pickle&#39;</span>
+building [html]: targets <span style=color:#6ab825;font-weight:700>for</span> <span style=color:#3677a9>1</span> <span style=color:#24909d>source</span> files that are out of date
+updating environment: <span style=color:#3677a9>1</span> added, <span style=color:#3677a9>0</span> changed, <span style=color:#3677a9>0</span> removed
 reading sources... [100%] index
-looking <span style="color:#6ab825;font-weight:bold">for</span> now-outdated files... none found
-pickling environment... <span style="color:#6ab825;font-weight:bold">done</span>
-checking consistency... <span style="color:#6ab825;font-weight:bold">done</span>
-preparing documents... <span style="color:#6ab825;font-weight:bold">done</span>
+looking <span style=color:#6ab825;font-weight:700>for</span> now-outdated files... none found
+pickling environment... <span style=color:#6ab825;font-weight:700>done</span>
+checking consistency... <span style=color:#6ab825;font-weight:700>done</span>
+preparing documents... <span style=color:#6ab825;font-weight:700>done</span>
 writing output... [100%] index
 writing additional files... genindex search
-copying static files... <span style="color:#6ab825;font-weight:bold">done</span>
-copying extra files... <span style="color:#6ab825;font-weight:bold">done</span>
-dumping search index... <span style="color:#6ab825;font-weight:bold">done</span>
-dumping object inventory... <span style="color:#6ab825;font-weight:bold">done</span>
+copying static files... <span style=color:#6ab825;font-weight:700>done</span>
+copying extra files... <span style=color:#6ab825;font-weight:700>done</span>
+dumping search index... <span style=color:#6ab825;font-weight:700>done</span>
+dumping object inventory... <span style=color:#6ab825;font-weight:700>done</span>
 build succeeded.
 
 Build finished. The HTML pages are in _build/html.
-</code></pre></div><p>How about <strong>PDF</strong>?</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  make latexpdf
+</code></pre></div><p>How about <strong>PDF</strong>?</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(doku)â  my_documentation  make latexpdf
 sphinx-build -b latex -d _build/doctrees   . _build/latex
 Making output directory...
 Running Sphinx v1.2.2
-loading pickled environment... <span style="color:#6ab825;font-weight:bold">done</span>
+loading pickled environment... <span style=color:#6ab825;font-weight:700>done</span>
 building [latex]: all documents
-updating environment: <span style="color:#3677a9">0</span> added, <span style="color:#3677a9">0</span> changed, <span style="color:#3677a9">0</span> removed
-looking <span style="color:#6ab825;font-weight:bold">for</span> now-outdated files... none found
+updating environment: <span style=color:#3677a9>0</span> added, <span style=color:#3677a9>0</span> changed, <span style=color:#3677a9>0</span> removed
+looking <span style=color:#6ab825;font-weight:700>for</span> now-outdated files... none found
 processing MyDocumentation.tex... index
 resolving references...
-writing... <span style="color:#6ab825;font-weight:bold">done</span>
+writing... <span style=color:#6ab825;font-weight:700>done</span>
 copying TeX support files...
-<span style="color:#6ab825;font-weight:bold">done</span>
+<span style=color:#6ab825;font-weight:700>done</span>
 build succeeded.
 Running LaTeX files through pdflatex...
 make -C _build/latex all-pdf
-make[1]: Entering directory <span style="color:#ed9d13">&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
+make[1]: Entering directory <span style=color:#ed9d13>&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
 ...
 Transcript written on MyDocumentation.log.
-make[1]: Leaving directory <span style="color:#ed9d13">&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
+make[1]: Leaving directory <span style=color:#ed9d13>&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
 pdflatex finished; the PDF files are in _build/latex.
-</code></pre></div><p>You can find you <strong>builds</strong> inside the <strong>_build</strong> folder:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  tree _build
+</code></pre></div><p>You can find you <strong>builds</strong> inside the <strong>_build</strong> folder:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>(doku)â  my_documentation  tree _build
 _build
 âââ doctrees
 â   âââ environment.pickle
@@ -409,117 +305,13 @@ _build
     âââ sphinxmanual.cls
     âââ sphinx.sty
     âââ tabulary.sty
-</code></pre></div><p>You can easily customize the output of your PDF (when dealing with LaTeX). Just have a look at Pedros <a href="http://pedrokroger.net/using-sphinx-write-technical-books/">tips</a>
-how to do that. However if you don&rsquo;t want to use LaTeX to generate your PDF, you could also have a look at <a href="https://code.google.com/p/rst2pdf/">rst2pdf</a>
-which will convert your RST file into some PDF. <strong>Attention</strong>: <strong>rst2pdf</strong> is <strong>not</strong> available for Python <strong>3</strong>.x!</p>
-<h2 id="themes">Themes</h2>
-<p>Although I like to use PDFs when generating my documentation, HTML file are also fine. Make sure you have a look at <a href="http://sphinx-doc.org/theming.html">how</a>
-themes are used. There are some basic themes provided within sphinx itself, but you can also create your own <a href="http://sphinx-doc.org/theming.html#creating-themes">ones</a>.
-Also search for themes: <a href="https://github.com/search?q=sphinx+theme&amp;ref=cmdform">GitHub is your friend!</a></p>
-<h2 id="conclusion">Conclusion</h2>
-<p>You can use <strong>sphinx</strong> to generate all kind of documentation. Examples:</p>
-<ul>
-<li><a href="https://github.com/AndreasHeger/sphinx-report">Reports</a></li>
-<li><a href="http://pedrokroger.net/using-sphinx-write-technical-books/">Books</a></li>
-<li><a href="http://bartaz.github.io/impress.js/#/bored">Presentations</a> (using <a href="https://github.com/bartaz/impress.js/">impress.js</a>)</li>
-<li>Create diagrams: <a href="http://sphinx-doc.org/ext/graphviz.html">graphviz</a> or <a href="http://blockdiag.com/en/blockdiag/sphinxcontrib.html">blockdiag</a></li>
-</ul>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2014/03/07/unfancy-dashboard-using-matplotlib/">prev post</a>
-  <a href="http://blog.dornea.nu/2014/05/20/howto-write-pentest-reports-the-easy-way/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>You can easily customize the output of your PDF (when dealing with LaTeX). Just have a look at Pedros <a href=http://pedrokroger.net/using-sphinx-write-technical-books/>tips</a>
+how to do that. However if you don&rsquo;t want to use LaTeX to generate your PDF, you could also have a look at <a href=https://code.google.com/p/rst2pdf/>rst2pdf</a>
+which will convert your RST file into some PDF. <strong>Attention</strong>: <strong>rst2pdf</strong> is <strong>not</strong> available for Python <strong>3</strong>.x!</p><h2 id=themes>Themes</h2><p>Although I like to use PDFs when generating my documentation, HTML file are also fine. Make sure you have a look at <a href=http://sphinx-doc.org/theming.html>how</a>
+themes are used. There are some basic themes provided within sphinx itself, but you can also create your own <a href=http://sphinx-doc.org/theming.html#creating-themes>ones</a>.
+Also search for themes: <a href="https://github.com/search?q=sphinx+theme&ref=cmdform">GitHub is your friend!</a></p><h2 id=conclusion>Conclusion</h2><p>You can use <strong>sphinx</strong> to generate all kind of documentation. Examples:</p><ul><li><a href=https://github.com/AndreasHeger/sphinx-report>Reports</a></li><li><a href=http://pedrokroger.net/using-sphinx-write-technical-books/>Books</a></li><li><a href=http://bartaz.github.io/impress.js/#/bored>Presentations</a> (using <a href=https://github.com/bartaz/impress.js/>impress.js</a>)</li><li>Create diagrams: <a href=http://sphinx-doc.org/ext/graphviz.html>graphviz</a> or <a href=http://blockdiag.com/en/blockdiag/sphinxcontrib.html>blockdiag</a></li></ul></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/03/07/unfancy-dashboard-using-matplotlib/>prev post</a>
+<a href=http://blog.dornea.nu/2014/05/20/howto-write-pentest-reports-the-easy-way/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

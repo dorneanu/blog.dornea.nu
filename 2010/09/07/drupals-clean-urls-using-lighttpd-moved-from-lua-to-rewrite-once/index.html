@@ -1,213 +1,53 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once - blog.dornea.nu</title><meta content="Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once - blog.dornea.nu" property="title"><meta content="Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once - blog.dornea.nu" property="og:title"><meta property="og:description" content="I&rsquo;ve been using Lighttpd + Drupal for a long time. In order to have those sexy clean urls, you&rsquo;ll have to do some rewrite stuff. A few months ago I found this Lua script, which served its purpose without any complications.
+-- little helper function function file_exists(path) local attr = lighty.stat(path) if (attr) then return true else return false end end function removePrefix(str, prefix) return str:sub(1,#prefix+1) == prefix..&#34;/&#34; and str:sub(#prefix+2) end -- prefix without the trailing slash local prefix = '' -- the magic if (not file_exists(lighty."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2010/09/07/drupals-clean-urls-using-lighttpd-moved-from-lua-to-rewrite-once/"><meta property="article:published_time" content="2010-09-07T00:00:00+00:00"><meta property="article:modified_time" content="2010-09-07T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once</div><p class="silver f6 mt1 mb4 post-meta"><time>07 Sep 2010</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/web class="link silver">web</a> <a href=http://blog.dornea.nu/tags/lighttpd class="link silver">lighttpd</a> <a href=http://blog.dornea.nu/tags/drupal class="link silver">drupal</a> <a href=http://blog.dornea.nu/tags/admin class="link silver">admin</a> ]</p><div class="lh-copy post-content"><p>I&rsquo;ve been using Lighttpd + Drupal for a long time. In order to have those sexy clean urls, you&rsquo;ll have to do some rewrite stuff. A few months ago I found this Lua script, which served its purpose without any complications.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.lua data-lang=.lua><span style=color:#999;font-style:italic>-- little helper function</span>
+<span style=color:#6ab825;font-weight:700>function</span> <span style=color:#447fcf>file_exists</span>(path)
+<span style=color:#6ab825;font-weight:700>local</span> attr = lighty.stat(path)
+<span style=color:#6ab825;font-weight:700>if</span> (attr) <span style=color:#6ab825;font-weight:700>then</span>
+<span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>true</span>
+<span style=color:#6ab825;font-weight:700>else</span>
+<span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>false</span>
+<span style=color:#6ab825;font-weight:700>end</span>
+<span style=color:#6ab825;font-weight:700>end</span>
+<span style=color:#6ab825;font-weight:700>function</span> <span style=color:#447fcf>removePrefix</span>(str, prefix)
+<span style=color:#6ab825;font-weight:700>return</span> str:sub(<span style=color:#3677a9>1</span>,#prefix+<span style=color:#3677a9>1</span>) == prefix..<span style=color:#ed9d13>&#34;/&#34;</span> <span style=color:#6ab825;font-weight:700>and</span> str:sub(#prefix+<span style=color:#3677a9>2</span>)
+<span style=color:#6ab825;font-weight:700>end</span>
 
-  <title>Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once - blog.dornea.nu</title>
-  <meta content='Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once - blog.dornea.nu' property='title' />
-  <meta content='Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once - blog.dornea.nu' property='og:title' />
+<span style=color:#999;font-style:italic>-- prefix without the trailing slash</span>
+<span style=color:#6ab825;font-weight:700>local</span> prefix = <span style=color:#ed9d13>&#39;&#39;</span>
 
-
-<meta property="og:description" content="I&rsquo;ve been using Lighttpd &#43; Drupal for a long time. In order to have those sexy clean urls, you&rsquo;ll have to do some rewrite stuff. A few months ago I found this Lua script, which served its purpose without any complications.
--- little helper function function file_exists(path) local attr = lighty.stat(path) if (attr) then return true else return false end end function removePrefix(str, prefix) return str:sub(1,#prefix&#43;1) == prefix..&#34;/&#34; and str:sub(#prefix&#43;2) end -- prefix without the trailing slash local prefix = &#39;&#39; -- the magic if (not file_exists(lighty." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2010/09/07/drupals-clean-urls-using-lighttpd-moved-from-lua-to-rewrite-once/" />
-
-
-<meta property="article:published_time" content="2010-09-07T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2010-09-07T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">Drupals clean urls using Lighttpd: Moved from Lua to rewrite-once</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>07 Sep 2010</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='http://blog.dornea.nu/tags/lighttpd' class="link silver">lighttpd</a> <a href='http://blog.dornea.nu/tags/drupal' class="link silver">drupal</a> <a href='http://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>I&rsquo;ve been using Lighttpd + Drupal for a long time. In order to have those sexy clean urls, you&rsquo;ll have to do some rewrite stuff. A few months ago I found this Lua script, which served its purpose without any complications.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.lua" data-lang=".lua"><span style="color:#999;font-style:italic">-- little helper function</span>
-<span style="color:#6ab825;font-weight:bold">function</span> <span style="color:#447fcf">file_exists</span>(path)
-<span style="color:#6ab825;font-weight:bold">local</span> attr = lighty.stat(path)
-<span style="color:#6ab825;font-weight:bold">if</span> (attr) <span style="color:#6ab825;font-weight:bold">then</span>
-<span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">true</span>
-<span style="color:#6ab825;font-weight:bold">else</span>
-<span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">false</span>
-<span style="color:#6ab825;font-weight:bold">end</span>
-<span style="color:#6ab825;font-weight:bold">end</span>
-<span style="color:#6ab825;font-weight:bold">function</span> <span style="color:#447fcf">removePrefix</span>(str, prefix)
-<span style="color:#6ab825;font-weight:bold">return</span> str:sub(<span style="color:#3677a9">1</span>,#prefix+<span style="color:#3677a9">1</span>) == prefix..<span style="color:#ed9d13">&#34;/&#34;</span> <span style="color:#6ab825;font-weight:bold">and</span> str:sub(#prefix+<span style="color:#3677a9">2</span>)
-<span style="color:#6ab825;font-weight:bold">end</span>
-
-<span style="color:#999;font-style:italic">-- prefix without the trailing slash</span>
-<span style="color:#6ab825;font-weight:bold">local</span> prefix = <span style="color:#ed9d13">&#39;&#39;</span>
-
-<span style="color:#999;font-style:italic">-- the magic</span>
-<span style="color:#6ab825;font-weight:bold">if</span> (<span style="color:#6ab825;font-weight:bold">not</span> file_exists(lighty.env[<span style="color:#ed9d13">&#34;physical.path&#34;</span>])) <span style="color:#6ab825;font-weight:bold">then</span>
-<span style="color:#999;font-style:italic">-- file still missing. pass it to the fastcgi backend</span>
-request_uri = removePrefix(lighty.env[<span style="color:#ed9d13">&#34;uri.path&#34;</span>], prefix)
-<span style="color:#6ab825;font-weight:bold">if</span> request_uri <span style="color:#6ab825;font-weight:bold">then</span>
-lighty.env[<span style="color:#ed9d13">&#34;uri.path&#34;</span>] = prefix .. <span style="color:#ed9d13">&#34;/index.php&#34;</span>
-<span style="color:#6ab825;font-weight:bold">local</span> uriquery = lighty.env[<span style="color:#ed9d13">&#34;uri.query&#34;</span>] <span style="color:#6ab825;font-weight:bold">or</span> <span style="color:#ed9d13">&#34;&#34;</span>
-lighty.env[<span style="color:#ed9d13">&#34;uri.query&#34;</span>] = uriquery .. (uriquery ~= <span style="color:#ed9d13">&#34;&#34;</span> <span style="color:#6ab825;font-weight:bold">and</span> <span style="color:#ed9d13">&#34;&amp;&#34;</span> <span style="color:#6ab825;font-weight:bold">or</span> <span style="color:#ed9d13">&#34;&#34;</span>) .. <span style="color:#ed9d13">&#34;q=&#34;</span> .. request_uri
-lighty.env[<span style="color:#ed9d13">&#34;physical.rel-path&#34;</span>] = lighty.env[<span style="color:#ed9d13">&#34;uri.path&#34;</span>]
-lighty.env[<span style="color:#ed9d13">&#34;request.orig-uri&#34;</span>] = lighty.env[<span style="color:#ed9d13">&#34;request.uri&#34;</span>]
-lighty.env[<span style="color:#ed9d13">&#34;physical.path&#34;</span>] = lighty.env[<span style="color:#ed9d13">&#34;physical.doc-root&#34;</span>] .. lighty.env[<span style="color:#ed9d13">&#34;physical.rel-path&#34;</span>]
-<span style="color:#6ab825;font-weight:bold">end</span>
-<span style="color:#6ab825;font-weight:bold">end</span>
-<span style="color:#999;font-style:italic">-- fallthrough will put it back into the lighty request loop</span>
-<span style="color:#999;font-style:italic">-- that means we get the 304 handling for free.</span>
-</code></pre></div><p>Your <code>lighttpd.conf</code> should include - somewhere! - this lines:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Make Drupal&#39;s url SEXY
+<span style=color:#999;font-style:italic>-- the magic</span>
+<span style=color:#6ab825;font-weight:700>if</span> (<span style=color:#6ab825;font-weight:700>not</span> file_exists(lighty.env[<span style=color:#ed9d13>&#34;physical.path&#34;</span>])) <span style=color:#6ab825;font-weight:700>then</span>
+<span style=color:#999;font-style:italic>-- file still missing. pass it to the fastcgi backend</span>
+request_uri = removePrefix(lighty.env[<span style=color:#ed9d13>&#34;uri.path&#34;</span>], prefix)
+<span style=color:#6ab825;font-weight:700>if</span> request_uri <span style=color:#6ab825;font-weight:700>then</span>
+lighty.env[<span style=color:#ed9d13>&#34;uri.path&#34;</span>] = prefix .. <span style=color:#ed9d13>&#34;/index.php&#34;</span>
+<span style=color:#6ab825;font-weight:700>local</span> uriquery = lighty.env[<span style=color:#ed9d13>&#34;uri.query&#34;</span>] <span style=color:#6ab825;font-weight:700>or</span> <span style=color:#ed9d13>&#34;&#34;</span>
+lighty.env[<span style=color:#ed9d13>&#34;uri.query&#34;</span>] = uriquery .. (uriquery ~= <span style=color:#ed9d13>&#34;&#34;</span> <span style=color:#6ab825;font-weight:700>and</span> <span style=color:#ed9d13>&#34;&amp;&#34;</span> <span style=color:#6ab825;font-weight:700>or</span> <span style=color:#ed9d13>&#34;&#34;</span>) .. <span style=color:#ed9d13>&#34;q=&#34;</span> .. request_uri
+lighty.env[<span style=color:#ed9d13>&#34;physical.rel-path&#34;</span>] = lighty.env[<span style=color:#ed9d13>&#34;uri.path&#34;</span>]
+lighty.env[<span style=color:#ed9d13>&#34;request.orig-uri&#34;</span>] = lighty.env[<span style=color:#ed9d13>&#34;request.uri&#34;</span>]
+lighty.env[<span style=color:#ed9d13>&#34;physical.path&#34;</span>] = lighty.env[<span style=color:#ed9d13>&#34;physical.doc-root&#34;</span>] .. lighty.env[<span style=color:#ed9d13>&#34;physical.rel-path&#34;</span>]
+<span style=color:#6ab825;font-weight:700>end</span>
+<span style=color:#6ab825;font-weight:700>end</span>
+<span style=color:#999;font-style:italic>-- fallthrough will put it back into the lighty request loop</span>
+<span style=color:#999;font-style:italic>-- that means we get the 304 handling for free.</span>
+</code></pre></div><p>Your <code>lighttpd.conf</code> should include - somewhere! - this lines:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback># Make Drupal&#39;s url SEXY
 magnet.attract-physical-path-to = ( &#34;/etc/lighttpd/drupal.lua&#34; )
-</code></pre></div><p>Well.. That&rsquo;s now history! I found a better way to do that rewritting:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">url.rewrite-once = (
+</code></pre></div><p>Well.. That&rsquo;s now history! I found a better way to do that rewritting:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>url.rewrite-once = (
 &#34;^/system/test/(.*)$&#34; =&gt; &#34;/index.php?q=system/test/$1&#34;,
 &#34;^/search/node/(.*)$&#34; =&gt; &#34;/index.php?q=search/node/$1&#34;,
 &#34;^/([^.?]*)?(.*)$&#34; =&gt; &#34;/index.php?q=$1&amp;$2&#34;,
 &#34;^/([^.?]*)$&#34; =&gt; &#34;/index.php?q=$1&#34;
 )
-</code></pre></div><p>That should do the work. If any troubles, just let me know!</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2010/09/04/speed-up-drupal-by-preloading-the-page-cache/">prev post</a>
-  <a href="http://blog.dornea.nu/2010/09/13/icmpknock-v0.2-released/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>That should do the work. If any troubles, just let me know!</p></div></main><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2010/09/04/speed-up-drupal-by-preloading-the-page-cache/>prev post</a>
+<a href=http://blog.dornea.nu/2010/09/13/icmpknock-v0.2-released/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}</script></body></html>

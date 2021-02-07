@@ -1,448 +1,182 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>On Java, OpenSSL, Crypto, Blowfish and stuff - blog.dornea.nu</title><meta content="On Java, OpenSSL, Crypto, Blowfish and stuff - blog.dornea.nu" property="title"><meta content="On Java, OpenSSL, Crypto, Blowfish and stuff - blog.dornea.nu" property="og:title"><meta property="og:description" content="During some Android malware analysis I came along some Java routines which were meant to decrypt/encrypt some content. Nothing special about it. The key had to be extracted from a file and the encrypted file was in Base64. After unsuccessfully trying openssl in order to decrypt the file I decided to make some further investigations.
+In this article I&rsquo;ll have a look how Python, Java and openssl (command line utility) implement Blowfish in CBC mode."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/"><meta property="article:published_time" content="2014-07-01T00:00:00+00:00"><meta property="article:modified_time" content="2014-07-01T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">On Java, OpenSSL, Crypto, Blowfish and stuff</div><p class="silver f6 mt1 mb4 post-meta"><time>01 Jul 2014</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/java class="link silver">java</a> <a href=http://blog.dornea.nu/tags/cryptography class="link silver">cryptography</a> <a href=http://blog.dornea.nu/tags/crypto class="link silver">crypto</a> <a href=http://blog.dornea.nu/tags/openssl class="link silver">openssl</a> <a href=http://blog.dornea.nu/tags/ssl class="link silver">ssl</a> <a href=http://blog.dornea.nu/tags/tls class="link silver">tls</a> <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/python class="link silver">python</a> ]</p><div class="lh-copy post-content"><p>During some Android malware analysis I came along some Java routines which were meant to decrypt/encrypt some content. Nothing special about it. The key had to be extracted from a file and the encrypted file was in Base64. After unsuccessfully trying <strong>openssl</strong> in order to decrypt the file I decided to make some further investigations.</p><p>In this article I&rsquo;ll have a look how <code>Python</code>, <code>Java</code> and <code>openssl</code> (command line utility) implement <a href=https://www.schneier.com/paper-blowfish-fse.html>Blowfish</a> in <code>CBC</code> mode. Furthermore I want to know if data encrypted with Python can be later on decrypted with Java and viceversa. Following compatibility dependencies might be interesting:</p><ol><li>Python &lt;-> Java</li><li>Java &lt;-> openssl</li><li>Python &lt;-> openssl</li></ol><h2 id=java>Java</h2><p>Let&rsquo;s take a look at some routines in <code>Java</code>. You can also view/download the following code on this <a href=https://gist.github.com/dorneanu/b8e53b034d89f6be383c>GitHub Gist</a>.</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#999;font-style:italic>/*
+</span><span style=color:#999;font-style:italic> * Based on https://raw.githubusercontent.com/usefulfor/usefulfor/master/security/JBoss.java
+</span><span style=color:#999;font-style:italic> *
+</span><span style=color:#999;font-style:italic> * JBoss.java - Blowfish encryption/decryption tool with JBoss default password
+</span><span style=color:#999;font-style:italic> *    Daniel Martin Gomez &lt;daniel@ngssoftware.com&gt; - 03/Sep/2009
+</span><span style=color:#999;font-style:italic> *
+</span><span style=color:#999;font-style:italic> * This file may be used under the terms of the GNU General Public License
+</span><span style=color:#999;font-style:italic> * version 2.0 as published by the Free Software Foundation:
+</span><span style=color:#999;font-style:italic> *   http://www.gnu.org/licenses/gpl-2.0.html
+</span><span style=color:#999;font-style:italic> */</span>
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>javax.crypto.*</span>;
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>javax.crypto.spec.SecretKeySpec</span>;
 
-  <title>On Java, OpenSSL, Crypto, Blowfish and stuff - blog.dornea.nu</title>
-  <meta content='On Java, OpenSSL, Crypto, Blowfish and stuff - blog.dornea.nu' property='title' />
-  <meta content='On Java, OpenSSL, Crypto, Blowfish and stuff - blog.dornea.nu' property='og:title' />
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>java.math.BigInteger</span>;
+<span style=color:#6ab825;font-weight:700>import</span> <span style=color:#447fcf;text-decoration:underline>javax.xml.bind.DatatypeConverter</span>;
 
-
-<meta property="og:description" content="During some Android malware analysis I came along some Java routines which were meant to decrypt/encrypt some content. Nothing special about it. The key had to be extracted from a file and the encrypted file was in Base64. After unsuccessfully trying openssl in order to decrypt the file I decided to make some further investigations.
-In this article I&rsquo;ll have a look how Python, Java and openssl (command line utility) implement Blowfish in CBC mode." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2014/07/01/on-java-openssl-crypto-blowfish-and-stuff/" />
-
-
-<meta property="article:published_time" content="2014-07-01T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2014-07-01T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">On Java, OpenSSL, Crypto, Blowfish and stuff</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>01 Jul 2014</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/java' class="link silver">java</a> <a href='http://blog.dornea.nu/tags/cryptography' class="link silver">cryptography</a> <a href='http://blog.dornea.nu/tags/crypto' class="link silver">crypto</a> <a href='http://blog.dornea.nu/tags/openssl' class="link silver">openssl</a> <a href='http://blog.dornea.nu/tags/ssl' class="link silver">ssl</a> <a href='http://blog.dornea.nu/tags/tls' class="link silver">tls</a> <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>During some Android malware analysis I came along some Java routines which were meant to decrypt/encrypt some content. Nothing special about it. The key had to be extracted from a file and the encrypted file was in Base64. After unsuccessfully trying <strong>openssl</strong> in order to decrypt the file I decided to make some further investigations.</p>
-<p>In this article I&rsquo;ll have a look how <code>Python</code>, <code>Java</code> and <code>openssl</code> (command line utility) implement <a href="https://www.schneier.com/paper-blowfish-fse.html">Blowfish</a> in <code>CBC</code> mode. Furthermore I want to know if data encrypted with Python can be later on decrypted with Java and viceversa. Following compatibility dependencies might be interesting:</p>
-<ol>
-<li>Python &lt;-&gt; Java</li>
-<li>Java &lt;-&gt; openssl</li>
-<li>Python &lt;-&gt; openssl</li>
-</ol>
-<h2 id="java">Java</h2>
-<p>Let&rsquo;s take a look at some routines in <code>Java</code>. You can also view/download the following code on this <a href="https://gist.github.com/dorneanu/b8e53b034d89f6be383c">GitHub Gist</a>.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#999;font-style:italic">/*
-</span><span style="color:#999;font-style:italic"> * Based on https://raw.githubusercontent.com/usefulfor/usefulfor/master/security/JBoss.java
-</span><span style="color:#999;font-style:italic"> *
-</span><span style="color:#999;font-style:italic"> * JBoss.java - Blowfish encryption/decryption tool with JBoss default password
-</span><span style="color:#999;font-style:italic"> *    Daniel Martin Gomez &lt;daniel@ngssoftware.com&gt; - 03/Sep/2009
-</span><span style="color:#999;font-style:italic"> *
-</span><span style="color:#999;font-style:italic"> * This file may be used under the terms of the GNU General Public License
-</span><span style="color:#999;font-style:italic"> * version 2.0 as published by the Free Software Foundation:
-</span><span style="color:#999;font-style:italic"> *   http://www.gnu.org/licenses/gpl-2.0.html
-</span><span style="color:#999;font-style:italic"> */</span>
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">javax.crypto.*</span>;
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">javax.crypto.spec.SecretKeySpec</span>;
-
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">java.math.BigInteger</span>;
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">javax.xml.bind.DatatypeConverter</span>;
-
-<span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">JBlowfish</span>
+<span style=color:#6ab825;font-weight:700>public</span> <span style=color:#6ab825;font-weight:700>class</span> <span style=color:#447fcf;text-decoration:underline>JBlowfish</span>
 {
-    <span style="color:#6ab825;font-weight:bold">final</span> <span style="color:#6ab825;font-weight:bold">protected</span> <span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">char</span>[] hexArray = <span style="color:#ed9d13">&#34;0123456789ABCDEF&#34;</span>.<span style="color:#bbb">toCharArray</span>();
+    <span style=color:#6ab825;font-weight:700>final</span> <span style=color:#6ab825;font-weight:700>protected</span> <span style=color:#6ab825;font-weight:700>static</span> <span style=color:#6ab825;font-weight:700>char</span>[] hexArray = <span style=color:#ed9d13>&#34;0123456789ABCDEF&#34;</span>.<span style=color:#bbb>toCharArray</span>();
 
-    <span style="color:#999;font-style:italic">// Converts byte array to hex string
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#999;font-style:italic">// From: http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">static</span> String <span style="color:#447fcf">bytesToHex</span>(<span style="color:#6ab825;font-weight:bold">byte</span>[] bytes) {
-        <span style="color:#6ab825;font-weight:bold">char</span>[] hexChars = <span style="color:#6ab825;font-weight:bold">new</span> <span style="color:#6ab825;font-weight:bold">char</span>[bytes.<span style="color:#bbb">length</span> * 2];
-        <span style="color:#6ab825;font-weight:bold">for</span> ( <span style="color:#6ab825;font-weight:bold">int</span> j = 0; j &lt; bytes.<span style="color:#bbb">length</span>; j++ ) {
-            <span style="color:#6ab825;font-weight:bold">int</span> v = bytes[j] &amp; 0xFF;
+    <span style=color:#999;font-style:italic>// Converts byte array to hex string
+</span><span style=color:#999;font-style:italic></span>    <span style=color:#999;font-style:italic>// From: http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
+</span><span style=color:#999;font-style:italic></span>    <span style=color:#6ab825;font-weight:700>public</span> <span style=color:#6ab825;font-weight:700>static</span> String <span style=color:#447fcf>bytesToHex</span>(<span style=color:#6ab825;font-weight:700>byte</span>[] bytes) {
+        <span style=color:#6ab825;font-weight:700>char</span>[] hexChars = <span style=color:#6ab825;font-weight:700>new</span> <span style=color:#6ab825;font-weight:700>char</span>[bytes.<span style=color:#bbb>length</span> * 2];
+        <span style=color:#6ab825;font-weight:700>for</span> ( <span style=color:#6ab825;font-weight:700>int</span> j = 0; j &lt; bytes.<span style=color:#bbb>length</span>; j++ ) {
+            <span style=color:#6ab825;font-weight:700>int</span> v = bytes[j] &amp; 0xFF;
             hexChars[j * 2] = hexArray[v &gt;&gt;&gt; 4];
             hexChars[j * 2 + 1] = hexArray[v &amp; 0x0F];
         }
-        <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#6ab825;font-weight:bold">new</span> String(hexChars);
+        <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#6ab825;font-weight:700>new</span> String(hexChars);
     }
 
-    <span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">main</span>(String[] args) <span style="color:#6ab825;font-weight:bold">throws</span> Exception
+    <span style=color:#6ab825;font-weight:700>public</span> <span style=color:#6ab825;font-weight:700>static</span> <span style=color:#6ab825;font-weight:700>void</span> <span style=color:#447fcf>main</span>(String[] args) <span style=color:#6ab825;font-weight:700>throws</span> Exception
     {
 
-        <span style="color:#6ab825;font-weight:bold">if</span> ( ( args.<span style="color:#bbb">length</span> != 2 ) || !( args[0].<span style="color:#bbb">equals</span>(<span style="color:#ed9d13">&#34;-e&#34;</span>) | args[0].<span style="color:#bbb">equals</span>(<span style="color:#ed9d13">&#34;-d&#34;</span>) ) )
+        <span style=color:#6ab825;font-weight:700>if</span> ( ( args.<span style=color:#bbb>length</span> != 2 ) || !( args[0].<span style=color:#bbb>equals</span>(<span style=color:#ed9d13>&#34;-e&#34;</span>) | args[0].<span style=color:#bbb>equals</span>(<span style=color:#ed9d13>&#34;-d&#34;</span>) ) )
         {
-            System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>( <span style="color:#ed9d13">&#34;Usage:\n\tjava JBlowfish &lt;-e|-d&gt; &lt;encrypted_password&gt;&#34;</span> );
-            <span style="color:#6ab825;font-weight:bold">return</span>;
+            System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>( <span style=color:#ed9d13>&#34;Usage:\n\tjava JBlowfish &lt;-e|-d&gt; &lt;encrypted_password&gt;&#34;</span> );
+            <span style=color:#6ab825;font-weight:700>return</span>;
         }
 
         String mode = args[0];
 
-        <span style="color:#999;font-style:italic">// Configuration
-</span><span style="color:#999;font-style:italic"></span>        <span style="color:#6ab825;font-weight:bold">byte</span>[] key  = <span style="color:#ed9d13">&#34;secret&#34;</span>.<span style="color:#bbb">getBytes</span>();
-        String IV   = <span style="color:#ed9d13">&#34;12345678&#34;</span>;
+        <span style=color:#999;font-style:italic>// Configuration
+</span><span style=color:#999;font-style:italic></span>        <span style=color:#6ab825;font-weight:700>byte</span>[] key  = <span style=color:#ed9d13>&#34;secret&#34;</span>.<span style=color:#bbb>getBytes</span>();
+        String IV   = <span style=color:#ed9d13>&#34;12345678&#34;</span>;
 
 
-        System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;-- Settings -----------&#34;</span>);
-        System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;KEY:\t &#34;</span> + bytesToHex(key));
-        System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;IV:\t &#34;</span> + bytesToHex(IV.<span style="color:#bbb">getBytes</span>()));
+        System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;-- Settings -----------&#34;</span>);
+        System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;KEY:\t &#34;</span> + bytesToHex(key));
+        System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;IV:\t &#34;</span> + bytesToHex(IV.<span style=color:#bbb>getBytes</span>()));
 
-        <span style="color:#999;font-style:italic">// Create new Blowfish cipher
-</span><span style="color:#999;font-style:italic"></span>        SecretKeySpec keySpec = <span style="color:#6ab825;font-weight:bold">new</span> SecretKeySpec(key, <span style="color:#ed9d13">&#34;Blowfish&#34;</span>);
-        Cipher cipher = Cipher.<span style="color:#bbb">getInstance</span>(<span style="color:#ed9d13">&#34;Blowfish/CBC/PKCS5Padding&#34;</span>);
-        String out = <span style="color:#6ab825;font-weight:bold">null</span>;
+        <span style=color:#999;font-style:italic>// Create new Blowfish cipher
+</span><span style=color:#999;font-style:italic></span>        SecretKeySpec keySpec = <span style=color:#6ab825;font-weight:700>new</span> SecretKeySpec(key, <span style=color:#ed9d13>&#34;Blowfish&#34;</span>);
+        Cipher cipher = Cipher.<span style=color:#bbb>getInstance</span>(<span style=color:#ed9d13>&#34;Blowfish/CBC/PKCS5Padding&#34;</span>);
+        String out = <span style=color:#6ab825;font-weight:700>null</span>;
 
-        <span style="color:#6ab825;font-weight:bold">if</span> ( mode.<span style="color:#bbb">equals</span>(<span style="color:#ed9d13">&#34;-e&#34;</span>) )
+        <span style=color:#6ab825;font-weight:700>if</span> ( mode.<span style=color:#bbb>equals</span>(<span style=color:#ed9d13>&#34;-e&#34;</span>) )
         {
             String secret = args[1];
-            cipher.<span style="color:#bbb">init</span>(Cipher.<span style="color:#bbb">ENCRYPT_MODE</span>, keySpec, <span style="color:#6ab825;font-weight:bold">new</span> javax.<span style="color:#bbb">crypto</span>.<span style="color:#bbb">spec</span>.<span style="color:#bbb">IvParameterSpec</span>(IV.<span style="color:#bbb">getBytes</span>()));
-            <span style="color:#6ab825;font-weight:bold">byte</span>[] encoding = cipher.<span style="color:#bbb">doFinal</span>(secret.<span style="color:#bbb">getBytes</span>());
+            cipher.<span style=color:#bbb>init</span>(Cipher.<span style=color:#bbb>ENCRYPT_MODE</span>, keySpec, <span style=color:#6ab825;font-weight:700>new</span> javax.<span style=color:#bbb>crypto</span>.<span style=color:#bbb>spec</span>.<span style=color:#bbb>IvParameterSpec</span>(IV.<span style=color:#bbb>getBytes</span>()));
+            <span style=color:#6ab825;font-weight:700>byte</span>[] encoding = cipher.<span style=color:#bbb>doFinal</span>(secret.<span style=color:#bbb>getBytes</span>());
 
-            System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;-- Encrypted -----------&#34;</span>);
-            System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;Base64:\t &#34;</span> + DatatypeConverter.<span style="color:#bbb">printBase64Binary</span>(encoding));
-            System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;HEX:\t &#34;</span> + bytesToHex(encoding));
+            System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;-- Encrypted -----------&#34;</span>);
+            System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;Base64:\t &#34;</span> + DatatypeConverter.<span style=color:#bbb>printBase64Binary</span>(encoding));
+            System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;HEX:\t &#34;</span> + bytesToHex(encoding));
         }
-        <span style="color:#6ab825;font-weight:bold">else</span>
+        <span style=color:#6ab825;font-weight:700>else</span>
         {
-            <span style="color:#999;font-style:italic">// Decode Base64
-</span><span style="color:#999;font-style:italic"></span>            <span style="color:#6ab825;font-weight:bold">byte</span>[] ciphertext = DatatypeConverter.<span style="color:#bbb">parseBase64Binary</span>(args[1]);
+            <span style=color:#999;font-style:italic>// Decode Base64
+</span><span style=color:#999;font-style:italic></span>            <span style=color:#6ab825;font-weight:700>byte</span>[] ciphertext = DatatypeConverter.<span style=color:#bbb>parseBase64Binary</span>(args[1]);
 
-            <span style="color:#999;font-style:italic">// Decrypt
-</span><span style="color:#999;font-style:italic"></span>            cipher.<span style="color:#bbb">init</span>(Cipher.<span style="color:#bbb">DECRYPT_MODE</span>, keySpec, <span style="color:#6ab825;font-weight:bold">new</span> javax.<span style="color:#bbb">crypto</span>.<span style="color:#bbb">spec</span>.<span style="color:#bbb">IvParameterSpec</span>(IV.<span style="color:#bbb">getBytes</span>()));
-            <span style="color:#6ab825;font-weight:bold">byte</span>[] message = cipher.<span style="color:#bbb">doFinal</span>(ciphertext);
+            <span style=color:#999;font-style:italic>// Decrypt
+</span><span style=color:#999;font-style:italic></span>            cipher.<span style=color:#bbb>init</span>(Cipher.<span style=color:#bbb>DECRYPT_MODE</span>, keySpec, <span style=color:#6ab825;font-weight:700>new</span> javax.<span style=color:#bbb>crypto</span>.<span style=color:#bbb>spec</span>.<span style=color:#bbb>IvParameterSpec</span>(IV.<span style=color:#bbb>getBytes</span>()));
+            <span style=color:#6ab825;font-weight:700>byte</span>[] message = cipher.<span style=color:#bbb>doFinal</span>(ciphertext);
 
-            System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;-- Decrypted -----------&#34;</span>);
-            System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;HEX:\t &#34;</span> + bytesToHex(message));
-            System.<span style="color:#bbb">out</span>.<span style="color:#bbb">println</span>(<span style="color:#ed9d13">&#34;PLAIN:\t &#34;</span> + <span style="color:#6ab825;font-weight:bold">new</span> String(message));
+            System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;-- Decrypted -----------&#34;</span>);
+            System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;HEX:\t &#34;</span> + bytesToHex(message));
+            System.<span style=color:#bbb>out</span>.<span style=color:#bbb>println</span>(<span style=color:#ed9d13>&#34;PLAIN:\t &#34;</span> + <span style=color:#6ab825;font-weight:700>new</span> String(message));
 
         }
     }
 }
-</code></pre></div><p>The programm will encrypt messages using <em>Blowfish</em> in <em>CBC</em> mode. There are 2 modi available:</p>
-<ul>
-<li><code>-e &lt;message&gt;</code>: will encrypt the message &lt; message &gt;</li>
-<li><code>-d &lt;Base64&gt;</code>: will decrypt the specified Base64 string &lt; Base64 &gt;</li>
-</ul>
-<p>The encryption <code>key</code> and the <code>IV</code> (initialization vector) are static. Let&rsquo;s see an example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># javac JBlowfish.java</span>
-<span style="color:#999;font-style:italic"># java -cp . JBlowfish -e secretmessage</span>
+</code></pre></div><p>The programm will encrypt messages using <em>Blowfish</em> in <em>CBC</em> mode. There are 2 modi available:</p><ul><li><code>-e &lt;message></code>: will encrypt the message &lt; message ></li><li><code>-d &lt;Base64></code>: will decrypt the specified Base64 string &lt; Base64 ></li></ul><p>The encryption <code>key</code> and the <code>IV</code> (initialization vector) are static. Let&rsquo;s see an example:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># javac JBlowfish.java</span>
+<span style=color:#999;font-style:italic># java -cp . JBlowfish -e secretmessage</span>
 -- Settings -----------
-KEY:     <span style="color:#3677a9">736563726574</span>
-IV:      <span style="color:#3677a9">3132333435363738</span>
+KEY:     <span style=color:#3677a9>736563726574</span>
+IV:      <span style=color:#3677a9>3132333435363738</span>
 -- Encrypted -----------
-Base64:  <span style="color:#40ffff">2CEndW0AA2xpsYz3XrXnrA</span>==
+Base64:  <span style=color:#40ffff>2CEndW0AA2xpsYz3XrXnrA</span>==
 HEX:     D82127756D00036C69B18CF75EB5E7AC
-</code></pre></div><p>We just <em>encrypted</em> the message <em>&ldquo;secretmessage</em>&rdquo; with <em>Blowfish/CBC</em>. In the <em>settings</em> section you&rsquo;ll see the <code>KEY</code> and the <code>IV</code> in their <em>hex</em> representation. Afterwards the programm will show the <code>Base64</code> and the <code>hex</code> representation of <strong>encrypted</strong> message. <em>Decryption</em> works quite straightforward:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># java -cp . JBlowfish -d 2CEndW0AA2xpsYz3XrXnrA==</span>
+</code></pre></div><p>We just <em>encrypted</em> the message <em>&ldquo;secretmessage</em>&rdquo; with <em>Blowfish/CBC</em>. In the <em>settings</em> section you&rsquo;ll see the <code>KEY</code> and the <code>IV</code> in their <em>hex</em> representation. Afterwards the programm will show the <code>Base64</code> and the <code>hex</code> representation of <strong>encrypted</strong> message. <em>Decryption</em> works quite straightforward:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># java -cp . JBlowfish -d 2CEndW0AA2xpsYz3XrXnrA==</span>
 -- Settings -----------
-KEY:     <span style="color:#3677a9">736563726574</span>
-IV:      <span style="color:#3677a9">3132333435363738</span>
+KEY:     <span style=color:#3677a9>736563726574</span>
+IV:      <span style=color:#3677a9>3132333435363738</span>
 -- Decrypted -----------
 HEX:     7365637265746D657373616765
 PLAIN:   secretmessage
-</code></pre></div><p>Our little Java application does its job pretty fine. Ok, now let&rsquo;s have a look at <code>openssl</code>.</p>
-<h2 id="openssl---java">OpenSSL &lt;-&gt; Java</h2>
-<p>Using <code>openssl</code> I&rsquo;ll encrypt/decrypt the previous secret message with the same cipher:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;secretmessage&#34; | openssl bf-cbc -nosalt -a -pass pass:victor -iv 3132333435363738 -p</span>
-<span style="color:#40ffff">key</span>=FFC150A160D37E92012C196B6AF4160D
-<span style="color:#40ffff">iv</span> =<span style="color:#3677a9">3132333435363738</span>
+</code></pre></div><p>Our little Java application does its job pretty fine. Ok, now let&rsquo;s have a look at <code>openssl</code>.</p><h2 id=openssl---java>OpenSSL &lt;-> Java</h2><p>Using <code>openssl</code> I&rsquo;ll encrypt/decrypt the previous secret message with the same cipher:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># echo &#34;secretmessage&#34; | openssl bf-cbc -nosalt -a -pass pass:victor -iv 3132333435363738 -p</span>
+<span style=color:#40ffff>key</span>=FFC150A160D37E92012C196B6AF4160D
+<span style=color:#40ffff>iv</span> =<span style=color:#3677a9>3132333435363738</span>
 +NtBjHQzii7i//apIvfHkw==
-</code></pre></div><p>A few explanations:</p>
-<ul>
-<li><code>bf-cbc</code>: this is Blowfish with CBC</li>
-<li><code>nosalt</code>: Use no salt (which in general is very bad!)</li>
-<li><code>-a</code>: This means that if encryption is taking place the data is base64 encoded after encryption. If decryption is set then the input data is base64 decoded before being decrypted.</li>
-<li><code>-pass</code>: Specify the passphrase to encrypt the message with. This is actually <strong>not</strong> the encryption key openssl will use. The encryption key will be derived from the passphrase.</li>
-<li><code>-iv</code>: Specify IV in hex representation. In the Java code I&rsquo;ve used <code>IV=&quot;12345678</code> and <code>hex(IV)=3132333435363738</code></li>
-</ul>
-<p>As you can see the output of <em>openssl</em> looks quite different. Following observations:</p>
-<table>
-<thead>
-<tr>
-<th>Tool</th>
-<th>KEY</th>
-<th>IV</th>
-<th>Encrypted message (Base64)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><em>Java</em></td>
-<td>736563726574</td>
-<td>3132333435363738</td>
-<td>2CEndW0AA2xpsYz3XrXnrA==</td>
-</tr>
-<tr>
-<td><em>openssl</em></td>
-<td>FFC150A160D37E92012C196B6AF4160D</td>
-<td>3132333435363738</td>
-<td>+NtBjHQzii7i//apIvfHkw==</td>
-</tr>
-</tbody>
-</table>
-<p>Besides the IV everything looks different :(</p>
-<h2 id="python---java">Python &lt;-&gt; Java</h2>
-<p>Let&rsquo;s also have a look at <em>Python</em>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">67</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto</span> <span style="color:#6ab825;font-weight:bold">import</span> Random
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">struct</span> <span style="color:#6ab825;font-weight:bold">import</span> pack
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">binascii</span> <span style="color:#6ab825;font-weight:bold">import</span> hexlify, unhexlify
+</code></pre></div><p>A few explanations:</p><ul><li><code>bf-cbc</code>: this is Blowfish with CBC</li><li><code>nosalt</code>: Use no salt (which in general is very bad!)</li><li><code>-a</code>: This means that if encryption is taking place the data is base64 encoded after encryption. If decryption is set then the input data is base64 decoded before being decrypted.</li><li><code>-pass</code>: Specify the passphrase to encrypt the message with. This is actually <strong>not</strong> the encryption key openssl will use. The encryption key will be derived from the passphrase.</li><li><code>-iv</code>: Specify IV in hex representation. In the Java code I&rsquo;ve used <code>IV="12345678</code> and <code>hex(IV)=3132333435363738</code></li></ul><p>As you can see the output of <em>openssl</em> looks quite different. Following observations:</p><table><thead><tr><th>Tool</th><th>KEY</th><th>IV</th><th>Encrypted message (Base64)</th></tr></thead><tbody><tr><td><em>Java</em></td><td>736563726574</td><td>3132333435363738</td><td>2CEndW0AA2xpsYz3XrXnrA==</td></tr><tr><td><em>openssl</em></td><td>FFC150A160D37E92012C196B6AF4160D</td><td>3132333435363738</td><td>+NtBjHQzii7i//apIvfHkw==</td></tr></tbody></table><p>Besides the IV everything looks different :(</p><h2 id=python---java>Python &lt;-> Java</h2><p>Let&rsquo;s also have a look at <em>Python</em>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>In [<span style=color:#3677a9>67</span>]:    <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto.Cipher</span> <span style=color:#6ab825;font-weight:700>import</span> Blowfish
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto</span> <span style=color:#6ab825;font-weight:700>import</span> Random
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>struct</span> <span style=color:#6ab825;font-weight:700>import</span> pack
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>binascii</span> <span style=color:#6ab825;font-weight:700>import</span> hexlify, unhexlify
 
 
-            IV = <span style="color:#ed9d13">&#34;12345678&#34;</span>
-            KEY = <span style="color:#ed9d13">&#34;secret&#34;</span>
+            IV = <span style=color:#ed9d13>&#34;12345678&#34;</span>
+            KEY = <span style=color:#ed9d13>&#34;secret&#34;</span>
 
-            <span style="color:#999;font-style:italic"># We&#39;ll use the Base64 string from JBlowfish output</span>
-            ciphertext = <span style="color:#ed9d13">&#34;2CEndW0AA2xpsYz3XrXnrA==&#34;</span>.decode(<span style="color:#ed9d13">&#34;base64&#34;</span>)
+            <span style=color:#999;font-style:italic># We&#39;ll use the Base64 string from JBlowfish output</span>
+            ciphertext = <span style=color:#ed9d13>&#34;2CEndW0AA2xpsYz3XrXnrA==&#34;</span>.decode(<span style=color:#ed9d13>&#34;base64&#34;</span>)
 
             cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
             message = cipher.decrypt(ciphertext)
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;KEY: &#34;</span> + KEY.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;IV: &#34;</span> + IV.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;Message: &#34;</span> + message)
+            <span style=color:#6ab825;font-weight:700>print</span>(<span style=color:#ed9d13>&#34;KEY: &#34;</span> + KEY.encode(<span style=color:#ed9d13>&#34;hex&#34;</span>))
+            <span style=color:#6ab825;font-weight:700>print</span>(<span style=color:#ed9d13>&#34;IV: &#34;</span> + IV.encode(<span style=color:#ed9d13>&#34;hex&#34;</span>))
+            <span style=color:#6ab825;font-weight:700>print</span>(<span style=color:#ed9d13>&#34;Message: &#34;</span> + message)
 
-Out:        KEY: <span style="color:#3677a9">736563726574</span>
-            IV: <span style="color:#3677a9">3132333435363738</span>
-            Message: secretmessage<span style="color:#a61717;background-color:#e3d2d2"></span>
-</code></pre></div><p>Well that looks good. This is what we got:</p>
-<table>
-<thead>
-<tr>
-<th>Tool</th>
-<th style="text-align:center">KEY</th>
-<th style="text-align:right">IV</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><em>Java</em></td>
-<td style="text-align:center">736563726574</td>
-<td style="text-align:right">3132333435363738</td>
-</tr>
-<tr>
-<td><em>python</em></td>
-<td style="text-align:center">736563726574</td>
-<td style="text-align:right">3132333435363738</td>
-</tr>
-</tbody>
-</table>
-<h2 id="python---openssl">Python &lt;-&gt; openssl</h2>
-<p>This time let&rsquo;s encrypt some message using Python:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">71</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto</span> <span style="color:#6ab825;font-weight:bold">import</span> Random
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">struct</span> <span style="color:#6ab825;font-weight:bold">import</span> pack
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">binascii</span> <span style="color:#6ab825;font-weight:bold">import</span> hexlify, unhexlify
+Out:        KEY: <span style=color:#3677a9>736563726574</span>
+            IV: <span style=color:#3677a9>3132333435363738</span>
+            Message: secretmessage<span style=color:#a61717;background-color:#e3d2d2></span>
+</code></pre></div><p>Well that looks good. This is what we got:</p><table><thead><tr><th>Tool</th><th style=text-align:center>KEY</th><th style=text-align:right>IV</th></tr></thead><tbody><tr><td><em>Java</em></td><td style=text-align:center>736563726574</td><td style=text-align:right>3132333435363738</td></tr><tr><td><em>python</em></td><td style=text-align:center>736563726574</td><td style=text-align:right>3132333435363738</td></tr></tbody></table><h2 id=python---openssl>Python &lt;-> openssl</h2><p>This time let&rsquo;s encrypt some message using Python:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>In [<span style=color:#3677a9>71</span>]:    <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto.Cipher</span> <span style=color:#6ab825;font-weight:700>import</span> Blowfish
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto</span> <span style=color:#6ab825;font-weight:700>import</span> Random
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>struct</span> <span style=color:#6ab825;font-weight:700>import</span> pack
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>binascii</span> <span style=color:#6ab825;font-weight:700>import</span> hexlify, unhexlify
 
 
-            IV = <span style="color:#ed9d13">&#34;12345678&#34;</span>
-            KEY = <span style="color:#ed9d13">&#34;secret&#34;</span>
-            message = <span style="color:#ed9d13">&#34;12345678&#34;</span>
+            IV = <span style=color:#ed9d13>&#34;12345678&#34;</span>
+            KEY = <span style=color:#ed9d13>&#34;secret&#34;</span>
+            message = <span style=color:#ed9d13>&#34;12345678&#34;</span>
 
 
             cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
             ciphertext = cipher.encrypt(message)
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;HEX: &#34;</span> + ciphertext.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;Base64: &#34;</span> + ciphertext.encode(<span style="color:#ed9d13">&#34;base64&#34;</span>))
+            <span style=color:#6ab825;font-weight:700>print</span>(<span style=color:#ed9d13>&#34;HEX: &#34;</span> + ciphertext.encode(<span style=color:#ed9d13>&#34;hex&#34;</span>))
+            <span style=color:#6ab825;font-weight:700>print</span>(<span style=color:#ed9d13>&#34;Base64: &#34;</span> + ciphertext.encode(<span style=color:#ed9d13>&#34;base64&#34;</span>))
 
-Out:        HEX: <span style="color:#3677a9">010</span>a0d9149750a32
+Out:        HEX: <span style=color:#3677a9>010</span>a0d9149750a32
             Base64: AQoNkUl1CjI=
-</code></pre></div><p>Now decrypt that ciphertext using openssl:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;AQoNkUl1CjI=&#34; | openssl bf-cbc -d -a -nosalt -pass pass:secret -iv 3132333435363738  -p</span>
-<span style="color:#40ffff">key</span>=5EBE2294ECD0E0F08EAB7690D2A6EE69
-<span style="color:#40ffff">iv</span> =<span style="color:#3677a9">3132333435363738</span>
+</code></pre></div><p>Now decrypt that ciphertext using openssl:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># echo &#34;AQoNkUl1CjI=&#34; | openssl bf-cbc -d -a -nosalt -pass pass:secret -iv 3132333435363738  -p</span>
+<span style=color:#40ffff>key</span>=5EBE2294ECD0E0F08EAB7690D2A6EE69
+<span style=color:#40ffff>iv</span> =<span style=color:#3677a9>3132333435363738</span>
 bad decrypt
 140568446580392:error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt:evp_enc.c:539:
-</code></pre></div><p>Again the encryption key doesn&rsquo;t match the one we used in the Python code. Thus the Bas64 string can&rsquo;t be decoded by openssl.</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>Obviously I&rsquo;m not the <a href="http://stackoverflow.com/questions/8468799/decrypting-openssl-blowfish-with-java">only one</a> facing this problem.</p>
-<blockquote>
-<p><a href="http://juliusdavies.ca/commons-ssl/pbe.html">Not-Yet-Commons-SSL</a> has an implementation of PBE (&ldquo;password based encryption&rdquo;) that is 100% compatible with OpenSSL&rsquo;s command-line &ldquo;enc&rdquo; utility</p>
-</blockquote>
-<p>That sounds promising but you should be warned:</p>
-<blockquote>
-<p>Warning:  All versions of not-yet-commons-ssl should be considered to be of &ldquo;Alpha&rdquo; quality! This code probably contains bugs. This code may have security issues.</p>
-</blockquote>
-<p>as stated <a href="http://juliusdavies.ca/commons-ssl/download.html">here</a>.</p>
-<p>If you still want some compatibility between <code>openssl</code> and your code, you should use the <code>key</code> and <code>IV</code> from openssl. Example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;this-is-secret&#34; | openssl bf-cbc -a -nosalt -pass pass:secret -iv 12345678 -p</span>
-<span style="color:#40ffff">key</span>=5EBE2294ECD0E0F08EAB7690D2A6EE69
-<span style="color:#40ffff">iv</span> =<span style="color:#3677a9">1234567800000000</span>
-<span style="color:#40ffff">2whDyIn5hRdyXpRZbMZayw</span>==
-</code></pre></div><p>Now use those values in your code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">72</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto</span> <span style="color:#6ab825;font-weight:bold">import</span> Random
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">struct</span> <span style="color:#6ab825;font-weight:bold">import</span> pack
-            <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">binascii</span> <span style="color:#6ab825;font-weight:bold">import</span> hexlify, unhexlify
+</code></pre></div><p>Again the encryption key doesn&rsquo;t match the one we used in the Python code. Thus the Bas64 string can&rsquo;t be decoded by openssl.</p><h2 id=conclusion>Conclusion</h2><p>Obviously I&rsquo;m not the <a href=http://stackoverflow.com/questions/8468799/decrypting-openssl-blowfish-with-java>only one</a> facing this problem.</p><blockquote><p><a href=http://juliusdavies.ca/commons-ssl/pbe.html>Not-Yet-Commons-SSL</a> has an implementation of PBE (&ldquo;password based encryption&rdquo;) that is 100% compatible with OpenSSL&rsquo;s command-line &ldquo;enc&rdquo; utility</p></blockquote><p>That sounds promising but you should be warned:</p><blockquote><p>Warning: All versions of not-yet-commons-ssl should be considered to be of &ldquo;Alpha&rdquo; quality! This code probably contains bugs. This code may have security issues.</p></blockquote><p>as stated <a href=http://juliusdavies.ca/commons-ssl/download.html>here</a>.</p><p>If you still want some compatibility between <code>openssl</code> and your code, you should use the <code>key</code> and <code>IV</code> from openssl. Example:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#999;font-style:italic># echo &#34;this-is-secret&#34; | openssl bf-cbc -a -nosalt -pass pass:secret -iv 12345678 -p</span>
+<span style=color:#40ffff>key</span>=5EBE2294ECD0E0F08EAB7690D2A6EE69
+<span style=color:#40ffff>iv</span> =<span style=color:#3677a9>1234567800000000</span>
+<span style=color:#40ffff>2whDyIn5hRdyXpRZbMZayw</span>==
+</code></pre></div><p>Now use those values in your code:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>In [<span style=color:#3677a9>72</span>]:    <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto.Cipher</span> <span style=color:#6ab825;font-weight:700>import</span> Blowfish
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>Crypto</span> <span style=color:#6ab825;font-weight:700>import</span> Random
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>struct</span> <span style=color:#6ab825;font-weight:700>import</span> pack
+            <span style=color:#6ab825;font-weight:700>from</span> <span style=color:#447fcf;text-decoration:underline>binascii</span> <span style=color:#6ab825;font-weight:700>import</span> hexlify, unhexlify
 
 
-            KEY = unhexlify(<span style="color:#ed9d13">&#34;5EBE2294ECD0E0F08EAB7690D2A6EE69&#34;</span>)
-            IV = unhexlify(<span style="color:#ed9d13">&#34;1234567800000000&#34;</span>)
-            ciphertext = <span style="color:#ed9d13">&#34;2whDyIn5hRdyXpRZbMZayw==&#34;</span>.decode(<span style="color:#ed9d13">&#34;base64&#34;</span>)
+            KEY = unhexlify(<span style=color:#ed9d13>&#34;5EBE2294ECD0E0F08EAB7690D2A6EE69&#34;</span>)
+            IV = unhexlify(<span style=color:#ed9d13>&#34;1234567800000000&#34;</span>)
+            ciphertext = <span style=color:#ed9d13>&#34;2whDyIn5hRdyXpRZbMZayw==&#34;</span>.decode(<span style=color:#ed9d13>&#34;base64&#34;</span>)
 
 
             cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
             ciphertext = cipher.decrypt(ciphertext)
 
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;Message: &#34;</span> + message)
+            <span style=color:#6ab825;font-weight:700>print</span>(<span style=color:#ed9d13>&#34;Message: &#34;</span> + message)
 
-Out:        Message: <span style="color:#3677a9">12345678</span>
-</code></pre></div><p>Also have a look at <a href="http://stackoverflow.com/questions/12227510/how-to-decrypt-unsalted-openssl-compatible-blowfish-cbc-pkcs5padding-password-in">this</a>. That&rsquo;s all for today. Cya next time!</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2014/06/29/whatsapp-bot/">prev post</a>
-  <a href="http://blog.dornea.nu/2014/07/07/disect-android-apks-like-a-pro-static-code-analysis/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+Out:        Message: <span style=color:#3677a9>12345678</span>
+</code></pre></div><p>Also have a look at <a href=http://stackoverflow.com/questions/12227510/how-to-decrypt-unsalted-openssl-compatible-blowfish-cbc-pkcs5padding-password-in>this</a>. That&rsquo;s all for today. Cya next time!</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2014/06/29/whatsapp-bot/>prev post</a>
+<a href=http://blog.dornea.nu/2014/07/07/disect-android-apks-like-a-pro-static-code-analysis/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

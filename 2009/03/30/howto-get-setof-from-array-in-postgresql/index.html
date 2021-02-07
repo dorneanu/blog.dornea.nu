@@ -1,325 +1,138 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>HowTo: Get SETOF from Array in PostgreSQL - blog.dornea.nu</title>
-  <meta content='HowTo: Get SETOF from Array in PostgreSQL - blog.dornea.nu' property='title' />
-  <meta content='HowTo: Get SETOF from Array in PostgreSQL - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="The use of so called &ldquo;procedural languages&rdquo; in PostgreSQL allows the user to write user-defined functions in other languages than SQL or C. Since every query is sent to the server, the database server has to know how to interpret and handle function statements. As the PostgreSQL documentation describes, the function handler itself is a C language function compiled into a shared object and loaded on demand. All you have to do is to install the language into your database." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2009/03/30/howto-get-setof-from-array-in-postgresql/" />
-
-
-<meta property="article:published_time" content="2009-03-30T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2009-03-30T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">HowTo: Get SETOF from Array in PostgreSQL</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>30 Mar 2009</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/sql' class="link silver">sql</a> <a href='http://blog.dornea.nu/tags/admin' class="link silver">admin</a> <a href='http://blog.dornea.nu/tags/postgresql' class="link silver">postgresql</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>The use of so called &ldquo;procedural languages&rdquo; in PostgreSQL allows the user to write user-defined functions in other languages than SQL or C. Since every query is sent to the server, the database server has to know how to interpret and handle function statements. As the PostgreSQL documentation describes, the function handler itself is a C language function compiled into a shared object and loaded on demand. All you have to do is to install the <em>language</em> into your database. Besides that you&rsquo;ll have to install the pre-compiled shared objects on your system. On my system (Debian 5.0) I had to install the <code>postgresql-plperl</code> package. Afterwars I connected to the database and typed:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> FUNCTION <span style="color:#447fcf">plpgsql_call_handler</span> ()
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>HowTo: Get SETOF from Array in PostgreSQL - blog.dornea.nu</title><meta content="HowTo: Get SETOF from Array in PostgreSQL - blog.dornea.nu" property="title"><meta content="HowTo: Get SETOF from Array in PostgreSQL - blog.dornea.nu" property="og:title"><meta property="og:description" content="The use of so called &ldquo;procedural languages&rdquo; in PostgreSQL allows the user to write user-defined functions in other languages than SQL or C. Since every query is sent to the server, the database server has to know how to interpret and handle function statements. As the PostgreSQL documentation describes, the function handler itself is a C language function compiled into a shared object and loaded on demand. All you have to do is to install the language into your database."><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2009/03/30/howto-get-setof-from-array-in-postgresql/"><meta property="article:published_time" content="2009-03-30T00:00:00+00:00"><meta property="article:modified_time" content="2009-03-30T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">HowTo: Get SETOF from Array in PostgreSQL</div><p class="silver f6 mt1 mb4 post-meta"><time>30 Mar 2009</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/coding class="link silver">coding</a> <a href=http://blog.dornea.nu/tags/howto class="link silver">howto</a> <a href=http://blog.dornea.nu/tags/sql class="link silver">sql</a> <a href=http://blog.dornea.nu/tags/admin class="link silver">admin</a> <a href=http://blog.dornea.nu/tags/postgresql class="link silver">postgresql</a> ]</p><div class="lh-copy post-content"><p>The use of so called &ldquo;procedural languages&rdquo; in PostgreSQL allows the user to write user-defined functions in other languages than SQL or C. Since every query is sent to the server, the database server has to know how to interpret and handle function statements. As the PostgreSQL documentation describes, the function handler itself is a C language function compiled into a shared object and loaded on demand. All you have to do is to install the <em>language</em> into your database. Besides that you&rsquo;ll have to install the pre-compiled shared objects on your system. On my system (Debian 5.0) I had to install the <code>postgresql-plperl</code> package. Afterwars I connected to the database and typed:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> FUNCTION <span style=color:#447fcf>plpgsql_call_handler</span> ()
    RETURNS OPAQUE
-   <span style="color:#6ab825;font-weight:bold">AS</span> <span style="color:#ed9d13">&#39;/usr/lib/postgresql/8.3/lib/plpgsql.so&#39;</span>
-LANGUAGE <span style="color:#ed9d13">&#39;C&#39;</span>;
-</code></pre></div><p>Of course you&rsquo;ll have to look up for the right file path in order to work. Finally I was able to use the language <code>plpgsql</code> in my functions. If you need help installing languages just check out the PostgreSQL <a href="http://www.postgresql.org/docs/8.3/static/plpgsql.html">documentation</a> (it helped me too).</p>
-<h2 id="polymorphic-types">Polymorphic types</h2>
-<p>When speaking of polymorphism in PostgreSQL, we actually refer to the polymorphic functions. So what’s the difference between a polymorphic type and a polymorphic function? They&rsquo;re related to each other. In fact every function declared to use polymorphic types is called as a polymorphic function. These types (pseudo-types) are <code>anyelement</code> and <code>anyarray</code>. So when arguments of these types are passed to a function, it can handle with different data types. Imagine a function called <code>equal</code> that compares two arguments and returns a boolean:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">or</span> <span style="color:#6ab825;font-weight:bold">REPLACE</span> FUNCTION <span style="color:#447fcf">equal</span> (anyelement,anyelement)
-  RETURNS boolean <span style="color:#6ab825;font-weight:bold">AS</span>
-  <span style="color:#a61717;background-color:#e3d2d2">$$</span>
+   <span style=color:#6ab825;font-weight:700>AS</span> <span style=color:#ed9d13>&#39;/usr/lib/postgresql/8.3/lib/plpgsql.so&#39;</span>
+LANGUAGE <span style=color:#ed9d13>&#39;C&#39;</span>;
+</code></pre></div><p>Of course you&rsquo;ll have to look up for the right file path in order to work. Finally I was able to use the language <code>plpgsql</code> in my functions. If you need help installing languages just check out the PostgreSQL <a href=http://www.postgresql.org/docs/8.3/static/plpgsql.html>documentation</a> (it helped me too).</p><h2 id=polymorphic-types>Polymorphic types</h2><p>When speaking of polymorphism in PostgreSQL, we actually refer to the polymorphic functions. So what’s the difference between a polymorphic type and a polymorphic function? They&rsquo;re related to each other. In fact every function declared to use polymorphic types is called as a polymorphic function. These types (pseudo-types) are <code>anyelement</code> and <code>anyarray</code>. So when arguments of these types are passed to a function, it can handle with different data types. Imagine a function called <code>equal</code> that compares two arguments and returns a boolean:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>or</span> <span style=color:#6ab825;font-weight:700>REPLACE</span> FUNCTION <span style=color:#447fcf>equal</span> (anyelement,anyelement)
+  RETURNS boolean <span style=color:#6ab825;font-weight:700>AS</span>
+  <span style=color:#a61717;background-color:#e3d2d2>$$</span>
       ...
-      <span style="color:#6ab825;font-weight:bold">IF</span> <span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span> == <span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">2</span> <span style="color:#6ab825;font-weight:bold">THEN</span>
-          <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#40ffff">TRUE</span>;
-      <span style="color:#6ab825;font-weight:bold">ELSE</span>
-          <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#40ffff">FALSE</span>;
-      END <span style="color:#6ab825;font-weight:bold">IF</span>;
-  <span style="color:#a61717;background-color:#e3d2d2">$$</span>
-LANGUAGE <span style="color:#ed9d13">&#39;sql&#39;</span>;
-</code></pre></div><p><code>equal</code> will take 2 input values of the SAME data type. Otherwise how could you e.g. compare a string to an integer? Read <a href="http://www.postgresql.org/docs/current/static/extend-type-system.html">more</a>.</p>
-<h2 id="getting-started">Getting started</h2>
-<p>I&rsquo;ll use following employees table:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">create</span> <span style="color:#6ab825;font-weight:bold">table</span> <span style="color:#447fcf">t_employee</span>
+      <span style=color:#6ab825;font-weight:700>IF</span> <span style=color:#a61717;background-color:#e3d2d2>$</span><span style=color:#3677a9>1</span> == <span style=color:#a61717;background-color:#e3d2d2>$</span><span style=color:#3677a9>2</span> <span style=color:#6ab825;font-weight:700>THEN</span>
+          <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#40ffff>TRUE</span>;
+      <span style=color:#6ab825;font-weight:700>ELSE</span>
+          <span style=color:#6ab825;font-weight:700>return</span> <span style=color:#40ffff>FALSE</span>;
+      END <span style=color:#6ab825;font-weight:700>IF</span>;
+  <span style=color:#a61717;background-color:#e3d2d2>$$</span>
+LANGUAGE <span style=color:#ed9d13>&#39;sql&#39;</span>;
+</code></pre></div><p><code>equal</code> will take 2 input values of the SAME data type. Otherwise how could you e.g. compare a string to an integer? Read <a href=http://www.postgresql.org/docs/current/static/extend-type-system.html>more</a>.</p><h2 id=getting-started>Getting started</h2><p>I&rsquo;ll use following employees table:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>create</span> <span style=color:#6ab825;font-weight:700>table</span> <span style=color:#447fcf>t_employee</span>
 (
-        ID <span style="color:#6ab825;font-weight:bold">integer</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        name <span style="color:#6ab825;font-weight:bold">text</span>,
-        salary <span style="color:#6ab825;font-weight:bold">real</span>, 
-        start_date <span style="color:#6ab825;font-weight:bold">date</span>,
-        city <span style="color:#6ab825;font-weight:bold">text</span>,
-        <span style="color:#6ab825;font-weight:bold">CONSTRAINT</span> primkey_ID <span style="color:#6ab825;font-weight:bold">PRIMARY</span> <span style="color:#6ab825;font-weight:bold">KEY</span> (ID)
+        ID <span style=color:#6ab825;font-weight:700>integer</span> <span style=color:#6ab825;font-weight:700>NOT</span> <span style=color:#40ffff>NULL</span>,
+        name <span style=color:#6ab825;font-weight:700>text</span>,
+        salary <span style=color:#6ab825;font-weight:700>real</span>, 
+        start_date <span style=color:#6ab825;font-weight:700>date</span>,
+        city <span style=color:#6ab825;font-weight:700>text</span>,
+        <span style=color:#6ab825;font-weight:700>CONSTRAINT</span> primkey_ID <span style=color:#6ab825;font-weight:700>PRIMARY</span> <span style=color:#6ab825;font-weight:700>KEY</span> (ID)
 
-) <span style="color:#6ab825;font-weight:bold">WITH</span> (OIDS=<span style="color:#40ffff">FALSE</span>);
-</code></pre></div><p>Then we insert some new data into the table:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">INSERT</span> <span style="color:#6ab825;font-weight:bold">INTO</span> <span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city) 
-   <span style="color:#6ab825;font-weight:bold">VALUES</span> (<span style="color:#3677a9">1</span>,<span style="color:#ed9d13">&#39;Peter&#39;</span>,<span style="color:#ed9d13">&#39;2100&#39;</span>,<span style="color:#ed9d13">&#39;2003-06-19&#39;</span>,<span style="color:#ed9d13">&#39;Stuttgart&#39;</span>);
-<span style="color:#6ab825;font-weight:bold">INSERT</span> <span style="color:#6ab825;font-weight:bold">INTO</span> <span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city) 
-   <span style="color:#6ab825;font-weight:bold">VALUES</span> (<span style="color:#3677a9">2</span>,<span style="color:#ed9d13">&#39;Peter&#39;</span>,<span style="color:#ed9d13">&#39;2100&#39;</span>,<span style="color:#ed9d13">&#39;2003-06-19&#39;</span>,<span style="color:#ed9d13">&#39;Stuttgart&#39;</span>);
-<span style="color:#6ab825;font-weight:bold">INSERT</span> <span style="color:#6ab825;font-weight:bold">INTO</span> <span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city) 
-   <span style="color:#6ab825;font-weight:bold">VALUES</span> (<span style="color:#3677a9">3</span>,<span style="color:#ed9d13">&#39;Marc&#39;</span>,<span style="color:#ed9d13">&#39;1560&#39;</span>,<span style="color:#ed9d13">&#39;2001-02-25&#39;</span>,<span style="color:#ed9d13">&#39;Mannheim&#39;</span>);
-<span style="color:#6ab825;font-weight:bold">INSERT</span> <span style="color:#6ab825;font-weight:bold">INTO</span> <span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city) 
-   <span style="color:#6ab825;font-weight:bold">VALUES</span> (<span style="color:#3677a9">4</span>,<span style="color:#ed9d13">&#39;Stefan&#39;</span>,<span style="color:#ed9d13">&#39;1100&#39;</span>,<span style="color:#ed9d13">&#39;2008-03-14&#39;</span>,<span style="color:#ed9d13">&#39;Hamburg&#39;</span>);
-<span style="color:#6ab825;font-weight:bold">INSERT</span> <span style="color:#6ab825;font-weight:bold">INTO</span> <span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city) 
-   <span style="color:#6ab825;font-weight:bold">VALUES</span> (<span style="color:#3677a9">5</span>,<span style="color:#ed9d13">&#39;Gerd&#39;</span>,<span style="color:#ed9d13">&#39;900&#39;</span>,<span style="color:#ed9d13">&#39;2004-06-24&#39;</span>,<span style="color:#ed9d13">&#39;Hannover&#39;</span>);
-</code></pre></div><p><code>t_employee</code> will now contain:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">select</span> * <span style="color:#6ab825;font-weight:bold">from</span> t_employee;
+) <span style=color:#6ab825;font-weight:700>WITH</span> (OIDS=<span style=color:#40ffff>FALSE</span>);
+</code></pre></div><p>Then we insert some new data into the table:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>INSERT</span> <span style=color:#6ab825;font-weight:700>INTO</span> <span style=color:#447fcf>t_employee</span>(ID,name,salary,start_date,city) 
+   <span style=color:#6ab825;font-weight:700>VALUES</span> (<span style=color:#3677a9>1</span>,<span style=color:#ed9d13>&#39;Peter&#39;</span>,<span style=color:#ed9d13>&#39;2100&#39;</span>,<span style=color:#ed9d13>&#39;2003-06-19&#39;</span>,<span style=color:#ed9d13>&#39;Stuttgart&#39;</span>);
+<span style=color:#6ab825;font-weight:700>INSERT</span> <span style=color:#6ab825;font-weight:700>INTO</span> <span style=color:#447fcf>t_employee</span>(ID,name,salary,start_date,city) 
+   <span style=color:#6ab825;font-weight:700>VALUES</span> (<span style=color:#3677a9>2</span>,<span style=color:#ed9d13>&#39;Peter&#39;</span>,<span style=color:#ed9d13>&#39;2100&#39;</span>,<span style=color:#ed9d13>&#39;2003-06-19&#39;</span>,<span style=color:#ed9d13>&#39;Stuttgart&#39;</span>);
+<span style=color:#6ab825;font-weight:700>INSERT</span> <span style=color:#6ab825;font-weight:700>INTO</span> <span style=color:#447fcf>t_employee</span>(ID,name,salary,start_date,city) 
+   <span style=color:#6ab825;font-weight:700>VALUES</span> (<span style=color:#3677a9>3</span>,<span style=color:#ed9d13>&#39;Marc&#39;</span>,<span style=color:#ed9d13>&#39;1560&#39;</span>,<span style=color:#ed9d13>&#39;2001-02-25&#39;</span>,<span style=color:#ed9d13>&#39;Mannheim&#39;</span>);
+<span style=color:#6ab825;font-weight:700>INSERT</span> <span style=color:#6ab825;font-weight:700>INTO</span> <span style=color:#447fcf>t_employee</span>(ID,name,salary,start_date,city) 
+   <span style=color:#6ab825;font-weight:700>VALUES</span> (<span style=color:#3677a9>4</span>,<span style=color:#ed9d13>&#39;Stefan&#39;</span>,<span style=color:#ed9d13>&#39;1100&#39;</span>,<span style=color:#ed9d13>&#39;2008-03-14&#39;</span>,<span style=color:#ed9d13>&#39;Hamburg&#39;</span>);
+<span style=color:#6ab825;font-weight:700>INSERT</span> <span style=color:#6ab825;font-weight:700>INTO</span> <span style=color:#447fcf>t_employee</span>(ID,name,salary,start_date,city) 
+   <span style=color:#6ab825;font-weight:700>VALUES</span> (<span style=color:#3677a9>5</span>,<span style=color:#ed9d13>&#39;Gerd&#39;</span>,<span style=color:#ed9d13>&#39;900&#39;</span>,<span style=color:#ed9d13>&#39;2004-06-24&#39;</span>,<span style=color:#ed9d13>&#39;Hannover&#39;</span>);
+</code></pre></div><p><code>t_employee</code> will now contain:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>select</span> * <span style=color:#6ab825;font-weight:700>from</span> t_employee;
 
  id |  name  | salary | start_date |   city    
-----+--------+--------+------------+---------<span style="color:#999;font-style:italic">--
-</span><span style="color:#999;font-style:italic">  1 | John   |   1100 | 2002-05-01 | Berlin
-</span><span style="color:#999;font-style:italic"></span>  <span style="color:#3677a9">2</span> | Peter  |   <span style="color:#3677a9">2100</span> | <span style="color:#3677a9">2003</span>-<span style="color:#3677a9">06</span>-<span style="color:#3677a9">19</span> | Stuttgart
-  <span style="color:#3677a9">3</span> | Marc   |   <span style="color:#3677a9">1560</span> | <span style="color:#3677a9">2001</span>-<span style="color:#3677a9">02</span>-<span style="color:#3677a9">25</span> | Mannheim
-  <span style="color:#3677a9">4</span> | Stefan |   <span style="color:#3677a9">1100</span> | <span style="color:#3677a9">2008</span>-<span style="color:#3677a9">03</span>-<span style="color:#3677a9">14</span> | Hamburg
-  <span style="color:#3677a9">5</span> | Gerd   |    <span style="color:#3677a9">900</span> | <span style="color:#3677a9">2004</span>-<span style="color:#3677a9">06</span>-<span style="color:#3677a9">24</span> | <span style="color:#447fcf">Hannover</span>
-(<span style="color:#3677a9">5</span> rows)
-</code></pre></div><p>In the next step we&rsquo;ll try to write a function which returns a SETOF containing our data.</p>
-<h2 id="setof-vs-array">SETOF vs. Array</h2>
-<p>Now we need a function which returns our data as a SETOF. In my function I can declare <code>l_row</code> of type <code>t_employee</code>(see below). In this variable data is structured as in the table <code>t_employee</code>. So far, no big deal. Just let us have a look at the function:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">or</span> <span style="color:#6ab825;font-weight:bold">REPLACE</span> FUNCTION <span style="color:#447fcf">get_employee</span>()
-   RETURNS SETOF t_employees <span style="color:#6ab825;font-weight:bold">AS</span>
-<span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span>
+----+--------+--------+------------+---------<span style=color:#999;font-style:italic>--
+</span><span style=color:#999;font-style:italic>  1 | John   |   1100 | 2002-05-01 | Berlin
+</span><span style=color:#999;font-style:italic></span>  <span style=color:#3677a9>2</span> | Peter  |   <span style=color:#3677a9>2100</span> | <span style=color:#3677a9>2003</span>-<span style=color:#3677a9>06</span>-<span style=color:#3677a9>19</span> | Stuttgart
+  <span style=color:#3677a9>3</span> | Marc   |   <span style=color:#3677a9>1560</span> | <span style=color:#3677a9>2001</span>-<span style=color:#3677a9>02</span>-<span style=color:#3677a9>25</span> | Mannheim
+  <span style=color:#3677a9>4</span> | Stefan |   <span style=color:#3677a9>1100</span> | <span style=color:#3677a9>2008</span>-<span style=color:#3677a9>03</span>-<span style=color:#3677a9>14</span> | Hamburg
+  <span style=color:#3677a9>5</span> | Gerd   |    <span style=color:#3677a9>900</span> | <span style=color:#3677a9>2004</span>-<span style=color:#3677a9>06</span>-<span style=color:#3677a9>24</span> | <span style=color:#447fcf>Hannover</span>
+(<span style=color:#3677a9>5</span> rows)
+</code></pre></div><p>In the next step we&rsquo;ll try to write a function which returns a SETOF containing our data.</p><h2 id=setof-vs-array>SETOF vs. Array</h2><p>Now we need a function which returns our data as a SETOF. In my function I can declare <code>l_row</code> of type <code>t_employee</code>(see below). In this variable data is structured as in the table <code>t_employee</code>. So far, no big deal. Just let us have a look at the function:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>or</span> <span style=color:#6ab825;font-weight:700>REPLACE</span> FUNCTION <span style=color:#447fcf>get_employee</span>()
+   RETURNS SETOF t_employees <span style=color:#6ab825;font-weight:700>AS</span>
+<span style=color:#a61717;background-color:#e3d2d2>$</span>BODY<span style=color:#a61717;background-color:#e3d2d2>$</span>
 
-<span style="color:#6ab825;font-weight:bold">DECLARE</span>
+<span style=color:#6ab825;font-weight:700>DECLARE</span>
    l_row t_employee;
 
 BEGIN
 
-   <span style="color:#999;font-style:italic">-- Loop through rows
-</span><span style="color:#999;font-style:italic"></span>   <span style="color:#6ab825;font-weight:bold">FOR</span> l_row <span style="color:#6ab825;font-weight:bold">IN</span>
-      <span style="color:#6ab825;font-weight:bold">SELECT</span> * <span style="color:#6ab825;font-weight:bold">FROM</span> t_employee
-   <span style="color:#6ab825;font-weight:bold">LOOP</span>
-      <span style="color:#999;font-style:italic">-- Return data
-</span><span style="color:#999;font-style:italic"></span>      <span style="color:#6ab825;font-weight:bold">RETURN</span> NEXT l_row;
-   END <span style="color:#6ab825;font-weight:bold">LOOP</span>;
+   <span style=color:#999;font-style:italic>-- Loop through rows
+</span><span style=color:#999;font-style:italic></span>   <span style=color:#6ab825;font-weight:700>FOR</span> l_row <span style=color:#6ab825;font-weight:700>IN</span>
+      <span style=color:#6ab825;font-weight:700>SELECT</span> * <span style=color:#6ab825;font-weight:700>FROM</span> t_employee
+   <span style=color:#6ab825;font-weight:700>LOOP</span>
+      <span style=color:#999;font-style:italic>-- Return data
+</span><span style=color:#999;font-style:italic></span>      <span style=color:#6ab825;font-weight:700>RETURN</span> NEXT l_row;
+   END <span style=color:#6ab825;font-weight:700>LOOP</span>;
 END;
-<span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span>
-   LANGUAGE <span style="color:#ed9d13">&#39;plpgsql&#39;</span>;
-</code></pre></div><p>Okay. But as you might have noticed, the purpose of this howto ist to show you how to get a SETOF from an array. Therefor we need some array. We&rsquo;ll modify <code>get_employees</code> in this way:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">or</span> <span style="color:#6ab825;font-weight:bold">REPLACE</span> FUNCTION <span style="color:#447fcf">get_employee</span>()
-   RETURNS SETOF t_employee <span style="color:#6ab825;font-weight:bold">AS</span>
-<span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span>
+<span style=color:#a61717;background-color:#e3d2d2>$</span>BODY<span style=color:#a61717;background-color:#e3d2d2>$</span>
+   LANGUAGE <span style=color:#ed9d13>&#39;plpgsql&#39;</span>;
+</code></pre></div><p>Okay. But as you might have noticed, the purpose of this howto ist to show you how to get a SETOF from an array. Therefor we need some array. We&rsquo;ll modify <code>get_employees</code> in this way:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>or</span> <span style=color:#6ab825;font-weight:700>REPLACE</span> FUNCTION <span style=color:#447fcf>get_employee</span>()
+   RETURNS SETOF t_employee <span style=color:#6ab825;font-weight:700>AS</span>
+<span style=color:#a61717;background-color:#e3d2d2>$</span>BODY<span style=color:#a61717;background-color:#e3d2d2>$</span>
 
-<span style="color:#6ab825;font-weight:bold">DECLARE</span>
+<span style=color:#6ab825;font-weight:700>DECLARE</span>
    l_row t_employee;
    l_array t_employee[];
 
 BEGIN
 
-   <span style="color:#999;font-style:italic">-- Loop throught rows
-</span><span style="color:#999;font-style:italic"></span>   <span style="color:#6ab825;font-weight:bold">FOR</span> l_row <span style="color:#6ab825;font-weight:bold">IN</span>
-      <span style="color:#6ab825;font-weight:bold">SELECT</span> * <span style="color:#6ab825;font-weight:bold">FROM</span> t_employee
-   <span style="color:#6ab825;font-weight:bold">LOOP</span>
-      <span style="color:#999;font-style:italic">-- Put all data into array
-</span><span style="color:#999;font-style:italic"></span>      <span style="color:#6ab825;font-weight:bold">SELECT</span> <span style="color:#447fcf">array_append</span>(l_array,l_row) <span style="color:#6ab825;font-weight:bold">INTO</span> l_array;
-   END <span style="color:#6ab825;font-weight:bold">LOOP</span>;
+   <span style=color:#999;font-style:italic>-- Loop throught rows
+</span><span style=color:#999;font-style:italic></span>   <span style=color:#6ab825;font-weight:700>FOR</span> l_row <span style=color:#6ab825;font-weight:700>IN</span>
+      <span style=color:#6ab825;font-weight:700>SELECT</span> * <span style=color:#6ab825;font-weight:700>FROM</span> t_employee
+   <span style=color:#6ab825;font-weight:700>LOOP</span>
+      <span style=color:#999;font-style:italic>-- Put all data into array
+</span><span style=color:#999;font-style:italic></span>      <span style=color:#6ab825;font-weight:700>SELECT</span> <span style=color:#447fcf>array_append</span>(l_array,l_row) <span style=color:#6ab825;font-weight:700>INTO</span> l_array;
+   END <span style=color:#6ab825;font-weight:700>LOOP</span>;
    ...
 END;
-<span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span>
-   LANGUAGE <span style="color:#ed9d13">&#39;plpgsql&#39;</span>;
-</code></pre></div><p>IN the next step we&rsquo;ll have to extract SETOF data from the array. Since you can&rsquo;t do that with built-in Postgres functions, we&rsquo;ll need some auxiliary function:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#999;font-style:italic">/*
-</span><span style="color:#999;font-style:italic">   Polymorphic function &#39;unnest&#39;: ANYARRAY -&amp;gt; SETOF
-</span><span style="color:#999;font-style:italic">   Return SETOF from ANYARRAY
-</span><span style="color:#999;font-style:italic">*/</span>
+<span style=color:#a61717;background-color:#e3d2d2>$</span>BODY<span style=color:#a61717;background-color:#e3d2d2>$</span>
+   LANGUAGE <span style=color:#ed9d13>&#39;plpgsql&#39;</span>;
+</code></pre></div><p>IN the next step we&rsquo;ll have to extract SETOF data from the array. Since you can&rsquo;t do that with built-in Postgres functions, we&rsquo;ll need some auxiliary function:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#999;font-style:italic>/*
+</span><span style=color:#999;font-style:italic>   Polymorphic function &#39;unnest&#39;: ANYARRAY -&amp;gt; SETOF
+</span><span style=color:#999;font-style:italic>   Return SETOF from ANYARRAY
+</span><span style=color:#999;font-style:italic>*/</span>
 
-<span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">or</span> <span style="color:#6ab825;font-weight:bold">REPLACE</span> FUNCTION <span style="color:#447fcf">unnest</span>(ANYARRAY)
+<span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>or</span> <span style=color:#6ab825;font-weight:700>REPLACE</span> FUNCTION <span style=color:#447fcf>unnest</span>(ANYARRAY)
 RETURNS SETOF ANYELEMENT
-LANGUAGE <span style="color:#6ab825;font-weight:bold">SQL</span> <span style="color:#6ab825;font-weight:bold">AS</span>
+LANGUAGE <span style=color:#6ab825;font-weight:700>SQL</span> <span style=color:#6ab825;font-weight:700>AS</span>
 
-<span style="color:#a61717;background-color:#e3d2d2">$$</span>
-   <span style="color:#6ab825;font-weight:bold">SELECT</span> <span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span>[i] <span style="color:#6ab825;font-weight:bold">FROM</span> <span style="color:#447fcf">generate_series</span>(<span style="color:#447fcf">array_lower</span>(<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span>,<span style="color:#3677a9">1</span>),<span style="color:#447fcf">array_upper</span>(<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span>,<span style="color:#3677a9">1</span>)) i;
-<span style="color:#a61717;background-color:#e3d2d2">$$</span>;
-</code></pre></div><p>I hope you have noticed the <code>anyarray</code> which is given as a parameter to the function. So you can use <code>unnest</code> for every type of array. That&rsquo;s the great point when using polymorphic functions: You have some kind of generic function and you can use it for all arrays. Well having this function implemented, we can now modify <code>get_employees</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">or</span> <span style="color:#6ab825;font-weight:bold">REPLACE</span> FUNCTION <span style="color:#447fcf">get_employee</span>()
-   RETURNS SETOF t_employee <span style="color:#6ab825;font-weight:bold">AS</span>
-<span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span>
+<span style=color:#a61717;background-color:#e3d2d2>$$</span>
+   <span style=color:#6ab825;font-weight:700>SELECT</span> <span style=color:#a61717;background-color:#e3d2d2>$</span><span style=color:#3677a9>1</span>[i] <span style=color:#6ab825;font-weight:700>FROM</span> <span style=color:#447fcf>generate_series</span>(<span style=color:#447fcf>array_lower</span>(<span style=color:#a61717;background-color:#e3d2d2>$</span><span style=color:#3677a9>1</span>,<span style=color:#3677a9>1</span>),<span style=color:#447fcf>array_upper</span>(<span style=color:#a61717;background-color:#e3d2d2>$</span><span style=color:#3677a9>1</span>,<span style=color:#3677a9>1</span>)) i;
+<span style=color:#a61717;background-color:#e3d2d2>$$</span>;
+</code></pre></div><p>I hope you have noticed the <code>anyarray</code> which is given as a parameter to the function. So you can use <code>unnest</code> for every type of array. That&rsquo;s the great point when using polymorphic functions: You have some kind of generic function and you can use it for all arrays. Well having this function implemented, we can now modify <code>get_employees</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.sql data-lang=.sql><span style=color:#6ab825;font-weight:700>CREATE</span> <span style=color:#6ab825;font-weight:700>or</span> <span style=color:#6ab825;font-weight:700>REPLACE</span> FUNCTION <span style=color:#447fcf>get_employee</span>()
+   RETURNS SETOF t_employee <span style=color:#6ab825;font-weight:700>AS</span>
+<span style=color:#a61717;background-color:#e3d2d2>$</span>BODY<span style=color:#a61717;background-color:#e3d2d2>$</span>
 
-<span style="color:#6ab825;font-weight:bold">DECLARE</span>
+<span style=color:#6ab825;font-weight:700>DECLARE</span>
    l_row t_employee;
    l_array t_employee[];
 
 BEGIN
 
-   <span style="color:#999;font-style:italic">-- Loop throught rows
-</span><span style="color:#999;font-style:italic"></span>   <span style="color:#6ab825;font-weight:bold">FOR</span> l_row <span style="color:#6ab825;font-weight:bold">IN</span>
-      <span style="color:#6ab825;font-weight:bold">SELECT</span> * <span style="color:#6ab825;font-weight:bold">FROM</span> t_employee
-   <span style="color:#6ab825;font-weight:bold">LOOP</span>
-      <span style="color:#999;font-style:italic">-- Put all data into array
-</span><span style="color:#999;font-style:italic"></span>      <span style="color:#6ab825;font-weight:bold">SELECT</span> <span style="color:#447fcf">array_append</span>(l_array,l_row) <span style="color:#6ab825;font-weight:bold">INTO</span> l_array;
-   END <span style="color:#6ab825;font-weight:bold">LOOP</span>;
+   <span style=color:#999;font-style:italic>-- Loop throught rows
+</span><span style=color:#999;font-style:italic></span>   <span style=color:#6ab825;font-weight:700>FOR</span> l_row <span style=color:#6ab825;font-weight:700>IN</span>
+      <span style=color:#6ab825;font-weight:700>SELECT</span> * <span style=color:#6ab825;font-weight:700>FROM</span> t_employee
+   <span style=color:#6ab825;font-weight:700>LOOP</span>
+      <span style=color:#999;font-style:italic>-- Put all data into array
+</span><span style=color:#999;font-style:italic></span>      <span style=color:#6ab825;font-weight:700>SELECT</span> <span style=color:#447fcf>array_append</span>(l_array,l_row) <span style=color:#6ab825;font-weight:700>INTO</span> l_array;
+   END <span style=color:#6ab825;font-weight:700>LOOP</span>;
 
-   <span style="color:#999;font-style:italic">-- ARRAY -&amp;gt; SETOF
-</span><span style="color:#999;font-style:italic"></span>   <span style="color:#6ab825;font-weight:bold">FOR</span> l_row <span style="color:#6ab825;font-weight:bold">IN</span>
-      <span style="color:#6ab825;font-weight:bold">SELECT</span> * <span style="color:#6ab825;font-weight:bold">FROM</span> <span style="color:#447fcf">unnest</span>(l_array)
-   <span style="color:#6ab825;font-weight:bold">LOOP</span>
-      <span style="color:#6ab825;font-weight:bold">return</span> next l_row;
-   END <span style="color:#6ab825;font-weight:bold">LOOP</span>; 
+   <span style=color:#999;font-style:italic>-- ARRAY -&amp;gt; SETOF
+</span><span style=color:#999;font-style:italic></span>   <span style=color:#6ab825;font-weight:700>FOR</span> l_row <span style=color:#6ab825;font-weight:700>IN</span>
+      <span style=color:#6ab825;font-weight:700>SELECT</span> * <span style=color:#6ab825;font-weight:700>FROM</span> <span style=color:#447fcf>unnest</span>(l_array)
+   <span style=color:#6ab825;font-weight:700>LOOP</span>
+      <span style=color:#6ab825;font-weight:700>return</span> next l_row;
+   END <span style=color:#6ab825;font-weight:700>LOOP</span>; 
 END;
-<span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span>
-   LANGUAGE <span style="color:#ed9d13">&#39;plpgsql&#39;</span>;
-</code></pre></div></div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2009/03/18/bye-bye-immobilo/">prev post</a>
-  <a href="http://blog.dornea.nu/2009/04/07/why-use-python-the-n00b-mini-review/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+<span style=color:#a61717;background-color:#e3d2d2>$</span>BODY<span style=color:#a61717;background-color:#e3d2d2>$</span>
+   LANGUAGE <span style=color:#ed9d13>&#39;plpgsql&#39;</span>;
+</code></pre></div></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2009/03/18/bye-bye-immobilo/>prev post</a>
+<a href=http://blog.dornea.nu/2009/04/07/why-use-python-the-n00b-mini-review/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>

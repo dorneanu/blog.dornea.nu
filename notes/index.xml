@@ -1,114 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Notes on blog.dornea.nu</title>
-    <link>http://blog.dornea.nu/notes/</link>
-    <description>Recent content in Notes on blog.dornea.nu</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Fri, 26 Aug 2016 00:00:00 +0000</lastBuildDate><atom:link href="http://blog.dornea.nu/notes/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Automatic file uploads</title>
-      <link>http://blog.dornea.nu/2016/08/26/automatic-file-uploads/</link>
-      <pubDate>Fri, 26 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2016/08/26/automatic-file-uploads/</guid>
-      <description>Uploading files in web applications iw nowadays a common feature. Being able to automate this steps using Burp, Curl, Python &amp;amp; Co. doesn&amp;rsquo;t seem to be an easy task. Basically the automation involves following steps:
- for a given directory of files, repeat the request for each file have a look for the status responses to detect anomalies  In Burp you&amp;rsquo;re allowed to copy a certain request as curl command which simplifies things.</description>
-    </item>
-    
-    <item>
-      <title>Testing shellcodes</title>
-      <link>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</link>
-      <pubDate>Tue, 23 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</guid>
-      <description>While playing some wargames where I had to read a file called flag.txt using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.
-BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 Shellcode ; Shellcode size 82 bytes global _start section .text _start: jmp _push_filename _readfile: ; syscall open file pop rdi ; pop path value ; NULL byte fix xor byte [rdi + 11], 0x41 xor rax, rax add al, 2 xor rsi, rsi ; set O_RDONLY flag syscall ; syscall read file sub sp, 0xfff lea rsi, [rsp] mov rdi, rax xor rdx, rdx mov dx, 0xfff; size to read xor rax, rax syscall ; syscall write to stdout xor rdi, rdi add dil, 1 ; set stdout fd = 1 mov rdx, rax xor rax, rax add al, 1 syscall ; syscall exit xor rax, rax add al, 60 syscall _push_filename: call _readfile path: db &amp;#34;flag.</description>
-    </item>
-    
-    <item>
-      <title>TLS Client authentication using Bitnami Nginx stack</title>
-      <link>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</link>
-      <pubDate>Thu, 18 Feb 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</guid>
-      <description>I&amp;rsquo;ve felt that I have to write it down since it took almost 2 days to find the root cause of:
-[info] 30979#0: *2 client SSL certificate verify error: (18:self signed certificate) while reading client request headers, client: xxx, server: yyy, request: &amp;#34;GET / HTTP/1.1&amp;#34;, host: &amp;#34;yyy&amp;#34; Use nginx stack environment Not generating the certificates inside the Bitnami environment was the root cause - at least I think it is. In your Bitnami installation folder (remember the instructions here) you&amp;rsquo;ll find a small script called use_nginxstack:</description>
-    </item>
-    
-    <item>
-      <title>No DNAT to localhost</title>
-      <link>http://blog.dornea.nu/2016/01/20/no-dnat-to-localhost/</link>
-      <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2016/01/20/no-dnat-to-localhost/</guid>
-      <description>Doing a simple port forwarding is actually a simple task:
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Notes on blog.dornea.nu</title><link>http://blog.dornea.nu/notes/</link><description>Recent content in Notes on blog.dornea.nu</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 26 Aug 2016 00:00:00 +0000</lastBuildDate><atom:link href="http://blog.dornea.nu/notes/index.xml" rel="self" type="application/rss+xml"/><item><title>Automatic file uploads</title><link>http://blog.dornea.nu/2016/08/26/automatic-file-uploads/</link><pubDate>Fri, 26 Aug 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/08/26/automatic-file-uploads/</guid><description>Uploading files in web applications iw nowadays a common feature. Being able to automate this steps using Burp, Curl, Python &amp;amp; Co. doesn&amp;rsquo;t seem to be an easy task. Basically the automation involves following steps:
+for a given directory of files, repeat the request for each file have a look for the status responses to detect anomalies In Burp you&amp;rsquo;re allowed to copy a certain request as curl command which simplifies things.</description></item><item><title>Testing shellcodes</title><link>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</link><pubDate>Tue, 23 Aug 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/08/23/testing-shellcodes/</guid><description>While playing some wargames where I had to read a file called flag.txt using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.
+BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 Shellcode ; Shellcode size 82 bytes global _start section .text _start: jmp _push_filename _readfile: ; syscall open file pop rdi ; pop path value ; NULL byte fix xor byte [rdi + 11], 0x41 xor rax, rax add al, 2 xor rsi, rsi ; set O_RDONLY flag syscall ; syscall read file sub sp, 0xfff lea rsi, [rsp] mov rdi, rax xor rdx, rdx mov dx, 0xfff; size to read xor rax, rax syscall ; syscall write to stdout xor rdi, rdi add dil, 1 ; set stdout fd = 1 mov rdx, rax xor rax, rax add al, 1 syscall ; syscall exit xor rax, rax add al, 60 syscall _push_filename: call _readfile path: db &amp;#34;flag.</description></item><item><title>TLS Client authentication using Bitnami Nginx stack</title><link>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</link><pubDate>Thu, 18 Feb 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/02/18/tls-client-authentication-using-bitnami-nginx-stack/</guid><description>I&amp;rsquo;ve felt that I have to write it down since it took almost 2 days to find the root cause of:
+[info] 30979#0: *2 client SSL certificate verify error: (18:self signed certificate) while reading client request headers, client: xxx, server: yyy, request: &amp;#34;GET / HTTP/1.1&amp;#34;, host: &amp;#34;yyy&amp;#34; Use nginx stack environment Not generating the certificates inside the Bitnami environment was the root cause - at least I think it is. In your Bitnami installation folder (remember the instructions here) you&amp;rsquo;ll find a small script called use_nginxstack:</description></item><item><title>No DNAT to localhost</title><link>http://blog.dornea.nu/2016/01/20/no-dnat-to-localhost/</link><pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/01/20/no-dnat-to-localhost/</guid><description>Doing a simple port forwarding is actually a simple task:
 $ iptables -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080 This would redirect all traffic from 80 to 8080. But if you have some firewall activated, you&amp;rsquo;ll have to allow both ports:
-$ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW Otherwise the port forwarding won&amp;rsquo;t work. But this is not the use case you want to achieve.</description>
-    </item>
-    
-    <item>
-      <title>Video editing with ffmpeg and kdenlive</title>
-      <link>http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/</link>
-      <pubDate>Fri, 08 Jan 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/</guid>
-      <description>Having recently bought a brand new Sony Action Cam HDR-AS200v I wanted to do some video editing. I&amp;rsquo;ve used Blender before but at some point of time it was to over-bloated and to complicated for some video editing tasks. So I&amp;rsquo;ve had a look at kdenlive.
+$ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW Otherwise the port forwarding won&amp;rsquo;t work. But this is not the use case you want to achieve.</description></item><item><title>Video editing with ffmpeg and kdenlive</title><link>http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/</link><pubDate>Fri, 08 Jan 2016 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2016/01/08/video-editing-with-ffmpeg-and-kdenlive/</guid><description>Having recently bought a brand new Sony Action Cam HDR-AS200v I wanted to do some video editing. I&amp;rsquo;ve used Blender before but at some point of time it was to over-bloated and to complicated for some video editing tasks. So I&amp;rsquo;ve had a look at kdenlive.
 Due to the nature of the action cam I had recordings in
- standard MP4 (28 Mb/s) XAVC S Codec (50 Mb/s)  I&amp;rsquo;ve first set the right profile in kdenlive (1080p, 30fps) and imported the recordings.</description>
-    </item>
-    
-    <item>
-      <title>Decode Adobe Flex AMF protocol </title>
-      <link>http://blog.dornea.nu/2015/06/22/decode-adobe-flex-amf-protocol/</link>
-      <pubDate>Mon, 22 Jun 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2015/06/22/decode-adobe-flex-amf-protocol/</guid>
-      <description>If you ever had the opportunity to pentest Flash applications you might have had problems analyzing the traffic between the client and the backend. An increasing number of (web) applications is using Adobe Flex at the presentation layer which uses the ActionScript Message Format (AMF) to send data back and forth. One might think that Burp has already built-in decoding functionalities for AMF. Although this is the case I found Burp&amp;rsquo;s decoding to be more confusing than useful.</description>
-    </item>
-    
-    <item>
-      <title>Android remote sniffing using Tcpdump, nc and Wireshark</title>
-      <link>http://blog.dornea.nu/2015/02/20/android-remote-sniffing-using-tcpdump-nc-and-wireshark/</link>
-      <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2015/02/20/android-remote-sniffing-using-tcpdump-nc-and-wireshark/</guid>
-      <description>If you want to sniff your devices traffic and visualize it on Wireshark, you&amp;rsquo;ll need:
- tcpdump netcat wireshark/tshark  Make sure you have tcpdump installed on your machine. I highly recommend you installing the Debian Kit which I&amp;rsquo;ve been using for years now. It makes things less complicated. Once you have done that, log in to your Android device and switch to the Debian environment:
-victor@delia:/$ adb shell # deb root@debian:/# Now you can start tcpdump and pipe its output to netcat:</description>
-    </item>
-    
-    <item>
-      <title>Redirect Androids traffic to Burp</title>
-      <link>http://blog.dornea.nu/2015/02/19/redirect-androids-traffic-to-burp/</link>
-      <pubDate>Thu, 19 Feb 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2015/02/19/redirect-androids-traffic-to-burp/</guid>
-      <description>If you want to redirect you Android devices traffic to your Burp instance, you&amp;rsquo;ll just have to use DNAT and MASQUERADING. I was more detailed about this topic in this post. And since the Internet is full of misleading information these are the steps to get it working. A small side remark: Most articles show you how to route the devices traffic through another machine (hosting the Burp instance). In that case one could:</description>
-    </item>
-    
-    <item>
-      <title>Import Burp cert into Android</title>
-      <link>http://blog.dornea.nu/2014/12/03/import-burp-cert-into-android/</link>
-      <pubDate>Wed, 03 Dec 2014 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2014/12/03/import-burp-cert-into-android/</guid>
-      <description>As already mentioned in previous posts, in order to install Burps CA certificate, just go to the IP address Burp is listening on, followed by /cert, e.g. http://127.0.0.1:8080/cert. There you can download the cert and push it to your Android device. Usually you&amp;rsquo;ll get a binary certificate in DER format: cacert.crt.
-Android won&amp;rsquo;t recognize this file as a cert. You&amp;rsquo;ll have to rename it to: cacert.der and push it to your device:</description>
-    </item>
-    
-    <item>
-      <title>Re-Root Nexus 10 4.x</title>
-      <link>http://blog.dornea.nu/2014/12/02/re-root-nexus-10-4.x/</link>
-      <pubDate>Tue, 02 Dec 2014 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.dornea.nu/2014/12/02/re-root-nexus-10-4.x/</guid>
-      <description>I wrote this since I always forget the 2 essential steps in order to regain root on a Nexus 10 device which has been updated over-the-air. Basically you&amp;rsquo;ll have to flash a new recovery image:
+standard MP4 (28 Mb/s) XAVC S Codec (50 Mb/s) I&amp;rsquo;ve first set the right profile in kdenlive (1080p, 30fps) and imported the recordings.</description></item><item><title>Decode Adobe Flex AMF protocol</title><link>http://blog.dornea.nu/2015/06/22/decode-adobe-flex-amf-protocol/</link><pubDate>Mon, 22 Jun 2015 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2015/06/22/decode-adobe-flex-amf-protocol/</guid><description>If you ever had the opportunity to pentest Flash applications you might have had problems analyzing the traffic between the client and the backend. An increasing number of (web) applications is using Adobe Flex at the presentation layer which uses the ActionScript Message Format (AMF) to send data back and forth. One might think that Burp has already built-in decoding functionalities for AMF. Although this is the case I found Burp&amp;rsquo;s decoding to be more confusing than useful.</description></item><item><title>Android remote sniffing using Tcpdump, nc and Wireshark</title><link>http://blog.dornea.nu/2015/02/20/android-remote-sniffing-using-tcpdump-nc-and-wireshark/</link><pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2015/02/20/android-remote-sniffing-using-tcpdump-nc-and-wireshark/</guid><description>If you want to sniff your devices traffic and visualize it on Wireshark, you&amp;rsquo;ll need:
+tcpdump netcat wireshark/tshark Make sure you have tcpdump installed on your machine. I highly recommend you installing the Debian Kit which I&amp;rsquo;ve been using for years now. It makes things less complicated. Once you have done that, log in to your Android device and switch to the Debian environment:
+victor@delia:/$ adb shell # deb root@debian:/# Now you can start tcpdump and pipe its output to netcat:</description></item><item><title>Redirect Androids traffic to Burp</title><link>http://blog.dornea.nu/2015/02/19/redirect-androids-traffic-to-burp/</link><pubDate>Thu, 19 Feb 2015 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2015/02/19/redirect-androids-traffic-to-burp/</guid><description>If you want to redirect you Android devices traffic to your Burp instance, you&amp;rsquo;ll just have to use DNAT and MASQUERADING. I was more detailed about this topic in this post. And since the Internet is full of misleading information these are the steps to get it working. A small side remark: Most articles show you how to route the devices traffic through another machine (hosting the Burp instance). In that case one could:</description></item><item><title>Import Burp cert into Android</title><link>http://blog.dornea.nu/2014/12/03/import-burp-cert-into-android/</link><pubDate>Wed, 03 Dec 2014 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2014/12/03/import-burp-cert-into-android/</guid><description>As already mentioned in previous posts, in order to install Burps CA certificate, just go to the IP address Burp is listening on, followed by /cert, e.g. http://127.0.0.1:8080/cert. There you can download the cert and push it to your Android device. Usually you&amp;rsquo;ll get a binary certificate in DER format: cacert.crt.
+Android won&amp;rsquo;t recognize this file as a cert. You&amp;rsquo;ll have to rename it to: cacert.der and push it to your device:</description></item><item><title>Re-Root Nexus 10 4.x</title><link>http://blog.dornea.nu/2014/12/02/re-root-nexus-10-4.x/</link><pubDate>Tue, 02 Dec 2014 00:00:00 +0000</pubDate><guid>http://blog.dornea.nu/2014/12/02/re-root-nexus-10-4.x/</guid><description>I wrote this since I always forget the 2 essential steps in order to regain root on a Nexus 10 device which has been updated over-the-air. Basically you&amp;rsquo;ll have to flash a new recovery image:
 # ~/android-sdk/platform-tools/fastboot flash recovery recovery-clockwork-touch-6.0.4.3-manta.img ... Before booting into recovery make sure you&amp;rsquo;ll push the latest SuperSU zip package to your device:
 # adb push UPDATE-SuperSU-v1.51.zip /mnt/sdcard ... Boot into recovery:
-# adb reboot recovery .</description>
-    </item>
-    
-  </channel>
-</rss>
+# adb reboot recovery .</description></item></channel></rss>

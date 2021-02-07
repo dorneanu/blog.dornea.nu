@@ -1,93 +1,13 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content='text/html; charset=utf-8' http-equiv='content-type' />
-
-  <title>ringzer0 CTF - Binaries - Heap Allocator - blog.dornea.nu</title>
-  <meta content='ringzer0 CTF - Binaries - Heap Allocator - blog.dornea.nu' property='title' />
-  <meta content='ringzer0 CTF - Binaries - Heap Allocator - blog.dornea.nu' property='og:title' />
-
-
-<meta property="og:description" content="First let&rsquo;s collect some information about the binary itself:
-$ readelf IntelligenSoftware -h ELF Header: Magic: 7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 Class: ELF64 Data: 2&#39;s complement, little endian Version: 1 (current) OS/ABI: UNIX - System V ABI Version: 0 Type: EXEC (Executable file) Machine: Advanced Micro Devices X86-64 Version: 0x1 Entry point address: 0x400688 Start of program headers: 64 (bytes into file) Start of section headers: 4608 (bytes into file) Flags: 0x0 Size of this header: 64 (bytes) Size of program headers: 56 (bytes) Number of program headers: 9 Size of section headers: 64 (bytes) Number of section headers: 30 Section header string table index: 27 Let&rsquo;s see some code:" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2016/11/30/ringzer0-ctf-binaries-heap-allocator/" />
-
-
-<meta property="article:published_time" content="2016-11-30T00:00:00&#43;00:00"/>
-
-<meta property="article:modified_time" content="2016-11-30T00:00:00&#43;00:00"/>
-
-
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.78.1" />
-
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
-<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
-:root {
-  --main-color: #8C6056; 
-  --secondary-color: #AFD5AA;
-  --logo-text-color: #fff;
-  --body-text-color: #3d3d3d;
-  --heading-text-color: #383838;
-  --background-color: #fff;
-}</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-
-
-<link rel="icon" 
- 
-  href='http://blog.dornea.nu/favicon.ico'
-
-type="image/x-icon"/>
-
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
-</head>
-<body class="global-font">
-  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
-  <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
-  </div>
-  
-  <div class=" flex-ns mt2 mt0-ns pv1">
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bookmarks.html' title="Bookmarks">Bookmarks</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org/bib.html' title="Books">Books</a>
-    
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
-    
-  </div>
-  
-</nav>
-  
-<main class="center mv4 content-width ph3">
-  <div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - Binaries - Heap Allocator</div>
-  <p class="silver f6 mt1 mb4 post-meta">
-    <time>30 Nov 2016</time> 
-     | 
-    
-    
-    tags: [ <a href='http://blog.dornea.nu/tags/ringzer0' class="link silver">ringzer0</a> <a href='http://blog.dornea.nu/tags/ctf' class="link silver">ctf</a> <a href='http://blog.dornea.nu/tags/wargames' class="link silver">wargames</a> <a href='http://blog.dornea.nu/tags/asm' class="link silver">asm</a> <a href='http://blog.dornea.nu/tags/x86' class="link silver">x86</a> <a href='http://blog.dornea.nu/tags/sploitfun' class="link silver">sploitfun</a>  ]
-    
-  </p>
-  <div class="lh-copy post-content"><p>First let&rsquo;s collect some information about the binary itself:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf IntelligenSoftware -h
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><title>ringzer0 CTF - Binaries - Heap Allocator - blog.dornea.nu</title><meta content="ringzer0 CTF - Binaries - Heap Allocator - blog.dornea.nu" property="title"><meta content="ringzer0 CTF - Binaries - Heap Allocator - blog.dornea.nu" property="og:title"><meta property="og:description" content="First let&rsquo;s collect some information about the binary itself:
+$ readelf IntelligenSoftware -h ELF Header: Magic: 7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 Class: ELF64 Data: 2's complement, little endian Version: 1 (current) OS/ABI: UNIX - System V ABI Version: 0 Type: EXEC (Executable file) Machine: Advanced Micro Devices X86-64 Version: 0x1 Entry point address: 0x400688 Start of program headers: 64 (bytes into file) Start of section headers: 4608 (bytes into file) Flags: 0x0 Size of this header: 64 (bytes) Size of program headers: 56 (bytes) Number of program headers: 9 Size of section headers: 64 (bytes) Number of section headers: 30 Section header string table index: 27 Let&rsquo;s see some code:"><meta property="og:type" content="article"><meta property="og:url" content="http://blog.dornea.nu/2016/11/30/ringzer0-ctf-binaries-heap-allocator/"><meta property="article:published_time" content="2016-11-30T00:00:00+00:00"><meta property="article:modified_time" content="2016-11-30T00:00:00+00:00"><meta name=generator content="Hugo 0.75.1"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel=stylesheet><style type=text/css>:root{--main-color: #8C6056;--secondary-color: #AFD5AA;--logo-text-color: #fff;--body-text-color: #3d3d3d;--heading-text-color: #383838;--background-color: #fff}</style><link href=http://blog.dornea.nu/css/tachyons.min.css rel=stylesheet><link href=http://blog.dornea.nu/css/styles.css rel=stylesheet><link rel=icon href=http://blog.dornea.nu/favicon.ico type=image/x-icon><link href=http://blog.dornea.nu/feed.xml rel=alternate type=application/atom+xml title=blog.dornea.nu></head><body class=global-font><nav class="flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id=navbar><div class=flex><a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id=site-title href=http://blog.dornea.nu/ title=Home>blog.dornea.nu</a></div><div class="flex-ns mt2 mt0-ns pv1"><a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/ title=Home>Home</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://dornea.nu title=About>About</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/tags title=Tags>Tags</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org title=Zettelkasten>Zettelkasten</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bookmarks.html title=Bookmarks>Bookmarks</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=https://brainfck.org/bib.html title=Books>Books</a>
+<a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href=http://blog.dornea.nu/notes title=Notes>Notes</a></div></nav><main class="center mv4 content-width ph3"><div class="f3 fw6 heading-color heading-font post-title">ringzer0 CTF - Binaries - Heap Allocator</div><p class="silver f6 mt1 mb4 post-meta"><time>30 Nov 2016</time>
+|
+tags: [ <a href=http://blog.dornea.nu/tags/ringzer0 class="link silver">ringzer0</a> <a href=http://blog.dornea.nu/tags/ctf class="link silver">ctf</a> <a href=http://blog.dornea.nu/tags/wargames class="link silver">wargames</a> <a href=http://blog.dornea.nu/tags/asm class="link silver">asm</a> <a href=http://blog.dornea.nu/tags/x86 class="link silver">x86</a> <a href=http://blog.dornea.nu/tags/sploitfun class="link silver">sploitfun</a> ]</p><div class="lh-copy post-content"><p>First let&rsquo;s collect some information about the binary itself:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ readelf IntelligenSoftware -h
 ELF Header:
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
   Class:                             ELF64
@@ -109,8 +29,7 @@ ELF Header:
   Number of section headers:         30
   Section header string table index: 27
 
-</code></pre></div><p>Let&rsquo;s see some code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ objdump -d IntelligentSoftware -j .text 
+</code></pre></div><p>Let&rsquo;s see some code:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ objdump -d IntelligentSoftware -j .text 
 ...
 0000000000400660 &lt;main&gt;:
   400660:       48 83 ec 08             sub    $0x8,%rsp
@@ -124,8 +43,7 @@ ELF Header:
   400681:       31 c0                   xor    %eax,%eax
   400683:       48 83 c4 08             add    $0x8,%rsp
   400687:       c3                      retq
-</code></pre></div><p>Nothing interesting here. But there is a <code>call</code> to <code>get_flag</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">0000000000400780 &lt;get_flag&gt;:
+</code></pre></div><p>Nothing interesting here. But there is a <code>call</code> to <code>get_flag</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>0000000000400780 &lt;get_flag&gt;:
   400780:       53                      push   %rbx
   400781:       bf 00 04 00 00          mov    $0x400,%edi
   400786:       e8 05 fe ff ff          callq  400590 &lt;malloc@plt&gt;
@@ -138,19 +56,8 @@ ELF Header:
   400658:       eb cf                   jmp    400629 &lt;__libc_csu_ctor+0x79&gt;
   40065a:       e8 01 ff ff ff          callq  400560 &lt;__stack_chk_fail@plt&gt;
   40065f:       90                      nop
-</code></pre></div><p>And there is some <code>jmp</code> to a <strong>libc constructor</strong> (`__libc_csu_ctor').</p>
-<h3 id="libc-constructors--destructors">Libc constructors / destructors</h3>
-<p>If you don&rsquo;t have a clue what <strong>libc</strong> constructors/destructors are, make sure
-you have a look at:</p>
-<ul>
-<li><a href="http://dbp-consulting.com/tutorials/debugging/linuxProgramStartup.html">Linux x86 Program Start Up</a></li>
-<li><a href="http://bottomupcs.sourceforge.net/csbu/x3564.htm">Starting a process</a></li>
-<li><a href="http://eli.thegreenplace.net/2012/08/13/how-statically-linked-programs-run-on-linux">How statically linked programs run on Linux</a></li>
-<li><a href="http://nairobi-embedded.org/070_elf_c_runtime.html">C Run-time for ELF Executables</a></li>
-</ul>
-<h3 id="dynamic-analysis">Dynamic analysis</h3>
-<p>Again using <code>radare</code> I&rsquo;ll disassemble <code>get_flag</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ sym.get_flag
+</code></pre></div><p>And there is some <code>jmp</code> to a <strong>libc constructor</strong> (`__libc_csu_ctor').</p><h3 id=libc-constructors--destructors>Libc constructors / destructors</h3><p>If you don&rsquo;t have a clue what <strong>libc</strong> constructors/destructors are, make sure
+you have a look at:</p><ul><li><a href=http://dbp-consulting.com/tutorials/debugging/linuxProgramStartup.html>Linux x86 Program Start Up</a></li><li><a href=http://bottomupcs.sourceforge.net/csbu/x3564.htm>Starting a process</a></li><li><a href=http://eli.thegreenplace.net/2012/08/13/how-statically-linked-programs-run-on-linux>How statically linked programs run on Linux</a></li><li><a href=http://nairobi-embedded.org/070_elf_c_runtime.html>C Run-time for ELF Executables</a></li></ul><h3 id=dynamic-analysis>Dynamic analysis</h3><p>Again using <code>radare</code> I&rsquo;ll disassemble <code>get_flag</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>[0x00400688]&gt; pdf @ sym.get_flag
 / (fcn) sym.get_flag 73
 |   sym.get_flag ();
 |       |   ; CALL XREF from 0x0040067c (sym.main)
@@ -174,8 +81,7 @@ you have a look at:</p>
 |       |   0x004007bf      bf90084000     mov edi, str.Heap_is_working_perfectly__No_Flag_then ; &#34;Heap is working perfectly! No Flag then&#34; @ 0x400890
 \       `=&lt; 0x004007c4      e987fdffff     jmp sym.imp.puts
 </code></pre></div><p>Nothing suspicious about it: <code>malloc</code> is being called and then <code>free</code>. Now let&rsquo;s have a look at the constructors, which are usually
-called before <code>main</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ entry0
+called before <code>main</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>[0x00400688]&gt; pdf @ entry0
             ;-- _start:
 / (fcn) entry0 41
 |   entry0 ();
@@ -191,31 +97,19 @@ called before <code>main</code>:</p>
 |           0x0040069e      48c7c1d00740.  mov rcx, sym.__libc_csu_init ; &#34;AWA..AVI..AUI..ATL.% . &#34; @ 0x4007d0
 |           0x004006a5      48c7c7600640.  mov rdi, sym.main           ; &#34;H......`&#34; @ 0x400660
 \           0x004006ac      e8bffeffff     call sym.imp.__libc_start_main; int __libc_start_main(func main, int argc, char **ubp_av, func init, func fini, func rtld_fini, void *stack_end);
-</code></pre></div><p>Ahh, there we go. From the links mentioned before we know that <code>__libc_start_main</code> has following syntax:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">__libc_start_main</span>( 
-	<span style="color:#6ab825;font-weight:bold">int</span> (*main) (<span style="color:#6ab825;font-weight:bold">int</span>, <span style="color:#6ab825;font-weight:bold">char</span> * *, <span style="color:#6ab825;font-weight:bold">char</span> * *), 
-	<span style="color:#6ab825;font-weight:bold">int</span> argc, 
-	<span style="color:#6ab825;font-weight:bold">char</span> * * ubp_av, 
-	<span style="color:#6ab825;font-weight:bold">void</span> (*init) (<span style="color:#6ab825;font-weight:bold">void</span>), 
-	<span style="color:#6ab825;font-weight:bold">void</span> (*fini) (<span style="color:#6ab825;font-weight:bold">void</span>), 
-	<span style="color:#6ab825;font-weight:bold">void</span> (*rtld_fini) (<span style="color:#6ab825;font-weight:bold">void</span>), 
-	<span style="color:#6ab825;font-weight:bold">void</span> (* stack_end)
+</code></pre></div><p>Ahh, there we go. From the links mentioned before we know that <code>__libc_start_main</code> has following syntax:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>int</span> <span style=color:#447fcf>__libc_start_main</span>( 
+	<span style=color:#6ab825;font-weight:700>int</span> (*main) (<span style=color:#6ab825;font-weight:700>int</span>, <span style=color:#6ab825;font-weight:700>char</span> * *, <span style=color:#6ab825;font-weight:700>char</span> * *), 
+	<span style=color:#6ab825;font-weight:700>int</span> argc, 
+	<span style=color:#6ab825;font-weight:700>char</span> * * ubp_av, 
+	<span style=color:#6ab825;font-weight:700>void</span> (*init) (<span style=color:#6ab825;font-weight:700>void</span>), 
+	<span style=color:#6ab825;font-weight:700>void</span> (*fini) (<span style=color:#6ab825;font-weight:700>void</span>), 
+	<span style=color:#6ab825;font-weight:700>void</span> (*rtld_fini) (<span style=color:#6ab825;font-weight:700>void</span>), 
+	<span style=color:#6ab825;font-weight:700>void</span> (* stack_end)
 );
 </code></pre></div><p>So before calling <code>main</code> its arguments are copied to the corresponding registers. Since we&rsquo;re dealing with <code>x86-64</code>
-the <strong>ABI</strong> requires that registers are used instead of the stack. On Linux we have the <a href="https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI">System V AMD64 ABI</a> calling convention which uses following registers for the parameters:</p>
-<ul>
-<li>RDI</li>
-<li>RSI</li>
-<li>RDX</li>
-<li>RCX</li>
-<li>R8</li>
-<li>R9</li>
-</ul>
-<p>Additional arguments can be passed on the stack. In our case we have:</p>
-<p>{% graphviz
+the <strong>ABI</strong> requires that registers are used instead of the stack. On Linux we have the <a href=https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI>System V AMD64 ABI</a> calling convention which uses following registers for the parameters:</p><ul><li>RDI</li><li>RSI</li><li>RDX</li><li>RCX</li><li>R8</li><li>R9</li></ul><p>Additional arguments can be passed on the stack. In our case we have:</p><p>{% graphviz
 dot {
-digraph G {</p>
-<pre><code>        // Define layout
+digraph G {</p><pre><code>        // Define layout
         graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
         rankdir=LR;
         node [shape=&quot;record&quot;];
@@ -275,28 +169,15 @@ digraph G {</p>
         rsp_20:p -&gt; stack:20 [style=invis];
     }
 }
-</code></pre>
-<p>%}</p>
-<p>As stated <a href="http://dbp-consulting.com/tutorials/debugging/linuxProgramStartup.html">here</a> <code>__libc_start_main</code> does
-the following:</p>
-<ul>
-<li>Takes care of some security problems with setuid setgid programs</li>
-<li>Starts up threading</li>
-<li>Registers the fini (our program), and rtld_fini (run-time loader) arguments to get run by at_exit to run the program&rsquo;s and the loader&rsquo;s cleanup routines</li>
-<li>Calls the init argument</li>
-<li>Calls the main with the argc and argv arguments passed to it and with the global __environ argument as detailed above.</li>
-<li>Calls exit with the return value of main</li>
-</ul>
-<p>The <code>init</code> argument is set to <code>__libc_csu_init</code>. In the <strong>glibc</strong> source tree you will find <code>csu/elf-init.c</code> which contains <code>__libc_csu_init</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">__libc_csu_init</span> (<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv, <span style="color:#6ab825;font-weight:bold">char</span> **envp) {
+</code></pre><p>%}</p><p>As stated <a href=http://dbp-consulting.com/tutorials/debugging/linuxProgramStartup.html>here</a> <code>__libc_start_main</code> does
+the following:</p><ul><li>Takes care of some security problems with setuid setgid programs</li><li>Starts up threading</li><li>Registers the fini (our program), and rtld_fini (run-time loader) arguments to get run by at_exit to run the program&rsquo;s and the loader&rsquo;s cleanup routines</li><li>Calls the init argument</li><li>Calls the main with the argc and argv arguments passed to it and with the global __environ argument as detailed above.</li><li>Calls exit with the return value of main</li></ul><p>The <code>init</code> argument is set to <code>__libc_csu_init</code>. In the <strong>glibc</strong> source tree you will find <code>csu/elf-init.c</code> which contains <code>__libc_csu_init</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>void</span> <span style=color:#447fcf>__libc_csu_init</span> (<span style=color:#6ab825;font-weight:700>int</span> argc, <span style=color:#6ab825;font-weight:700>char</span> **argv, <span style=color:#6ab825;font-weight:700>char</span> **envp) {
 	 _init (); 
 	
-	<span style="color:#6ab825;font-weight:bold">const</span> size_t size = __init_array_end - __init_array_start; 
-	<span style="color:#6ab825;font-weight:bold">for</span> (size_t i = <span style="color:#3677a9">0</span>; i &lt; size; i++) 
+	<span style=color:#6ab825;font-weight:700>const</span> size_t size = __init_array_end - __init_array_start; 
+	<span style=color:#6ab825;font-weight:700>for</span> (size_t i = <span style=color:#3677a9>0</span>; i &lt; size; i++) 
 		(*__init_array_start [i]) (argc, argv, envp); 
 }
-</code></pre></div><p>Let&rsquo;s have a look at the disassembly:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ sym.__libc_csu_init
+</code></pre></div><p>Let&rsquo;s have a look at the disassembly:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>[0x00400688]&gt; pdf @ sym.__libc_csu_init
 / (fcn) sym.__libc_csu_init 101
 |   sym.__libc_csu_init ();
 |           ; DATA XREF from 0x0040069e (entry0)
@@ -337,8 +218,7 @@ the following:</p>
 |           0x00400830      415e           pop r14
 |           0x00400832      415f           pop r15
 \           0x00400834      c3             ret
-</code></pre></div><p>You can definitely see the call to <code>_init()</code>. The loop inside looks very interesting:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">|       |   0x08048592      8db600000000   lea esi, [esi]
+</code></pre></div><p>You can definitely see the call to <code>_init()</code>. The loop inside looks very interesting:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>|       |   0x08048592      8db600000000   lea esi, [esi]
 |      .--&gt; 0x08048598      8b442438       mov eax, dword [esp + arg_38h] ; [0x38:4]=52 ; &#39;8&#39;
 |      ||   0x0804859c      892c24         mov dword [esp], ebp
 |      ||   0x0804859f      89442408       mov dword [esp + local_8h], eax
@@ -348,8 +228,7 @@ the following:</p>
 |      ||   0x080485b2      83c601         add esi, 1
 |      ||   0x080485b5      39fe           cmp esi, edi
 |      `==&lt; 0x080485b7      75df           jne 0x8048598
-</code></pre></div><p>Let&rsquo;s have a look what&rsquo;s happening inside this loop:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; b *0x0000000000400803
+</code></pre></div><p>Let&rsquo;s have a look what&rsquo;s happening inside this loop:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>gef&gt; b *0x0000000000400803
 gef&gt; r
 gef&gt; 
 0x0000000000400819    &lt;__libc_csu_init+73&gt;     call   QWORD PTR [r12+rbx*8]   &lt;- $pc
@@ -359,17 +238,13 @@ gef&gt; x/x $r12
 gef&gt; x/x $rbx
 0x0:    Cannot access memory at address 0x0
 </code></pre></div><p>As you can see the address at <code>$r12 + rbx*8</code> will be called. Since <code>$rbx</code> is null the programm
-execution will jump to the address <code>0x00400750</code>. But where does this address come from?</p>
-<h3 id="constructors">Constructors</h3>
-<p>As you have seen previously an <code>init_array</code> is used to call some functions. In C you&rsquo;d usually
-implement some constructors using <code>__attribute__</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">init</span>(<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv, <span style="color:#6ab825;font-weight:bold">char</span> **envp) { 
-	printf(<span style="color:#ed9d13">&#34;INIT!&#34;</span>); 
+execution will jump to the address <code>0x00400750</code>. But where does this address come from?</p><h3 id=constructors>Constructors</h3><p>As you have seen previously an <code>init_array</code> is used to call some functions. In C you&rsquo;d usually
+implement some constructors using <code>__attribute__</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-.c data-lang=.c><span style=color:#6ab825;font-weight:700>void</span> <span style=color:#447fcf>init</span>(<span style=color:#6ab825;font-weight:700>int</span> argc, <span style=color:#6ab825;font-weight:700>char</span> **argv, <span style=color:#6ab825;font-weight:700>char</span> **envp) { 
+	printf(<span style=color:#ed9d13>&#34;INIT!&#34;</span>); 
 }
-__attribute__((section(<span style="color:#ed9d13">&#34;.init_array&#34;</span>))) typeof(init) *__init = init;
+__attribute__((section(<span style=color:#ed9d13>&#34;.init_array&#34;</span>))) typeof(init) *__init = init;
 </code></pre></div><p>This whole information is stored inside the ELF binary at a section called <code>init_array</code>. Let&rsquo;s
-see what it contains:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ objdump -d -j .init_array IntelligentSoftware
+see what it contains:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ objdump -d -j .init_array IntelligentSoftware
 
 IntelligentSoftware:     file format elf64-x86-64
 
@@ -378,15 +253,13 @@ Disassembly of section .init_array:
 
 0000000000600e08 &lt;__frame_dummy_init_array_entry&gt;:
   600e08:       50 07 40 00 00 00 00 00 b0 05 40 00 00 00 00 00     P.@.......@.....
-</code></pre></div><p>Did you recognize the address <code>0x600e08</code> and the value <code>0x00400750</code>? Let&rsquo;s go back to <code>radare</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pxr @ obj.__frame_dummy_init_array_entry
+</code></pre></div><p>Did you recognize the address <code>0x600e08</code> and the value <code>0x00400750</code>? Let&rsquo;s go back to <code>radare</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>[0x00400688]&gt; pxr @ obj.__frame_dummy_init_array_entry
 0x00600e08  0x0000000000400750   P.@..... (.text) sym.frame_dummy sym.frame_dummy R X &#39;cmp qword [rip + 0x2006c8], 0&#39;
 0x00600e10  0x00000000004005b0   ..@..... (.text) sym.__libc_csu_ctor sym.__libc_csu_ctor R X &#39;sub rsp, 0x48&#39;
 0x00600e18  0x0000000000400730   0.@..... (.text) sym.__do_global_dtors_aux sym.__do_global_dtors_aux R X &#39;cmp byte [rip + 0x200998], 0&#39;
 0x00600e20  0x0000000000000000   ........ section_end.GNU_STACK
 ...
-</code></pre></div><p>Let&rsquo;s have a look at the <strong>2nd</strong>  constructor/entry:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">/ (fcn) sym.__libc_csu_ctor 216
+</code></pre></div><p>Let&rsquo;s have a look at the <strong>2nd</strong> constructor/entry:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>/ (fcn) sym.__libc_csu_ctor 216
 |   sym.__libc_csu_ctor ();
 |           ; var int local_8h @ rsp+0x8
 |           ; var int local_10h @ rsp+0x10
@@ -432,8 +305,7 @@ Disassembly of section .init_array:
 |     |||   0x00400630      a802           test al, 2
 
 </code></pre></div><p>Do you see how the string <code>FLAG-</code> is being concatenated? Let&rsquo;s <code>seek</code> to that address and let <code>radare</code> give us some
-graphics:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; s 0x00000000004005b
+graphics:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>[0x00400688]&gt; s 0x00000000004005b
 [0x004005b0]&gt; VV
 
                                                          =---------------------------------=
@@ -518,8 +390,7 @@ graphics:</p>
 </code></pre></div><p>As you can see there is one execution path which will directly lead to <code>0x4005da</code> and then either
 to <code>0x4005ea</code> or <code>sym.imp.__stack_chk_fail</code> if sth was wrong with the stack (this function
 wil be called if the stack canaries were modified). Now let&rsquo;s have a look what happens inside
-the first block:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">                =----------------------------------------------------------------------------=
+the first block:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>                =----------------------------------------------------------------------------=
                 | [0x4005b0]                                                                 |
                 |   ;-- section_end..plt:                                                    |
                 |   ;-- section..text:                                                       |
@@ -560,11 +431,9 @@ the first block:</p>
     | 0x00400621 752b           jne 0x40064e ;[b]                   |     |
     =---------------------------------------------------------------=     |
 
-</code></pre></div><p>Apparently the programm will jump to <code>0x4005ef</code> only if <code>$al = 0xcc</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">|           0x004005d6      3ccc           cmp al, 0xcc
+</code></pre></div><p>Apparently the programm will jump to <code>0x4005ef</code> only if <code>$al = 0xcc</code>:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>|           0x004005d6      3ccc           cmp al, 0xcc
 |       ,=&lt; 0x004005d8      7415           je 0x4005ef
-</code></pre></div><p>Let&rsquo;s debug the binary and see what happens:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt;  b *0x004005d6
+</code></pre></div><p>Let&rsquo;s debug the binary and see what happens:</p><div class=highlight><pre style=color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>gef&gt;  b *0x004005d6
 Breakpoint 1 at 0x4005d6
 gef&gt;  r
 gef&gt;  set $al=0xcc
@@ -574,103 +443,9 @@ FLAG-Allocating 1024 bytes 0x602420...
 Freeing buffer 0x602420...
 Heap is working perfectly! No Flag then
 [Inferior 1 (process 1745) exited normally]
-</code></pre></div><p>Well <code>FLAG-Allocating</code> looks like a flag! ;)</p>
-</div>
-</main>
- 
-
-
-
-
-
-
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
-
-
-<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
-  
-<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
-<br>
-  <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/">prev post</a>
-  <a href="http://blog.dornea.nu/2016/12/09/ringzer0-ctf-binaries-introduction-to-mips/">next post</a>
-  </p>
-</div>
-
-  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
-  <hr class="dn db-l ml0-l gray w3"><br>
-  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
-  
-</footer>
-  
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
-
-
-
-<script type="text/javascript">
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-
-  
-  if (document.getElementById("tag-cloud") !== null) { 
-    if (prevScrollpos > currentScrollPos) { 
-      document.getElementById("tag-cloud").style.visibility = "visible";
-      document.getElementById("tag-cloud").style.opacity = "1";
-    } else {
-      document.getElementById("tag-cloud").style.visibility = "hidden";
-      document.getElementById("tag-cloud").style.opacity = "0";
-    }
-  }
-  
-
-  
-  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-      document.getElementById("scroll-to-top").style.display = "inline";
-      document.getElementById("scroll-to-top").style.visibility = "visible";
-      document.getElementById("scroll-to-top").style.opacity = "1";
-  } else {
-      document.getElementById("scroll-to-top").style.visibility = "hidden";
-      document.getElementById("scroll-to-top").style.opacity = "0";
-  }
-  
-  prevScrollpos = currentScrollPos;
-}
-
-
-function topFunction() {
-  document.body.scrollTop = 0; 
-  document.documentElement.scrollTop = 0; 
-}
-
-
-
-
-
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+</code></pre></div><p>Well <code>FLAG-Allocating</code> looks like a flag! ;)</p></div></main><div class="tl fixed list-pages lh-copy" id=contents-list></div><div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l"><a id=scroll-to-top class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick=topFunction() style="color:#fff;visibility:hidden;display:none;transition:opacity .5s,visibility .5s" title="back to top">back to top</a><br><p class="mb0 mt2"><a href=http://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/>prev post</a>
+<a href=http://blog.dornea.nu/2016/12/09/ringzer0-ctf-binaries-introduction-to-mips/>next post</a></p></div><footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l"><hr class="dn db-l ml0-l gray w3"><br>Powered by <a href=https://gohugo.io/ target=_blank class="link gray dim">Hugo</a>, based on the <a href=https://github.com/lingxz/er target=_blank class="link gray dim">Er</a> theme.<br></footer><script src=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css><style>.is-active-link::before{background-color:var(--secondary-color)}</style><script type=text/javascript>var prevScrollpos=window.pageYOffset;window.onscroll=function(){var currentScrollPos=window.pageYOffset;if(document.getElementById("tag-cloud")!==null){if(prevScrollpos>currentScrollPos){document.getElementById("tag-cloud").style.visibility="visible";document.getElementById("tag-cloud").style.opacity="1";}else{document.getElementById("tag-cloud").style.visibility="hidden";document.getElementById("tag-cloud").style.opacity="0";}}
+if(document.body.scrollTop>1000||document.documentElement.scrollTop>1000){document.getElementById("scroll-to-top").style.display="inline";document.getElementById("scroll-to-top").style.visibility="visible";document.getElementById("scroll-to-top").style.opacity="1";}else{document.getElementById("scroll-to-top").style.visibility="hidden";document.getElementById("scroll-to-top").style.opacity="0";}
+prevScrollpos=currentScrollPos;}
+function topFunction(){document.body.scrollTop=0;document.documentElement.scrollTop=0;}
+if(document.getElementById("contents-list")!==null&&document.getElementsByClassName("post-content").length!==0){tocbot.init({tocSelector:'#contents-list',contentSelector:'.post-content',headingSelector:'h1, h2, h3',});}</script></body></html>
