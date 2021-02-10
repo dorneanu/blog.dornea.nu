@@ -184,7 +184,7 @@ blockdiag {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
   Intermediate_CA3 -&gt; Signing_CA3 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
   Intermediate_CA3 -&gt; Signing_CA3_0 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
 }
-</code></pre></div><p><img src="output_1_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_1_0.png" alt="png"></p>
 <p>For my purposes I&rsquo;ll be using only a <strong>2-tier</strong> hierarchy as shown below:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
@@ -206,7 +206,7 @@ blockdiag {
   Root_CA -&gt; Signing_CA2;
   Root_CA -&gt; Signing_CA3;
 }
-</code></pre></div><p><img src="output_3_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_3_0.png" alt="png"></p>
 <p>The level of security is increased because you separate the root CA from the issuing CAs. The root CA is mostly offline so the private key to sign the certificates should be thus protected from compromise. If one of the <em>issuing CAs</em> is being compromised, you can <em>revoke</em> the certificate issued for that specific CA and create another one using the <em>root CA</em>. You can also have multiple issuing CAs distributed geographically and with different security levels. This increases <em>flexibility</em> and <em>scalability</em>.</p>
 <blockquote>
 <p>Also checkout this <a href="http://blogs.technet.com/b/askds/archive/2009/09/01/designing-and-implementing-a-pki-part-i-design-and-planning.aspx">awesome article</a> for further details.</p>
@@ -242,7 +242,7 @@ blockdiag {
   Signing_CA3 -&gt; VPN_Server_CA [label = <span style="color:#ed9d13">&#34;issues&#34;</span>];
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="output_5_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_5_0.png" alt="png"></p>
 <p>We&rsquo;ll have a <strong>root CA</strong> bound to the domain <code>dornea.nu</code> followed by 2 intermediate CAs: <strong>dev.dornea.nu CA</strong> and <strong>vpn.dornea.nu CA</strong>. The CAs will be used to issue certificates to <em>users</em> and <em>networks</em>.</p>
 <p>The <strong>TLS Server CA</strong> will be used by a web server like Apache or Nginx to server content over a SSL/TLS connection. The server will only accept connection from clients with a valid <strong>TLS Client CA</strong> which has been signed (and generated) from <strong>dev.dornea.nu CA</strong>.</p>
 <p>The <strong>vpn.dornea.nu CA</strong> will then issue certificates for a <strong>VPN Server CA</strong> and a <strong>VPN Client CA</strong>.</p>
@@ -312,7 +312,7 @@ blockdiag {
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="output_14_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_14_0.png" alt="png"></p>
 <p>The configuration file can be shown here:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/root-ca.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
@@ -520,7 +520,7 @@ blockdiag {
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="output_20_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_20_0.png" alt="png"></p>
 <p>Create the directories:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%bash<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
@@ -745,7 +745,7 @@ blockdiag {
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="output_30_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_30_0.png" alt="png"></p>
 <p>Create the directories:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
@@ -985,7 +985,7 @@ blockdiag {
     
   TLS_Server_CA -&gt; dev_dornea_nu;
 }
-</code></pre></div><p><img src="output_44_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_44_0.png" alt="png"></p>
 <p>We will specify <strong>multiple domains</strong> with one certificate by using <strong>SANs</strong> (Subject Alternatve Name). Those are a <em>X.509</em> V3 extension to allow a SSL certificate to specify multiple names that the certificate should match. They can contain:</p>
 <ul>
 <li>mail addresses</li>
@@ -1141,7 +1141,7 @@ blockdiag {
     
   TLS_Client_CA -&gt; dev_client_victor;
 }
-</code></pre></div><p><img src="output_52_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_52_0.png" alt="png"></p>
 <p>Create directories:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
@@ -1293,7 +1293,7 @@ blockdiag {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="output_60_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_60_0.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/vpn-ca/certs/vpn-server
@@ -1457,7 +1457,7 @@ blockdiag {
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="output_65_0.png" alt="png"></p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_65_0.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/vpn-ca/certs/vpn-client

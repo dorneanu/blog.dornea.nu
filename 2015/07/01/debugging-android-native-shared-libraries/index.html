@@ -270,7 +270,7 @@ adb shell am start -n com.example.jni_debug_demo/com.example.jni_debug_demo.Main
 WARNING: linker: libvc1dec_sa.ca7.so has text relocations. This is wasting memory and is a security risk. Please fix.
 Starting: Intent { cmp=com.example.jni_debug_demo/.MainActivity }
 </code></pre>
-<p><img src="http://dl.dornea.nu/img/2015/android-solib/a74f0e9adca736086c2834fb63c793ad.png" alt="JNI Debug Demo Application"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/android-solib/a74f0e9adca736086c2834fb63c793ad.png" alt="JNI Debug Demo Application"></p>
 <p>Greping for the <strong>logcat messages</strong> shows:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb logcat -s JNIDemo
 --------- beginning of /dev/log/system
@@ -409,7 +409,7 @@ From        To          Syms Read   Shared Object Library
 (*): Shared library is missing debugging information.
 </code></pre></div><h3 id="find-target-function">Find target function</h3>
 <p>From last output you can see that <code>libsquared.so</code> starts at address <strong>0x60b5bbe4</strong>. Let&rsquo;s see what we can find there:</p>
-<p><img src="http://dl.dornea.nu/img/2015/android-solib/b85df1e566b46ed748e315c3d4f043ed.png" alt="jni_debug_demo libsquared"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/android-solib/b85df1e566b46ed748e315c3d4f043ed.png" alt="jni_debug_demo libsquared"></p>
 <p>Bingo! So <code>Java_com_example_jni_1debug_1demo_SquaredWrapper_squared</code> starts at <strong>0x60b5bc28</strong>. We&rsquo;ll definitely set a <strong>breakpoint</strong> at that address:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; b Java_com_example_jni_1debug_1demo_SquaredWrapper_squared
 Breakpoint 1 at 0x60b5bc40: file jni/square.c, line 5.
@@ -457,8 +457,8 @@ Backtrace stopped: previous frame identical to this frame (corrupt stack?)
 Breakpoint 1, Java_com_example_jni_1debug_1demo_SquaredWrapper_squared (je=0x4187fe30, jc=0x7a100019, base=8) at jni/square.c:5
 5           return (base*base);
 </code></pre></div><p>You can see that the execution currently stopped at <strong>0x60b5bc40</strong>. Now you can inspect the <em>registers</em>, set <em>additional</em> breakpoints, <em>step</em> into routines etc.</p>
-<p><img src="http://dl.dornea.nu/img/2015/android-solib/1c34d2da522b2a450b603cf8cd6a965a.png" alt="GDB GEF">
-<img src="http://dl.dornea.nu/img/2015/android-solib/18d6146e96dbb21ceed498ae1cdd92f4.png" alt="GDB GEF"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/android-solib/1c34d2da522b2a450b603cf8cd6a965a.png" alt="GDB GEF">
+<img src="http://blog.dornea.nu/posts/img/2015/android-solib/18d6146e96dbb21ceed498ae1cdd92f4.png" alt="GDB GEF"></p>
 <p>At this point you should now be equipped with enough knowledge to dissect shared libraries and get some reverse engineering job done. Although this was a quite easy one due to the fact that we had debug symbols and were able to compile the library, the same techniques should also work on <em>stripped</em> binaries. In the post I&rsquo;ll some <em>binary analysis</em> on some random Android shared library using <a href="http://www.radare.org/r/">radare</a>.</p>
 <h2 id="references">References</h2>
 <ul>

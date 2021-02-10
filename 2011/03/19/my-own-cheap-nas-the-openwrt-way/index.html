@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>My own cheap NAS - the OpenWRT way - blog.dornea.nu</title>
+  <meta content='My own cheap NAS - the OpenWRT way - blog.dornea.nu' property='title' />
+  <meta content='My own cheap NAS - the OpenWRT way - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Introducing my TP-Link TL-WR1043ND:
+Summary  OS: Linux OpenWrt 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Linux CPU: system type : Atheros AR9132 rev 2 machine : TP-LINK TL-WR1043ND processor : 0 cpu model : MIPS 24Kc V7.4  Filesystems root@OpenWrt:~# df -Ph Filesystem Size Used Available Capacity Mounted on /dev/root 2.1M 2.1M 0 100% /rom tmpfs 14.4M 232.0K 14.2M 2% /tmp tmpfs 512.0K 0 512.0K 0% /dev /dev/sda1 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2011/03/19/my-own-cheap-nas-the-openwrt-way/" />
+
+
+<meta property="article:published_time" content="2011-03-19T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2011-03-19T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">My own cheap NAS - the OpenWRT way</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>19 Mar 2011</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/openwrt' class="link silver">openwrt</a> <a href='http://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='http://blog.dornea.nu/tags/iptables' class="link silver">iptables</a> <a href='http://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p>Introducing my <strong>TP-Link TL-WR1043ND</strong>:</p>
+<p><img src="http://blog.dornea.nu/posts/img/2011/236/tp-link-TL-WR1043ND_2.jpg" alt="TP Link"></p>
+<h2 id="summary">Summary</h2>
+<ul>
+<li><strong>OS</strong>: Linux <strong>OpenWrt</strong> 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Linux</li>
+<li><strong>CPU</strong>:  <!-- raw HTML omitted -->system type             : Atheros AR9132 rev 2
+machine                 : TP-LINK TL-WR1043ND
+processor               : 0
+cpu model               : MIPS 24Kc V7.4<!-- raw HTML omitted --></li>
+</ul>
+<h2 id="filesystems">Filesystems</h2>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# df -Ph
+Filesystem                Size      Used Available Capacity Mounted on
+/dev/root                 2.1M      2.1M         0 100% /rom
+tmpfs                    14.4M    232.0K     14.2M   2% /tmp
+tmpfs                   512.0K         0    512.0K   0% /dev
+/dev/sda1                 1.8G     64.6M      1.8G   3% /overlay
+mini_fo:/overlay          2.1M      2.1M         0 100% /
+</code></pre></div><p>As you can see a USB-Hub is attached along with a 2GB USB-Stick. I used it to store my rootfs on external storage [1]. Additionally my 2TB external hard drived is attached to the device so I can access the data per NFS [2].</p>
+<p><img src="http://blog.dornea.nu/posts/img/2011/236/tp-link-TL-WR1043ND_1.jpg" alt="TP Link"></p>
+<h2 id="firewall">Firewall</h2>
+<p>These are my firewall [3] rules:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# cat /etc/firewall.user 
+# This file is interpreted as shell script.
+# Put your custom iptables rules here, they will
+# be executed with each firewall (re-)start.
+IPT=iptables
+NET_LAN=192.168.0.0/16
+
+# ssh from outside
+$IPT -I input -j ACCEPT -i eth0.2 -s xxx -p tcp --dport 22
+$IPT -I input -j ACCEPT -i eth0.2 -s xxx -p udp --dport 22
+
+# portmap
+$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p tcp --dport 111
+$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 111
+
+# nfsd
+$IPT -I INPUT -j ACCEPT -i eth0.1 -s $NET_LAN -p tcp --dport 32777:32780
+$IPT -I INPUT -j ACCEPT -i eth0.1 -s $NET_LAN -p udp --dport 32777:32780
+
+# minidlna
+$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p tcp --dport 8200
+$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 8200
+</code></pre></div><h2 id="what-about-speed">What about speed?</h2>
+<p><img src="http://blog.dornea.nu/posts/img/2011/236/tp-link_speed-test.png" alt="TP Link speed"></p>
+<p>In general you won&rsquo;t get more than <strong>5.60MB/s</strong>. It depends on your drives read/write speed and the connection. In my case I was using WLAN which was slower than normal LAN connectivity.  But that&rsquo;s fine with me.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p><strong>Awesome device with great features!</strong> Check out <a href="http://openwrt.org">openwrt.org</a>  for more information. The devices price is about <strong>50€</strong> which is a fair one.</p>
+<p> </p>
+<h2 id="links">Links</h2>
+<p>[1] <a href="http://wiki.openwrt.org/doc/howto/extroot">http://wiki.openwrt.org/doc/howto/extroot</a></p>
+<p>[2] <a href="http://wiki.openwrt.org/doc/howto/nfs.server">http://wiki.openwrt.org/doc/howto/nfs.server</a></p>
+<p>[3] <a href="http://wiki.openwrt.org/doc/uci/firewall?s">http://wiki.openwrt.org/doc/uci/firewall?s</a></p>
+</div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2011/03/07/howto-full-encrypt-data-using-gentooluks-and-initramfs/">prev post</a>
+  <a href="http://blog.dornea.nu/2011/03/21/openbsd-freebsd-netbsd-i-do-love-beasts/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>

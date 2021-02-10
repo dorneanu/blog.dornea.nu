@@ -202,12 +202,12 @@ include &quot;src/footer.php&quot;;
 </blockquote>
 <h2 id="3rd-token">3rd Token</h2>
 <p>Now let&rsquo;s have a look at the PDF under http://82.195.79.41/download.php.</p>
-<p><img src="http://dl.dornea.nu/img/2015/hackertag/9ca3a31f6400a2bf414ad3802d296cd3.png" alt="hackertag"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/hackertag/9ca3a31f6400a2bf414ad3802d296cd3.png" alt="hackertag"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span><span style="color:#24909d">file</span> usd_Hackertag_2015.pdf
 </code></pre></div><pre><code>usd_Hackertag_2015.pdf: PDF document, version 1.3
 </code></pre>
 <p>When you look at it (PDF viewer) nothing special about it.</p>
-<p><img src="http://dl.dornea.nu/img/2015/hackertag/c304c9040deae8ee416f3e4f8a8f7802.png" alt="hackertag"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/hackertag/c304c9040deae8ee416f3e4f8a8f7802.png" alt="hackertag"></p>
 <p>Let&rsquo;s extract all available strings:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>strings usd_Hackertag_2015.pdf | tail -n <span style="color:#3677a9">20</span>
 </code></pre></div><pre><code>/ModDate (D:20150220100358+01'00')
@@ -255,7 +255,7 @@ binascii.unhexlify(hex_code)
 <h2 id="5th-token">5th Token</h2>
 <p>I must say this part of the challenge was the most &ldquo;challenging&rdquo; one. The found vulnerability was actually obvious but it took me to long to exploit it :D But first a short introduction to the vulnerability itself.</p>
 <p>There was this link http://82.195.79.41/liste.php?id=1 which caught my attention from the beginning.</p>
-<p><img src="http://dl.dornea.nu/img/2015/hackertag/0b0663206b0bb77ffcb484f606c39936.png" alt="hackertag"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/hackertag/0b0663206b0bb77ffcb484f606c39936.png" alt="hackertag"></p>
 <p>The first thing I did:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a61717;background-color:#e3d2d2">!</span>curl <span style="color:#ed9d13">&#34;http://82.195.79.41/liste.php?id=1&#39;&#34;</span> <span style="color:#3677a9">2</span>&gt; /dev/null | tail -n <span style="color:#3677a9">1</span>
 </code></pre></div><pre><code>&lt;div id=&quot;contentliquid&quot;&gt;&lt;div id=&quot;content&quot;&gt;unrecognized token: &quot;'1'';&quot;
@@ -317,7 +317,7 @@ binascii.unhexlify(hex_code)
 <p>Token <strong>336809</strong> is the next one.</p>
 <h2 id="6th-and-last-token">6th and last Token</h2>
 <p>While looking for tokens, I have seen this message a couple of times:</p>
-<p><img src="http://dl.dornea.nu/img/2015/hackertag/08e649ee3231f07d05c42df5c11de2ab.png" alt="hackertag"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/hackertag/08e649ee3231f07d05c42df5c11de2ab.png" alt="hackertag"></p>
 <p>The realm says: <strong>80 is just a number of 65535</strong>. Ok hat was a hint for more undetected ports. I&rsquo;ve run <em>nmap</em> again:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># nmap -sT -p 0-65535 82.195.79.41
 ...
@@ -366,7 +366,7 @@ d79a2543ddbb8042a6d14851fb098e0d
 
 *********************************************************
 </code></pre>
-<p><img src="http://dl.dornea.nu/img/2015/hackertag/61fe1a8df134387a58b7790a891c8443.png" alt="hackertag"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/hackertag/61fe1a8df134387a58b7790a891c8443.png" alt="hackertag"></p>
 <p>What it basically says, is that a certain MD5 hash was created using <code>echo -n &quot;Hackertag{Password}&quot;</code>, where <code>Hackertag</code> is a salt. And given the hash I should find out the right password. I have never used <code>hashcat</code> before but this was the right time to do it. After reading some docs, I was able to get the right password in ca. 3 seconds :)</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;d79a2543ddbb8042a6d14851fb098e0d&#34;</span> &gt; <span style="color:#24909d">hash</span>
@@ -506,7 +506,7 @@ Stopped: Wed Mar 18 21:45:47 2015
 </code></pre></div><pre><code>d79a2543ddbb8042a6d14851fb098e0d  -
 </code></pre>
 <p>Perfect! Now we can use the passwort to access this link: http://82.195.79.41/restricted/index.php. Inside you&rsquo;ll see a image and nothing more:</p>
-<p><img src="http://dl.dornea.nu/img/2015/hackertag/dc0eb3cacc8696cdbaa8604bfb89e25e.png" alt="hackertag"></p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/hackertag/dc0eb3cacc8696cdbaa8604bfb89e25e.png" alt="hackertag"></p>
 <p>But again let&rsquo;s have a look at the image itself:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 curl --user freddy:blue http://82.195.79.41/restricted/tour.jpg -o tour.jpg 2&gt; /dev/null
@@ -518,6 +518,7 @@ strings tour.jpg | grep <span style="color:#ed9d13">&#34;==&#34;</span>
 </code></pre></div><pre><code>Token: 551243
 </code></pre>
 <p>That&rsquo;s it! :)</p>
+<p><img src="http://blog.dornea.nu/posts/img/2015/hackertag/4f41c02eeeb8fbee62da2751ffd913bc.jpg" alt="hackertag"></p>
 </div>
   <div id="comments">
       

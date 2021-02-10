@@ -208,71 +208,68 @@ the <strong>ABI</strong> requires that registers are used instead of the stack. 
 <li>R9</li>
 </ul>
 <p>Additional arguments can be passed on the stack. In our case we have:</p>
-<p>{% graphviz
-dot {
-digraph G {</p>
-<pre><code>        // Define layout
-        graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
-        rankdir=LR;
-        node [shape=&quot;record&quot;];
-        rank=same;
-	 
-        // Define pointers
-        rsp [
-            label=&quot;&lt;p&gt; $rdi \l&quot;, height=&quot;0.1&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
-		
-        // rbp [
-        // 	label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
-        // 	color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        // ];
-	 
-        rsp_4 [
-            label=&quot;&lt;p&gt; $rsi \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
-	 
-	 
-        rsp_8 [
-            label=&quot;&lt;p&gt; $rdx \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        ];
-	 
-        rsp_12 [
-            label=&quot;&lt;p&gt; $rcx \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        ];
-		
-        rsp_16 [
-            label=&quot;&lt;p&gt; $r8 \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        ];
-		
-        rsp_20 [
-            label=&quot;&lt;p&gt; $r9 \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        ];
-	 
-        // Define stack
-        stack [
-            width=&quot;3&quot;,
-            label=&quot;&lt;p&gt;\nArguments\n\n | &lt;bp&gt;\n...\n\n | &lt;20&gt;0x7ffff7de9900 (_dl_fini) \l| &lt;16&gt;0x00400840 (sym.__libc_csu_fini) \l| &lt;12&gt;0x4007d0 (sym.__libc_csu_init)  \l | &lt;8&gt;(char **ubp_av = $rsp) \l | &lt;4&gt;(int argc = pop)  \l | &lt;0&gt;0x400660 (sym.main) \l&quot;
-        ];
-	   
-	   
-        // Pointer -&gt; Stack edges
-        //rbp:p -&gt; stack:bp [style=invis];
-        rsp:p -&gt; stack:0 [style=invis];
-        rsp_4:p -&gt; stack:4 [style=invis];
-        rsp_8:p -&gt; stack:8 [style=invis];
-        rsp_12:p -&gt; stack:12 [style=invis];
-        rsp_16:p -&gt; stack:16 [style=invis];
-        rsp_20:p -&gt; stack:20 [style=invis];
-    }
+<p>{{gravizo background-color=&quot;#fff&quot; title=&ldquo;Deployment scheme&rdquo; alt=&ldquo;Deployment scheme&rdquo; }}
+digraph G {
+// Define layout
+graph [pad=&quot;.75&quot;, ranksep=&ldquo;0.95&rdquo;, nodesep=&ldquo;0.05&rdquo;];
+rankdir=LR;
+node [shape=&ldquo;record&rdquo;];
+rank=same;</p>
+<pre><code>    // Define pointers
+    rsp [
+        label=&quot;&lt;p&gt; $rdi \l&quot;, height=&quot;0.1&quot;,
+        color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+    ];
+    
+    // rbp [
+    // 	label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
+    // 	color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+    // ];
+ 
+    rsp_4 [
+        label=&quot;&lt;p&gt; $rsi \l&quot;, height=&quot;0.01&quot;,
+        color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+    ];
+ 
+ 
+    rsp_8 [
+        label=&quot;&lt;p&gt; $rdx \l&quot;, height=&quot;0.01&quot;,
+        color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+    ];
+ 
+    rsp_12 [
+        label=&quot;&lt;p&gt; $rcx \l&quot;, height=&quot;0.01&quot;,
+        color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+    ];
+    
+    rsp_16 [
+        label=&quot;&lt;p&gt; $r8 \l&quot;, height=&quot;0.01&quot;,
+        color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+    ];
+    
+    rsp_20 [
+        label=&quot;&lt;p&gt; $r9 \l&quot;, height=&quot;0.01&quot;,
+        color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+    ];
+ 
+    // Define stack
+    stack [
+        width=&quot;3&quot;,
+        label=&quot;&lt;p&gt;\nArguments\n\n | &lt;bp&gt;\n...\n\n | &lt;20&gt;0x7ffff7de9900 (_dl_fini) \l| &lt;16&gt;0x00400840 (sym.__libc_csu_fini) \l| &lt;12&gt;0x4007d0 (sym.__libc_csu_init)  \l | &lt;8&gt;(char **ubp_av = $rsp) \l | &lt;4&gt;(int argc = pop)  \l | &lt;0&gt;0x400660 (sym.main) \l&quot;
+    ];
+   
+   
+    // Pointer -&gt; Stack edges
+    //rbp:p -&gt; stack:bp [style=invis];
+    rsp:p -&gt; stack:0 [style=invis];
+    rsp_4:p -&gt; stack:4 [style=invis];
+    rsp_8:p -&gt; stack:8 [style=invis];
+    rsp_12:p -&gt; stack:12 [style=invis];
+    rsp_16:p -&gt; stack:16 [style=invis];
+    rsp_20:p -&gt; stack:20 [style=invis];
 }
 </code></pre>
-<p>%}</p>
+<p>{{/gravizo}}</p>
 <p>As stated <a href="http://dbp-consulting.com/tutorials/debugging/linuxProgramStartup.html">here</a> <code>__libc_start_main</code> does
 the following:</p>
 <ul>
