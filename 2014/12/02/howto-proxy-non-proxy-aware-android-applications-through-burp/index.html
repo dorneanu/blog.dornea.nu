@@ -314,22 +314,27 @@ Received M-SEARCH * HTTP/1.1 from (&#39;192.168.1.49&#39;, 62861)
 </code></pre></div><p>Obviously we have found some devices. And because the requests were sent on <code>destination-port = 1900</code> you won&rsquo;t see them on <strong>burp</strong>. This is where <em>ProxyDroid</em> shows its first weakness. In general you&rsquo;re going to run into troubles if your requests are sent to a port different from <code>80</code> or <code>443</code>. So we need a more <em>generic</em> solution.</p>
 <h3 id="port-forwarding">Port forwarding</h3>
 <p>Using <em>iptables</em> I&rsquo;ll re-route the traffic destinated to some specific <em>port</em> directly to <em>burp</em>.Without any proxies the connection &ldquo;flows&rdquo; between the client and the server. Using a proxy between them you&rsquo;ll have sth like this:</p>
-<p>{% graphviz
-dot {
-digraph G {
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <p>digraph G {
 graph [rankdir = LR];
 node[shape=record];</p>
-<pre><code>        Proxy  [label=&quot;{ { &lt;i1&gt; Input: Port | &lt;i2&gt;Input: Data } | &lt;proxy&gt;proxy | { &lt;o1&gt; Output: Port | &lt;o2&gt; Output: Data } }&quot;];
-        Client [label=&quot;{ { &lt;p1&gt; Source Port | &lt;p2&gt; Data | &lt;p3&gt; Other Headers} | &lt;client&gt;android-client }&quot;];
-        Server [label=&quot;{ webserver | { &lt;p1&gt; Destination Port | &lt;p2&gt; Data | &lt;p3&gt; Other Headers } }&quot;];
+<pre><code>  Proxy  [label=&quot;{ { &lt;i1&gt; Input: Port | &lt;i2&gt;Input: Data } | &lt;proxy&gt;proxy | { &lt;o1&gt; Output: Port | &lt;o2&gt; Output: Data } }&quot;];
+  Client [label=&quot;{ { &lt;p1&gt; Source Port | &lt;p2&gt; Data | &lt;p3&gt; Other Headers} | &lt;client&gt;android-client }&quot;];
+  Server [label=&quot;{ webserver | { &lt;p1&gt; Destination Port | &lt;p2&gt; Data | &lt;p3&gt; Other Headers } }&quot;];
 
 
-        Client:client -&gt; Proxy [color=red];
-        Proxy -&gt; Server [color=red];
-    }
-}
+  Client:client -&gt; Proxy [color=red];
+  Proxy -&gt; Server [color=red];
 </code></pre>
-<p>%}</p>
+<p>}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/proxy.dot.png" alt=""></p>
 <p>And this is where <strong>NAT</strong> comes into play. The 3 major NAT types are described below:</p>
 <ol>
 <li><strong>SNAT</strong></li>
@@ -414,7 +419,7 @@ Capturing on wlan0
 <p>On <em>burp</em> you won&rsquo;t see anything. How comes? And this is the point where we come the final conclusion and also the main reason I&rsquo;ve written this post (sorry for the long prologue :)). And the reason is actually pretty &ldquo;invisible&rdquo; and can be found in Burps proxy options:</p>
 <p><img src="http://blog.dornea.nu/posts/img/2014/38a52fceb67b54c86e46548098cd31ecee8f456c.png" alt="Burp invisible option"></p>
 <p>It&rsquo;s all about Burps <a href="http://portswigger.net/burp/help/proxy_options_invisible.html">invisible proxying</a>. It basically enables proxy support for non-proxy-aware clients to be able to connect directly to the listener (Burp). Editing the proxy options (Request Handling) you&rsquo;ll find these options:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/6899841c0a375a2a5ad1f5108ac0d62efab8fd79.png" alt="Burp non-proxy-aware support"></p>
+<p><img src="http://blog.dornea.nu/img/2014/6899841c0a375a2a5ad1f5108ac0d62efab8fd79.png" alt="Burp non-proxy-aware support"></p>
 <p>Make sure you activate &ldquo;Support invisible proxying&rdquo;. Afterwards you can trigger <code>curl</code> again to see if it works:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://dornea.nu:8000/
 HTTP/1.0 200 OK

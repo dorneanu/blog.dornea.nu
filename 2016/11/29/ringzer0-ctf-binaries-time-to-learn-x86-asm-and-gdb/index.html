@@ -208,10 +208,15 @@ RETURN VALUE
   The memset() function returns a pointer to the memory area s.
 </code></pre></div><p>Since we&rsquo;re dealing with <code>x86</code> (<a href="http://wiki.osdev.org/Calling_Conventions">this site</a> is very good) the
 arguments for <code>memset</code> are being pushed into the stack:</p>
-<p>{% graphviz
-dot {
-digraph G {</p>
-<pre><code>        // Define layout
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <pre><code>dot {
+    digraph G {
+	 
+        // Define layout
         graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
         rankdir=LR;
         node [shape=&quot;record&quot;];
@@ -258,7 +263,10 @@ digraph G {</p>
     }
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/r0-binaries/stack.dot.png" alt="stack"></p>
 <p>So <code>memset</code> will set the value &ldquo;0&rdquo; 8 times at the address pointed by <code>eax</code>. Afterwards
 some values will be <code>mov</code>ed into the previously allocated memory range:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
@@ -288,10 +296,15 @@ gef&gt; b *0x080484aa
 gef&gt; r
 </code></pre></div><p>Now from <code>0x080484aa</code> through <code>0x080484fc</code> you can <code>s</code> (step) the opcodes. Then pay attention to the stack. You
 should have sth like:</p>
-<p>{% graphviz
-dot {
-digraph G {</p>
-<pre><code>        // Define layout
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <pre><code>dot {
+    digraph G {
+	 
+        // Define layout
         graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
         rankdir=LR;
         node [shape=&quot;record&quot;];
@@ -351,9 +364,11 @@ digraph G {</p>
         stack:0 -&gt; val:1 [color=red];
         stack:12 -&gt; val:2;
     }
-}
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/r0-binaries/stack-values.dot.png" alt="stack"></p>
 <p>Bingo. So the flag is <code>FLAG-4092849uio2jf</code>.</p>
 </div>
   <div id="comments">

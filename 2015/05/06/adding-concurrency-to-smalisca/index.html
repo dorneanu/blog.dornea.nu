@@ -196,12 +196,17 @@ into it. Well that&rsquo;s pretty much what I&rsquo;ve done except for the fact 
 <li>after <code>SmaliParser</code> finishes its work, the results are pushed into a thread-safe <code>Queue</code></li>
 </ul>
 <p>So basically you&rsquo;ll have a list of directory paths:</p>
-<p>{% graphviz
-dot {
-digraph G {
-graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=7, height=.5];</p>
-<pre><code>        compound = true;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <pre><code>dot {
+    digraph G {
+        graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&quot;1.25&quot;, nodesep=&quot;2.25&quot;];
+        node[fontname=&quot;FreeSans&quot;,fontsize=&quot;14&quot;,shape=Mrecord,width=7, height=.5];
+
+        compound = true;
 
         Bar[label=&quot;{\
               {PATHS \r |\
@@ -216,14 +221,22 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
     }
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/smalisca-concurrency/paths.dot.png" alt="paths"></p>
 <p>And some workers to do the job:</p>
-<p>{% graphviz
-dot {
-digraph G {
-graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p>
-<pre><code>        compound = true;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <pre><code>dot {
+    digraph G {
+        graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&quot;1.25&quot;, nodesep=&quot;2.25&quot;];
+        node[fontname=&quot;FreeSans&quot;,fontsize=&quot;14&quot;,shape=Mrecord,width=2, height=.5];
+
+        compound = true;
 
         Workers[label=&quot;{\
               {WORKERS \r |\
@@ -236,14 +249,22 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
     }
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/smalisca-concurrency/workers.dot.png" alt="workers"></p>
 <p>In my case the paths have to be distributed to the workers:</p>
-<p>{% graphviz
-dot {
-digraph G {
-graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p>
-<pre><code>        compound = true;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <pre><code>dot {
+    digraph G {
+        graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&quot;1.25&quot;, nodesep=&quot;2.25&quot;];
+        node[fontname=&quot;FreeSans&quot;,fontsize=&quot;14&quot;,shape=Mrecord,width=2, height=.5];
+
+        compound = true;
 
         Bar[label=&quot;{\
               {PATHS \r |\
@@ -273,7 +294,10 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
     }
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/smalisca-concurrency/paths-workers.dot.png" alt="paths-workers"></p>
 <p>So let&rsquo;s continue with some code examples. A typical <strong>parser process</strong> would look like this:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">SmaliParserProcess</span>(multiprocessing.Process):
     <span style="color:#ed9d13">&#34;&#34;&#34;Implements a multiprocessing.Process
@@ -305,12 +329,17 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
             c += <span style="color:#3677a9">1</span>
 </code></pre></div><p>A process will have a list of directories to scan plus a results queue where to put
 its individual results.</p>
-<p>{% graphviz
-dot {
-digraph G {
-graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&ldquo;1.25&rdquo;, nodesep=&ldquo;2.25&rdquo;];
-node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,width=2, height=.5];</p>
-<pre><code>        compound = true;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <pre><code>dot {
+    digraph G {
+        graph [splines=curve, rankdir = LR, pad=&quot;.15&quot;, ranksep=&quot;1.25&quot;, nodesep=&quot;2.25&quot;];
+        node[fontname=&quot;FreeSans&quot;,fontsize=&quot;14&quot;,shape=Mrecord,width=2, height=.5];
+
+        compound = true;
 
         Workers[label=&quot;{\
               {WORKERS \r |\
@@ -330,7 +359,10 @@ node[fontname=&ldquo;FreeSans&rdquo;,fontsize=&ldquo;14&rdquo;,shape=Mrecord,wid
     }
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/smalisca-concurrency/queue.dot.png" alt="queue"></p>
 <p>A <strong>controller</strong> should create and create the workers. Afterwards it should collect the
 results:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">ConcurrentParser</span>():
@@ -443,20 +475,19 @@ $ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span sty
 ./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.44s user 0.33s system 155% cpu 3.707 total
 </code></pre></div><p><strong>5.5 seconds</strong>!!! It takes <strong>longer</strong>! Obviously the <code>Queue</code> processing and starting new processes increases
 execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p>
-<pre><code>$ export CMD=&quot;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&quot;
-$ for i in {1..10};do eval ${CMD} 2&gt;&amp;1 /dev/null | grep total; done
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.66s user 0.36s system 161% cpu 3.730 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.80s user 0.29s system 161% cpu 3.761 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.57s user 0.40s system 158% cpu 3.756 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.49s user 0.32s system 156% cpu 3.700 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.76s user 0.30s system 162% cpu 3.741 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.62s user 0.28s system 162% cpu 3.641 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.54s user 0.30s system 161% cpu 3.627 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.63s user 0.31s system 159% cpu 3.724 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.73s user 0.35s system 162% cpu 3.747 total
-./smalisca-test.py parser --depth 3 -j 8 -l  -s java -f sqlite -o   5.43s user 0.34s system 153% cpu 3.764 total
-</code></pre>
-<p>Pretty much the <strong>same</strong> results. And here is the overall results table:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+$ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> 2&gt;&amp;<span style="color:#3677a9">1</span> /dev/null | grep total; <span style="color:#6ab825;font-weight:bold">done</span>
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.66s user 0.36s system 161% cpu 3.730 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.80s user 0.29s system 161% cpu 3.761 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.57s user 0.40s system 158% cpu 3.756 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.49s user 0.32s system 156% cpu 3.700 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.76s user 0.30s system 162% cpu 3.741 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.62s user 0.28s system 162% cpu 3.641 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.54s user 0.30s system 161% cpu 3.627 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.63s user 0.31s system 159% cpu 3.724 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.73s user 0.35s system 162% cpu 3.747 total
+./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.43s user 0.34s system 153% cpu 3.764 total
+</code></pre></div><p>Pretty much the <strong>same</strong> results. And here is the overall results table:</p>
 <table>
 <thead>
 <tr>
@@ -538,7 +569,7 @@ $ for i in {1..10};do eval ${CMD} 2&gt;&amp;1 /dev/null | grep total; done
 <li>Despite all those kind of problems, it&rsquo;s <strong>fun</strong>! :)</li>
 <li>Have a look at the <a href="https://github.com/dorneanu/smalisca/commit/a48a1b9e3eb648baf6547658e06bfe32c094551c">commit details</a> in the <a href="https://github.com/dorneanu/smalisca/tree/develop">develop</a> branch.</li>
 </ul>
-<p>##References</p>
+<h2 id="references">References</h2>
 <ul>
 <li><a href="http://everydayimlearning.blogspot.de/2013/03/multiprocessing-with-python.html">Multiprocessing with Python</a></li>
 <li><a href="https://moinakg.wordpress.com/2013/07/01/parallel-directory-tree-compare-in-python/">Parallel Directory Tree Compare with Python</a></li>
