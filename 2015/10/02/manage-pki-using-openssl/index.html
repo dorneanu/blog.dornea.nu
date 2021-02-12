@@ -9,9 +9,9 @@
   <meta content='Manage PKI using OpenSSL - blog.dornea.nu' property='og:title' />
 
 
-<meta property="og:description" content="In the previous X.509 related post I&rsquo;ve had a look at the internals of a X.509 certficate. This time I want to setup my own PKI using some open source software. This post is a preparation for setting up a VPN using OpenVPN.
-Before implementing the PKI let&rsquo;s have a look what a PKI should definitely include (make sure you have a look at the Wikipedia entry):
- certificate authority (CA)  has a public and a private key used to digitally sign certificates   registration authority (RA)  verify identify of users requesting information from the CA   certificate management system  probably the most important component    Revision CA types There are several types of CAs:" />
+<meta property="og:description" content="For better display results you can also have a look at the Manage a PKI using OpenSSL.
+ In the previous X.509 related post I&rsquo;ve had a look at the internals of a X.509 certficate. This time I want to setup my own PKI using some open source software. This post is a preparation for setting up a VPN using OpenVPN.
+Before implementing the PKI let&rsquo;s have a look what a PKI should definitely include (make sure you have a look at the Wikipedia entry):" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/" />
 
@@ -83,7 +83,11 @@ type="image/x-icon"/>
     tags: [ <a href='http://blog.dornea.nu/tags/ssl' class="link silver">ssl</a> <a href='http://blog.dornea.nu/tags/tls' class="link silver">tls</a> <a href='http://blog.dornea.nu/tags/openssl' class="link silver">openssl</a> <a href='http://blog.dornea.nu/tags/crypto' class="link silver">crypto</a> <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/admin' class="link silver">admin</a> <a href='http://blog.dornea.nu/tags/pki' class="link silver">pki</a> <a href='http://blog.dornea.nu/tags/openssl' class="link silver">openssl</a> <a href='http://blog.dornea.nu/tags/x.509' class="link silver">x.509</a>  ]
     
   </p>
-  <div class="lh-copy post-content"><p>In the previous X.509 related <a href="http://blog.dornea.nu/2015/05/24/validating-and-pinning-x509-certificates/">post</a> I&rsquo;ve had a look at the internals of a X.509 certficate. This time I want to setup my own <a href="https://en.wikipedia.org/wiki/Public_key_infrastructure">PKI</a> using some <em>open source</em> software. This post is a preparation for setting up a VPN using <em>OpenVPN</em>.</p>
+  <div class="lh-copy post-content">
+<div class="notices tip" ><p>For better display results you can also have a look at the <a href="https://github.com/dorneanu/blog/blob/master/content/jupyter/2015-10-02-manage-a-pki-using-openssl.v3.ipynb">Manage a PKI using OpenSSL</a>.</p>
+</div>
+
+<p>In the previous X.509 related <a href="http://blog.dornea.nu/2015/05/24/validating-and-pinning-x509-certificates/">post</a> I&rsquo;ve had a look at the internals of a X.509 certficate. This time I want to setup my own <a href="https://en.wikipedia.org/wiki/Public_key_infrastructure">PKI</a> using some <em>open source</em> software. This post is a preparation for setting up a VPN using <em>OpenVPN</em>.</p>
 <p>Before implementing the PKI let&rsquo;s have a look what a PKI should definitely include (make sure you have a look at the <a href="https://en.wikipedia.org/wiki/Public_key_infrastructure">Wikipedia entry</a>):</p>
 <ul>
 <li>certificate authority (<strong>CA</strong>)
@@ -150,99 +154,117 @@ type="image/x-icon"/>
 </ul>
 <h2 id="pki-hierarchy">PKI hierarchy</h2>
 <p>In most modern companies you&rsquo;ll find a <strong>3-tier</strong> PKI hierarchy.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {↔
 
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
+// Define class (list of attributes)
+class emphasis [color = pink, style = dashed];
+class blackline [color = black, style = dotted];
+class blue [color = lightblue];
 
-  Root_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">emphasis</span><span style="color:#ed9d13">&#34;, label = &#34;</span>Root CA<span style="color:#ed9d13">&#34;];</span>
-  Intermediate_CA1 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blue</span><span style="color:#ed9d13">&#34;, label = &#34;</span>Intermediate CA<span style="color:#ed9d13">&#34;];</span>
-  Intermediate_CA2 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blue</span><span style="color:#ed9d13">&#34;, label = &#34;</span>Intermediate CA<span style="color:#ed9d13">&#34;];</span>
-  Intermediate_CA3 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blue</span><span style="color:#ed9d13">&#34;, label = &#34;</span> ... <span style="color:#ed9d13">&#34;];</span>
-  Signing_CA1 [label = <span style="color:#ed9d13">&#34;Signing CA&#34;</span>];
-  Signing_CA1_0 [label = <span style="color:#ed9d13">&#34; ... &#34;</span>];
-  
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;Signing CA&#34;</span>];
-  Signing_CA2_0 [label = <span style="color:#ed9d13">&#34; ... &#34;</span>];
-  
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;Signing CA&#34;</span>];
-  Signing_CA3_0 [label = <span style="color:#ed9d13">&#34; ... &#34;</span>];
+Root_CA [class = &#34;emphasis&#34;, label = &#34;Root CA&#34;];
+Intermediate_CA1 [class = &#34;blue&#34;, label = &#34;Intermediate CA&#34;];
+Intermediate_CA2 [class = &#34;blue&#34;, label = &#34;Intermediate CA&#34;];
+Intermediate_CA3 [class = &#34;blue&#34;, label = &#34; ... &#34;];
+Signing_CA1 [label = &#34;Signing CA&#34;];
+Signing_CA1_0 [label = &#34; ... &#34;];
 
-  Root_CA -&gt; Intermediate_CA1;
-  Root_CA -&gt; Intermediate_CA2 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
-  Root_CA -&gt; Intermediate_CA3 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
-  Intermediate_CA1 -&gt; Signing_CA1;
-  Intermediate_CA1 -&gt; Signing_CA1_0 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
+Signing_CA2 [label = &#34;Signing CA&#34;];
+Signing_CA2_0 [label = &#34; ... &#34;];
 
-  Intermediate_CA2 -&gt; Signing_CA2 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
-  Intermediate_CA2 -&gt; Signing_CA2_0 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
+Signing_CA3 [label = &#34;Signing CA&#34;];
+Signing_CA3_0 [label = &#34; ... &#34;];
 
-  Intermediate_CA3 -&gt; Signing_CA3 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
-  Intermediate_CA3 -&gt; Signing_CA3_0 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">blackline</span><span style="color:#ed9d13">&#34;];</span>
+Root_CA -&gt; Intermediate_CA1;
+Root_CA -&gt; Intermediate_CA2 [class = &#34;blackline&#34;];
+Root_CA -&gt; Intermediate_CA3 [class = &#34;blackline&#34;];
+Intermediate_CA1 -&gt; Signing_CA1;
+Intermediate_CA1 -&gt; Signing_CA1_0 [class = &#34;blackline&#34;];
+
+Intermediate_CA2 -&gt; Signing_CA2 [class = &#34;blackline&#34;];
+Intermediate_CA2 -&gt; Signing_CA2_0 [class = &#34;blackline&#34;];
+
+Intermediate_CA3 -&gt; Signing_CA3 [class = &#34;blackline&#34;];
+Intermediate_CA3 -&gt; Signing_CA3_0 [class = &#34;blackline&#34;];
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_1_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_1_0.png" alt="png"></p>
 <p>For my purposes I&rsquo;ll be using only a <strong>2-tier</strong> hierarchy as shown below:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
-  // Define orientation
-  orientation = portrait;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+// Define orientation
+orientation = portrait;
 
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
+// Define class (list of attributes)
+class emphasis [color = pink, style = dashed];
+class blackline [color = black, style = dotted];
+class blue [color = lightblue];
 
-  Root_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">emphasis</span><span style="color:#ed9d13">&#34;, label = &#34;</span>Root CA<span style="color:#ed9d13">&#34;];</span>
-  Signing_CA1 [label = <span style="color:#ed9d13">&#34;Signing CA&#34;</span>];
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;Signing CA&#34;</span>];
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;Signing CA&#34;</span>];
+Root_CA [class = &#34;emphasis&#34;, label = &#34;Root CA&#34;];
+Signing_CA1 [label = &#34;Signing CA&#34;];
+Signing_CA2 [label = &#34;Signing CA&#34;];
+Signing_CA3 [label = &#34;Signing CA&#34;];
 
-  Root_CA -&gt; Signing_CA1;
-  Root_CA -&gt; Signing_CA2;
-  Root_CA -&gt; Signing_CA3;
+Root_CA -&gt; Signing_CA1;
+Root_CA -&gt; Signing_CA2;
+Root_CA -&gt; Signing_CA3;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_3_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_3_0.png" alt="png"></p>
 <p>The level of security is increased because you separate the root CA from the issuing CAs. The root CA is mostly offline so the private key to sign the certificates should be thus protected from compromise. If one of the <em>issuing CAs</em> is being compromised, you can <em>revoke</em> the certificate issued for that specific CA and create another one using the <em>root CA</em>. You can also have multiple issuing CAs distributed geographically and with different security levels. This increases <em>flexibility</em> and <em>scalability</em>.</p>
 <blockquote>
 <p>Also checkout this <a href="http://blogs.technet.com/b/askds/archive/2009/09/01/designing-and-implementing-a-pki-part-i-design-and-planning.aspx">awesome article</a> for further details.</p>
 </blockquote>
 <h3 id="dorneanu-pki-hierarchy">dornea.nu PKI hierarchy</h3>
 <p>And now let&rsquo;s make this whole hierarchy more personalized:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
-  // Define orientation
-  orientation = portrait;
-
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey];
-
-  Root_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= &#34;</span><span style="color:#447fcf;text-decoration:underline">emphasis</span><span style="color:#ed9d13">&#34;, label = &#34;</span>dornea.nu root CA<span style="color:#ed9d13">&#34;];</span>
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-
-  Root_CA -&gt; Signing_CA2 [label = <span style="color:#ed9d13">&#34;issues&#34;</span>];
-  Root_CA -&gt; Signing_CA3;
-
-  Signing_CA2 -&gt; TLS_Server_CA [label = <span style="color:#ed9d13">&#34;issues&#34;</span>];
-  Signing_CA2 -&gt; TLS_Client_CA;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
     
-  Signing_CA3 -&gt; VPN_Server_CA [label = <span style="color:#ed9d13">&#34;issues&#34;</span>];
-  Signing_CA3 -&gt; VPN_Client_CA;
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+// Define orientation
+orientation = portrait;
+
+// Define class (list of attributes)
+class emphasis [color = pink, style = dashed];
+class blackline [color = black, style = dotted];
+class blue [color = lightblue];
+class inactive [color = lightgrey];
+
+Root_CA [class = &#34;emphasis&#34;, label = &#34;dornea.nu root CA&#34;];
+Signing_CA2 [label = &#34;dev.dornea.nu CA&#34;];
+Signing_CA3 [label = &#34;vpn.dornea.nu CA&#34;];
+TLS_Server_CA [label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+TLS_Client_CA [label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+VPN_Server_CA [class = inactive, label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+VPN_Client_CA [class = inactive, label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+
+Root_CA -&gt; Signing_CA2 [label = &#34;issues&#34;];
+Root_CA -&gt; Signing_CA3;
+
+Signing_CA2 -&gt; TLS_Server_CA [label = &#34;issues&#34;];
+Signing_CA2 -&gt; TLS_Client_CA;
+
+Signing_CA3 -&gt; VPN_Server_CA [label = &#34;issues&#34;];
+Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_5_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_5_0.png" alt="png"></p>
 <p>We&rsquo;ll have a <strong>root CA</strong> bound to the domain <code>dornea.nu</code> followed by 2 intermediate CAs: <strong>dev.dornea.nu CA</strong> and <strong>vpn.dornea.nu CA</strong>. The CAs will be used to issue certificates to <em>users</em> and <em>networks</em>.</p>
 <p>The <strong>TLS Server CA</strong> will be used by a web server like Apache or Nginx to server content over a SSL/TLS connection. The server will only accept connection from clients with a valid <strong>TLS Client CA</strong> which has been signed (and generated) from <strong>dev.dornea.nu CA</strong>.</p>
 <p>The <strong>vpn.dornea.nu CA</strong> will then issue certificates for a <strong>VPN Server CA</strong> and a <strong>VPN Client CA</strong>.</p>
@@ -282,37 +304,43 @@ tree /tmp/pki
 <p>Below there is an overview of the most used <em>subcommands</em> in openssl:</p>
 <!-- raw HTML omitted -->
 <h3 id="create-dorneanu-root-ca">Create dornea.nu root CA</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
-  // Define orientation
-  orientation = portrait;
-
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">active</span> [color = lightgreen];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey];  
-
-  Root_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;dornea.nu root CA&#34;</span>];
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-
-  Root_CA -&gt; Signing_CA2;
-  Root_CA -&gt; Signing_CA3;
-
-  Signing_CA2 -&gt; TLS_Server_CA;
-  Signing_CA2 -&gt; TLS_Client_CA;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
     
-  Signing_CA3 -&gt; VPN_Server_CA;
-  Signing_CA3 -&gt; VPN_Client_CA;
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+// Define orientation
+orientation = portrait;
+
+// Define class (list of attributes)
+class emphasis [color = pink, style = dashed];
+class blackline [color = black, style = dotted];
+class blue [color = lightblue];
+class active [color = lightgreen];
+class inactive [color = lightgrey];  
+
+Root_CA [class = active, label = &#34;dornea.nu root CA&#34;];
+Signing_CA2 [label = &#34;dev.dornea.nu CA&#34;];
+Signing_CA3 [class = inactive, label = &#34;vpn.dornea.nu CA&#34;];
+TLS_Server_CA [label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+TLS_Client_CA [label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+VPN_Server_CA [class = inactive, label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+VPN_Client_CA [class = inactive, label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+
+Root_CA -&gt; Signing_CA2;
+Root_CA -&gt; Signing_CA3;
+
+Signing_CA2 -&gt; TLS_Server_CA;
+Signing_CA2 -&gt; TLS_Client_CA;
+
+Signing_CA3 -&gt; VPN_Server_CA;
+Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_14_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_14_0.png" alt="png"></p>
 <p>The configuration file can be shown here:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/root-ca.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
@@ -490,37 +518,43 @@ Data Base Updated
 Using configuration from ca/conf/root-ca.conf
 <span style="color:#40ffff">01</span>=Valid (V)
 </code></pre></div><h3 id="create-devdorneanu-ca">Create dev.dornea.nu CA</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
-  // Define orientation
-  orientation = portrait;
-
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">active</span> [color = lightgreen];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey];    
-
-  Root_CA [label = <span style="color:#ed9d13">&#34;dornea.nu root CA&#34;</span>];
-  Signing_CA2 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-
-  Root_CA -&gt; Signing_CA2;
-  Root_CA -&gt; Signing_CA3;
-
-  Signing_CA2 -&gt; TLS_Server_CA;
-  Signing_CA2 -&gt; TLS_Client_CA;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
     
-  Signing_CA3 -&gt; VPN_Server_CA;
-  Signing_CA3 -&gt; VPN_Client_CA;
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+// Define orientation
+orientation = portrait;
+
+// Define class (list of attributes)
+class emphasis [color = pink, style = dashed];
+class blackline [color = black, style = dotted];
+class blue [color = lightblue];
+class active [color = lightgreen];
+class inactive [color = lightgrey];    
+
+Root_CA [label = &#34;dornea.nu root CA&#34;];
+Signing_CA2 [class = active, label = &#34;dev.dornea.nu CA&#34;];
+Signing_CA3 [label = &#34;vpn.dornea.nu CA&#34;];
+TLS_Server_CA [label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+TLS_Client_CA [label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+VPN_Server_CA [class = inactive, label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+VPN_Client_CA [class = inactive, label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+
+Root_CA -&gt; Signing_CA2;
+Root_CA -&gt; Signing_CA3;
+
+Signing_CA2 -&gt; TLS_Server_CA;
+Signing_CA2 -&gt; TLS_Client_CA;
+
+Signing_CA3 -&gt; VPN_Server_CA;
+Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_20_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_20_0.png" alt="png"></p>
 <p>Create the directories:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%bash<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
@@ -715,26 +749,29 @@ Write out database with <span style="color:#3677a9">1</span> new entries
 Data Base Updated
 
 </code></pre></div><h3 id="create-vpndorneanu-ca">Create vpn.dornea.nu CA</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">active</span> [color = lightgreen];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey]; 
+  // Define class (list of attributes)
+  class emphasis [color = pink, style = dashed];
+  class blackline [color = black, style = dotted];
+  class blue [color = lightblue];
+  class active [color = lightgreen];
+  class inactive [color = lightgrey]; 
 
-  Root_CA [label = <span style="color:#ed9d13">&#34;dornea.nu root CA&#34;</span>];
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
+  Root_CA [label = &#34;dornea.nu root CA&#34;];
+  Signing_CA2 [label = &#34;dev.dornea.nu CA&#34;];
+  Signing_CA3 [class = active, label = &#34;vpn.dornea.nu CA&#34;];
+  TLS_Server_CA [label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  TLS_Client_CA [label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Server_CA [class = inactive, label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Client_CA [class = inactive, label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
 
   Root_CA -&gt; Signing_CA2;
   Root_CA -&gt; Signing_CA3;
@@ -744,8 +781,10 @@ blockdiag {
     
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
-}
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_30_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_30_0.png" alt="png"></p>
 <p>Create the directories:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
@@ -951,28 +990,31 @@ cat ca/vpn-ca/vpn-ca.crt ca/root-ca/root-ca.crt &gt; ca/vpn-ca/vpn-ca-chain.pem
 </code></pre></div><h1 id="issue-dev-ca-certificates">Issue dev-CA certificates</h1>
 <p>We&rsquo;ll now create the <strong>TLS</strong> <em>server</em> and <em>client</em> certificates.</p>
 <h2 id="create-tls-server-certificate">Create TLS server certificate</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">active</span> [color = lightgreen];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey]; 
+  // Define class (list of attributes)
+  class emphasis [color = pink, style = dashed];
+  class blackline [color = black, style = dotted];
+  class blue [color = lightblue];
+  class active [color = lightgreen];
+  class inactive [color = lightgrey]; 
 
-  Root_CA [label = <span style="color:#ed9d13">&#34;dornea.nu root CA&#34;</span>];
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
+  Root_CA [label = &#34;dornea.nu root CA&#34;];
+  Signing_CA2 [label = &#34;dev.dornea.nu CA&#34;];
+  Signing_CA3 [label = &#34;vpn.dornea.nu CA&#34;];
+  TLS_Server_CA [class = active, label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  TLS_Client_CA [label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Server_CA [class = inactive, label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Client_CA [class = inactive, label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
     
-  dev_dornea_nu [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;DNS: dev.dornea.nu</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">DNS: dev2.dornea.nu</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">IP: 10.10.10.1</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">IP: 10.20.20.1&#34;</span>];
+  dev_dornea_nu [class = active, label = &#34;DNS: dev.dornea.nu\nDNS: dev2.dornea.nu\nIP: 10.10.10.1\nIP: 10.20.20.1&#34;];
 
   Root_CA -&gt; Signing_CA2;
   Root_CA -&gt; Signing_CA3;
@@ -985,7 +1027,10 @@ blockdiag {
     
   TLS_Server_CA -&gt; dev_dornea_nu;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_44_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_44_0.png" alt="png"></p>
 <p>We will specify <strong>multiple domains</strong> with one certificate by using <strong>SANs</strong> (Subject Alternatve Name). Those are a <em>X.509</em> V3 extension to allow a SSL certificate to specify multiple names that the certificate should match. They can contain:</p>
 <ul>
 <li>mail addresses</li>
@@ -1107,28 +1152,31 @@ Enter PEM pass phrase:
 <span style="color:#40ffff">subject</span>=/C=NU/O=dornea.nu/OU=dornea.nu Root CA/CN=dornea.nu Root CA
 <span style="color:#40ffff">issuer</span>=/C=NU/O=dornea.nu/OU=dornea.nu Root CA/CN=dornea.nu Root CA
 </code></pre></div><h2 id="create-tls-client-certificate">Create TLS client certificate</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">active</span> [color = lightgreen];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey]; 
+  // Define class (list of attributes)
+  class emphasis [color = pink, style = dashed];
+  class blackline [color = black, style = dotted];
+  class blue [color = lightblue];
+  class active [color = lightgreen];
+  class inactive [color = lightgrey]; 
 
-  Root_CA [label = <span style="color:#ed9d13">&#34;dornea.nu root CA&#34;</span>];
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">inactive</span>, label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
+  Root_CA [label = &#34;dornea.nu root CA&#34;];
+  Signing_CA2 [label = &#34;dev.dornea.nu CA&#34;];
+  Signing_CA3 [label = &#34;vpn.dornea.nu CA&#34;];
+  TLS_Server_CA [label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  TLS_Client_CA [class = active, label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Server_CA [class = inactive, label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Client_CA [class = inactive, label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
     
-  dev_client_victor [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;CN: Victor Dorneanu</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>];
+  dev_client_victor [class = active, label = &#34;CN: Victor Dorneanu\n&#34;];
 
   Root_CA -&gt; Signing_CA2;
   Root_CA -&gt; Signing_CA3;
@@ -1141,7 +1189,10 @@ blockdiag {
     
   TLS_Client_CA -&gt; dev_client_victor;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_52_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_52_0.png" alt="png"></p>
 <p>Create directories:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
@@ -1264,24 +1315,27 @@ Verifying - Enter PEM pass phrase:
 </code></pre></div><h1 id="issue-vpn-ca-certificates">Issue vpn-CA certificates</h1>
 <p>We&rsquo;ll now create <strong>VPN</strong> <em>server</em> and <em>client</em> certificates.</p>
 <h2 id="create-vpn-server-certificate">Create VPN server certificate</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {↔
 
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">active</span> [color = lightgreen];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey]; 
+  // Define class (list of attributes)
+  class emphasis [color = pink, style = dashed];
+  class blackline [color = black, style = dotted];
+  class blue [color = lightblue];
+  class active [color = lightgreen];
+  class inactive [color = lightgrey]; 
 
-  Root_CA [label = <span style="color:#ed9d13">&#34;dornea.nu root CA&#34;</span>];
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
+  Root_CA [label = &#34;dornea.nu root CA&#34;];
+  Signing_CA2 [label = &#34;dev.dornea.nu CA&#34;];
+  Signing_CA3 [label = &#34;vpn.dornea.nu CA&#34;];
+  TLS_Server_CA [label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  TLS_Client_CA [label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Server_CA [class = active, label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Client_CA [label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
     
 
   Root_CA -&gt; Signing_CA2;
@@ -1293,7 +1347,10 @@ blockdiag {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_60_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_60_0.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/vpn-ca/certs/vpn-server
@@ -1426,26 +1483,29 @@ Enter pass phrase <span style="color:#6ab825;font-weight:bold">for</span> ca/vpn
 Enter Export Password:
 Verifying - Enter Export Password:
 </code></pre></div><h2 id="create-vpn-client-certificate">Create VPN client certificate</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-blockdiag {
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
-  // Define <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">(</span><span style="color:#447fcf;text-decoration:underline">list</span> of attributes)
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">emphasis</span> [color = pink, style = dashed];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blackline</span> [color = black, style = dotted];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">blue</span> [color = lightblue];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">active</span> [color = lightgreen];
-  <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">inactive</span> [color = lightgrey]; 
+  // Define class (list of attributes)
+  class emphasis [color = pink, style = dashed];
+  class blackline [color = black, style = dotted];
+  class blue [color = lightblue];
+  class active [color = lightgreen];
+  class inactive [color = lightgrey]; 
 
-  Root_CA [label = <span style="color:#ed9d13">&#34;dornea.nu root CA&#34;</span>];
-  Signing_CA2 [label = <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span>];
-  Signing_CA3 [label = <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span>];
-  TLS_Server_CA [label = <span style="color:#ed9d13">&#34;TLS Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  TLS_Client_CA [label = <span style="color:#ed9d13">&#34;TLS Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Server_CA [label = <span style="color:#ed9d13">&#34;VPN Server Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
-  VPN_Client_CA [<span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#a61717;background-color:#e3d2d2">= </span><span style="color:#447fcf;text-decoration:underline">active</span>, label = <span style="color:#ed9d13">&#34;VPN Client Cert&#34;</span>, shape = flowchart.terminator, style = dotted];
+  Root_CA [label = &#34;dornea.nu root CA&#34;];
+  Signing_CA2 [label = &#34;dev.dornea.nu CA&#34;];
+  Signing_CA3 [label = &#34;vpn.dornea.nu CA&#34;];
+  TLS_Server_CA [label = &#34;TLS Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  TLS_Client_CA [label = &#34;TLS Client Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Server_CA [label = &#34;VPN Server Cert&#34;, shape = flowchart.terminator, style = dotted];
+  VPN_Client_CA [class = active, label = &#34;VPN Client Cert&#34;, shape = flowchart.terminator, style = dotted];
     
 
   Root_CA -&gt; Signing_CA2;
@@ -1457,7 +1517,10 @@ blockdiag {
   Signing_CA3 -&gt; VPN_Server_CA;
   Signing_CA3 -&gt; VPN_Client_CA;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_65_0.png" alt="png"></p>
+</code></pre></div>
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_65_0.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/vpn-ca/certs/vpn-client

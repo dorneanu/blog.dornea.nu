@@ -128,12 +128,7 @@ type="image/x-icon"/>
     }
 %}
 </code></pre></div><p>will render to</p>
-<p>{% blockdiag
-blockdiag {
-A -&gt; B -&gt; C;
-B -&gt; D;
-}
-%}</p>
+<p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx02.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
     nwdiag {
       network dmz {
@@ -151,22 +146,7 @@ B -&gt; D;
     }
 %}
 </code></pre></div><p>will render to</p>
-<p>{% blockdiag
-nwdiag {
-network dmz {
-web01;
-web02;
-stg01;
-}</p>
-<pre><code>  network internal {
-    web01;
-    web02;
-    db01;
-    db02;
-  }
-}
-</code></pre>
-<p>%}</p>
+<p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx04.png" alt="png"></p>
 <h2 id="fonts">Fonts</h2>
 <p>Regarding the <strong>font</strong>: You can add following to your <code>~/.blockdiagrc</code>:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[blockdiag]
@@ -190,22 +170,7 @@ fontpath = /usr/share/fonts/TTF/DejaVuSerif.ttf
 	  index -&gt; delete_confirm -&gt; index;
 	}
 %}
-</code></pre></div><p>{% blockdiag
-blockdiag admin {
-index [label = &ldquo;List of FOOs&rdquo;];
-add [label = &ldquo;Add FOO&rdquo;];
-add_confirm [label = &ldquo;Add FOO (confirm)&quot;];
-edit [label = &ldquo;Edit FOO&rdquo;];
-edit_confirm [label = &ldquo;Edit FOO (confirm)&quot;];
-show [label = &ldquo;Show FOO&rdquo;];
-delete_confirm [label = &ldquo;Delete FOO (confirm)&quot;];</p>
-<pre><code>  index -&gt; add  -&gt; add_confirm  -&gt; index;
-  index -&gt; edit -&gt; edit_confirm -&gt; index;
-  index -&gt; show -&gt; index;
-  index -&gt; delete_confirm -&gt; index;
-}
-</code></pre>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx06.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	blockdiag {
 	   // Set labels to nodes.
@@ -220,20 +185,7 @@ delete_confirm [label = &ldquo;Delete FOO (confirm)&quot;];</p>
 	   C -&gt; A;
 	}
 %}
-</code></pre></div><p>{% blockdiag
-blockdiag {
-// Set labels to nodes.
-A [label = &ldquo;foo&rdquo;];
-B [label = &ldquo;bar&rdquo;];
-// And set text-color
-C [label = &ldquo;baz&rdquo;, numbered = 99];</p>
-<pre><code>   // Set labels to edges. (short text only)
-   A -&gt; B [label = &quot;click bar&quot;, textcolor=&quot;red&quot;];
-   B -&gt; C [label = &quot;click baz&quot;];
-   C -&gt; A;
-}
-</code></pre>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx09.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	blockdiag {
 	  A -&gt; B -&gt; C -&gt; D -&gt; E;
@@ -242,14 +194,7 @@ C [label = &ldquo;baz&rdquo;, numbered = 99];</p>
 	  C -&gt; D [folded];
 	}
 %}
-</code></pre></div><p>{% blockdiag
-blockdiag {
-A -&gt; B -&gt; C -&gt; D -&gt; E;</p>
-<pre><code>  // fold edge at C to D (D will be layouted at top level; left side)
-  C -&gt; D [folded];
-}
-</code></pre>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx11.png" alt="png"></p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	blockdiag {
 	  // node shapes for flowcharts
@@ -261,17 +206,7 @@ A -&gt; B -&gt; C -&gt; D -&gt; E;</p>
 	  condition -&gt; database -&gt; terminator -&gt; input;
 	}
 %}
-</code></pre></div><p>{% blockdiag
-blockdiag {
-// node shapes for flowcharts
-condition [shape = flowchart.condition];
-database [shape = flowchart.database];
-terminator [shape = flowchart.terminator];
-input [shape = flowchart.input];</p>
-<pre><code>  condition -&gt; database -&gt; terminator -&gt; input;
-}
-</code></pre>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx12.png" alt="png"></p>
 <h4 id="blockdiagcontrib-cisco">blockdiagcontrib-cisco</h4>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag 
 	diagram admin {
@@ -284,14 +219,6 @@ input [shape = flowchart.input];</p>
 </code></pre></div><blockquote>
 <p>If you get an exception like <code>AttributeError: close</code> have a look at this <a href="https://bitbucket.org/blockdiag/blockdiag/issue/63/attributeerror-close">issue</a></p>
 </blockquote>
-<p>{% blockdiag
-diagram admin {
-A [shape = &ldquo;cisco.router&rdquo;];
-B [shape = &ldquo;cisco.ups&rdquo;];</p>
-<pre><code>  A -&gt; B;
-}
-</code></pre>
-<p>%}</p>
 <h4 id="blockdiagcontrib-octicons">blockdiagcontrib-octicons</h4>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	blockdiag {
@@ -304,20 +231,10 @@ B [shape = &ldquo;cisco.ups&rdquo;];</p>
 	  B -&gt; C;
 	}
 %}
-</code></pre></div><blockquote>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx17.png" alt="png"></p>
+<blockquote>
 <p>If you have problems generating the <strong>octicons</strong> have a look at this <a href="https://bitbucket.org/blockdiag/blockdiag-contrib/issue/2/blockdiagcontrib-octicons-cannot-open">issue</a></p>
 </blockquote>
-<p>{% blockdiag
-blockdiag {
-plugin octicons;</p>
-<pre><code>  A [label = &quot;&quot;, background = &quot;octicon://mark-github&quot;];
-  B [icon = &quot;octicon://cloud-download?color=red&quot;];
-  C [icon = &quot;octicon://settings?color=green&quot;]
-  A -&gt; B;
-  B -&gt; C;
-}
-</code></pre>
-<p>%}</p>
 <h3 id="seqdiag">seqdiag</h3>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	seqdiag {
@@ -329,16 +246,7 @@ plugin octicons;</p>
 	  browser &lt;-- webserver;
 	}
 %}
-</code></pre></div><p>{% blockdiag
-seqdiag {
-browser  -&gt; webserver [label = &ldquo;GET /index.html&rdquo;];
-browser &lt;&ndash; webserver;
-browser  -&gt; webserver [label = &ldquo;POST /blog/comment&rdquo;];
-webserver  -&gt; database [label = &ldquo;INSERT comment&rdquo;];
-webserver &lt;&ndash; database;
-browser &lt;&ndash; webserver;
-}
-%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx18.svg" alt="png"></p>
 <h3 id="actdiag">actdiag</h3>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	actdiag {
@@ -352,18 +260,7 @@ browser &lt;&ndash; webserver;
 	  }
 	}
 %}
-</code></pre></div><p>{% blockdiag
-actdiag {
-A -&gt; B -&gt; C -&gt; D -&gt; E;</p>
-<pre><code>  lane {
-    A; C; E;
-  }
-  lane {
-    B; D;
-  }
-}
-</code></pre>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx21.png" alt="png"></p>
 <h3 id="nwdiag">nwdiag</h3>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	nwdiag {
@@ -383,24 +280,7 @@ A -&gt; B -&gt; C -&gt; D -&gt; E;</p>
 	  }
 	}
 %}
-</code></pre></div><p>{% blockdiag
-nwdiag {
-network dmz {
-address = &ldquo;210.x.x.x/24&rdquo;</p>
-<pre><code>      web01 [address = &quot;210.x.x.1&quot;];
-      web02 [address = &quot;210.x.x.2&quot;];
-  }
-  network internal {
-      address = &quot;172.x.x.x/24&quot;;
-
-      web01 [address = &quot;172.x.x.1&quot;];
-      web02 [address = &quot;172.x.x.2&quot;];
-      db01;
-      db02;
-  }
-}
-</code></pre>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx22.png" alt="png"></p>
 <h4 id="nwdiag-more-advanced">nwdiag more advanced</h4>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	nwdiag {
@@ -447,51 +327,7 @@ address = &ldquo;210.x.x.x/24&rdquo;</p>
 	}
 }
 %}
-</code></pre></div><p>{% blockdiag
-nwdiag {
-class obj_old		[color = lighgray,style = dotted];
-class obj_new		[color = lightblue,style = dotted];
-class obj_null		[style = dotted,stacked];
-class obj_router	[shape = cisco.router];
-class obj_l2sw		[shape = cisco.layer_2_remote_switch];
-class obj_fw		[shape = cisco.firewall];
-class obj_wlan		[shape = cisco.wireless_router];
-class obj_pc		[shape = cisco.pc];
-class obj_mobile	[shape = cisco.pda];</p>
-<pre><code>network untrust {
-    address = &quot;X.X.X.0/28&quot;
-
-    main-router	[address = &quot;.n&quot;,class = obj_router];
-}
-
-network dmz {
-    address = &quot;192.168.X.0/24&quot;
-
-    main-router	[address = &quot;.n\ndmz/24 only&quot;,class = obj_router];
-    debian-fw1	[address = &quot;.n+16&quot;,class = obj_fw];
-    debian-fw2	[address = &quot;.m+17&quot;,class = obj_fw];
-}
-network trust {
-    address = &quot;172.X.X.0/24&quot;
-
-    VLAN-Switch	[address = &quot;.n&quot;,class = obj_l2sw];
-    debian-fw1	[address = &quot;.n+16\n&lt;-&gt;VLAN-Switch only&quot;,class = obj_fw];
-    debian-fw2	[address = &quot;.n+17\n&lt;-&gt;VLAN-Switch only&quot;,class = obj_fw];
-    nat-router	[address = &quot;.n+64\n&lt;-&gt;VLAN-Switch only&quot;,class = obj_router];
-}
-network wlan-seg {
-    address = &quot;10.X.X.0/24&quot;
-
-    nat-router	[address = &quot;.n+64\n&lt;-&gt;wlan-router's IP only&quot;,class = obj_router];
-    wlan-router	[address = &quot;.n\n&lt;-&gt;sheeva-debian only\n&lt;-&gt;note-debian only&quot;,class = obj_wlan];
-    sheeva-debian	[address = &quot;.n+16&quot;,class = obj_pc];
-    note-debian	[address = &quot;.n+17&quot;,class = obj_pc];
-    iPod		[address = &quot;.n+128&quot;,class = obj_mobile];
-    Android		[address = &quot;.n+129&quot;,class = obj_mobile];
-}
-</code></pre>
-<p>}
-%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx25.png" alt="png"></p>
 <h3 id="packetdiag">packetdiag</h3>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag 
 	packetdiag {
@@ -502,14 +338,7 @@ network wlan-seg {
 	}
     
 %}
-</code></pre></div><p>{% blockdiag
-packetdiag {
-0-7: Source Port
-8-15: Destination Port
-16-31: Sequence Number
-32-47: Acknowledgment Number
-}</p>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx27.png" alt="png"></p>
 <h3 id="rackdiag">rackdiag</h3>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% blockdiag
 	rackdiag {
@@ -527,22 +356,7 @@ packetdiag {
 	  14: LoadBalancer
 	}
 %}
-</code></pre></div><p>{% blockdiag
-rackdiag {
-24U;</p>
-<pre><code>  1: UPS [3U, 0.5A, 10kg];
-  5: Disk Array [2U, 0.5A];
-  7: DB Master
-  8: DB Mirror (1)
-  9: DB Mirror (2)
-  11: Web Server (1)
-  11: Web Server (2)
-  12: Web Server (3)
-  12: Web Server (4)
-  14: LoadBalancer
-}
-</code></pre>
-<p>%}</p>
+</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/using-blockdiag-with-pelican-and-liquid-tags/xx29.png" alt="png"></p>
 </div>
   <div id="comments">
       

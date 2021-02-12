@@ -85,23 +85,36 @@ type="image/x-icon"/>
 are avoided. One of those security nightmare - and in my own oppinion the most complicated one to explain to a <strong>non-sec</strong> person - is <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet">CSRF</a>. I won&rsquo;t go into details since these are freely available. Furthermore I would like to focus on the <strong>countermeasures</strong> one would implement to prevent CSRF. In some cases it&rsquo;s suggested to think of some attack scenarios before relying on the implemented solution. But first let&rsquo;s have a look how a typical CSRF attack works like.</p>
 <h2 id="general-idea">General idea</h2>
 <p>Usually we have 3 components involved:</p>
-<p>{% blockdiag
-seqdiag {
-Attacker;
-Client [label=&ldquo;Client/Browser&rdquo;];
-Server;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    Attacker;
+    Client [label=&quot;Client/Browser&quot;];
+    Server;
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx01.png" alt=""></p>
 <p>The <strong>client/browser</strong> communicates with the <strong>server</strong> and the <strong>attacker</strong> will try to <em>lure</em> the user to some previously <strong>prepared site</strong>. This can happen by sending
 <strong>mails</strong> with some malicious link or injecting content into a site the user is visiting (e.g. using <strong>iframes</strong>). This way the attack will cause the client/browser
 to fire requests to the server <strong>without</strong> any user interaction. The user behing the client/browser won&rsquo;t notice anything since this will happen in the background by just visiting the site and/or triggering some JavaScript to execute.</p>
-<p>{% blockdiag
-seqdiag {
-Attacker;
-Client [label=&ldquo;Client/Browser&rdquo;];
-Server;
-Attacker -&gt; Client [label=&ldquo;Send some link&rdquo;];</p>
-<pre><code>    // Separator
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    Attacker;
+    Client [label=&quot;Client/Browser&quot;];
+    Server;
+    Attacker -&gt; Client [label=&quot;Send some link&quot;];
+    
+    // Separator
     === User clicks on link. Browser will start ===
     ... Client opens malicious link ...
     
@@ -111,7 +124,10 @@ Attacker -&gt; Client [label=&ldquo;Send some link&rdquo;];</p>
     Client -&gt; Server [label=&quot;GET /change-account-settings&quot;];
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx02.png" alt=""></p>
 <h2 id="some-example">Some example</h2>
 <p>Now let&rsquo;s think of some <strong>real-world</strong> example. User <strong>Bob</strong> has an account on <code>http://bank.nu</code>. Attacker <strong>Victor</strong> will prepare a site <code>http://attacker.nu</code> which once accessed will load following <strong>iframe</strong>:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.html" data-lang=".html">&lt;<span style="color:#6ab825;font-weight:bold">iframe</span> <span style="color:#bbb">style</span>=<span style="color:#ed9d13">&#34;display:none&#34;</span> <span style="color:#bbb">name</span>=<span style="color:#ed9d13">&#34;csrf-frame&#34;</span>&gt;&lt;/<span style="color:#6ab825;font-weight:bold">iframe</span>&gt;
@@ -132,28 +148,44 @@ Attacker -&gt; Client [label=&ldquo;Send some link&rdquo;];</p>
 </ol>
 <p>Well first let&rsquo;s see <strong>why</strong> this kind of attacks are so powerful. Apparently Bob can only trigger the transaction if he has a <strong>valid session</strong>. Otherwise the bank would
 show some error message that the request is not allowed and a valid session is necessary. The authentification process usually looks like this:</p>
-<p>{% blockdiag
-seqdiag {
-edge_length = 600;
-Client
-Server;
-Client -&gt; Server [label=&ldquo;POST /login&rdquo;];
-Server -&gt; Client [label=&ldquo;200 OK\nSet-Cookie: session=xxxx&rdquo;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    edge_length = 600;
+    Client
+    Server;
+    Client -&gt; Server [label=&quot;POST /login&quot;];
+    Server -&gt; Client [label=&quot;200 OK\nSet-Cookie: session=xxxx&quot;];
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx03.png" alt=""></p>
 <p>The user sends his credentials to the server, the server validates these and sends a <strong>cookie</strong> to the client which serves as authentification characteristic.
 Regardless of the expiration time of the cookie, <strong>every time</strong> the browser/client makes a request to the server, the cookie will be sent <strong>automatically</strong> to the server.
 This is a very important one and <strong>often misunderstood</strong> by non-sec people.</p>
 <p>So next time the user wants to visit the site again, the browser will <strong>add</strong> the cookies received from the server to the request:</p>
-<p>{% blockdiag
-seqdiag {
-edge_length = 600;
-Client
-Server;
-Client -&gt; Server [label=&ldquo;GET /myaccount\nCookie: session=xxxx\nCookie: bla=foo&rdquo;];
-Server -&gt; Client [label=&ldquo;200 OK&rdquo;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    edge_length = 600;
+    Client
+    Server;
+    Client -&gt; Server [label=&quot;GET /myaccount\nCookie: session=xxxx\nCookie: bla=foo&quot;];
+    Server -&gt; Client [label=&quot;200 OK&quot;];
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx04.png" alt=""></p>
 <p>That in turn means that every time a request is conducted by your browser - whether intended by the user or not - the session cookie will be <strong>always</strong> be sent
 along with the request.</p>
 <h2 id="the-attack">The attack</h2>
@@ -165,20 +197,28 @@ along with the request.</p>
 <li>This is going to work <strong>only and if</strong> Bob is logged in (has a valid session cookie) on the bank site</li>
 </ol>
 <p>Trying to be more precise, these are the requests made:</p>
-<p>{% blockdiag
-seqdiag {
-Attacker;
-User;
-Site [label=&ldquo;http://attacker.nu&rdquo;];
-Bank [label=&ldquo;http://bank.nu&rdquo;];
-Attacker -&gt; User [label=&ldquo;Send link&rdquo;];</p>
-<pre><code>    ... User opens the link ...
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    Attacker;
+    User; 
+    Site [label=&quot;http://attacker.nu&quot;];
+    Bank [label=&quot;http://bank.nu&quot;];
+    Attacker -&gt; User [label=&quot;Send link&quot;];
+    
+    ... User opens the link ...
     User -&gt; Site;
     Site -&gt; Bank [label=&quot;POST /transfer.do\nHost: bank.nu\nCookie: session=xxxx&quot;, note = &quot;Request is automatically triggered&quot;];
     Bank -&gt; Site [label=&quot;200 OK&quot;];
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx05.png" alt=""></p>
 <p>As you have noticed the <strong>session cookie</strong> is part of the POST request. The attackers site <strong>can&rsquo;t</strong> read the cookie due to several reasons:</p>
 <ul>
 <li>the <strong>domain</strong> attribute of the cookie restricts the availability of the cookie only to the <code>bank.nu</code> domain
@@ -205,45 +245,69 @@ the mitigation of such attacks has to be done somewhere else. The <a href="https
 <p>The <strong>client</strong> has to provide this token in its requests. The server will reject the request/action if the token is not valid. Sounds simple, isn&rsquo;t it? There are two ways to do it:</p>
 <h3 id="provide-the-token-in-a-hidden-field-synchronizer-token-pattern">Provide the token in a hidden field (Synchronizer Token Pattern)</h3>
 <p>If the client wants to perform an action (like sending a POST request), the server will put inside the <strong>body</strong> content a hidden token which the client has to provide when sending the POST request:</p>
-<p>{% blockdiag
-seqdiag {
-edge_length = 600;
-Client -&gt; Server [label=&ldquo;GET /transfer&rdquo;];
-Server -&gt; Client [label=&ldquo;200 OK\n\n<!-- raw HTML omitted -->&quot;];
-Client -&gt; Server [label=&ldquo;POST /transfer.do\n\n[&hellip;]&amp;token=xxx&rdquo;];
-Server -&gt; Client [label=&ldquo;200 OK&rdquo;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    edge_length = 600;
+    Client -&gt; Server [label=&quot;GET /transfer&quot;];
+    Server -&gt; Client [label=&quot;200 OK\n\n&lt;form token='xxx'&gt;&quot;];
+    Client -&gt; Server [label=&quot;POST /transfer.do\n\n[...]&amp;token=xxx&quot;];
+    Server -&gt; Client [label=&quot;200 OK&quot;];
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx06.png" alt=""></p>
 <p>The token should change every time the site is loaded again. That means that the server should <strong>not</strong> accept 2 POST requests with the <strong>same</strong> token value.</p>
 <h3 id="provide-session-based-csrf-token-double-submit-cookies">Provide session based CSRF token (Double Submit Cookies)</h3>
 <p>Once the client has authentificated against the server, the server will send the client a CSRF token which will be used for <strong>every</strong> request. The token value <strong>doesn&rsquo;t change</strong> and remains the same for the whole session.</p>
-<p>{% blockdiag
-seqdiag {
-edge_length = 600;
-Client -&gt; Server [label=&ldquo;POST /login&rdquo;];
-Server -&gt; Client [label=&ldquo;200 OK\nSet-Cookie: session=xxx\nSet-Cookie: token=yyy&rdquo;];</p>
-<pre><code>    ... Client does some actions ...
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    edge_length = 600;
+    Client -&gt; Server [label=&quot;POST /login&quot;];
+    Server -&gt; Client [label=&quot;200 OK\nSet-Cookie: session=xxx\nSet-Cookie: token=yyy&quot;];
+    
+    ... Client does some actions ...
     
     Client -&gt; Server [label=&quot;POST /transfer.do\nCookie: token=yyy\nCookie: session=xxx\n\n[...]&amp;token=yyy&quot;];
     Server -&gt; Client [label=&quot;200 OK&quot;];
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx07.png" alt=""></p>
 <p>The interesting thing about this approach is the fact that the token is sent <strong>twice</strong>. The CSRF token is being sent to the client as a <em>cookie</em>.
 That means that this specific cookie will be sent automatically by the browser when some requests are triggered (<strong>natural</strong> behaviour, remember?).
 At first look this approach doesn&rsquo;t look secure, since the <strong>session</strong> cookie <strong>and</strong> the <strong>csrf</strong> token will be sent automatically by the browser
 in case of a <strong>forged</strong> request. Remember that the <strong>attacker</strong> doesn&rsquo;t have to know the cookie values. He/she just <strong>forges</strong> the request and since the
 server can&rsquo;t distinguish between a <strong>legitimate</strong> and a <strong>forged</strong> request, the attack will be successful.</p>
 <p>However, in the <em>Double Submit Cookies</em> approach the token value <strong>has</strong> to be sent more than once: Either as a <em>GET</em> or <em>POST</em> parameter. So the big question here is: Why is this secure? Well due to the fact that the token value has to be submitted somewhere else, the attacker will have to <strong>read</strong> this value - which is <strong>not possible</strong>. The attacker <em>can</em> forge the request but he can&rsquo;t <em>get</em> the response. The reason therefore is called <strong>SOP</strong> (Same Origin Policy) and prevents <strong>cross-requests</strong> (aka from other domains) to be performed. In our case a script hosted at <code>attacker.nu</code> would <strong>not</strong>  be able to get &ldquo;ressources&rdquo; from <code>bank.nu</code> when executed in the browser.</p>
-<p>{% blockdiag
-seqdiag {
-edge_length = 600;
-attacker [label=&ldquo;attacker.nu/evil.js&rdquo;];
-server [label=&ldquo;bank.nu&rdquo;];
-attacker -&gt; server [label=&ldquo;XMLHttpRequest(&lsquo;http://bank.nu/transfer&rsquo;)&quot;];
-server -&gt; attacker [note=&ldquo;Server will send nothing&rdquo;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    edge_length = 600;
+    attacker [label=&quot;attacker.nu/evil.js&quot;];
+    server [label=&quot;bank.nu&quot;];
+    attacker -&gt; server [label=&quot;XMLHttpRequest('http://bank.nu/transfer')&quot;];
+    server -&gt; attacker [note=&quot;Server will send nothing&quot;];
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx08.png" alt=""></p>
 <p>This is the reason the attacker <strong>can&rsquo;t</strong> read the token value even though he is able to <em>forge</em> requests. Providing the token value <strong>twice</strong> make this approach secure since the attacker can&rsquo;t read the token value and therefore can&rsquo;t forge a valid request (accepted by the server).</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>There are some other patterns I&rsquo;m aware of (there might more!):</p>

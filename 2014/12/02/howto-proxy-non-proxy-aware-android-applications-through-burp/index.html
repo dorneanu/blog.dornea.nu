@@ -103,11 +103,16 @@ type="image/x-icon"/>
 <p>In theory that&rsquo;s all! <strong>BUT</strong>: During recent mobile application pentest sessions, I&rsquo;ve noticed that sometimes applications traffic is not being passed through the proxy, especially when the application does <strong>not</strong> connect to standard HTTP ports like <code>80</code> or <code>443</code>. Besides that: What about SSDP and all other text-based protocols you would like to intercept in Burp? In most cases the proxy settings will simply be ignored and the traffic would be routed directly to the destination. In order to achieve my goal I&rsquo;ll be using <em>iptables</em> and some Burp settings most pentest aren&rsquo;t aware of. But first things first: The basics.</p>
 <h3 id="virtual-pentest-environment">Virtual pentest environment</h3>
 <p>Before getting into details let&rsquo;s &ldquo;virtually&rdquo; (rather mentally) create a network we can use as an example:</p>
-<p>{% blockdiag
-nwdiag {
-internet [shape = cloud];
-internet &ndash; router;</p>
-<pre><code> network internal {
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>nwdiag {
+ internet [shape = cloud];
+ internet -- router;
+
+ network internal {
       address = &quot;192.x.x.x/24&quot;;
 
       router [address = &quot;192.x.x.1&quot;, shape=cisco.router];
@@ -117,43 +122,67 @@ internet &ndash; router;</p>
   }
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx01.svg" alt="png"></p>
 <p>So nothing special about it. The <em>burp</em> instance is running on my local machine and it&rsquo;s listening on <code>192.x.x.1:8080</code> for incoming connections.</p>
 <h3 id="some-words-about-proxying">Some words about proxying</h3>
 <p>Using <strong>no</strong> proxy at all, your client (in our case the target application) will have <em>no</em> pre-routed connections to its destinations. It will access them directly:</p>
-<p>{% blockdiag
-seqdiag {
-android-client  -&gt; webserver [label = &ldquo;GET /index.html\nHost: www.example.com&rdquo;];
-android-client &lt;&ndash; webserver [label = &ldquo;HTTP/1.1 200 OK&rdquo;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    android-client  -&gt; webserver [label = &quot;GET /index.html\nHost: www.example.com&quot;];
+    android-client &lt;-- webserver [label = &quot;HTTP/1.1 200 OK&quot;];
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx02.png" alt="png"></p>
 <p>Using <em>burp</em> as a proxy it will act as an intermediate between the <code>webserver</code> and the <code>client</code>:</p>
-<p>{% blockdiag
-seqdiag {
-android-client  -&gt; burp [label = &ldquo;GET /index.html\nHost: www.example.com&rdquo;];
-burp  -&gt; webserver [label = &ldquo;GET /index.html\nHost: www.example.com&rdquo;];
-burp &lt;&ndash; webserver [label = &ldquo;HTTP/1.1 200 OK&rdquo;];
-android-client &lt;&ndash; burp [label = &ldquo;HTTP/1.1 200 OK&rdquo;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    android-client  -&gt; burp [label = &quot;GET /index.html\nHost: www.example.com&quot;];
+                       burp  -&gt; webserver [label = &quot;GET /index.html\nHost: www.example.com&quot;];
+                       burp &lt;-- webserver [label = &quot;HTTP/1.1 200 OK&quot;];
+    android-client &lt;-- burp [label = &quot;HTTP/1.1 200 OK&quot;];
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx03.png" alt="png"></p>
 <p>Ok, so that&rsquo;s no big deal and works as expected as long as your application/client <em>knows</em> how to connect to the proxy and it&rsquo;s <em>aware</em> of that fact. But what about the clients that are <em>not</em> aware of the fact that their connection will be proxied? Let&rsquo;s have a closer look at this particular case.</p>
 <h3 id="non-proxy-aware-clients">Non-proxy-aware clients</h3>
 <p><strong>Proxy-aware</strong> clients need to be told how to connect to the proxy and the proxy server however knows how to connect to the final destination. <strong>Non-proxy-aware</strong> applications don&rsquo;t know that the connection is proxied through some other host. In that case some other <em>additional</em> steps are required to proxy the connection through Burp.</p>
 <p>In most cases you&rsquo;ll have to <em>redirect</em> the packages at a lower OSI level (rather than the application layer). In concrete terms that means you&rsquo;ll have to redirect the IP packets on the <strong>android-client</strong> to the <strong>burp</strong> instance. Burp instead must know where to redirect the packets (answer from <code>webserver</code>) back. This is the point where you&rsquo;ll need your operating system handle some things for you.</p>
 <h3 id="some-words-on-redirects">Some words on redirects</h3>
 <p>On most <em>Linux</em> based hosts you&rsquo;ll have <code>iptables</code> installed which will help us out with packet filtering / redirects. By rooting your Android device you should be able to take advantage of using iptables. Otherwise I&rsquo;d recommend you <a href="https://play.google.com/store/apps/details?id=org.dyndns.sven_ola.debian_kit&amp;hl=en">Debian Kit</a>. The general iptables packet traversal scheme looks like this:</p>
-<p>{% blockdiag
-blockdiag {
-packet [shape=beginpoint];
-system;
-prerouting;
-is_forward [shape=flowchart.condition, label=&ldquo;Forward?&rdquo;, width=&ldquo;150&rdquo;, height=&ldquo;80&rdquo;, fontsize=18];
-forward;
-input;
-output;
-final_output [shape=dots, label=&ldquo;destination&rdquo;];
-postrouting;</p>
-<pre><code>    packet -&gt; prerouting -&gt; is_forward [folded]; 
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>blockdiag {
+    packet [shape=beginpoint];
+    system;
+    prerouting;
+    is_forward [shape=flowchart.condition, label=&quot;Forward?&quot;, width=&quot;150&quot;, height=&quot;80&quot;, fontsize=18];
+    forward;
+    input;
+    output;
+    final_output [shape=dots, label=&quot;destination&quot;];
+    postrouting;
+
+    packet -&gt; prerouting -&gt; is_forward [folded]; 
     is_forward -&gt; input [label=&quot;no&quot;, textcolor=&quot;red&quot;];
     input -&gt; system -&gt; output;
 
@@ -163,21 +192,29 @@ postrouting;</p>
     postrouting -&gt; final_output;
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx04.png" alt="png"></p>
 <p>In reality the truth is more <a href="http://www.adminsehow.com/wp-content/uploads/2011/09/tables_traverse.jpg">complicated</a>. And besides that there are several <a href="https://wiki.archlinux.org/index.php/iptables#TablesJust"><em>tables</em></a> which I haven&rsquo;t taken into consideration. And speaking of tables: The <em>filter</em> and <em>nat</em> ones are those you&rsquo;ll mostly deal with. But like already mentioned: For the sake of simplicity &hellip; :)</p>
 <p>Since we are generating packets <em>locally</em> (on <strong>android-client</strong>) the <em>output</em> firewall chain is our main point of interest.</p>
-<p>{% blockdiag
-blockdiag {
-packet [shape=beginpoint];
-system;
-prerouting;
-is_forward [shape=flowchart.condition, label=&ldquo;Forward?&rdquo;, width=&ldquo;150&rdquo;, height=&ldquo;80&rdquo;, fontsize=18];
-forward;
-input;
-output [color=&quot;#CCFF33&quot;, fontsize=18];
-final_output [shape=dots, label=&ldquo;destination&rdquo;];
-postrouting;</p>
-<pre><code>    packet -&gt; prerouting -&gt; is_forward [folded]; 
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>blockdiag {
+    packet [shape=beginpoint];
+    system;
+    prerouting;
+    is_forward [shape=flowchart.condition, label=&quot;Forward?&quot;, width=&quot;150&quot;, height=&quot;80&quot;, fontsize=18];
+    forward;
+    input;
+    output [color=&quot;#CCFF33&quot;, fontsize=18];
+    final_output [shape=dots, label=&quot;destination&quot;];
+    postrouting;
+
+    packet -&gt; prerouting -&gt; is_forward [folded]; 
     is_forward -&gt; input [label=&quot;no&quot;, textcolor=&quot;red&quot;];
     input -&gt; system -&gt; output;
 
@@ -187,7 +224,10 @@ postrouting;</p>
     postrouting -&gt; final_output;
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx05.png" alt="png"></p>
 <p>While forwarding and re-routing packets between the <strong>android-client</strong> and the <strong>webserver</strong> through <strong>burp</strong> you won&rsquo;t be able to avoid  <a href="http://en.wikipedia.org/wiki/Network_address_translation"><em>NAT</em></a> (Network Address Translation). While modifying certain headers in the <em>IP</em> datagrams, packets are &ldquo;re-mapped&rdquo; from one IP address to another one. iptables can handle NAT (<code>-t nat</code>) and has 3 predefined chains: <em>PREROUTING</em>, <em>OUTPUT</em> and <em>POSTROUTING</em>.</p>
 <h3 id="proxying-with-proxydroid">Proxying with ProxyDroid</h3>
 <p>Before getting into the cool stuff, let&rsquo;s see what happens when <strong>ProxyDroid</strong> is used. You can use it only on a <em>rooted</em> device since internally it depends on <em>iptables</em>.</p>
@@ -246,16 +286,24 @@ REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
 [...]
 
 </code></pre></div><p>In other words the <em>connection flow</em> looks like this:</p>
-<p>{% blockdiag
-seqdiag {
-android-client  -&gt; ProxyDroid;
-ProxyDroid  -&gt; burp;
-burp  -&gt; webserver;
-burp &lt;&ndash; webserver;
-ProxyDroid &lt;&ndash; burp;
-android-client &lt;&ndash; ProxyDroid;
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>seqdiag {
+    android-client  -&gt; ProxyDroid;
+                       ProxyDroid  -&gt; burp;
+                                      burp  -&gt; webserver;
+                                      burp &lt;-- webserver;
+                       ProxyDroid &lt;-- burp;
+    android-client &lt;-- ProxyDroid;
 }
-%}</p>
+</code></pre>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx06.png" alt="png"></p>
 <h3 id="testing-the-connection">Testing the connection</h3>
 <p>Using a <strong>HTTP proxy</strong> we&rsquo;ll test the connection between <strong>android-client</strong> and some webserver out there. Since the connection is proxied through <strong>burp</strong> we should be able to see it. On <strong>android-client</strong> I run:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://www.spiegel.de/
@@ -340,14 +388,19 @@ node[shape=record];</p>
 <li><strong>SNAT</strong></li>
 </ol>
 <p><strong>Souce NAT</strong> changes the <em>source</em> address/port in the IP header of a packet to sth different. SNAT is commonly done in the <strong>POSTROUTING</strong> chain, just before the packet will be sent out. That means that everything on the box itself (routing, filtering etc.) will see the packet unchanged. For more detailed reading have a look at <a href="http://www.netfilter.org/documentation/HOWTO/NAT-HOWTO-6.html">netfilter - NAT Howto</a>.</p>
-<p>{% blockdiag
-blockdiag {
-Client [label=&ldquo;Client\n1.1.1.1&rdquo;, shape=cisco.pc];
-NAT [label=&ldquo;NAT\n2.2.2.2&rdquo;, shape=cisco.router];
-Server [label=&ldquo;Server\n3.3.3.3&rdquo;, shape=cisco.www_server];
-CN [label=&ldquo;Packet\n\nFrom: 1.1.1.1:4192\nTo: 3.3.3.3:8080&rdquo;, height=80, width=170, color=&ldquo;orange&rdquo;];
-NS [label=&ldquo;Packet\n\nFrom: 2.2.2.2:14567\nTo: 3.3.3.3:8080&rdquo;, height=80, width=170, color=&ldquo;orange&rdquo;];</p>
-<pre><code>  NC [label=&quot;Packet\n\nFrom: 3.3.3.3:8080\nTo: 1.1.1.1:4192&quot;, height=80, width=170, color=&quot;lightblue&quot;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>blockdiag {
+  Client [label=&quot;Client\n1.1.1.1&quot;, shape=cisco.pc]; 
+  NAT [label=&quot;NAT\n2.2.2.2&quot;, shape=cisco.router];
+  Server [label=&quot;Server\n3.3.3.3&quot;, shape=cisco.www_server];
+  CN [label=&quot;Packet\n\nFrom: 1.1.1.1:4192\nTo: 3.3.3.3:8080&quot;, height=80, width=170, color=&quot;orange&quot;];
+  NS [label=&quot;Packet\n\nFrom: 2.2.2.2:14567\nTo: 3.3.3.3:8080&quot;, height=80, width=170, color=&quot;orange&quot;];
+
+  NC [label=&quot;Packet\n\nFrom: 3.3.3.3:8080\nTo: 1.1.1.1:4192&quot;, height=80, width=170, color=&quot;lightblue&quot;];
   SN [label=&quot;Packet\n\nFrom: 3.3.3.3:8080\nTo: 2.2.2.2:14567&quot;, height=80, width=170, color=&quot;lightblue&quot;];
 
   Client -&gt; CN -&gt; NAT [color=&quot;orange&quot;];
@@ -356,7 +409,10 @@ NS [label=&ldquo;Packet\n\nFrom: 2.2.2.2:14567\nTo: 3.3.3.3:8080&rdquo;, height=
   Client &lt;- NC &lt;- NAT [color=&quot;lightblue&quot;];
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx07.png" alt="png"></p>
 <ul>
 <li>Client &ndash;&gt; Server (orange)</li>
 </ul>
@@ -369,18 +425,26 @@ NS [label=&ldquo;Packet\n\nFrom: 2.2.2.2:14567\nTo: 3.3.3.3:8080&rdquo;, height=
 <li><strong>DNAT</strong></li>
 </ol>
 <p><strong>Destination NAT</strong> changes the <em>destination</em> address/port in the IP header of a packet. This is usually done in the <strong>PREROUTING</strong> chain, right after the packet has arrived. For my purpose I&rsquo;ll be using the <em>OUTPUT</em> chain to do DNAT. Since the packets are modified before leaving the network interface</p>
-<p>{% blockdiag
-blockdiag {
-Client [label=&ldquo;Client\n1.1.1.1&rdquo;, shape=cisco.pc];
-NAT [label=&ldquo;NAT\n2.2.2.2&rdquo;, shape=cisco.router];
-Server [label=&ldquo;Server\nx.x.x.x&rdquo;, shape=cisco.www_server];
-CN [label=&ldquo;Packet\n\nFrom: 1.1.1.1:4192\nTo: 3.3.3.3:8080&rdquo;, height=80, width=170, color=&ldquo;orange&rdquo;];
-NS [label=&ldquo;Packet\n\nFrom: 1.1.1.1:4192\nTo: x.x.x.x:yyyy&rdquo;, height=80, width=170, color=&ldquo;orange&rdquo;];</p>
-<pre><code>  Client -&gt; CN -&gt; NAT [color=&quot;orange&quot;];
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    blockdiag code
+    
+  </summary>
+  <pre><code>blockdiag {
+  Client [label=&quot;Client\n1.1.1.1&quot;, shape=cisco.pc]; 
+  NAT [label=&quot;NAT\n2.2.2.2&quot;, shape=cisco.router];
+  Server [label=&quot;Server\nx.x.x.x&quot;, shape=cisco.www_server];
+  CN [label=&quot;Packet\n\nFrom: 1.1.1.1:4192\nTo: 3.3.3.3:8080&quot;, height=80, width=170, color=&quot;orange&quot;];
+  NS [label=&quot;Packet\n\nFrom: 1.1.1.1:4192\nTo: x.x.x.x:yyyy&quot;, height=80, width=170, color=&quot;orange&quot;];
+
+  Client -&gt; CN -&gt; NAT [color=&quot;orange&quot;];
   NAT -&gt; NS -&gt; Server [color=&quot;orange&quot;];
 }
 </code></pre>
-<p>%}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx08.png" alt="png"></p>
 <ol start="3">
 <li><strong>MASQUERADING</strong></li>
 </ol>
