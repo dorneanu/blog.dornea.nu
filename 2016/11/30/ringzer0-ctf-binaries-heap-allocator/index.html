@@ -208,14 +208,19 @@ the <strong>ABI</strong> requires that registers are used instead of the stack. 
 <li>R9</li>
 </ul>
 <p>Additional arguments can be passed on the stack. In our case we have:</p>
-<p>{{gravizo background-color=&quot;#fff&quot; title=&ldquo;Deployment scheme&rdquo; alt=&ldquo;Deployment scheme&rdquo; }}
-digraph G {
-// Define layout
-graph [pad=&quot;.75&quot;, ranksep=&ldquo;0.95&rdquo;, nodesep=&ldquo;0.05&rdquo;];
-rankdir=LR;
-node [shape=&ldquo;record&rdquo;];
-rank=same;</p>
-<pre><code>    // Define pointers
+<details>
+  <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
+    Graphviz code
+    
+  </summary>
+  <pre><code>digraph G {
+    // Define layout
+    graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
+    rankdir=LR;
+    node [shape=&quot;record&quot;];
+    rank=same;
+ 
+    // Define pointers
     rsp [
         label=&quot;&lt;p&gt; $rdi \l&quot;, height=&quot;0.1&quot;,
         color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
@@ -269,7 +274,10 @@ rank=same;</p>
     rsp_20:p -&gt; stack:20 [style=invis];
 }
 </code></pre>
-<p>{{/gravizo}}</p>
+
+</details>
+
+<p><img src="http://blog.dornea.nu/posts/img/2016/r0-binaries-heap-allocator/stack.dot.png" alt=""></p>
 <p>As stated <a href="http://dbp-consulting.com/tutorials/debugging/linuxProgramStartup.html">here</a> <code>__libc_start_main</code> does
 the following:</p>
 <ul>
