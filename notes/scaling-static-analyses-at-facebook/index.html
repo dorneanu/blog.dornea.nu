@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Scaling Static Analyses at Facebook - blog.dornea.nu</title>
+  <meta content='Scaling Static Analyses at Facebook - blog.dornea.nu' property='title' />
+  <meta content='Scaling Static Analyses at Facebook - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="https://cacm.acm.org/magazines/2019/8/238344-scaling-static-analyses-at-facebook/fulltext
+ To industry professionals we say: advanced static analyses, like those found in the research literature, can be deployed at scale and deliver value for general code. And to academics we say: from an industrial point of view the subject appears to have many unexplored avenues, and this provides research opportunities to inform future tools.
+ Deployments &ldquo;diff time&rdquo; deployment  analyzers participate as bots in code review make automatic comments when engineer submits code modification this kind of deployment lead to 70% fix rate traditional (offline or batch) deployment saw a 0% fix rate security related issues are pushed to the security engineer on-call for commenting on code modification  Software Development at Facebook  there is a main codebase (master) this gets altered by modifications submitted by devs CI/CD:  anaylyses run on the code modification and participate by commenting their findings directly in the code review tool    Reporting  The actioned reports and missed bugs are related to the classic concepts of true positives and false negatives from the academic static analysis literature." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/notes/scaling-static-analyses-at-facebook/" />
+
+
+<meta property="article:published_time" content="2021-02-26T11:12:17&#43;01:00"/>
+<meta property="article:modified_time" content="2021-02-26T11:12:17&#43;01:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Scaling Static Analyses at Facebook</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>26 Feb 2021</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/note' class="link silver">note</a> <a href='http://blog.dornea.nu/tags/sca' class="link silver">sca</a> <a href='http://blog.dornea.nu/tags/facebook' class="link silver">facebook</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><p><a href="https://cacm.acm.org/magazines/2019/8/238344-scaling-static-analyses-at-facebook/fulltext">https://cacm.acm.org/magazines/2019/8/238344-scaling-static-analyses-at-facebook/fulltext</a></p>
+<blockquote>
+<p>To industry professionals we say: advanced static analyses, like those found in
+the research literature, can be deployed at scale and deliver value for general
+code. And to academics we say: from an industrial point of view the subject
+appears to have many unexplored avenues, and this provides research
+opportunities to inform future tools.</p>
+</blockquote>
+<h2 id="deployments">Deployments</h2>
+<h3 id="diff-time-deployment">&ldquo;diff time&rdquo; deployment</h3>
+<ul>
+<li>analyzers participate as bots in code review</li>
+<li>make automatic comments when engineer submits code modification</li>
+<li>this kind of deployment lead to <strong>70% fix rate</strong></li>
+<li>traditional (offline or batch) deployment saw a <strong>0% fix rate</strong></li>
+<li>security related issues are pushed to the security engineer on-call for
+commenting on code modification</li>
+</ul>
+<h3 id="software-development-at-facebook">Software Development at Facebook</h3>
+<ul>
+<li>there is a main codebase (master)</li>
+<li>this gets altered by modifications submitted by devs</li>
+<li>CI/CD:
+<ul>
+<li>anaylyses run on the code modification and participate by <strong>commenting their
+findings directly in the code review tool</strong></li>
+</ul>
+</li>
+</ul>
+<h2 id="reporting">Reporting</h2>
+<blockquote>
+<p>The actioned reports and missed bugs are related to the classic concepts of true
+positives and false negatives from the academic static analysis literature. A
+true positive is a report of a potential bug that can happen in a run of the
+program in question (whether or not it will happen in practice); a false
+positive is one that cannot happen.</p>
+</blockquote>
+<h3 id="false-positives">False positives</h3>
+<blockquote>
+<p>the false positive rate is challenging to measure for a large, rapidly changing
+codebase: it would be extremely time consuming for humans to judge all reports
+as false or true as the code is changing.</p>
+</blockquote>
+<ul>
+<li>don&rsquo;t focus on true positives and false negatives (even if valuable concepts)</li>
+<li>pay more attention to <strong>action rate</strong> and the observed <strong>missed bugs</strong></li>
+</ul>
+<h3 id="actioned-reports">Actioned reports</h3>
+<h3 id="observable-missed-bugs">Observable missed bugs</h3>
+<ul>
+<li>has been observed in some way</li>
+<li>but was not reported by an analysis</li>
+</ul>
+<h2 id="tools">Tools</h2>
+<p>Tools used by Fb to conduct static analysis</p>
+<h3 id="infer"><a href="https://github.com/facebook/infer">Infer</a></h3>
+<blockquote>
+<p>Infer has its roots in academic research on program analysis with separation
+logic,5 research, which led to a startup company (Monoidics Ltd.) that was
+acquired by Facebook in 2013. Infer was open sourced in 2015 (<a href="http://www.fbinfer.com">www.fbinfer.com</a>)
+and is used at Amazon, Spotify, Mozilla, and other companies.</p>
+</blockquote>
+<ul>
+<li>targets mobile apps</li>
+<li>applied to Java, Objective C and C++</li>
+<li>processes about 10s of millions of Android and Objective C code</li>
+<li>uses analysis logic based on the theory of <strong>Separation Logic</strong></li>
+<li>finds errors related to more than 30 types of issues:
+<ul>
+<li>memory safety</li>
+<li>concurrency (deadlocks and starvation)</li>
+<li>security (information flow)</li>
+<li>custom errors (suggested by Fb devs)</li>
+</ul>
+</li>
+</ul>
+<h3 id="zocolan">Zocolan</h3>
+<ul>
+<li>mainly does &ldquo;taint&rdquo; analysis
+<ul>
+<li>builds a dependency graph that related methods to their potential callers</li>
+<li>uses this graph to schedule parallel analyses of individual methods</li>
+</ul>
+</li>
+<li>deployed for more than 2 years (in 2019), first to security engineers then to
+software engineers</li>
+<li>report can trigger the security expert to create tasks</li>
+<li>can process over 100-million lines of <a href="https://hacklang.org">Hack</a> code in less than 30 minutes</li>
+<li>implements new modular parallel taint analysis algorithm</li>
+</ul>
+<h2 id="lessons-learned">Lessons learned</h2>
+<h3 id="first-run">First run</h3>
+<p>First deployment was rather batch than continous:</p>
+<ul>
+<li>run once (per night)</li>
+<li>generate list of issues</li>
+<li>assign issues to devs</li>
+</ul>
+<p>Results:</p>
+<ul>
+<li>devs didn&rsquo;t act on the issues assigned</li>
+<li>Fb reduced the false positive rate (down to 20%) but devs still didn&rsquo;t take
+actions on issues</li>
+</ul>
+<h3 id="switch-to-diff-time">Switch to Diff time</h3>
+<ul>
+<li>the response of engineers was at about 70%</li>
+<li>positive rate didn&rsquo;t change</li>
+<li>but the impact was bigger when the static analysis was deployed at diff time</li>
+</ul>
+<h3 id="human-factors">Human factors</h3>
+<p>The success of the diff time came as no surprise to Fb&rsquo;s devs:</p>
+<ul>
+<li>mental effort of context switch+
+<ul>
+<li>if dev is working on one problem, and the assigned issue is about another
+one, they must swap out the mental context of the first problem and swap in
+the second</li>
+<li>by participating as a bot in the code review process, the context switch was
+kind of solved</li>
+</ul>
+</li>
+<li>relevance
+<ul>
+<li>sometimes it&rsquo;s hard to find the right person to assign issues to</li>
+<li>by commenting on a diff that introduces an issue we have a pretty good
+chance to find the relevant person</li>
+</ul>
+</li>
+</ul>
+<h2 id="additional-resources">Additional resources</h2>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=Vj0QVRaw8A4">&ldquo;Move fast and secure things (with static analysis)&rdquo; by Ibrahim Mohamed El-Sayed</a></li>
+<li><a href="https://engineering.fb.com/security/zoncolan/">How Facebook uses static analysis to detect and prevent static issues</a></li>
+</ul>
+</div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/notes/automatic-file-uploads/">prev post</a>
+  <a href="http://blog.dornea.nu/notes/lessons-from-building-static-analysis-tools-at-google/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>
