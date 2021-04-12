@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Hands-On Software architecture with Golang - blog.dornea.nu</title>
+  <meta content='Hands-On Software architecture with Golang - blog.dornea.nu' property='title' />
+  <meta content='Hands-On Software architecture with Golang - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Summary  Hands-On Software Architecture with Golang starts with a brief introduction to architectural elements, Go, and a case study to demonstrate architectural principles. You&rsquo;ll then move on to look at code-level aspects such as modularity, class design, and constructs specific to Golang and implementation of design patterns. As you make your way through the chapters, you&rsquo;ll explore the core objectives of architecture such as effectively managing complexity, scalability, and reliability of software systems." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/notes/hands-on-software-architecture-with-golang/" />
+
+
+<meta property="article:published_time" content="2021-03-18T14:51:31&#43;01:00"/>
+<meta property="article:modified_time" content="2021-03-18T14:51:31&#43;01:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/bookmarks' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Hands-On Software architecture with Golang</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>18 Mar 2021</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/note' class="link silver">note</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><h2 id="summary">Summary</h2>
+<blockquote>
+<p>Hands-On Software Architecture with Golang starts with a brief introduction to
+architectural elements, Go, and a case study to demonstrate architectural
+principles. You&rsquo;ll then move on to look at code-level aspects such as
+modularity, class design, and constructs specific to Golang and implementation
+of design patterns. As you make your way through the chapters, you&rsquo;ll explore
+the core objectives of architecture such as effectively managing complexity,
+scalability, and reliability of software systems. You&rsquo;ll also work through
+creating distributed systems and their communication before moving on to
+modeling and scaling of data. In the concluding chapters, you&rsquo;ll learn to deploy
+architectures and plan the migration of applications from other languages. &ndash; <a href="https://www.packtpub.com/eu/application-development/hands-software-architecture-golang">source</a></p>
+</blockquote>
+<h2 id="engineering-principles">Engineering principles</h2>
+<h3 id="high-level-design"><strong>High-level design</strong></h3>
+<blockquote>
+<p>This is the decomposition of the system into high-level components. This serves
+as the blueprint that the product and code need to follow at every stage of the
+product development life cycle. For example, once we have a layered architecture
+(see the following section), then we can easily identify for any new requirement
+to which layer each new component should</p>
+</blockquote>
+<h3 id="quality-attributes"><strong>Quality attributes</strong></h3>
+<blockquote>
+<p>We want high quality code, and this means no code checking would be allowed
+without unit tests and 90% code coverage</p>
+</blockquote>
+<h3 id="product-velocity"><strong>Product velocity</strong></h3>
+<blockquote>
+<p>The product has a bounded value in time and, to ensure that there is high
+developer productivity, the team should build Continuous Integration /
+Continuous Deployment (CICD) pipelines from the start.</p>
+</blockquote>
+<h3 id="a-b-testing">A/B testing</h3>
+<blockquote>
+<p>Every feature should have a flag, so that it can be shown only to an x
+percentage of users</p>
+</blockquote>
+<h2 id="software-architecture">Software Architecture</h2>
+<ul>
+<li>
+<p>package code into components</p>
+<ul>
+<li>divide system into partitions</li>
+<li>each parition has specific concern and role</li>
+<li>each component has well defined interfaces and responsabilities</li>
+</ul>
+</li>
+<li>
+<p>work with the components as abstract entities</p>
+</li>
+<li>
+<p>manage complexity</p>
+</li>
+<li>
+<p><a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a></p>
+<figure>
+    <img src="http://blog.dornea.nu/notes/software-engineering-golang/clean-architecture.jpg"
+         alt="Figure 1: The Clean Architecture / (c) Robert C. Martin"/> <figcaption>
+            <p>Figure 1: The Clean Architecture / (c) Robert C. Martin</p>
+        </figcaption>
+</figure>
+
+<ul>
+<li>
+<p>by Rober Cecil Martin (more commonly known as Uncle Bob)</p>
+</li>
+<li>
+<p>the dependency rule is important</p>
+<blockquote>
+<p>This rule says that source code dependencies can only point inward.
+Nothing in an inner circle (variables, classes, data, and private functions)
+can know anything at all about something in an outer circle</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="role">Role</h2>
+<h3 id="the-role-of-the-architect">The role of the architect</h3>
+<ul>
+<li>define a blueprint for what needs to be built</li>
+<li>ensure the team has enough details to get the job done</li>
+<li>guides the rest of the team toward this design during execution</li>
+<li>talks to stakeholders</li>
+<li>it&rsquo;s possible to do the architect&rsquo;s job w/o coding:
+<ul>
+<li>one must understand the low-level details, constraints and complexity</li>
+</ul>
+</li>
+</ul>
+<h2 id="microservices">Microservices</h2>
+<p><strong>Definition:</strong></p>
+<blockquote>
+<p>The basic concept of a microservice is simple—it&rsquo;s a simple, standalone application that does one thing only and does that one thing well. The objective is to retain the simplicity, isolation, and productivity of the early app. A microservice cannot live alone; no microservice is an island—it is part of a larger system, running and working alongside other microservices to accomplish what would normally be handled by one large standalone application.</p>
+</blockquote>
+<p>Each microservice is:</p>
+<ul>
+<li>autonomous</li>
+<li>independent</li>
+<li>self-contained</li>
+<li>and individually deployable</li>
+<li>and scalable.</li>
+</ul>
+<h3 id="advantages">Advantages</h3>
+<ul>
+<li>use the componentization strategy
+<ul>
+<li>divide and rule more effectively</li>
+<li>with clear boundaries between components.</li>
+</ul>
+</li>
+<li>create the right tool for each job in a microservice</li>
+<li>testability</li>
+<li>improved developer productivity and feature velocity.</li>
+</ul>
+<h2 id="go">Go</h2>
+<blockquote>
+<p>The Go programming language was conceived in late 2007 by Robert Griesemer, Rob Pike, and Ken Thompson, as an open source programming language that aims to simplify programming and make it fun again. It&rsquo;s sponsored by Google, but is a true open source project—it commits from Google first, to the open source projects, and then the public repository is imported internally.</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>The language was designed by and for people who write, read, debug, and maintain large software systems. It&rsquo;s a statically-typed, compiled language with built-in concurrency and garbage collection as first-class citizens.</p>
+</blockquote>
+<h3 id="introduction"><!-- raw HTML omitted -->TODO<!-- raw HTML omitted --> Introduction</h3>
+<p>Ideas how to structure a Golang intro session</p>
+<ul>
+<li>Hello World</li>
+<li>Data types and structures</li>
+<li>Functions and methods</li>
+<li>Flow control</li>
+<li>Packaging</li>
+<li>Concurrency</li>
+<li>Garbage collection</li>
+</ul>
+<h3 id="object-orientation">Object orientation</h3>
+<p>For polymorphic behavior, Go uses <strong>interfaces and duck typing</strong>:</p>
+<blockquote>
+<p>&ldquo;If it looks like a duck and quacks like a duck, it&rsquo;s a duck.&rdquo;</p>
+</blockquote>
+<p>Duck typing:</p>
+<ul>
+<li>class implements an interface if it has all methods and</li>
+<li>implement these methods</li>
+</ul>
+<h3 id="class">Class</h3>
+<blockquote>
+<p>A class is a blueprint, or a template for objects that share the same behavior
+and properties. Being a template, it can be used as a specification to create
+objects.</p>
+</blockquote>
+<h3 id="contracts">Contracts</h3>
+<blockquote>
+<p>The individual constructs (or functions) by which you can invoke behavior on the
+object are called methods.</p>
+</blockquote>
+<h3 id="encapsulation">Encapsulation</h3>
+<blockquote>
+<p><code>Encapsulation</code> is the key guiding principle for class design. It implies exposing
+a contract for the behavior of objects and hiding volatile implementation
+details. The private attributes and methods are hidden inside a capsule
+according to a need-to-know basis</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>Encapsulation is defined as the wrapping up of data under a single unit. It is
+the mechanism that binds together code and the data it manipulates. In a
+different way, encapsulation is a protective shield that prevents the data from
+being accessed by the code outside this shield. &ndash; <a href="https://www.geeksforgeeks.org/encapsulation-in-golang/">Encapsulation in Golang</a></p>
+</blockquote>
+<h3 id="polymorphism">Polymorphism</h3>
+<blockquote>
+<p>This ability of an interface method to behave differently based on the actual
+object is called polymorphism and is key to many design patterns</p>
+</blockquote>
+<h3 id="composition">Composition</h3>
+<blockquote>
+<p>An alternative to inheritance is to delegate behavior, also called composition.
+Instead of an is a, this is a has a relationship. It refers to combining simple
+types to make more complex ones.</p>
+</blockquote>
+<h4 id="over-inheritance">Over Inheritance</h4>
+<ul>
+<li>in Java for example inheritance defines a <code>is-a</code> relationship between classes</li>
+<li>in Golang we build class relationships using a <code>has-a</code> relationship</li>
+</ul>
+<p>Main concept in Golang:</p>
+<blockquote>
+<p>Classes implement an interface—which is the contract the base class offers.
+Functionality reuse happens through having references to objects, rather than
+deriving from classes. This is why many people, including people who code in Go,
+have the Composition Over Inheritance principle</p>
+</blockquote>
+<p><a href="https://golangbot.com/inheritance/">Good example</a></p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#6ab825;font-weight:bold">package</span> main
+
+  <span style="color:#6ab825;font-weight:bold">import</span> (
+      <span style="color:#ed9d13">&#34;fmt&#34;</span>
+  )
+
+  <span style="color:#6ab825;font-weight:bold">type</span> author <span style="color:#6ab825;font-weight:bold">struct</span> {
+      firstName <span style="color:#6ab825;font-weight:bold">string</span>
+      lastName  <span style="color:#6ab825;font-weight:bold">string</span>
+      bio       <span style="color:#6ab825;font-weight:bold">string</span>
+  }
+
+  <span style="color:#6ab825;font-weight:bold">func</span> (a author) <span style="color:#447fcf">fullName</span>() <span style="color:#6ab825;font-weight:bold">string</span> {
+      <span style="color:#6ab825;font-weight:bold">return</span> fmt.<span style="color:#447fcf">Sprintf</span>(<span style="color:#ed9d13">&#34;%s %s&#34;</span>, a.firstName, a.lastName)
+  }
+
+  <span style="color:#6ab825;font-weight:bold">type</span> post <span style="color:#6ab825;font-weight:bold">struct</span> {
+      title   <span style="color:#6ab825;font-weight:bold">string</span>
+      content <span style="color:#6ab825;font-weight:bold">string</span>
+      author
+  }
+
+  <span style="color:#6ab825;font-weight:bold">func</span> (p post) <span style="color:#447fcf">details</span>() {
+      fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;Title: &#34;</span>, p.title)
+      fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;Content: &#34;</span>, p.content)
+      fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;Author: &#34;</span>, p.<span style="color:#447fcf">fullName</span>())
+      fmt.<span style="color:#447fcf">Println</span>(<span style="color:#ed9d13">&#34;Bio: &#34;</span>, p.bio)
+  }
+
+  <span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">main</span>() {
+      author1 := author{
+          <span style="color:#ed9d13">&#34;Naveen&#34;</span>,
+          <span style="color:#ed9d13">&#34;Ramanathan&#34;</span>,
+          <span style="color:#ed9d13">&#34;Golang Enthusiast&#34;</span>,
+      }
+      post1 := post{
+          <span style="color:#ed9d13">&#34;Inheritance in Go&#34;</span>,
+          <span style="color:#ed9d13">&#34;Go supports composition instead of inheritance&#34;</span>,
+          author1,
+      }
+      post1.<span style="color:#447fcf">details</span>()
+  }
+</code></pre></div><blockquote>
+<p>Whenever one struct field is embedded in another, Go gives us the option to
+access the embedded fields as if they were part of the outer struct. This means
+that p.author.fullName() in line no. 11 of the above code can be replaced with
+p.fullName()</p>
+</blockquote>
+<h2 id="design-patterns">Design patterns</h2>
+<blockquote>
+<p>Design patterns are solutions to recurring problems in software engineering. Rather than a comprehensive solution, a design pattern is a description of a problem and a template of how to solve it. This template then becomes usable in many different contexts.</p>
+</blockquote>
+<p>Idea:</p>
+<ul>
+<li>study the problem and the solutions</li>
+<li>goal is to identify patterns among your requirements and architecture</li>
+<li>use pre-conceived solutions to the problem</li>
+<li>if design is composed of well-known patterns, it&rsquo;s easy to:
+<ul>
+<li>share idea</li>
+<li>communicate and discuss with other stakeholders</li>
+</ul>
+</li>
+</ul>
+<h3 id="design-principles">Design principles</h3>
+<ul>
+<li>2 aspects:
+<ul>
+<li>What is the responsibility of each class?</li>
+<li>What other classes depend on the current one and what is the contract
+between these classed?</li>
+</ul>
+</li>
+</ul>
+<h3 id="solid">SOLID</h3>
+<ul>
+<li>
+<p>for Go check <a href="https://dave.cheney.net/2016/08/20/solid-go-design">SOLID Go Design</a></p>
+</li>
+<li>
+<p>Uncle Bob defines five principles of good class design in his book <a href="https://www.goodreads.com/book/show/84985.Agile%5FSoftware%5FDevelopment%5FPrinciples%5FPatterns%5Fand%5FPractices">Agile Software Development, Principles, Patterns and Pratices</a></p>
+</li>
+<li>
+<p><strong>Single Responsibility Principle (S)</strong></p>
+<ul>
+<li><strong>Key point:</strong> Structure functions, types, methods into packages that have
+&ldquo;natural&rdquo; cohesion; functions serve a single purpose</li>
+</ul>
+<blockquote>
+<p>&ldquo;One class should have one, and only one, responsibility&rdquo;</p>
+</blockquote>
+<ul>
+<li>don&rsquo;t chose names like <code>common</code>, <code>utils</code> etc.</li>
+<li>use UNIX philosophy
+<ul>
+<li>combine sharp tools to solve larges tasks</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Open/Closed Principle (O)</strong></p>
+<ul>
+<li>
+<p><strong>Key point:</strong> compose simple types into more complex ones using embedding</p>
+<blockquote>
+<p>Software entities should be open for extension, but closed for modification.</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>&ldquo;You should be able to extend a class&rsquo;s behavior without modifying it.&rdquo;</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>This essentially means that classes should be open for extension but closed
+for modification, so it should be possible to extend or override class
+behavior without having to modify code. Behavior change should be pluggable
+into the class, either through overriding some methods or injecting some
+configuration. One excellent example of a framework exhibiting this principle
+is the Spring Framework</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<!-- raw HTML omitted -->
+<ul>
+<li>
+<p><strong>Liskov Substitution Principle (L)</strong></p>
+<ul>
+<li>
+<p><strong>Key point:</strong> express dependencies between packages in terms of interfaces
+and not concrete types</p>
+</li>
+<li>
+<p>This is a slight variation of the Open/Closed Principle, and Uncle Bob states it as follows:
+&ldquo;Derived types must be substitutable for their base types.&rdquo;</p>
+</li>
+<li>
+<p>This principle is called Liskov because it was first written by <a href="https://en.wikipedia.org/wiki/Barbara%5FLiskov">Barbara Liskov</a>:</p>
+<blockquote>
+<p>&ldquo;What is wanted here is something like the following substitution property: If for each object o1 of type S there is an object o2 of type T such that for all programs P defined in terms of T, the behavior of P is unchanged when o1 is substituted for o2—then S is a subtype of T.</p>
+</blockquote>
+</li>
+<li>
+<p>basically a specification for an abstract base class with various concrete subtypes</p>
+<p>Example is the <strong>io.Reader</strong> interface:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#6ab825;font-weight:bold">type</span> Reader <span style="color:#6ab825;font-weight:bold">interface</span> {
+        <span style="color:#999;font-style:italic">// Read reads up to len(buf) bytes into buf.
+</span><span style="color:#999;font-style:italic"></span>        <span style="color:#447fcf">Read</span>(buf []<span style="color:#6ab825;font-weight:bold">byte</span>) (n <span style="color:#6ab825;font-weight:bold">int</span>, err <span style="color:#6ab825;font-weight:bold">error</span>)
+        }
+</code></pre></div><blockquote>
+<p>Because io.Reader‘s deal with anything that can be expressed as a stream of
+bytes, we can construct readers over just about anything; a constant string, a
+byte array, standard in, a network stream, a gzip’d tar file, the standard out
+of a command being executed remotely via ssh. And all of these implementations
+are substitutable for one another because they fulfil the same simple contract.
+&ndash; <a href="https://dave.cheney.net/2016/08/20/solid-go-design">source</a></p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Interface Segregation Principle (I)</strong></p>
+<ul>
+<li>
+<p><strong>Key point:</strong> define functions/methods that depend only on the behaviour that
+they need</p>
+<blockquote>
+<p>Clients should not be forced to depend on methods they do not use. &ndash; Robert</p>
+<ol>
+<li>Martin</li>
+</ol>
+</blockquote>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>Many client-specific interfaces are better than one general-purpose interface</p>
+</blockquote>
+<p>Example:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">             <span style="color:#999;font-style:italic">// Save writes the contents of doc to the supplied Writer.
+</span><span style="color:#999;font-style:italic"></span>             <span style="color:#6ab825;font-weight:bold">func</span> <span style="color:#447fcf">Save</span>(w io.Writer, doc *Document) <span style="color:#6ab825;font-weight:bold">error</span>
+</code></pre></div><blockquote>
+<p>By applying the interface segregation principle to our Save function, the
+results has simultaneously been a function which is the most specific in terms
+of its requirements–it only needs a thing that is writable–and the most general
+in its function, we can now use Save to save our data to anything which
+implements io.Writer. &ndash; <a href="https://dave.cheney.net/2016/08/20/solid-go-design">source</a></p>
+</blockquote>
+<p>which leads to:</p>
+<blockquote>
+<p>A great rule of thumb for Go is accept interfaces, return structs.
+–Jack Lindamood</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Dependency Inversion Principle (D)</strong></p>
+<blockquote>
+<p>High-level modules should not depend on low-level modules. Both should depend on abstractions.
+Abstractions should not depend on details. Details should depend on abstractions.
+–Robert C. Martin</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>Depend on abstractions, not on concretions.</p>
+</blockquote>
+<ul>
+<li>For Golang that means
+<ul>
+<li>Every package should have interfaces that describe functionality without the implementation</li>
+<li>When a package needs a dependency, it should take that dependency as a
+parameter (specify interfaces as parameters)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="creational">Creational</h3>
+<blockquote>
+<p>Creational design patterns are design patterns that deal with object creation
+mechanisms in a safe and efficient manner and decouple clients from
+implementation specifics. With these patterns, the code using an object need not
+know details about how the object is created, or even the specific type of
+object, as long as the object adheres to the interface expected.</p>
+</blockquote>
+<ul>
+<li>Factory method</li>
+<li>Builder</li>
+<li>Abstract factory</li>
+<li>Singleton</li>
+</ul>
+<h3 id="behavioral">Behavioral</h3>
+<blockquote>
+<p>Behavioral design patterns are design patterns that identify communication
+patterns among objects and provide solution templates for specific situations.
+In doing so, these patterns increase the extensibility of the interactions</p>
+</blockquote>
+<ul>
+<li>Command</li>
+<li>Chain of Responsibility</li>
+<li>Mediator</li>
+<li>Memento</li>
+<li>Observer</li>
+<li>Visitor</li>
+<li>Strategy</li>
+</ul>
+<h3 id="structural">Structural</h3>
+<blockquote>
+<p>In Software Engineering, Structural Design Patterns are Design Patterns that
+ease the design by identifying a simple way to realize relationships between
+entities &ndash; <a href="https://sourcemaking.com/design%5Fpatterns/structural%5Fpatterns">Source</a></p>
+</blockquote>
+<ul>
+<li>Adapter</li>
+<li>Bridge</li>
+<li>Composite</li>
+<li>Decorator</li>
+<li>Facade</li>
+<li>Flyweight</li>
+<li>Proxy</li>
+</ul>
+<h2 id="scaling-applications">Scaling applications</h2>
+<h3 id="distributed-algorithms">Distributed algorithms</h3>
+<h4 id="google-s-mapreduce">Google&rsquo;s MapReduce</h4>
+<ul>
+<li>Map (C) -&gt; [(kx, vy)]: This extracts information from a record and generates key-value tuples.</li>
+<li>Reduce (k, [vx,vy&hellip;[]) -&gt; (k,vagg): The reducer takes the key-value tuples generated in the map phase, grouped by the key, and generates an aggregate result.</li>
+<li><a href="https://blog.gopheracademy.com/advent-2015/glow-map-reduce-for-golang/">glow-map-reduce-for-golang</a></li>
+</ul>
+<h3 id="scalability-bottlenecks">Scalability bottlenecks</h3>
+<ul>
+<li><a href="http://www.kegel.com/c10k.html">The C10k problem</a>
+At the start of the 21st century, engineers ran into a scalability bottleneck: web servers were not able to handle more than 10,000 concurrent connections.</li>
+<li>The thundering herd problem</li>
+<li><a href="http://highscalability.com/blog/2012/5/16/big-list-of-20-common-bottlenecks.html">common bottlenecks</a></li>
+</ul>
+<h2 id="scaling-systems">Scaling systems</h2>
+<h3 id="the-art-of-scalability--book">The Art of Scalability (Book)</h3>
+<figure>
+    <img src="http://blog.dornea.nu/notes/software-engineering-golang/art-of-scalability.png"
+         alt="Figure 2: 3D scalability model / (c) The scalability Book"/> <figcaption>
+            <p>Figure 2: 3D scalability model / (c) The scalability Book</p>
+        </figcaption>
+</figure>
+
+<ul>
+<li>
+<p>X-axis scaling</p>
+<figure>
+    <img src="http://blog.dornea.nu/notes/software-engineering-golang/scalability-x.png"
+         alt="Figure 3: (c) Jyotiswarup Raiturkar"/> <figcaption>
+            <p>Figure 3: (c) Jyotiswarup Raiturkar</p>
+        </figcaption>
+</figure>
+
+<blockquote>
+<p>Scaling along the x-axis means running multiple copies (instances) of the
+application behind a load balancer. If there are n instances, then each
+handles 1/n of the load. This is the simplest way of increasing scalability,
+by throwing hardware at the problem</p>
+</blockquote>
+</li>
+<li>
+<p>Y-axis scaling</p>
+<figure>
+    <img src="http://blog.dornea.nu/notes/software-engineering-golang/scalability-y.png"
+         alt="Figure 4: (c) Jyotiswarup Raiturkar"/> <figcaption>
+            <p>Figure 4: (c) Jyotiswarup Raiturkar</p>
+        </figcaption>
+</figure>
+
+<blockquote>
+<p>The objective of scaling along the y-axis is splitting the application into
+multiple, different services. Each service is responsible for one or more
+closely related functions. This relates to our microservices discussion, and
+is essentially a perfect deployment strategy for a service-oriented
+architecture. The benefit of this type of architecture is that hardware can be
+efficiently used for only those areas of the application that need it The
+solution to these issues is to implement an API gateway: an endpoint that
+clients calls which in turn handles the orchestration and composition of
+communication between services to get the clients what they need</p>
+</blockquote>
+</li>
+<li>
+<p>Z-axis scaling</p>
+<figure>
+    <img src="http://blog.dornea.nu/notes/software-engineering-golang/scalability-z.png"
+         alt="Figure 5: (c) Jyotiswarup Raiturkar"/> <figcaption>
+            <p>Figure 5: (c) Jyotiswarup Raiturkar</p>
+        </figcaption>
+</figure>
+
+<blockquote>
+<p>z-axis scaling mode, each instance runs the same code, but with a different
+set of data. That is, each server is responsible for only a subset of the
+data. The orchestrator described previously now becomes more intelligent and
+has to route requests to the specific instance having the data in order for
+the request to complete. One commonly used routing parameter is the primary
+key of the attribute for which the request is being made: for example, to get
+bookings for a specific user, we can route the requests based on the user ID.
+We can route not just on specific IDs, but also on segments; for example, the
+travel website can provide premium customers with a better SLA than the rest
+by outing the requests to a specific pool of high-capacity servers Z-axis
+scaling mandates that the data (and hence the database) be split across the
+various set of instances. This is called sharding. Sharding is typically done
+on the primary key of the data and divides the whole data set into multiple
+partitions</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="distributed-systems">Distributed systems</h2>
+<h3 id="architecture">Architecture</h3>
+<ul>
+<li>Components: Modular units with well-defined interfaces (such as services and
+databases</li>
+<li>Interconnects: The communication links between the components (sometimes with
+the additional responsibility of mediation/coordination between components)</li>
+</ul>
+<h3 id="distributed-system-quirks">Distributed system quirks</h3>
+<p>In 1994, Peter Deutsch, who worked at Sun Microsystems, wrote about common wrong assumptions that developers/architects make, which cause things to go wrong in distributed systems. In 1997, James Gosling added to this list to create what is commonly known as the eight fallacies of distributed computing. They are described here.</p>
+<ul>
+<li>The network is reliable</li>
+<li>The topology doesn&rsquo;t change
+<ul>
+<li>What does this mean in terms of code? It means not assuming location (endpoints) for various services. We need to build in service discovery, so that clients of services can figure out how to reach a particular service. There are two ways clients can discover service endpoints:</li>
+</ul>
+</li>
+<li>The bandwidth is infinite</li>
+<li>The latency is zero
+<ul>
+<li>Caching values every programmer should know about: <a href="https://gist.github.com/jboner/2841832">https://gist.github.com/jboner/2841832</a></li>
+</ul>
+</li>
+<li>The network is secure</li>
+<li>There is one administrator</li>
+<li>The transport cost is zero</li>
+<li>The network is homogeneous</li>
+</ul>
+<h2 id="distributed-architectures">Distributed architectures</h2>
+<h3 id="object-based">Object-based</h3>
+<ul>
+<li>RPCs</li>
+<li>RMIs</li>
+</ul>
+<h3 id="layered">Layered</h3>
+<blockquote>
+<p>This architectural style can be thought of as an inverted pyramid of reuse,
+where each layer aggregates the responsibilities and abstractions of the layer
+directly beneath it. When the layers are on different machines, they are
+called tiers. The most common example of strict layering is where components
+in one layer can interact only with components in the same layer or with
+components from the layer directly below it.</p>
+</blockquote>
+<h3 id="p2p">P2P</h3>
+<ul>
+<li>Hybrid</li>
+<li>Structured
+<ul>
+<li>DHT (Distributed Hash Tables)</li>
+</ul>
+</li>
+</ul>
+<h3 id="distributed-computations">Distributed computations</h3>
+<ul>
+<li>MapReduce</li>
+</ul>
+<h3 id="eda--event-driven-architecture">EDA (Event-driven Architecture)</h3>
+<figure>
+    <img src="http://blog.dornea.nu/notes/software-engineering-golang/eda-messaging.png"
+         alt="Figure 6: (c) Jyotiswarup Raiturkar"/> <figcaption>
+            <p>Figure 6: (c) Jyotiswarup Raiturkar</p>
+        </figcaption>
+</figure>
+
+<ul>
+<li>promotes an architectural paradigm where behavior is composed by reacting to
+events.</li>
+<li>Actor model</li>
+<li>Stream processing</li>
+</ul>
+<h2 id="messaging">Messaging</h2>
+<p>A messaging system can be judged on its performance in four aspects—scalability, availability, latency, and throughput.</p>
+<h3 id="scalability">Scalability</h3>
+<blockquote>
+<p>This is how the system is able to handle increases in load without noticeable
+degradation of the other two factors, latency or availability. Here, load can
+mean things such as the number of topics, consumers, producers, messages/sec, or
+average message size</p>
+</blockquote>
+<h3 id="availability">Availability</h3>
+<blockquote>
+<p>In a distributed system, a variety of problems can occur at a unit level
+(servers, disks, network, and so on). The system&rsquo;s availability is a measure of
+how resilient the system is to these failures so that it is available to end
+users</p>
+</blockquote>
+<h3 id="latency">Latency</h3>
+<blockquote>
+<p>This is how much time it takes for a message to get to a consumer from a
+producer</p>
+</blockquote>
+<h3 id="throughput">Throughput</h3>
+<blockquote>
+<p>This is how many messages can be processed per second by the messaging system</p>
+</blockquote>
+<h3 id="broker-based-messaging">Broker-based messaging</h3>
+<blockquote>
+<p>A broker is a component that acts as the intermediary in a messaging system.
+Here, the clients connect to the broker and not to each other directly. Whenever
+clients want to send and receive messages, they need to specify a
+mailbox/topic/queue on the broker. Producers connect to the broker and send
+messages to a specific queue. Consumers connect to the broker and specify queue
+name from which they want to read messages.</p>
+</blockquote>
+<h4 id="responsabilities">Responsabilities</h4>
+<ul>
+<li>Maintaining the mapping of queues, producers, and consumers reliably: This includes storing the messages in a durable format</li>
+<li>Handling message production: This includes storing messages written by the producers.</li>
+<li>Handling message consumption: This means ensuring that consumers reliably get messages and providing constructs to avoid duplicate messages</li>
+<li>Routing and transformation: Here, the message broker may transform or maintain multiple copies for each message to enable various topology models, which will be described in the following sections.</li>
+</ul>
+<h4 id="models">Models</h4>
+<ul>
+<li>Queue</li>
+<li>Pub/Sub</li>
+</ul>
+<h3 id="integration-patterns">Integration patterns</h3>
+<h4 id="using-golang-channels">Using Golang channels</h4>
+<ul>
+<li>The request-reply pattern</li>
+<li>The correletation identified pattern</li>
+<li>The pipes and filters pattern</li>
+<li>The content-based router pattern</li>
+<li>The fan-in pattern</li>
+<li>The fan-out pattern</li>
+<li>The background worker pattern</li>
+</ul>
+<h2 id="api">API</h2>
+<h3 id="rest">REST</h3>
+<h4 id="constraints">Constraints</h4>
+<ul>
+<li>
+<p>client-server model</p>
+</li>
+<li>
+<p>stateless</p>
+</li>
+<li>
+<p>uniform interface</p>
+<blockquote>
+<p>The REST paradigm promotes a uniform interface for all interactions between the
+client and the server. As described earlier, the key abstraction is the
+resource. A resource is identified by a unique hierarchical name, and can have
+multiple representations.</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="richardson-maturity-level">Richardson Maturity Level</h4>
+<ul>
+<li>
+<p>Level 0</p>
+<blockquote>
+<p>At level 0, the API uses the implementing protocol (normally HTTP, but it
+doesn&rsquo;t have to be) like a transport protocol. There is no effort to utilize the
+protocol to indicate state; it is just used to pass requests and responses back
+and forth. The system typically has one entry point (URI) and one method
+(normally POST in the case of HTTP).</p>
+</blockquote>
+</li>
+<li>
+<p>Level 1 - resources</p>
+<blockquote>
+<p>Here, the API distinguishes between multiple resources using different URLs.
+However, there is still typically only one method (POST) of interaction. This is
+better than the previous level because now there is a hierarchical definition of
+resources. Instead of going through /hotels, now the API assigns IDs to each
+hotel and uses that to see which hotel the request is for, so the API will have
+URLs of the /hotels/<!-- raw HTML omitted --> form.</p>
+</blockquote>
+</li>
+<li>
+<p>Level 2 - HTTP Verbs</p>
+<blockquote>
+<p>This level indicates that the API uses protocol properties (namely, HTTP verbs)
+to define the nature of the API. Thus GET is used for a read, POST is used to
+create a new resource, PUT to update a resource, and DELETE to of course delete
+the resource. The API also uses standard responses code such as 200 (OK) and 202
+(ACCEPTED) to describe the result of the request.</p>
+<p>Generally, most REST API implementations are at this level.</p>
+</blockquote>
+</li>
+<li>
+<p>Level 3 - Hypermedia controls</p>
+<blockquote>
+<p>Level 3, the highest level, uses Hypertext As The Engine Of Application State
+(HATEOAS) to allow clients to deal with discovering the resources and the
+identifiers.</p>
+</blockquote>
+<p>Example:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">    GET /hotels/xyz
+</code></pre></div><p>Response:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">    {
+        &#34;city&#34;: &#34;Delhi&#34;,
+        &#34;display_name&#34;: &#34;Hotel Xyz&#34;,
+        &#34;star_rating&#34;: 4,
+        &#34;links&#34;: [
+            {
+                &#34;href&#34;: &#34;xyz/book&#34;,
+                &#34;rel&#34;: &#34;book&#34;,
+                &#34;type&#34;: &#34;POST&#34;
+            },
+           {
+                &#34;href&#34;: &#34;xyz/rooms&#34;,
+                &#34;rel&#34;: &#34;rooms&#34;,
+                &#34;type&#34;: &#34;GET&#34;
+    ...
+</code></pre></div></li>
+</ul>
+<h2 id="anti-fragile-systems">Anti-fragile systems</h2>
+<h3 id="engineering-reliability">Engineering reliability</h3>
+<h4 id="messaging">Messaging</h4>
+<ul>
+<li>The asynchonous computation pattern</li>
+<li>The orchestrator pattern</li>
+<li>The compensating-transaction pattern</li>
+<li>The pipes and filter pattern</li>
+<li>The sidecar pattern</li>
+</ul>
+</div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/notes/lessons-from-building-static-analysis-tools-at-google/">prev post</a>
+  <a href="http://blog.dornea.nu/notes/tdd/">next post</a>
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+</body>
+</html>
