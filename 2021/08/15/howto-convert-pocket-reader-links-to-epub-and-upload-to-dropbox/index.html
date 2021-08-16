@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>HowTo: Convert pocket reader links to Epub and upload to Dropbox - blog.dornea.nu</title>
+  <meta content='HowTo: Convert pocket reader links to Epub and upload to Dropbox - blog.dornea.nu' property='title' />
+  <meta content='HowTo: Convert pocket reader links to Epub and upload to Dropbox - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Read, organize, archive I heavily use getpocket to collect articles and save them for later reading. While on my mobile devices I use the official app, on my desktop systems (mostly tmux &#43;Emacs) I use pocket-reader.el quite heavily to collect/organize/archive my list of articles. After my transition from Spacemacs to Doom Emacs I still love evil mode and like to do most of the stuff in normal mode. That&rsquo;s why I&rsquo;ve added some keybindings to pocket-reader:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.dornea.nu/2021/08/15/howto-convert-pocket-reader-links-to-epub-and-upload-to-dropbox/" />
+
+
+<meta property="article:published_time" content="2021-08-15T00:00:00&#43;02:00"/>
+
+<meta property="article:modified_time" content="2021-08-16T13:39:54&#43;02:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+
+    <link rel="stylesheet" type="text/css" href="http://blog.dornea.nucss/asciinema-player.css" />
+
+
+
+<link rel="icon" 
+ 
+  href='http://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/notes' title="Notes">Notes</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/bookmarks' title="Bookmarks">Bookmarks</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">HowTo: Convert pocket reader links to Epub and upload to Dropbox</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>15 Aug 2021</time> 
+     | 
+    
+    
+    tags: [ <a href='http://blog.dornea.nu/tags/org' class="link silver">org</a> <a href='http://blog.dornea.nu/tags/pocket' class="link silver">pocket</a> <a href='http://blog.dornea.nu/tags/asciinema' class="link silver">asciinema</a> <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/emacs' class="link silver">emacs</a>  ]
+    
+  </p>
+  <div class="lh-copy post-content"><h2 id="read-organize-archive">Read, organize, archive</h2>
+<p>I heavily use <a href="https://getpocket.com">getpocket</a> to collect articles and save them for later reading. While on my mobile devices I use the official
+app, on my desktop systems (mostly tmux +<a href="https://brainfck.org/#Emacs"> Emacs</a>) I use <a href="https://github.com/alphapapa/pocket-reader.el">pocket-reader.el</a> quite heavily to collect/organize/archive my list of
+articles. After my transition from <a href="https://www.spacemacs.org/">Spacemacs</a> to <a href="https://github.com/hlissner/doom-emacs">Doom Emacs</a> I still love <a href="https://github.com/emacs-evil/evil">evil</a> mode and like to do most of the stuff in <code>normal</code>
+mode. That&rsquo;s why I&rsquo;ve added some <a href="https://github.com/dorneanu/dotfiles/blob/master/emacs/doom/.doom.d/%2Bbindings.el#L25">keybindings to pocket-reader</a>:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp">(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">pocket-reader-mode-map</span>
+      <span style="color:#24909d">:after</span> <span style="color:#40ffff">pocket-reader</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;d&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-delete</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;a&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-toggle-archived</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;TAB&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-open-url</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;tr&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-remove-tags</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;ta&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-add-tags</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;gr&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-refresh</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;p&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-search</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-copy-url</span>
+      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;Y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">dorneanu/pocket-reader-copy-to-scratch</span>)
+</code></pre></div><p>This way I can add/remove tags, archive articles, open links without leaving normal mode in <code>evil</code>.</p>
+<h2 id="read-later-on-e-reader">Read later on E-Reader</h2>
+<p>Since I tend to read on my <a href="https://pocketbook.de/de%5Fde/inkpad-3-dark-brown">e-reader</a> most of the time, I also wanted to have an almost automated way of saving articles to <strong>Epub</strong>
+and send these to my device. Fortunately PocketBook devices can sync with Dropbox which made my life quite easy in the past. I just had to copy e-books, PDFs, Epubs to a specific folder in Dropbox and these will eventually sync with my device once WiFi
+is activated. That&rsquo;s first step of automation.</p>
+<p>As for the Epub conversion I&rsquo;ve used <a href="https://pandoc.org/">pandoc</a> in the past which still does its job great. Initially I&rsquo;ve used <a href="https://github.com/Y2Z/monolith">monolith</a> to save complete web pages as HTML but I&rsquo;ve realized the HTML also contained useless ads, images, text. That&rsquo;s why I&rsquo;ve searched for
+ways how to make the content more <strong>readable</strong> and discovered <a href="https://github.com/eafer/rdrview">rdrview</a>. It&rsquo;s written in C and applies <a href="https://support.mozilla.org/en-US/kb/firefox-reader-view-clutter-free-web-pages">Firefox&rsquo;s reader view</a> to web pages. Here are some examples:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -M http://blog.dornea.nu/2021/06/13/note-taking-in-2021/
+Title: Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
+Excerpt: [Update 2021-06-22] If you’re more interested in the Tiddlywiki aspect of this post you can also check this Tiddlywiki Google Groups thread. [Update 2021-06-18] This post caught some attention on this Hackernews thread. You might want to check the comments. Based on the recommendations in the thread I’ve put together a list of (digital) solutions (besides the preferred ones) Almost <span style="color:#3677a9">6</span> years ago I was blogging about organizing and visualizing knowledge.
+Readerable: Yes
+</code></pre></div><!-- raw HTML omitted -->
+<p>And now I&rsquo;m using some <code>xpath</code> to extract the title:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -T title,body -H http://blog.dornea.nu/2021/06/13/note-taking-in-2021/ | xmllint --html --xpath <span style="color:#ed9d13">&#34;//div/h1/text()&#34;</span> -
+Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
+</code></pre></div><p>Below I&rsquo;ve glued everything together in order to:</p>
+<ul>
+<li>convert an URL to epub</li>
+<li>extract the title and use it as the filename for the Epub</li>
+<li>do the converion using <a href="https://pandoc.org/">pandoc</a></li>
+<li>use <a href="https://rclone.org/">rclone</a> to copy the file to Dropbox</li>
+</ul>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#cd2828;font-weight:bold">#!/bin/bash
+</span><span style="color:#cd2828;font-weight:bold"></span>
+<span style="color:#40ffff">RDRVIEW_OUTPUT</span>=~/work/dropbox/rdrview
+<span style="color:#40ffff">DROPBOX_DIR</span>=<span style="color:#ed9d13">&#34;dropbox:Apps/Dropbox PocketBook/articles/2021/&#34;</span>
+
+add_link_to_dropbox() {
+    <span style="color:#999;font-style:italic"># Create tmp file</span>
+    <span style="color:#40ffff">TEMP_FILE</span>=<span style="color:#6ab825;font-weight:bold">$(</span>mktemp<span style="color:#6ab825;font-weight:bold">)</span>
+
+    <span style="color:#999;font-style:italic"># Make link readable</span>
+    rdrview -T title,body -H <span style="color:#40ffff">$1</span> &gt; <span style="color:#40ffff">$TEMP_FILE</span>
+
+    <span style="color:#999;font-style:italic"># Extract title</span>
+    <span style="color:#40ffff">TITLE</span>=<span style="color:#6ab825;font-weight:bold">$(</span>xmllint --html --xpath <span style="color:#ed9d13">&#34;//div/h1/text()&#34;</span> 2&gt;/dev/null <span style="color:#ed9d13">${</span><span style="color:#40ffff">TEMP_FILE</span><span style="color:#ed9d13">}</span><span style="color:#6ab825;font-weight:bold">)</span>
+    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;[-] Converting </span><span style="color:#40ffff">$TITLE</span><span style="color:#ed9d13">&#34;</span>
+
+    <span style="color:#999;font-style:italic"># Convert to PDF</span>
+    <span style="color:#40ffff">OUTPUT_FILE</span>=<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">RDRVIEW_OUTPUT</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13">/</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">TITLE</span>// /_<span style="color:#ed9d13">}</span><span style="color:#ed9d13">&#34;</span>.epub
+    pandoc --pdf-engine=xelatex --metadata <span style="color:#40ffff">title</span>=<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">TITLE</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13">&#34;</span> -f html -t epub -o <span style="color:#ed9d13">${</span><span style="color:#40ffff">OUTPUT_FILE</span><span style="color:#ed9d13">}</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">TEMP_FILE</span><span style="color:#ed9d13">}</span>
+
+    <span style="color:#999;font-style:italic"># Copy to dropbox</span>
+    rclone copy <span style="color:#ed9d13">${</span><span style="color:#40ffff">OUTPUT_FILE</span><span style="color:#ed9d13">}</span> <span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">DROPBOX_DIR</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13">&#34;</span>
+
+    <span style="color:#999;font-style:italic"># Log</span>
+    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;[-] Successfully added </span><span style="color:#ed9d13">${</span><span style="color:#40ffff">OUTPUT_FILE</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13"> to dropbox.&#34;</span>
+
+    <span style="color:#999;font-style:italic"># Clean up</span>
+    rm <span style="color:#40ffff">$TEMP_FILE</span>
+    rm <span style="color:#40ffff">$OUTPUT_FILE</span>
+}
+
+add_link_to_dropbox <span style="color:#40ffff">$1</span>
+</code></pre></div><p>Let&rsquo;s give it a try using <a href="https://pandoc.org/">https://pandoc.org/</a> as an URL:</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ~/work/dropbox/add_links_to_dropbox https://pandoc.org/
+[-] Converting Pandoc - About pandoc
+[-] Successfully added /home/victor/work/dropbox/rdrview/Pandoc_-_About_pandoc.epub to dropbox.
+</code></pre></div><h2 id="emacs-for-everything">Emacs for Everything</h2>
+<p>Now I&rsquo;d like to be able to call that script from Emacs without copy/paste URLs and hand them over to my script.
+The most difficult part here was to come up with some valid Elisp code. What I wanted was:</p>
+<ul>
+<li>in <code>pocket-reader</code> copy entry&rsquo;s URL to <code>scratch</code> buffer</li>
+<li>once I have collected the list of URLs for which I want the Epub conversion
+<ul>
+<li>take the list and use it as input for my script</li>
+<li>use <code>xargs</code> since my script takes only one argument</li>
+</ul>
+</li>
+</ul>
+<p>And this is what I&rsquo;ve got (my first elisp <a href="https://github.com/dorneanu/dotfiles/blob/master/emacs/doom/.doom.d/%2Bfunctions.el#L159">function</a> ever):</p>
+<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp"><span style="color:#999;font-style:italic">;; Copy current url to scratch buffer</span>
+(<span style="color:#24909d">defun</span> <span style="color:#40ffff">dorneanu/pocket-reader-copy-to-scratch</span> ()
+  <span style="color:#ed9d13">&#34;Copy URL of current item to kill-ring/clipboard.&#34;</span>
+  (<span style="color:#24909d">interactive</span>)
+  (<span style="color:#40ffff">when-let</span> ((<span style="color:#40ffff">id</span> (<span style="color:#40ffff">tabulated-list-get-id</span>))
+             (<span style="color:#40ffff">item</span> (<span style="color:#40ffff">ht-get</span> <span style="color:#40ffff">pocket-reader-items</span> <span style="color:#40ffff">id</span>))
+             (<span style="color:#40ffff">url</span> (<span style="color:#40ffff">pocket-reader--get-url</span> <span style="color:#40ffff">item</span>)))
+    (<span style="color:#24909d">with-current-buffer</span> <span style="color:#ed9d13">&#34;*scratch*&#34;</span>
+      (<span style="color:#447fcf">insert</span> <span style="color:#40ffff">url</span>)
+      (<span style="color:#40ffff">newline</span>))
+     (<span style="color:#447fcf">message</span> <span style="color:#ed9d13">&#34;Added: %s to scratch buffer&#34;</span> <span style="color:#40ffff">url</span>)))
+</code></pre></div><p>This will <code>insert</code> the URL into the <code>scratch</code> buffer and add a new line. Once you have your URLs in the buffer you can
+use <code>shell-command-on-region</code> with <code>xargs -n1 &lt;script&gt;</code> as shown in the asciinema below.</p>
+<h2 id="demo">Demo</h2>
+<p>
+    <asciinema-player
+        src="http://blog.dornea.nu/casts/first.cast"
+        cols="800"
+        rows="40"
+        
+        preload="1"
+        
+        start-at="0"
+        speed="1"
+        
+        
+        
+        
+        
+        
+        
+        
+    ></asciinema-player>
+</p>
+
+</div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="http://blog.dornea.nu/2021/06/13/note-taking-in-2021/">prev post</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme. <br>
+  2021 Victor Dorneanu - All rights reserved
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+  
+    <script src="http://blog.dornea.nujs/asciinema-player.js"></script>
+  
+</body>
+</html>
