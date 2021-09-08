@@ -12,7 +12,7 @@
 <meta property="og:description" content="Introduction With the recent success of Github actions you can automate lots of things whenever something in your repos changes, e.g. automatically generate static HTML content (using hugo) and push it to some repository for which GitHub Pages has been configured. Check this awesome actions list for more use cases.
 Using encrypted secrets defined either per repository or organization, you can bring your Github workflow to the next level: Authenticate against APIs, login to different services while keeping your secrets/credentials away from your repositories." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2021/04/25/implement-an-access-key-rotator/" />
+<meta property="og:url" content="https://blog.dornea.nu/2021/04/25/implement-an-access-key-rotator/" />
 
 
 <meta property="article:published_time" content="2021-04-25T00:00:00&#43;02:00"/>
@@ -38,36 +38,36 @@ Using encrypted secrets defined either per repository or organization, you can b
   --heading-text-color: #383838;
   --background-color: #fff;
 }</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
 
 
 <link rel="icon" 
  
-  href='http://blog.dornea.nu/favicon.ico'
+  href='https://blog.dornea.nu/favicon.ico'
 
 type="image/x-icon"/>
 
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
 
 </head>
 <body class="global-font">
   <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
   <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
   </div>
   
   <div class=" flex-ns mt2 mt0-ns pv1">
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
     
@@ -82,14 +82,14 @@ type="image/x-icon"/>
      | 
     
     
-    tags: [ <a href='http://blog.dornea.nu/tags/golang' class="link silver">golang</a> <a href='http://blog.dornea.nu/tags/architecture' class="link silver">architecture</a> <a href='http://blog.dornea.nu/tags/aws' class="link silver">aws</a> <a href='http://blog.dornea.nu/tags/github' class="link silver">github</a>  ]
+    tags: [ <a href='https://blog.dornea.nu/tags/golang' class="link silver">golang</a> <a href='https://blog.dornea.nu/tags/architecture' class="link silver">architecture</a> <a href='https://blog.dornea.nu/tags/aws' class="link silver">aws</a> <a href='https://blog.dornea.nu/tags/github' class="link silver">github</a>  ]
     
   </p>
   <div class="lh-copy post-content"><h2 id="introduction">Introduction</h2>
-<p>With the recent success of <a href="https://docs.github.com/en/actions/learn-github-actions">Github actions</a> you can automate lots of things whenever something in your repos changes, e.g. automatically generate static HTML content (using <a href="http://blog.dornea.nu/tags/hugo">hugo</a>) and push it to some repository for which GitHub Pages has been configured. Check this <a href="https://github.com/sdras/awesome-actions">awesome actions</a> list for more use cases.</p>
+<p>With the recent success of <a href="https://docs.github.com/en/actions/learn-github-actions">Github actions</a> you can automate lots of things whenever something in your repos changes, e.g. automatically generate static HTML content (using <a href="https://blog.dornea.nu/tags/hugo">hugo</a>) and push it to some repository for which GitHub Pages has been configured. Check this <a href="https://github.com/sdras/awesome-actions">awesome actions</a> list for more use cases.</p>
 <p>Using <a href="https://docs.github.com/en/actions/reference/encrypted-secrets">encrypted secrets</a> defined either per repository or organization, you can bring your Github workflow to the next level: Authenticate against APIs, login to different services while keeping your secrets/credentials away from your repositories. As a general you should <strong>never</strong> store credentials in your repositories, even
 if they&rsquo;re private. Misconfigurations happen all the time and private repos can become public ones without further notice.</p>
-<p>In this post I want to show the <a href="http://blog.dornea.nu/tags/golang">Golang</a> way how to update Github <strong>secrets</strong> in some repository. These secrets (more concrete an <code>AWS IAM access key ID</code> and an <code>AWS IAM access secret key</code>) should be used to interact with <a href="http://blog.dornea.nu/tags/aws">AWS</a>. Rotating these keys regularly is essential and also part of the <a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">AWS access keys best practices</a>.</p>
+<p>In this post I want to show the <a href="https://blog.dornea.nu/tags/golang">Golang</a> way how to update Github <strong>secrets</strong> in some repository. These secrets (more concrete an <code>AWS IAM access key ID</code> and an <code>AWS IAM access secret key</code>) should be used to interact with <a href="https://blog.dornea.nu/tags/aws">AWS</a>. Rotating these keys regularly is essential and also part of the <a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">AWS access keys best practices</a>.</p>
 
 
 
@@ -115,7 +115,7 @@ First of all I&rsquo;ll start with the <code>use cases</code> which describe wha
 <p>The <code>KeyManager</code> and the <code>SecretsStore</code> are interfaces to be implemented by different service providers. What the both have in common is the
 <code>AccessKey</code> data structure which holds everything we need to know about an access key.</p>
 <figure>
-    <img src="http://blog.dornea.nu/posts/img/2021/key-rotator-interfavces-entities.png"
+    <img src="https://blog.dornea.nu/posts/img/2021/key-rotator-interfavces-entities.png"
          alt="Figure 1: Interfaces using entities"/> <figcaption>
             <p>Figure 1: Interfaces using entities</p>
         </figcaption>
@@ -144,7 +144,7 @@ First of all I&rsquo;ll start with the <code>use cases</code> which describe wha
 </ul>
 <p>Each of these components (using 3rd-party libraries etc.) will need to implement the correspondig interface.</p>
 <figure>
-    <img src="http://blog.dornea.nu/posts/img/2021/key-rotator.png"
+    <img src="https://blog.dornea.nu/posts/img/2021/key-rotator.png"
          alt="Figure 2: Components implementing interfaces"/> <figcaption>
             <p>Figure 2: Components implementing interfaces</p>
         </figcaption>
@@ -413,8 +413,8 @@ and always keep in mind:</p>
 <a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
 <br>
   <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2021/02/08/4-years-and-7-days-later/">prev</a>
-  <a href="http://blog.dornea.nu/2021/06/13/note-taking-in-2021/">next</a>
+  <a href="https://blog.dornea.nu/2021/02/08/4-years-and-7-days-later/">prev</a>
+  <a href="https://blog.dornea.nu/2021/06/13/note-taking-in-2021/">next</a>
   </p>
 </div>
 
@@ -422,7 +422,7 @@ and always keep in mind:</p>
   <hr class="dn db-l ml0-l gray w3"><br>
   Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
   2021 Victor Dorneanu - All rights reserved
-  <a href="http://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 </footer>
 
   

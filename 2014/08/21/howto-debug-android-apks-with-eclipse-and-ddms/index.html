@@ -12,7 +12,7 @@
 <meta property="og:description" content="Simply out of necessity I&rsquo;ve written this mini-tutorial how debug android APKs using Eclipse and DDMS. After hours of wild googling these are the steps to make your APK debuggable under Eclipse. I&rsquo;ll be using the FakeBanker APK reverse-engineered in previous articles.
 Revisions  UPDATE 2014-12-09:  Before looking at the next steps, make sure you&rsquo;ll have a look at ADUS. It will help you with the automation of several steps described in this post." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2014/08/21/howto-debug-android-apks-with-eclipse-and-ddms/" />
+<meta property="og:url" content="https://blog.dornea.nu/2014/08/21/howto-debug-android-apks-with-eclipse-and-ddms/" />
 
 
 <meta property="article:published_time" content="2014-08-21T00:00:00&#43;00:00"/>
@@ -38,36 +38,36 @@ Revisions  UPDATE 2014-12-09:  Before looking at the next steps, make sure you&r
   --heading-text-color: #383838;
   --background-color: #fff;
 }</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
 
 
 <link rel="icon" 
  
-  href='http://blog.dornea.nu/favicon.ico'
+  href='https://blog.dornea.nu/favicon.ico'
 
 type="image/x-icon"/>
 
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
 
 </head>
 <body class="global-font">
   <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
   <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
   </div>
   
   <div class=" flex-ns mt2 mt0-ns pv1">
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
     
@@ -82,7 +82,7 @@ type="image/x-icon"/>
      | 
     
     
-    tags: [ <a href='http://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='http://blog.dornea.nu/tags/eclipse' class="link silver">eclipse</a> <a href='http://blog.dornea.nu/tags/java' class="link silver">java</a> <a href='http://blog.dornea.nu/tags/debug' class="link silver">debug</a> <a href='http://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='http://blog.dornea.nu/tags/mobile' class="link silver">mobile</a> <a href='http://blog.dornea.nu/tags/fakebanker' class="link silver">fakebanker</a> <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
+    tags: [ <a href='https://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='https://blog.dornea.nu/tags/eclipse' class="link silver">eclipse</a> <a href='https://blog.dornea.nu/tags/java' class="link silver">java</a> <a href='https://blog.dornea.nu/tags/debug' class="link silver">debug</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/mobile' class="link silver">mobile</a> <a href='https://blog.dornea.nu/tags/fakebanker' class="link silver">fakebanker</a> <a href='https://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
     
   </p>
   <div class="lh-copy post-content"><p>Simply out of necessity I&rsquo;ve written this mini-tutorial how debug android APKs using Eclipse and <a href="http://developer.android.com/tools/debugging/ddms.html">DDMS</a>.
@@ -204,7 +204,7 @@ Archive:  FakeBanker.Debug.apk
 <span style="color:#999;font-style:italic"># dex2jar classes.dex</span>
 dex2jar classes.dex -&gt; classes-dex2jar.jar
 </code></pre></div><p>Now open the jar file using <code>jd-gui</code> and save the sources as zip like I did:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/jd-gui.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/jd-gui.png" alt=""></p>
 <h2 id="sign-the-apk">Sign the APK</h2>
 <p>In order to push your APK to the device you&rsquo;ll have to <strong>sign</strong> it. I&rsquo;ll therefor using a test <a href="http://developer.android.com/tools/publishing/app-signing.html">certificate</a>:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># git clone https://github.com/appium/sign</span>
@@ -225,7 +225,7 @@ emulator-5554          device product:sdk model:sdk device:generic
 <span style="color:#3677a9">1628</span> KB/s (<span style="color:#3677a9">219033</span> bytes in 0.131s)
     pkg: /data/local/tmp/FakeBanker.Debug.Signed.apk
 Success
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_installed.png" alt=""></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_installed.png" alt=""></p>
 <h2 id="add-sources">Add sources</h2>
 <p>We&rsquo;ll add the Java sources to the <code>source</code> directory structure:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># mkdir source/src</span>
@@ -269,18 +269,18 @@ Archive:  classes-dex2jar.src.zip
 </code></pre></div><h2 id="debug-settings">Debug settings</h2>
 <p>I had to active the debug settings for my targeted app. Go to <code>Device Settings</code> -&gt; <code>Select debug app</code>. Also make sure you have <code>Wait for debugger</code> activated.
 This will prevent your app starting before any debugger gets connected to it.</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_select_debug_app.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_select_debug_app.png" alt=""></p>
 <h2 id="setup-eclipse">Setup Eclipse</h2>
 <p>First of all make sure you have the <a href="http://developer.android.com/tools/sdk/eclipse-adt.html">ADT</a> along with the <a href="http://developer.android.com/sdk/index.html">Android SDK</a> installed. Now let&rsquo;s move on:</p>
 <h4 id="create-new-java-project">Create new Java project</h4>
 <p>First create a new <em>Java</em> project and use <code>source</code> as the location of the project.</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_create_java_project.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_create_java_project.png" alt=""></p>
 <h4 id="add-src-folder-to-build-path">Add src folder to build path</h4>
 <p>Make sure the <code>src</code> folder is added as a source location to the build path.</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_project_src.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_project_src.png" alt=""></p>
 <h4 id="check-project-properties">Check project properties</h4>
 <p>You could also check the project properties by clicking on it and then <code>ALT+Enter</code>. You should have sth similar to:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_project_properties_build_path.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_project_properties_build_path.png" alt=""></p>
 <h2 id="set-breakpoints">Set breakpoints</h2>
 <p>Having set up the Eclipse environment let&rsquo;s add some breakpoints.</p>
 <h3 id="update-2014-12-09">UPDATE 2014-12-09</h3>
@@ -291,38 +291,38 @@ This will prevent your app starting before any debugger gets connected to it.</p
 <p>So be careful whet choosing your breakpoints otherwise you might ask yourself why your code doesn&rsquo;t get debugged.</p>
 <h3 id="debug-oncreate">Debug onCreate</h3>
 <p>First search for <strong>onCreate</strong> in all files:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_search_on_create.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_search_on_create.png" alt=""></p>
 <p>Eclipse found several matches:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_found_oncreate.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_found_oncreate.png" alt=""></p>
 <p>We&rsquo;ll now concentrate on <code>MainActivity.java</code> and set a breakpoint:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_set_breakpoint.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_set_breakpoint.png" alt=""></p>
 <p>Switching the perspective to <code>Debug</code> you should be able to see your breakpoints (marked in red):</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_view_breakpoints.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_view_breakpoints.png" alt=""></p>
 <h2 id="run-application">Run application</h2>
 <p>Before running our application we&rsquo;ll have a look at the already running processes on the device:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_running_processes.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_running_processes.png" alt=""></p>
 <p>After starting the application in the <code>AVD</code> you&rsquo;ll notice a new process:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_running_processes_after_app_start.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_running_processes_after_app_start.png" alt=""></p>
 <p>The red &ldquo;bug&rdquo; indicates that the process isn&rsquo;t being debugged yet. Meanwhile the app waits for some debugger
 to get connected:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_waiting_for_debugger.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_waiting_for_debugger.png" alt=""></p>
 <h4 id="debug-configuration">Debug configuration</h4>
 <p>In order to be able to debug process you&rsquo;ll have to add a new debug configuration:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_configuration.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_configuration.png" alt=""></p>
 <p>When setting up the configuration pay attention to the <strong>port</strong> your debugger should connect to. Make sure it matches with the port pair previously
 seen in the running process list (marked in red):</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_set_port.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_set_port.png" alt=""></p>
 <p>Now click on <strong>Debug</strong> and you&rsquo;re ready to go. Take a look at the running processes. You&rsquo;ll notice sth changed:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_running.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_running.png" alt=""></p>
 <p>The bug is now &ldquo;green&rdquo; meaning you&rsquo;re ready to debug your application.</p>
 <h2 id="trigger-breakpoint">Trigger breakpoint</h2>
 <p>We&rsquo;ve previously set a breakpoint at the <code>onCreate</code> method. Now that the application is running I had to &ldquo;trigger&rdquo; that breakpoint. Switching to my AVD I took
 a look at the application and filled in the fields:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_enter_click.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_enter_click.png" alt=""></p>
 <p>Afterwards I&rsquo;ve clicked <em>Enter</em>. Switching back to Eclipse I got following picture:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_hold_on_breakpoint.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_hold_on_breakpoint.png" alt=""></p>
 <p>The execution stopped at the breakpoint. Success! Now I&rsquo;ve typed F6 (Step over) and the execution moved on:</p>
-<p><img src="http://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_stepin.png" alt=""></p>
+<p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_stepin.png" alt=""></p>
 <h2 id="conclusion">Conclusion</h2>
 <p>Using great tools like <code>apktool</code> and <code>dex2jar</code> you can prepare your APK to inspect it dynamically in Eclipse. I think Eclipse (along with ADT) is a very powerful tool
 when it comes to dynamic analysis. I can easily switch between code parts and analyze the execution flow. Keep in mind that when the original is <em>obfuscated</em> you may
@@ -375,8 +375,8 @@ below.</p>
 <a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
 <br>
   <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2014/08/06/python-for-data-analysis/">prev</a>
-  <a href="http://blog.dornea.nu/2014/08/28/using-jquery-datatables-with-ipython/">next</a>
+  <a href="https://blog.dornea.nu/2014/08/06/python-for-data-analysis/">prev</a>
+  <a href="https://blog.dornea.nu/2014/08/28/using-jquery-datatables-with-ipython/">next</a>
   </p>
 </div>
 
@@ -384,7 +384,7 @@ below.</p>
   <hr class="dn db-l ml0-l gray w3"><br>
   Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
   2021 Victor Dorneanu - All rights reserved
-  <a href="http://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 </footer>
 
   

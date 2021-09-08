@@ -12,7 +12,7 @@
 <meta property="og:description" content="Continuing my CCNA journey I&rsquo;d like to address inter VLAN switching in a more detailed way. In this post I&rsquo;ll configure my previous topology to use VTP and let STP prevent frame looping and other &ldquo;anomalies&rdquo; on Layer 2.
 Updated network topology %%blockdiag # &lt;!-- collapse=True --&gt; diagram admin {↔ PC1 [shape = &#34;cisco.pc&#34;]; PC2 [shape = &#34;cisco.pc&#34;]; PC3 [shape = &#34;cisco.pc&#34;]; PC4 [shape = &#34;cisco.pc&#34;]; PC5 [shape = &#34;cisco.pc&#34;]; PC6 [shape = &#34;cisco." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2015/11/06/advanced-inter-vlan-switching-using-cisco/" />
+<meta property="og:url" content="https://blog.dornea.nu/2015/11/06/advanced-inter-vlan-switching-using-cisco/" />
 
 
 <meta property="article:published_time" content="2015-11-06T00:00:00&#43;00:00"/>
@@ -38,36 +38,36 @@ Updated network topology %%blockdiag # &lt;!-- collapse=True --&gt; diagram admi
   --heading-text-color: #383838;
   --background-color: #fff;
 }</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
 
 
 <link rel="icon" 
  
-  href='http://blog.dornea.nu/favicon.ico'
+  href='https://blog.dornea.nu/favicon.ico'
 
 type="image/x-icon"/>
 
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
 
 </head>
 <body class="global-font">
   <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
   <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
   </div>
   
   <div class=" flex-ns mt2 mt0-ns pv1">
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
     
@@ -82,7 +82,7 @@ type="image/x-icon"/>
      | 
     
     
-    tags: [ <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/cisco' class="link silver">cisco</a> <a href='http://blog.dornea.nu/tags/ccna' class="link silver">ccna</a> <a href='http://blog.dornea.nu/tags/layer-2' class="link silver">layer 2</a> <a href='http://blog.dornea.nu/tags/switch' class="link silver">switch</a> <a href='http://blog.dornea.nu/tags/vlan' class="link silver">vlan</a> <a href='http://blog.dornea.nu/tags/vtp' class="link silver">vtp</a> <a href='http://blog.dornea.nu/tags/stp' class="link silver">stp</a> <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
+    tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/cisco' class="link silver">cisco</a> <a href='https://blog.dornea.nu/tags/ccna' class="link silver">ccna</a> <a href='https://blog.dornea.nu/tags/layer-2' class="link silver">layer 2</a> <a href='https://blog.dornea.nu/tags/switch' class="link silver">switch</a> <a href='https://blog.dornea.nu/tags/vlan' class="link silver">vlan</a> <a href='https://blog.dornea.nu/tags/vtp' class="link silver">vtp</a> <a href='https://blog.dornea.nu/tags/stp' class="link silver">stp</a> <a href='https://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
     
   </p>
   <div class="lh-copy post-content"><p>Continuing my <a href="http://blog.dornea.nu/tag/ccna/">CCNA</a> journey I&rsquo;d like to address <em>inter VLAN switching</em> in a more detailed way. In this post I&rsquo;ll configure my <a href="http://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/">previous topology</a> to use <strong>VTP</strong> and let <strong>STP</strong> prevent <em>frame looping</em> and other &ldquo;anomalies&rdquo; on <em>Layer 2</em>.</p>
@@ -124,7 +124,7 @@ diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
         SW3 &lt;-&gt; PC6;
     }
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_2_0.png" alt="png"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_2_0.png" alt="png"></p>
 <p>The new added component <code>SW4</code> is connected to all other switches (red lines). Since a new switch has been added we&rsquo;ll have to add the existing <strong>VLANs</strong> to the corresponding interfaces as well. But this time I <strong>won&rsquo;t</strong> configure the ports manually. Instead I&rsquo;ll use a Cisco proprietary protocol called <code>VTP</code> to exchange information about VLAN accross all available switches. So called <code>VTP</code> advertisements can be sent over <code>ISL</code> or <code>802.1Q</code> (dot1q). Now let&rsquo;s have a look at the process of adding <code>VTP</code> to the existing infrastructure.</p>
 <h2 id="vlan-trunking-protocol">VLAN Trunking Protocol</h2>
 <p><code>VTP</code> has 3 operation modes:</p>
@@ -258,7 +258,7 @@ diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
         SW2 &lt;-&gt; SW3 [folded];
     }
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_8_0.png" alt="png"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_8_0.png" alt="png"></p>
 <h3 id="roots-election">Root(s) election</h3>
 <p>In terms of <strong>STP</strong> <code>SW4</code> will be the <strong>p</strong>rimary (p) and <code>SW2</code> the <strong>s</strong>econdary (s) root. Let&rsquo;s configure <code>Sw4</code> and <code>Sw2</code>:</p>
 <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">! SW4 configuration
@@ -663,8 +663,8 @@ Po1              Root FWD <span style="color:#3677a9">9</span>         128.27   
 <a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
 <br>
   <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/">prev</a>
-  <a href="http://blog.dornea.nu/2015/11/17/openvpn-for-paranoids/">next</a>
+  <a href="https://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/">prev</a>
+  <a href="https://blog.dornea.nu/2015/11/17/openvpn-for-paranoids/">next</a>
   </p>
 </div>
 
@@ -672,7 +672,7 @@ Po1              Root FWD <span style="color:#3677a9">9</span>         128.27   
   <hr class="dn db-l ml0-l gray w3"><br>
   Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
   2021 Victor Dorneanu - All rights reserved
-  <a href="http://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 </footer>
 
   

@@ -11,7 +11,7 @@
 
 <meta property="og:description" content="In times of NSA, surveillance and data privacy, protecting your data has become an essential part of your every day life. A good understanding of basic principles is half the battle. In this post I just wanted to have look at SSL/TLS from a developer point of view but also from an users one. On the one hand I wanted to use openssl as a CLI utility to inspect and validate X." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/" />
+<meta property="og:url" content="https://blog.dornea.nu/2015/05/24/validating-and-pinning-x.509-certificates/" />
 
 
 <meta property="article:published_time" content="2015-05-24T00:00:00&#43;00:00"/>
@@ -37,36 +37,36 @@
   --heading-text-color: #383838;
   --background-color: #fff;
 }</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
 
 
 <link rel="icon" 
  
-  href='http://blog.dornea.nu/favicon.ico'
+  href='https://blog.dornea.nu/favicon.ico'
 
 type="image/x-icon"/>
 
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
 
 </head>
 <body class="global-font">
   <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
   <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
   </div>
   
   <div class=" flex-ns mt2 mt0-ns pv1">
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
     
@@ -81,7 +81,7 @@ type="image/x-icon"/>
      | 
     
     
-    tags: [ <a href='http://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='http://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/ssl' class="link silver">ssl</a> <a href='http://blog.dornea.nu/tags/x.509' class="link silver">x.509</a> <a href='http://blog.dornea.nu/tags/tls' class="link silver">tls</a> <a href='http://blog.dornea.nu/tags/crypto' class="link silver">crypto</a> <a href='http://blog.dornea.nu/tags/openssl' class="link silver">openssl</a> <a href='http://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
+    tags: [ <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='https://blog.dornea.nu/tags/ssl' class="link silver">ssl</a> <a href='https://blog.dornea.nu/tags/x.509' class="link silver">x.509</a> <a href='https://blog.dornea.nu/tags/tls' class="link silver">tls</a> <a href='https://blog.dornea.nu/tags/crypto' class="link silver">crypto</a> <a href='https://blog.dornea.nu/tags/openssl' class="link silver">openssl</a> <a href='https://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
     
   </p>
   <div class="lh-copy post-content"><p>In times of NSA, surveillance and data privacy, protecting your data has become an essential part of your every day life. A good understanding of basic principles is half the battle. In this post I just wanted to have look at SSL/TLS from a developer point of view but also from an users one. On the one hand I wanted to use <code>openssl</code> as a CLI utility to <em>inspect</em> and <em>validate</em> <a href="http://en.wikipedia.org/wiki/X.509">X.509 certificates</a>. On the other hand I wanted to have code I could use in my own projects. I&rsquo;ve found <a href="https://github.com/pyca/pyopenssl">pyOpenSSL</a> to be a quite useful library to use on a regular daily basis. Regardless the programming language you&rsquo;ll find pretty generic ways of <em>validating</em> the certificates and <em>pinning</em> the presented data. For the sake of simplicity I&rsquo;ve chosen to analyze <a href="https://www.google.com">Googles</a> SSL certificate. But first let&rsquo;s start with <strong>certificate pinning</strong>.</p>
@@ -129,7 +129,7 @@ Installed gvmagic.py. To use it, type:
   Client -&gt; Server [label=<span style="color:#ed9d13">&#34;GET /index.html&#34;</span>];
   Server -&gt; Client [label=<span style="color:#ed9d13">&#34;200 OK Success&#34;</span>];
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_3_0.png" alt="png"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_3_0.png" alt="png"></p>
 <p>Before establishing the secure connection the client must <strong>validate</strong> the <em>presented</em> certificate.</p>
 <blockquote>
 <p>Regarding the validation: Here I won&rsquo;t go into much details because this is a quite complicated story from a technical point of view.</p>
@@ -153,7 +153,7 @@ Installed gvmagic.py. To use it, type:
   Server -&gt; Eve [label=<span style="color:#ed9d13">&#34;200 OK Success&#34;</span>];
   Eve -&gt; Client [label=<span style="color:#ed9d13">&#34;200 OK Success&#34;</span>];
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_5_0.png" alt="png"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_5_0.png" alt="png"></p>
 <p>As you see the client is presented <strong>Eves</strong> certificate which is the <em>evil</em> one. Now the client has 2 options:</p>
 <ul>
 <li>trust the presented certificate and hope it&rsquo;s from the <strong>Server</strong></li>
@@ -438,7 +438,7 @@ digraph trie {
     {rank = same; leaf; google_site}
     
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_41_0.svg" alt="svg"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_41_0.svg" alt="svg"></p>
 <p>First of all you&rsquo;ll notice that there has been some problem regarding the validation:</p>
 <pre><code>verify error:num=20:unable to get local issuer certificate
 </code></pre>
@@ -517,8 +517,8 @@ openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt <span style="color:#ed
 <a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
 <br>
   <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2015/05/06/adding-concurrency-to-smalisca/">prev</a>
-  <a href="http://blog.dornea.nu/2015/07/01/debugging-android-native-shared-libraries/">next</a>
+  <a href="https://blog.dornea.nu/2015/05/06/adding-concurrency-to-smalisca/">prev</a>
+  <a href="https://blog.dornea.nu/2015/07/01/debugging-android-native-shared-libraries/">next</a>
   </p>
 </div>
 
@@ -526,7 +526,7 @@ openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt <span style="color:#ed
   <hr class="dn db-l ml0-l gray w3"><br>
   Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
   2021 Victor Dorneanu - All rights reserved
-  <a href="http://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 </footer>
 
   

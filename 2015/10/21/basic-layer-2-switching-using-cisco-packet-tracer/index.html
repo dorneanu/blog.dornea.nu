@@ -11,7 +11,7 @@
 
 <meta property="og:description" content="As a pseudo-preparation for my CCNA exam I wanted to sum up some of the basic configuration steps related to Cisco switches. Although I won&rsquo;t handle every topic related to Layer 2, I will assume you have already some network knowledge. The main reason for this post is to show how to setup a really small network infrastructure and configure its components. For my purposes I have used Cisco&rsquo;s Packet Tracer to simulate the network which I highly recommend." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/" />
+<meta property="og:url" content="https://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/" />
 
 
 <meta property="article:published_time" content="2015-10-21T00:00:00&#43;00:00"/>
@@ -37,36 +37,36 @@
   --heading-text-color: #383838;
   --background-color: #fff;
 }</style>
-<link href='http://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
-<link href='http://blog.dornea.nu/css/styles.css' rel="stylesheet">
-<link rel="stylesheet" href="http://blog.dornea.nu/css/custom.css">
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
 
 
 <link rel="icon" 
  
-  href='http://blog.dornea.nu/favicon.ico'
+  href='https://blog.dornea.nu/favicon.ico'
 
 type="image/x-icon"/>
 
-<link href='http://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
 
 </head>
 <body class="global-font">
   <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
   <div class="flex">
-    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='http://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
   </div>
   
   <div class=" flex-ns mt2 mt0-ns pv1">
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/' title="Home">Home</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
     
-      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://blog.dornea.nu/tags' title="Tags">Tags</a>
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
     
       <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
     
@@ -81,7 +81,7 @@ type="image/x-icon"/>
      | 
     
     
-    tags: [ <a href='http://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='http://blog.dornea.nu/tags/cisco' class="link silver">cisco</a> <a href='http://blog.dornea.nu/tags/ccna' class="link silver">ccna</a> <a href='http://blog.dornea.nu/tags/layer-2' class="link silver">layer 2</a> <a href='http://blog.dornea.nu/tags/switch' class="link silver">switch</a> <a href='http://blog.dornea.nu/tags/vlan' class="link silver">vlan</a> <a href='http://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='http://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
+    tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/cisco' class="link silver">cisco</a> <a href='https://blog.dornea.nu/tags/ccna' class="link silver">ccna</a> <a href='https://blog.dornea.nu/tags/layer-2' class="link silver">layer 2</a> <a href='https://blog.dornea.nu/tags/switch' class="link silver">switch</a> <a href='https://blog.dornea.nu/tags/vlan' class="link silver">vlan</a> <a href='https://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
     
   </p>
   <div class="lh-copy post-content"><p>As a pseudo-preparation for my <a href="http://www.cisco.com/web/learning/certifications/associate/ccna/index.html">CCNA</a> exam I wanted to sum up some of the <em>basic</em> configuration steps related to <strong>Cisco</strong> switches. Although I won&rsquo;t handle <em>every</em> topic related to Layer 2, I will assume you have already some network knowledge. The main reason for this post is to show how to setup a <em>really</em> small network infrastructure and <em>configure</em> its components. For my purposes I have used <a href="http://www.packettracernetwork.com">Cisco&rsquo;s Packet Tracer</a> to simulate the network which I highly recommend. I know there is sth like <a href="http://www.gns3.com">GNS3</a> but I didn&rsquo;t have (yet) the time to look at it.</p>
@@ -96,7 +96,7 @@ diagram admin {
     SW1 &lt;-&gt; SW2;
     SW2 &lt;-&gt; SW3;
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/basic-layer-2-switching-using-cisco-packet-tracer/output_2_0.png" alt="png"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/basic-layer-2-switching-using-cisco-packet-tracer/output_2_0.png" alt="png"></p>
 <p>We&rsquo;ll have 3 switches connected to each other: <strong>SW1</strong>, <strong>SW2</strong> and <strong>SW3</strong>. Each of these switches (<a href="http://www.cisco.com/c/en/us/products/collateral/switches/catalyst-2960-series-switches/prod_bulletin0900aecd80322c22.html">Cisco Catalyst 2960 series</a>) will have one or several <strong>VLANs</strong> assigned. But first let&rsquo;s do some <em>house keeping</em> and configure each switch properly. For every switch I&rsquo;ll do:</p>
 <ol>
 <li>Restrict access
@@ -215,7 +215,7 @@ diagram admin {
         SW3 &lt;-&gt; PC6 [label = <span style="color:#ed9d13">&#34;F0/4 - F0&#34;</span>];
     }
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/basic-layer-2-switching-using-cisco-packet-tracer/output_5_0.png" alt="png"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/basic-layer-2-switching-using-cisco-packet-tracer/output_5_0.png" alt="png"></p>
 <p>Following table shows the links between the switches and the PCs and which <strong>switch ports</strong> are being used:</p>
 <!-- raw HTML omitted -->
 <h3 id="configure-links-between-switches">Configure links between switches</h3>
@@ -353,7 +353,7 @@ diagram admin {
         SW3 &lt;-&gt; PC6;
     }
 }
-</code></pre></div><p><img src="http://blog.dornea.nu/posts/img/2015/basic-layer-2-switching-using-cisco-packet-tracer/output_7_0.png" alt="png"></p>
+</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/basic-layer-2-switching-using-cisco-packet-tracer/output_7_0.png" alt="png"></p>
 <p><strong>Keep in mind that the switches don&rsquo;t really belong to any VLANs at all.</strong></p>
 <h3 id="add-vlan-students">Add VLAN Students</h3>
 <p>Adding the VLAN configuration has to be done on every switch. I could have used <code>VTP</code> (VLAN Trunking Protocol) but for the sake of exercise I&rsquo;ll do it manually, beginning with <code>SW1</code>:</p>
@@ -677,8 +677,8 @@ Security Violation Count   : <span style="color:#3677a9">0</span>
 <a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
 <br>
   <p class="mb0 mt2">
-  <a href="http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/">prev</a>
-  <a href="http://blog.dornea.nu/2015/11/06/advanced-inter-vlan-switching-using-cisco/">next</a>
+  <a href="https://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/">prev</a>
+  <a href="https://blog.dornea.nu/2015/11/06/advanced-inter-vlan-switching-using-cisco/">next</a>
   </p>
 </div>
 
@@ -686,7 +686,7 @@ Security Violation Count   : <span style="color:#3677a9">0</span>
   <hr class="dn db-l ml0-l gray w3"><br>
   Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
   2021 Victor Dorneanu - All rights reserved
-  <a href="http://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 </footer>
 
   
