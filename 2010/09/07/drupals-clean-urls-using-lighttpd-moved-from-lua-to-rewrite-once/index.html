@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -86,7 +90,7 @@ type="image/x-icon"/>
     
   </p>
   <div class="lh-copy post-content"><p>I&rsquo;ve been using Lighttpd + Drupal for a long time. In order to have those sexy clean urls, you&rsquo;ll have to do some rewrite stuff. A few months ago I found this Lua script, which served its purpose without any complications.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.lua" data-lang=".lua"><span style="color:#999;font-style:italic">-- little helper function</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.lua" data-lang=".lua"><span style="color:#999;font-style:italic">-- little helper function</span>
 <span style="color:#6ab825;font-weight:bold">function</span> <span style="color:#447fcf">file_exists</span>(path)
 <span style="color:#6ab825;font-weight:bold">local</span> attr = lighty.stat(path)
 <span style="color:#6ab825;font-weight:bold">if</span> (attr) <span style="color:#6ab825;font-weight:bold">then</span>
@@ -118,10 +122,10 @@ lighty.env[<span style="color:#ed9d13">&#34;physical.path&#34;</span>] = lighty.
 <span style="color:#999;font-style:italic">-- fallthrough will put it back into the lighty request loop</span>
 <span style="color:#999;font-style:italic">-- that means we get the 304 handling for free.</span>
 </code></pre></div><p>Your <code>lighttpd.conf</code> should include - somewhere! - this lines:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Make Drupal&#39;s url SEXY
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Make Drupal&#39;s url SEXY
 magnet.attract-physical-path-to = ( &#34;/etc/lighttpd/drupal.lua&#34; )
 </code></pre></div><p>Well.. That&rsquo;s now history! I found a better way to do that rewritting:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">url.rewrite-once = (
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">url.rewrite-once = (
 &#34;^/system/test/(.*)$&#34; =&gt; &#34;/index.php?q=system/test/$1&#34;,
 &#34;^/search/node/(.*)$&#34; =&gt; &#34;/index.php?q=search/node/$1&#34;,
 &#34;^/([^.?]*)?(.*)$&#34; =&gt; &#34;/index.php?q=$1&amp;$2&#34;,
@@ -233,6 +237,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

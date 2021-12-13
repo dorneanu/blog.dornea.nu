@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -111,11 +115,11 @@ type="image/x-icon"/>
 <ul>
 <li>Remove all USE flags related to consolekit:</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># euse -D consolekit policykit upower udisks
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># euse -D consolekit policykit upower udisks
 </code></pre></div><ul>
 <li>Make sure you have a <code>clean</code> /etc/make.conf. Here is mine:</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># These settings were set by the catalyst build script that automatically
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># These settings were set by the catalyst build script that automatically
 # built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more
 # detailed example.
@@ -147,7 +151,7 @@ PORTDIR=&#34;/usr/portage&#34;
 </code></pre></div><ul>
 <li>Make sure you have selected the right profile</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># eselect profile list
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># eselect profile list
 Available profile symlink targets:
   [1]   default/linux/amd64/13.0
   [2]   default/linux/amd64/13.0/selinux
@@ -166,7 +170,7 @@ Available profile symlink targets:
 </code></pre></div><ul>
 <li>Adjust profile settings</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># cd /etc/portage/profile
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># cd /etc/portage/profile
 # cat use.force
 -consolekit
 # cat use.mask
@@ -175,17 +179,17 @@ consolekit
 </code></pre></div><ul>
 <li>Remove udev, consolekit and polkit</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -aC udev consolekit polkit
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -aC udev consolekit polkit
 </code></pre></div><ul>
 <li>Now you should be able to install systemd</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -pv systemd
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -pv systemd
 </code></pre></div><ul>
 <li>Now update your system</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge --keep-going --jobs 4 --update --newuse --ask --deep --with-bdeps=y @world
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge --keep-going --jobs 4 --update --newuse --ask --deep --with-bdeps=y @world
 </code></pre></div><p>Additional steps to clean up your system:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -a --depclean
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -a --depclean
 # revdep-rebuild -- -q --keep-going
 </code></pre></div></div>
   <div id="comments">
@@ -292,6 +296,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

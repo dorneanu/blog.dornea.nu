@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -123,17 +127,17 @@ done
 root@debian-on-android:~# 
 </code></pre>
 <h1 id="merge-pcap-files">Merge pcap files</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mergecap -F libpcap -a output-* -w merged.pcap
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mergecap -F libpcap -a output-* -w merged.pcap
 </code></pre></div><h1 id="convert-pcap-to-sqlite3-db">Convert pcap to SQLite3 DB</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
 
 # Tshark generated files
 DNS_QUERIES  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/dns_queries.csv&#34;
 CONNECTIONS  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/connections.csv&#34;
 HTTP_TRAFFIC = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/http_traffic.csv&#34;
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h1 id="extract-valuable-information-from-pcap-file">Extract valuable information from pcap file</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
               -T fields  -e frame.number -e frame.time -e dns.qry.name -e dns.resp.addr &gt; $DNS_QUERIES
     
 connections = !tshark -r $PCAP_FILE -E header=y -E separator=\; -T fields -e frame.number \
@@ -142,12 +146,12 @@ connections = !tshark -r $PCAP_FILE -E header=y -E separator=\; -T fields -e fra
 http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fields \
               -e frame.number -e frame.time -e ip.dst -e http.request.method -e http.request.uri -e http.user_agent \
               -e http.response.code  -e http.response.phrase -e http.content_length -e data -e text &gt; $HTTP_TRAFFIC
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import sqlite3 as sql
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import sqlite3 as sql
 con = sql.connect(&#34;:memory:&#34;)
 cur = con.cursor()
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import binascii
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import binascii
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -199,10 +203,10 @@ dns_df.head(5)
 #unique_dns.columns = [&#39;DNS&#39;, &#39;# DNS Queries&#39;]
 #unique_dns.sort([&#39;# DNS Queries&#39;], ascending=False).head(10)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h1 id="top-dns-queries">Top DNS queries</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p1 = pdsql.read_frame(&#34;&#34;&#34;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p1 = pdsql.read_frame(&#34;&#34;&#34;
     SELECT COUNT(dns_response) AS &#39;# DNS Responses&#39;, dns_query AS &#39;DNS to lookup&#39; 
     FROM dns GROUP BY dns_query 
     ORDER by 1 DESC
@@ -210,7 +214,7 @@ dns_df.head(5)
 #print(p1.head(100).to_string())
 p1.head(100)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(c.dst),c.dst, c.dstport, c.frame_protocols FROM connection AS c 
     JOIN dns AS d ON c.dst=d.dns_response
     WHERE c.dst == &#34;173.194.70.95&#34; AND c.dst NOT LIKE &#34;10.%&#34;
@@ -226,9 +230,9 @@ p_testing = pdsql.read_frame(&#34;&#34;&#34;
 &#34;&#34;&#34;, con)
 p_testing.head(100)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h1 id="top-connections">Top connections</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p2 = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p2 = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(c.dst), d.dns_query, c.dstport, c.frame_protocols FROM connection AS c 
     JOIN dns AS d ON c.dst=d.dns_response
     WHERE c.frame_protocols LIKE &#34;sll:ip:tcp:%&#34;
@@ -237,8 +241,8 @@ p_testing.head(100)
 &#34;&#34;&#34;, con)
 p2.head(100)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT  frame_number, frame_protocols
     FROM connection
     WHERE frame_protocols LIKE &#39;sll:ip:tcp%xml%&#39;
@@ -248,9 +252,9 @@ p2.head(100)
 #print(p1.head(100).to_string())
 p_testing.head(100)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h1 id="used-protocols">Used protocols</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_proto = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_proto = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(frame_protocols), frame_protocols
     FROM connection
     GROUP by frame_protocols
@@ -258,9 +262,9 @@ p_testing.head(100)
 &#34;&#34;&#34;, con)
 p_proto.head(100)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h1 id="used-destination-ports">Used destination ports</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_ports = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_ports = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(c.dstport), c.dstport
     FROM connection AS c
     JOIN dns AS d ON c.dst = d.dns_response
@@ -270,10 +274,10 @@ p_proto.head(100)
 #print(p1.head(100).to_string())
 p_ports.head(100)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h1 id="http-connections">HTTP Connections</h1>
 <h2 id="http-methods">HTTP Methods</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_http_methods = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_http_methods = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(request_method), request_method
     FROM http
     GROUP by request_method
@@ -283,7 +287,7 @@ p_ports.head(100)
 p_http_methods.head(100)
 </code></pre></div><!-- raw HTML omitted -->
 <h2 id="user-agents">User Agents</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_user_agents = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p_user_agents = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT COUNT(user_agent), user_agent
     FROM http
     GROUP by user_agent
@@ -292,9 +296,9 @@ p_http_methods.head(100)
 #print(p1.head(100).to_string())
 p_user_agents.head(100)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h2 id="get-requests">GET Requests</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT h.frame_number, h.ip_dst, d.dns_query, h.request_method, h.request_uri, h.user_agent FROM http AS  h
     JOIN dns AS d ON h.ip_dst = d.dns_response
     WHERE lower(h.request_method) == &#39;get&#39; AND
@@ -320,10 +324,10 @@ p_user_agents.head(100)
 &#34;&#34;&#34;, con)
 p3.head(500)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div><h2 id="post-requests">POST Requests</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
     SELECT h.frame_number, d.dns_query, h.request_uri, h.data, h.text FROM http AS  h
     JOIN dns AS d ON h.ip_dst = d.dns_response
     WHERE lower(h.request_method) == &#39;post&#39;
@@ -331,7 +335,7 @@ p3.head(500)
 &#34;&#34;&#34;, con)
 p3.head(500)
 </code></pre></div><!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">
 </code></pre></div></div>
   <div id="comments">
       
@@ -454,6 +458,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

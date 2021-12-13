@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -85,11 +89,11 @@ type="image/x-icon"/>
     
   </p>
   <div class="lh-copy post-content"><p>If you ever had in mind to <code>rm -rf /</code>: DON&rsquo;T! Even for its funny aspect, it isn&rsquo;t worth doing such a stupid thing. Well I did it..At least not intentionally. I remember I was going to remove some ordinary directory and then I must have misspelled the last argument (directory name). Luckily I was able to notice the tragedy  and cancel the command by ^C. <code>F\***! What should I now?!</code>, was my first thought. I remembered there was a dir called backups somewhere. Indeed, there was <code>/var/backups</code> but I wasn&rsquo;t able to restore my data completely. And what about <code>/dev</code> ?! I knew I had to reinstall the NetBSD distribution; just to be sure everything is there. So I ran</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ./build.sh -u distribution install=/
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ./build.sh -u distribution install=/
 </code></pre></div><p>and hoped for the best. Finally the installation was done and I did a fresh reboot. And then it happened: BOOM!</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">...panic: init died (signal 0, exit 12)Stopped in pid 1.1 (init) at netbsd:cpu_Debugger+0x4: bx r14
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">...panic: init died (signal 0, exit 12)Stopped in pid 1.1 (init) at netbsd:cpu_Debugger+0x4: bx r14
 </code></pre></div><p>(for more details read <a href="http://mail-index.netbsd.org/tech-kern/2009/03/18/msg004607.html">this</a>). At that moment I knew I&rsquo;ve screwed it up. Apparently the init process couldn&rsquo;t create the devices, since there was no MAKEDEV in /dev. I don&rsquo;t have a clue how that happened. So I booted Linux, mounted the UFS partition and looked up for the MAKEDEV file. I found it in <code>/mnt//usr/obj/destdir.amd64/dev</code>. I tried to copy it to <code>/mnt/dev/</code> but then BAM! The partition was mounted read-only. Ok, I ran</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mount -o rw /mnt
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mount -o rw /mnt
 </code></pre></div><p>and the kernel said there was no write support for UFS. My second <code>F\*** YOU!</code> was just about to enter /dev/stdout but then I tried to stay calm and search for the solution. The solution: Recompile Linux kernel with UFS write suppport enabled. I found this <a href="http://ghantoos.org/2009/04/04/mounting-ufs-in-readwrite-under-linux/">short tutorial</a> (BTW: Really great howto!) and was able to enable write support for UFS. I rebooted, mounted the NetBSD partition with write support, copied MAKEDEV into <code>/dev</code> and rebooted again. No kernel panic anymore! I was on cloud nine!</p>
 <p>So what did I learned during this adventure?! <strong>Think before you type!</strong> That should apply to all of us.</p>
 </div>
@@ -197,6 +201,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

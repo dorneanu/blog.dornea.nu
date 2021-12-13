@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -103,7 +107,7 @@ type="image/x-icon"/>
 <li>data base (<code>mysqld</code>) for storing information</li>
 </ul>
 <p>The <code>mysqld</code> will usually listen on <em>localhost:3306</em> and can be thus accessed by the processes inside the chroot as well. The <code>nginx</code> and the <code>PHP</code> daemons have some dependencies to be installed inside the chroot otherwise you won&rsquo;t be able to run them. For the sake of example let&rsquo;s have a look at <code>nginx</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ldd /usr/sbin/nginx
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ldd /usr/sbin/nginx
     linux-vdso.so.1 (0x00007fffe734d000)
     libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f47b5548000)
     libcrypt.so.1 =&gt; /lib/x86_64-linux-gnu/libcrypt.so.1 (0x00007f47b5311000)
@@ -116,7 +120,7 @@ type="image/x-icon"/>
 </code></pre></div><p>So there are a lot of libraries which have to be copied into the chroot in order for the <code>nginx</code> binary to execute properly. But first, let&rsquo;s setup the basic directory structure.</p>
 <h2 id="chroot-environment">chroot() environment</h2>
 <p>First we&rsquo;ll create the basic directory structure and copy some basic stuff to it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Create devices</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Create devices</span>
 $ mkdir <span style="color:#40ffff">$JAIL</span>/dev
 $ mknod -m <span style="color:#3677a9">0666</span> <span style="color:#40ffff">$JAIL</span>/dev/null c <span style="color:#3677a9">1</span> <span style="color:#3677a9">3</span>
 $ mknod -m <span style="color:#3677a9">0666</span> <span style="color:#40ffff">$JAIL</span>/dev/random c <span style="color:#3677a9">1</span> <span style="color:#3677a9">8</span>
@@ -141,7 +145,7 @@ $ cp -rfvL /etc/{services,localtime,nsswitch.conf,nscd.conf,protocols,hosts,ld.s
 
 </code></pre></div><h2 id="nginx">nginx</h2>
 <p>Next we&rsquo;ll setup <code>nginx</code> and copy necessary config files and libraries:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Create directories</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Create directories</span>
 $ mkdir -p <span style="color:#40ffff">$JAIL</span>/usr/share/nginx
 $ mkdir -p <span style="color:#40ffff">$JAIL</span>/var/{log,lib}/nginx
 $ mkdir -p <span style="color:#40ffff">$JAIL</span>/www/cgi-bin
@@ -164,11 +168,11 @@ $ touch <span style="color:#40ffff">$JAIL</span>/run/nginx.pid
 $ cp /usr/sbin/nginx <span style="color:#40ffff">$JAIL</span>/usr/sbin/
 </code></pre></div><h3 id="troubleshooting">Troubleshooting</h3>
 <p>First let&rsquo;s see if we can run the daemon at all:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx -t                
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx -t                
 nginx: [emerg] getpwnam(<span style="color:#ed9d13">&#34;www-data&#34;</span>) failed in /etc/nginx/nginx.conf:1
 nginx: configuration file /etc/nginx/nginx.conf <span style="color:#24909d">test</span> failed
 </code></pre></div><p>OK. Let&rsquo;s have a look at <code>strace</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">mmap(NULL, 39842, PROT_READ, MAP_PRIVATE, 5, 0) = 0x7f1d0c620000
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">mmap(NULL, 39842, PROT_READ, MAP_PRIVATE, 5, 0) = 0x7f1d0c620000
 close(5)                                = <span style="color:#3677a9">0</span>
 access(<span style="color:#ed9d13">&#34;/etc/ld.so.nohwcap&#34;</span>, F_OK)      = -1 ENOENT (No such file or directory)
 open(<span style="color:#ed9d13">&#34;/lib/x86_64-linux-gnu/libnss_compat.so.2&#34;</span>, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
@@ -176,7 +180,7 @@ open(<span style="color:#ed9d13">&#34;/lib/x86_64-linux-gnu/libnss_compat.so.2&#
 exit_group(1)                           = ?
 +++ exited with <span style="color:#3677a9">1</span> +++
 </code></pre></div><p>Apparently <code>libnss</code> can&rsquo;t be found. Let&rsquo;s fix that:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ find / -name <span style="color:#ed9d13">&#34;libnss*&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ find / -name <span style="color:#ed9d13">&#34;libnss*&#34;</span>
 /lib/x86_64-linux-gnu/libnss_nis-2.19.so
 /lib/x86_64-linux-gnu/libnss_compat-2.19.so
 /lib/x86_64-linux-gnu/libnss_compat.so.2
@@ -198,12 +202,12 @@ exit_group(1)                           = ?
 
 <span style="color:#999;font-style:italic"># cp /lib/x86_64-linux-gnu/libnss_* $JAIL/lib/x86_64-linux-gnu/</span>
 </code></pre></div><p>Let&rsquo;s give it a 2nd try:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx -t
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx -t
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf <span style="color:#24909d">test</span> is successful
 </code></pre></div><h2 id="php5-fpm">php5-fpm</h2>
 <p>The PHP FastCGI Process Manager (<code>php5-fpm</code>) also requires some libraries and config files that have to be available in the new <code>chroot</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Copy config files</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Copy config files</span>
 $ cp -rfvl /etc/php5 <span style="color:#40ffff">$JAIL</span>/etc/
 $ cp -rfvl /usr/share/zoneinfo <span style="color:#40ffff">$JAIL</span>/usr/share/
 
@@ -213,20 +217,20 @@ $ <span style="color:#ed9d13">${</span><span style="color:#40ffff">N2CHROOT</spa
 <span style="color:#999;font-style:italic"># Copy the php5-fpm binary</span>
 $ cp /usr/sbin/php5-fpm <span style="color:#40ffff">$JAIL</span>/usr/sbin/
 </code></pre></div><p>Let&rsquo;s check if everything is ok:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/php5-fpm --help
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/php5-fpm --help
 Failed loading /usr/lib/php5/20131226/opcache.so:  /usr/lib/php5/20131226/opcache.so: cannot open shared object file: No such file or directory
 [11-Jan-2016 19:46:19] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span style="color:#ed9d13">&#39;/usr/lib/php5/20131226/mysqlnd.so&#39;</span> - /usr/lib/php5/20131226/mysqlnd.so: cannot open shared object file: No such file or directory in Unknown on line <span style="color:#3677a9">0</span>
 [11-Jan-2016 19:46:19] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span style="color:#ed9d13">&#39;/usr/lib/php5/20131226/pdo.so&#39;</span> - /usr/lib/php5/20131226/pdo.so: cannot open shared object file: No such file or directory in Unknown on line <span style="color:#3677a9">0</span>
 [11-Jan-2016 19:46:19] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span style="color:#ed9d13">&#39;/usr/lib/php5/20131226/curl.so&#39;</span> - /usr/lib/php5/20131226/curl.so: cannot open shared object file: No such file or directory in ...
 </code></pre></div><p>Obviously some libraries are still missing. Let&rsquo;s fix that:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cp -rvfl /usr/lib/php5 <span style="color:#40ffff">$JAIL</span>/usr/lib
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cp -rvfl /usr/lib/php5 <span style="color:#40ffff">$JAIL</span>/usr/lib
 $ <span style="color:#6ab825;font-weight:bold">for</span> f in /usr/lib/php5/20131226/*.so; <span style="color:#6ab825;font-weight:bold">do</span>
 &gt;    n2chroot <span style="color:#40ffff">$f</span>
 &gt; <span style="color:#6ab825;font-weight:bold">done</span>
 </code></pre></div><p>The <code>for</code>-loop will look at every php-module and copy its dependant libraries to the chroot.</p>
 <h3 id="cant-execute-exec-shell_exec-or-system">Can&rsquo;t execute exec(), shell_exec() or system()</h3>
 <p>If you experience some sort of problems like <a href="http://stackoverflow.com/questions/17006136/exec-with-php-fpm-on-nginx-under-chroot-returns-nothing">this</a> you probably have no <code>/bin/sh</code> inside your chroot (which is great after all, since we want to strip down the environment to a minimal setup). However <strong>PHP</strong>&rsquo;s functions like <code>exec()</code>, <code>shell_exec()</code> or <code>system()</code>will internally call <code>/bin/sh -c</code> to run the commands. So if your PHP application is using something like <code>sendmail</code> and you don&rsquo;t want to install any shell into your chroot, I&rsquo;ve found this <a href="https://knzl.de/setting-up-a-chroot-for-php/">solution</a> from <em>Sebastian Kienzl</em> which basically consists in providing a &ldquo;shell&rdquo; which will in turn use <code>execvp()</code> to run commands.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;string.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#cd2828;font-weight:bold">
@@ -256,19 +260,19 @@ $ <span style="color:#6ab825;font-weight:bold">for</span> f in /usr/lib/php5/201
     <span style="color:#6ab825;font-weight:bold">return</span> execvp( args[<span style="color:#3677a9">0</span>], args );
 }
 </code></pre></div><p>Compile this using (I use <code>clang</code>):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ clang -O2 -fpie -pie -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=<span style="color:#3677a9">2</span> <span style="color:#ed9d13">\
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ clang -O2 -fpie -pie -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=<span style="color:#3677a9">2</span> <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>  sh.c -o sh
 </code></pre></div><p>Now remove the sources and strip the binary:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ rm sh.c
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ rm sh.c
 $ strip sh
 </code></pre></div><p>However this approach seemed to introduce more problems than it was a decent solution. Depending on the applications and the scope you can decide whether to use a wrapper or provide <code>/bin/sh</code> inside your chroot. Nevertheless there should be no <code>setuid</code> binaries. More on that later.</p>
 <h3 id="timezone-is-corrupt">Timezone is corrupt</h3>
 <p>If you have issues like:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">PHP message: PHP Fatal error:  date(): Timezone database is corrupt - this should *never* happen!
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">PHP message: PHP Fatal error:  date(): Timezone database is corrupt - this should *never* happen!
 </code></pre></div><p>or</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">PHP message: PHP Notice:  date_default_timezone_set(): Timezone ID <span style="color:#ed9d13">&#39;UTC&#39;</span> is invalid
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">PHP message: PHP Notice:  date_default_timezone_set(): Timezone ID <span style="color:#ed9d13">&#39;UTC&#39;</span> is invalid
 </code></pre></div><p>make sure you copy <code>/usr/share/zoneinfo</code> into the chroot:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cp -Rv /usr/share/zoneinfo <span style="color:#40ffff">$JAIL</span>/usr/share/
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cp -Rv /usr/share/zoneinfo <span style="color:#40ffff">$JAIL</span>/usr/share/
 </code></pre></div><h2 id="adjust-chroot-security">Adjust chroot() security</h2>
 <p>In fact the actual hardening of the environment has not taken place already. Many people have pointed out that <strong>chroot != security</strong> and additional steps are vital for not being able to <strong>unchroot</strong> inside it. A few years ago <a href="https://filippo.io/escaping-a-chroot-jail-slash-1/">Filippo</a> also showed how easy an attacker could achieve that if specific conditions were satisfied. Since <code>chroot()</code> in my opinion it not <strong>THE</strong> security feature I&rsquo;d say it&rsquo;s sort of <strong>security in depth</strong>. Although there are enough cases where  leaving the chroot is possible - if securing it hasn&rsquo;t been done correctly, some recommendations from <a href="http://talby.rcs.manchester.ac.uk/~isd/_unix_security/unix_security_intro_securing_network_services.Breaking_Out_of_and_Securing_Chroot_Jails.html">here</a> should be taken into consideration:</p>
 <ul>
@@ -278,7 +282,7 @@ $ strip sh
 <li>avoid unnecessary bullshit and only install the minimum inside the jail</li>
 </ul>
 <p>Let&rsquo;s translate those into commands:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Add users</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Add users</span>
 $ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;www-data:x:1337:1337:www-data:/:/bin/false&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/passwd
 $ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;nobody:x:99:99:nobody:/:/bin/false&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/passwd
 
@@ -312,7 +316,7 @@ $ chmod +rw <span style="color:#40ffff">$JAIL</span>/run
 </code></pre></div><h2 id="systemd">systemd</h2>
 <p>Since <code>systemd</code>is now everywhere you can define your own <strong>service</strong> to start the daemons.</p>
 <h3 id="nginx-1">nginx</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo cat /etc/systemd/system/multi-user.target.wants/nginx.service 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo cat /etc/systemd/system/multi-user.target.wants/nginx.service 
 <span style="color:#999;font-style:italic"># Stop dance for nginx</span>
 <span style="color:#999;font-style:italic"># =======================</span>
 <span style="color:#999;font-style:italic">#</span>
@@ -343,7 +347,7 @@ $ chmod +rw <span style="color:#40ffff">$JAIL</span>/run
 [Install]
 <span style="color:#40ffff">WantedBy</span>=multi-user.target
 </code></pre></div><p>Now run it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo service nginx start
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo service nginx start
 $ ps -ax | grep nginx
 <span style="color:#3677a9">28530</span> ?        Ss     0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
 <span style="color:#3677a9">28531</span> ?        S      0:00 nginx: worker process
@@ -352,11 +356,11 @@ $ ls -l /proc/28530/root
 sudo ls -l /proc/28530/root
 lrwxrwxrwx <span style="color:#3677a9">1</span> root root <span style="color:#3677a9">0</span> Jan <span style="color:#3677a9">12</span> 21:31 /proc/28530/root -&gt; /var/www/chroot
 </code></pre></div><p>If you don&rsquo;t want to use <code>systemd</code> you can use following to start/stop <code>nginx</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx
 $ pgrep nginx | xargs <span style="color:#24909d">kill</span> -9
 </code></pre></div><h3 id="php5-fpm-1">php5-fpm</h3>
 <p>The same applies to <code>php5-fpm</code> too:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/systemd/system/multi-user.target.wants/php5-fpm.service
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/systemd/system/multi-user.target.wants/php5-fpm.service
 [Unit]
 <span style="color:#40ffff">Description</span>=The PHP FastCGI Process Manager
 <span style="color:#40ffff">After</span>=network.target
@@ -371,10 +375,10 @@ $ pgrep nginx | xargs <span style="color:#24909d">kill</span> -9
 [Install]
 <span style="color:#40ffff">WantedBy</span>=multi-user.target
 </code></pre></div><p>or start it manually:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
 $ pgrep php | xargs <span style="color:#24909d">kill</span> -9
 </code></pre></div><p>Check if it&rsquo;s indeed running in the chroot:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ps -ax |grep fpm
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ps -ax |grep fpm
  <span style="color:#3677a9">9468</span> ?        Ss     0:00 php-fpm: master process (/etc/php5/fpm/php-fpm.conf)
  <span style="color:#3677a9">9469</span> ?        S      0:00 php-fpm: pool www
  <span style="color:#3677a9">9470</span> ?        S      0:00 php-fpm: pool www
@@ -384,7 +388,7 @@ lrwxrwxrwx <span style="color:#3677a9">1</span> root root <span style="color:#36
 </code></pre></div><h2 id="system-v">System V</h2>
 <p>If you don&rsquo;t like <code>systemd</code> you can still do it the old way and have your scripts at <code>/etc/init.d/*</code>.</p>
 <h3 id="nginx-2">nginx</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/nginx-chroot 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/nginx-chroot 
 <span style="color:#999;font-style:italic">#!/bin/sh</span>
  
 <span style="color:#999;font-style:italic">### BEGIN INIT INFO</span>
@@ -416,7 +420,7 @@ lrwxrwxrwx <span style="color:#3677a9">1</span> root root <span style="color:#36
  
 <span style="color:#24909d">exit</span> <span style="color:#3677a9">0</span>
 </code></pre></div><h3 id="php5-fpm-2">php5-fpm</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/php5-fpm-chroot 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/php5-fpm-chroot 
 <span style="color:#999;font-style:italic">#!/bin/sh</span>
  
 <span style="color:#999;font-style:italic">### BEGIN INIT INFO</span>
@@ -446,10 +450,10 @@ lrwxrwxrwx <span style="color:#3677a9">1</span> root root <span style="color:#36
 <span style="color:#24909d">exit</span> <span style="color:#3677a9">0</span>
 </code></pre></div><h3 id="install-new-services">Install new services</h3>
 <p>First of all make sure you <strong>remove</strong> the old ones:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx remove
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx remove
 $ update-rc.d php5-fpm remove
 </code></pre></div><p>Now <strong>add</strong> the <strong>new</strong> ones:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx-chroot defaults
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx-chroot defaults
 $ update-rc.d php5-fpm-chroot defaults
 </code></pre></div><h2 id="conclusion">Conclusion</h2>
 <p>Now you have a basic structure to work with. You might want to add more <strong>binaries</strong> to the chroot but keep in mind the implied security concerns. And also try <strong>not</strong> to use symlinks/hardlinks to directories outside the chroot. You can always always override config files in the chroot with backuped one. And to make sure that everything works well, think about using <a href="http://linux.die.net/man/8/auditd">auditd</a> for monitoring file changes inside the chroot.</p>
@@ -582,6 +586,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -111,10 +115,10 @@ at the <a href="https://github.com/dorneanu/smalisca/blob/master/smalisca/module
 <p>Ok, that sounds great!</p>
 <h2 id="some-basic-code">Some basic code</h2>
 <p>The basic idea is to &ldquo;walk&rdquo; through files and call a <em>function</em> for every single found file. You&rsquo;d usually start like this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">for</span> root, dirs, files <span style="color:#6ab825;font-weight:bold">in</span> os.walk(location):
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">for</span> root, dirs, files <span style="color:#6ab825;font-weight:bold">in</span> os.walk(location):
     <span style="color:#999;font-style:italic"># call here some function(s) to do whatever with the dirs/files</span>
 </code></pre></div><p>But first an input filename list has to be generated:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"> <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">get_file_list</span>(folder):
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"> <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">get_file_list</span>(folder):
     <span style="color:#ed9d13">&#34;&#34;&#34; Returns a list of files inside the &lt;folder&gt; directory &#34;&#34;&#34;</span>
     file_list = []
 
@@ -132,7 +136,7 @@ at the <a href="https://github.com/dorneanu/smalisca/blob/master/smalisca/module
 which are then distributed to some &ldquo;workers&rdquo; (aka processes). The best way to do this is to
 distribute the sub-lists equally to the number of available CPU cores. Given an initial
 <code>file_list</code> one could do following:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">cpu_cores = multiprocessing.cpu_count()
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">cpu_cores = multiprocessing.cpu_count()
 <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, cpu_cores):
     sub_list = [file_list[j] <span style="color:#6ab825;font-weight:bold">for</span> j <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(file_list)) <span style="color:#6ab825;font-weight:bold">if</span> j % cpu_cores == i]
 
@@ -145,7 +149,7 @@ has to somehow return the results to the parent process. But how is this done?</
 <p>A simple way is to use <code>Queue</code> where you can pass messages back and forth between your processes. In a more complicated example you might use <code>JoinableQueue</code> where you have typical consumer scenario: Processes fetch data, modify it and then push them back into the queue (<a href="http://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem">producer consumer pattern</a>).</p>
 <p>In my case a <code>Queue</code> is perfectly fine. That way I have a safe way of letting the process pushing back the results into the queue, before merging all available results globally.
 Let&rsquo;s have a look at some example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">process_files</span>(file_list, q):
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">process_files</span>(file_list, q):
     <span style="color:#ed9d13">&#34;&#34;&#34; Proprocess every file in &lt;file_list&gt; and call parse_file() &#34;&#34;&#34;</span>
     results = []
     <span style="color:#6ab825;font-weight:bold">try</span>:
@@ -162,7 +166,7 @@ Let&rsquo;s have a look at some example:</p>
 specific type of queue <em>should</em> be thread and process safe as the documentation states.</p>
 <h2 id="collecting-results">Collecting results</h2>
 <p>After all processes are done doing their job, it&rsquo;s time to collect the results:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">all_results = []
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">all_results = []
 <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(procs)):
     all_results.append(q.get())
 </code></pre></div><p><code>q</code> is the queue used by the processes. Just <code>get</code> all collected results and then you&rsquo;re
@@ -302,7 +306,7 @@ into it. Well that&rsquo;s pretty much what I&rsquo;ve done except for the fact 
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/smalisca-concurrency/paths-workers.dot.png" alt="paths-workers"></p>
 <p>So let&rsquo;s continue with some code examples. A typical <strong>parser process</strong> would look like this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">SmaliParserProcess</span>(multiprocessing.Process):
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">SmaliParserProcess</span>(multiprocessing.Process):
     <span style="color:#ed9d13">&#34;&#34;&#34;Implements a multiprocessing.Process
 </span><span style="color:#ed9d13">
 </span><span style="color:#ed9d13">    Attributes:
@@ -368,7 +372,7 @@ its individual results.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2015/smalisca-concurrency/queue.dot.png" alt="queue"></p>
 <p>A <strong>controller</strong> should create and create the workers. Afterwards it should collect the
 results:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">ConcurrentParser</span>():
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">ConcurrentParser</span>():
     <span style="color:#ed9d13">&#34;&#34;&#34;Implements concurrency features
 </span><span style="color:#ed9d13">
 </span><span style="color:#ed9d13">    Attributes:
@@ -426,14 +430,14 @@ Looking at the <a href="https://docs.python.org/3.1/library/multiprocessing.html
 <p>Ä This means that whenever you use a queue you need to make sure that all items which have been put on the queue will eventually be removed before the process is joined. Otherwise you cannot be sure that processes which have put items on the queue will terminate. Remember also that non-daemonic processes will be automatically be joined.</p>
 </blockquote>
 <p>So my previous implementation was prone to a <strong>deadlock</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">...
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">...
 queue = Queue()
 p = Process(target=f, args=(queue,))
 p.start()
 p.join()                    <span style="color:#999;font-style:italic"># this deadlocks</span>
 obj = queue.get() 
 </code></pre></div><p>OK, leason lerned! And then I&rsquo;ve found this <a href="http://code.activestate.com/lists/python-tutor/99561/">post</a> which deals with <code>multiprocessing.Manager</code>s. In my current code I&rsquo;m also using a <code>Queue</code> but <strong>proxied</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">multimanager = multiprocessing.Manager()
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">multimanager = multiprocessing.Manager()
 result_queue = multimanager.Queue()
 </code></pre></div><p>In this case <code>result_queue</code> is also a <code>Queue</code> wrapped by a proxy. As stated <a href="https://docs.python.org/3/library/multiprocessing.html#proxy-objects">here</a>:</p>
 <blockquote>
@@ -450,7 +454,7 @@ It kind of surprised me too. I&rsquo;ve compared the execution time (<strong>jus
 <li>using different number of jobs/workers</li>
 </ul>
 <p>I&rsquo;ve used my Laptop (<strong>Dell XPS 13 with Intel Core i7</strong>) for the testings. Using a larger code repository (bigger than the <em>FakeBanker</em> one) I&rsquo;ve first ran the <strong>old</strong> smalisca version (0.1). This what I&rsquo;ve got:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time smalisca parser -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time smalisca parser -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
 $ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> | grep total; <span style="color:#6ab825;font-weight:bold">done</span> 
 smalisca parser -l  -s java -f sqlite -o   3.61s user 0.11s system 100% cpu 3.712 total
 smalisca parser -l  -s java -f sqlite -o   3.66s user 0.12s system 100% cpu 3.778 total
@@ -464,7 +468,7 @@ smalisca parser -l  -s java -f sqlite -o   3.52s user 0.16s system 100% cpu 3.68
 smalisca parser -l  -s java -f sqlite -o   3.55s user 0.11s system 100% cpu 3.658 total
 </code></pre></div><p>As you see it takes ca. <strong>3.5 seconds</strong> to finish the parsing. OK, now what about the
 <strong>concurrent</strong> version of smalisca?</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 2 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 2 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
 $ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> 2&gt;&amp;<span style="color:#3677a9">1</span> /dev/null | grep total; <span style="color:#6ab825;font-weight:bold">done</span> 
 ./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.52s user 0.28s system 156% cpu 3.704 total
 ./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.50s user 0.32s system 155% cpu 3.743 total
@@ -478,7 +482,7 @@ $ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span sty
 ./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.44s user 0.33s system 155% cpu 3.707 total
 </code></pre></div><p><strong>5.5 seconds</strong>!!! It takes <strong>longer</strong>! Obviously the <code>Queue</code> processing and starting new processes increases
 execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
 $ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> 2&gt;&amp;<span style="color:#3677a9">1</span> /dev/null | grep total; <span style="color:#6ab825;font-weight:bold">done</span>
 ./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.66s user 0.36s system 161% cpu 3.730 total
 ./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.80s user 0.29s system 161% cpu 3.761 total
@@ -701,6 +705,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

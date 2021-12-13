@@ -27,7 +27,7 @@ In this post I&rsquo;ll try to show which steps have to be taken in order to:
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -43,6 +43,10 @@ In this post I&rsquo;ll try to show which steps have to be taken in order to:
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -98,7 +102,7 @@ type="image/x-icon"/>
 <!-- raw HTML omitted -->
 <h1 id="create-certificates">Create certificates</h1>
 <p>In the last <a href="http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/">post</a> I&rsquo;ve already created the <a href="http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/#Create-vpn.dornea.nu-CA">VPN CA</a> and also <strong>issued</strong> certificates for server and client. Perhaps you do remember the PKI:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;↔</span>
 blockdiag {
   // Define orientation
@@ -136,18 +140,18 @@ blockdiag {
 <ul>
 <li>Add new user <code>openvpn</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# useradd openvpn
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# useradd openvpn
 </code></pre></div><ul>
 <li>Specify which interface the server should listen on</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Which local IP address should OpenVPN</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Which local IP address should OpenVPN</span>
 <span style="color:#999;font-style:italic"># listen on? (optional)</span>
 ;<span style="color:#24909d">local</span> a.b.c.d
 <span style="color:#24909d">local</span> 192.168.178.163
 </code></pre></div><ul>
 <li>Specify protocol and port OpenVPN should initiate connections over</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Which TCP/UDP port should OpenVPN listen on?</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Which TCP/UDP port should OpenVPN listen on?</span>
 <span style="color:#999;font-style:italic"># If you want to run multiple OpenVPN instances</span>
 <span style="color:#999;font-style:italic"># on the same machine, use a different port</span>
 <span style="color:#999;font-style:italic"># number for each one.  You will need to</span>
@@ -160,7 +164,7 @@ proto udp
 </code></pre></div><ul>
 <li>Specify VPN subnet where to assign IP addresses to clients from</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Configure server mode and supply a VPN subnet</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Configure server mode and supply a VPN subnet</span>
 <span style="color:#999;font-style:italic"># for OpenVPN to draw client addresses from.</span>
 <span style="color:#999;font-style:italic"># The server will take 10.8.0.1 for itself,</span>
 <span style="color:#999;font-style:italic"># the rest will be made available to clients.</span>
@@ -170,19 +174,19 @@ proto udp
 server 10.66.0.0 255.255.255.0
 </code></pre></div><h2 id="secure-communication-channel">Secure communication channel</h2>
 <h3 id="add-dh-params">Add <strong>DH params</strong></h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openssl dhparam -out dh2048.pem <span style="color:#3677a9">2048</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openssl dhparam -out dh2048.pem <span style="color:#3677a9">2048</span>
 Generating DH parameters, <span style="color:#3677a9">2048</span> bit long safe prime, generator <span style="color:#3677a9">2</span>
 This is going to take a long <span style="color:#24909d">time</span>
 ...
 </code></pre></div><p>And now add it to the config file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Diffie hellman parameters.</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Diffie hellman parameters.</span>
 <span style="color:#999;font-style:italic"># Generate your own with:</span>
 <span style="color:#999;font-style:italic">#   openssl dhparam -out dh2048.pem 2048</span>
 dh /etc/openvpn/dh2048.pem
 </code></pre></div><h3 id="hmac-firewall-using-tls-auth"><strong>HMAC firewall</strong> using tls-auth</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn --genkey --secret ta.key
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn --genkey --secret ta.key
 </code></pre></div><p>And add it to the config file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># For extra security beyond that provided</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># For extra security beyond that provided</span>
 <span style="color:#999;font-style:italic"># by SSL/TLS, create an &#34;HMAC firewall&#34;</span>
 <span style="color:#999;font-style:italic"># to help block DoS attacks and UDP port flooding.</span>
 <span style="color:#999;font-style:italic">#</span>
@@ -196,7 +200,7 @@ dh /etc/openvpn/dh2048.pem
 tls-auth /etc/openvpn/ta.key <span style="color:#3677a9">0</span> <span style="color:#999;font-style:italic"># This file is secret</span>
 </code></pre></div><h3 id="strong-cryptographic-cipher">Strong <strong>cryptographic cipher</strong></h3>
 <p>First let&rsquo;s have a look at the available ciphers (filter only those with 256 bit key length:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn --show-ciphers | grep <span style="color:#3677a9">256</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn --show-ciphers | grep <span style="color:#3677a9">256</span>
 AES-256-CBC <span style="color:#3677a9">256</span> bit default key (fixed)
 AES-256-OFB <span style="color:#3677a9">256</span> bit default key (fixed) (TLS client/server mode)
 AES-256-CFB <span style="color:#3677a9">256</span> bit default key (fixed) (TLS client/server mode)
@@ -208,7 +212,7 @@ CAMELLIA-256-CFB1 <span style="color:#3677a9">256</span> bit default key (fixed)
 CAMELLIA-256-CFB8 <span style="color:#3677a9">256</span> bit default key (fixed) (TLS client/server mode)
 CAMELLIA-256-OFB <span style="color:#3677a9">256</span> bit default key (fixed) (TLS client/server mode)
 </code></pre></div><p>I&rsquo;ll select <strong>AES-256-CBC</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Select a cryptographic cipher.</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Select a cryptographic cipher.</span>
 <span style="color:#999;font-style:italic"># This config item must be copied to</span>
 <span style="color:#999;font-style:italic"># the client config file as well.</span>
 ;cipher BF-CBC        <span style="color:#999;font-style:italic"># Blowfish (default)</span>
@@ -218,7 +222,7 @@ cipher AES-256-CBC
 </code></pre></div><h3 id="select-tls-cipher">Select TLS cipher</h3>
 <p>In order to guarantee <a href="https://en.wikipedia.org/wiki/Forward_secrecy">FPS</a> I&rsquo;ll be using a <strong>Diffie–Hellman key exchange-based PFS</strong> like <strong>DHE-[&hellip;]</strong> or an <strong>elliptic curve Diffie–Hellman-based PFS</strong> like <strong>ECDHE-[&hellip;]</strong>. As stated <a href="https://community.openvpn.net/openvpn/wiki/Hardening#Useof--tls-cipher">here</a> OpenVPN does not support TLS-ECDHE-* or more exotic cipher-suites as there is no elliptic curve support currently.</p>
 <p>Let&rsquo;s have a look at the available <strong>TLS ciphers</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn --show-tls | grep TLS-DHE
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn --show-tls | grep TLS-DHE
 TLS-DHE-DSS-WITH-AES-256-GCM-SHA384
 TLS-DHE-RSA-WITH-AES-256-GCM-SHA384
 TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
@@ -242,25 +246,25 @@ TLS-DHE-DSS-WITH-3DES-EDE-CBC-SHA
 TLS-DHE-RSA-WITH-DES-CBC-SHA
 TLS-DHE-DSS-WITH-DES-CBC-SHA
 </code></pre></div><p>Add <strong>some</strong> ciphers to the config file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Select a TLS cipher</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Select a TLS cipher</span>
 tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-128-CBC-SHA256:TLS-DHE-DSS-WITH-AES-128-CBC-SHA256:TLS-DHE-RSA-WITH-AES-128-CBC-SHA
 </code></pre></div><p>Additionally you can specify which <strong>TLS version</strong> should be used</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Use TLS 1.2 as minimum requirement</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Use TLS 1.2 as minimum requirement</span>
 tls-version-min 1.2
 </code></pre></div><h3 id="use-sha2-for-message-authentication">Use SHA2 for message authentication</h3>
 <p>In case you don&rsquo;t have performance issues, change the the MAC digest to:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">auth SHA512
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">auth SHA512
 </code></pre></div><h3 id="verify-revoked-client-certs">Verify revoked client certs</h3>
 <p>Also make sure that no client with a revoked certificate is allowed to connect to the VPN server:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">crl-verify path-to/your-ca-crl.pem
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">crl-verify path-to/your-ca-crl.pem
 </code></pre></div><h3 id="route-all-client-traffic-incl-dns-through-vpn-tunnel">Route all client traffic (incl. DNS) through VPN tunnel</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">push <span style="color:#ed9d13">&#34;redirect-gateway def1&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">push <span style="color:#ed9d13">&#34;redirect-gateway def1&#34;</span>
 </code></pre></div><p>Pushing this option to the clients will route all client originating traffic through the OpenVPN server. The server however must know how to deal with this traffic by <strong>NAT</strong>ing it to the Internet or passing it to some <strong>proxy</strong>. <strong>DNS</strong> traffic will be routed as well. You may want to <em>push</em> some DNS server to the clients, such as:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">push <span style="color:#ed9d13">&#34;dhcp-option DNS 208.67.222.222&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">push <span style="color:#ed9d13">&#34;dhcp-option DNS 208.67.222.222&#34;</span>
 push <span style="color:#ed9d13">&#34;dhcp-option DNS 8.8.8.8&#34;</span>
 </code></pre></div><h3 id="make-other-subnets-available-to-the-clients">Make other subnets available to the clients</h3>
 <p>In order to allow VPN clients to access subnets behind the VPN-gateway you&rsquo;ll have to advertise these subnets to the clients. One example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Push routes to the client to allow it</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Push routes to the client to allow it</span>
 <span style="color:#999;font-style:italic"># to reach other private subnets behind</span>
 <span style="color:#999;font-style:italic"># the server.  Remember that these</span>
 <span style="color:#999;font-style:italic"># private subnets will also need</span>
@@ -272,14 +276,14 @@ push <span style="color:#ed9d13">&#34;route 192.168.178.0 255.255.255.0&#34;</sp
 <h2 id="harden-server">Harden server</h2>
 <h3 id="move-it-to-chroot">Move it to chroot</h3>
 <p>In a <strong>chroot</strong> environment a process/daemon would not be able to access any part of the system&rsquo;s filesystem except for the directory it is currently in.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# mkdir -p /home/openvpn/tmp
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# mkdir -p /home/openvpn/tmp
 root@debian:/etc/openvpn# chown -R openvpn:openvpn /home/openvpn
 </code></pre></div><p>Also add to the config file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Lock down daemon to chroot jail</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Lock down daemon to chroot jail</span>
 chroot jail
 </code></pre></div><h3 id="dont-run-as-root">Don&rsquo;t run as root</h3>
 <p>Reduce OpenVPN&rsquo;s server privileges:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># It&#39;s a good idea to reduce the OpenVPN</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># It&#39;s a good idea to reduce the OpenVPN</span>
 <span style="color:#999;font-style:italic"># daemon&#39;s privileges after initialization.</span>
 <span style="color:#999;font-style:italic">#</span>
 <span style="color:#999;font-style:italic"># You can uncomment this out on</span>
@@ -291,34 +295,34 @@ group openvpn
 <ul>
 <li>Create a new script</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# cat /usr/local/sbin/unpriv-ip 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# cat /usr/local/sbin/unpriv-ip 
 <span style="color:#999;font-style:italic">#!/bin/sh</span>
 sudo /sbin/ip <span style="color:#40ffff">$*</span>
 root@debian:/etc/openvpn# chmod a+x /usr/local/sbin/unpriv-ip
 </code></pre></div><ul>
 <li>Allow <code>user1</code> to execute <code>/sbin/ip</code> (in <code>/etc/sudoers</code>):</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Allow user1 nobody to execute /sbin/ip</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Allow user1 nobody to execute /sbin/ip</span>
 openvpn <span style="color:#40ffff">ALL</span>=(ALL)  NOPASSWD: /sbin/ip
 </code></pre></div><ul>
 <li>Change OpenVPN configuration</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Set  alternate command to execute instead of default iproute2 command.</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Set  alternate command to execute instead of default iproute2 command.</span>
 iproute /usr/local/sbin/unpriv-ip
 </code></pre></div><h3 id="check-file-permissions">Check file permissions</h3>
 <p>Also check the file permissions for the file inside <code>/etc/openvpn</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# chmod go-rwx /etc/openvpn/ta.key /etc/openvpn/dh2048.pem /etc/openvpn/certs/raspberry_pi.p12
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# chmod go-rwx /etc/openvpn/ta.key /etc/openvpn/dh2048.pem /etc/openvpn/certs/raspberry_pi.p12
 </code></pre></div><h3 id="disable-password--caching">Disable password  caching</h3>
 <p>You might get some warning like</p>
 <blockquote>
 <p>WARNING: this configuration may cache passwords in memory &ndash; use the auth-nocache option to prevent this</p>
 </blockquote>
 <p>Then add it fo the conf:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Prevent password caching</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Prevent password caching</span>
 auth-nocache
 </code></pre></div><h2 id="start-server">Start server</h2>
 <p>Let&rsquo;s give it a try:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn server.conf 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/etc/openvpn# openvpn server.conf 
 Tue Nov <span style="color:#3677a9">17</span> 17:30:12 <span style="color:#3677a9">2015</span> OpenVPN 2.3.4 arm-unknown-linux-gnueabihf [SSL (OpenSSL)] [LZO] [EPOLL] [PKCS11] [MH] [IPv6] built on Dec  <span style="color:#3677a9">5</span> <span style="color:#3677a9">2014</span>
 ...
 
@@ -344,12 +348,12 @@ Tue Nov <span style="color:#3677a9">17</span> 17:30:17 <span style="color:#3677a
 <ul>
 <li>Process owner</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/home/victor# ps -efl | grep openvpn
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/home/victor# ps -efl | grep openvpn
 <span style="color:#3677a9">4</span> S openvpn   <span style="color:#3677a9">9930</span>  <span style="color:#3677a9">1633</span>  <span style="color:#3677a9">0</span>  <span style="color:#3677a9">80</span>   <span style="color:#3677a9">0</span> -  <span style="color:#3677a9">1356</span>  e0778 17:30 pts/1    00:00:00 openvpn server.conf
 </code></pre></div><ul>
 <li>Opened files</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/home/victor# lsof | grep <span style="color:#3677a9">9930</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/home/victor# lsof | grep <span style="color:#3677a9">9930</span>
 openvpn    <span style="color:#3677a9">9930</span>         openvpn  cwd       DIR      179,2     <span style="color:#3677a9">4096</span>        <span style="color:#3677a9">101</span> /home/openvpn
 openvpn    <span style="color:#3677a9">9930</span>         openvpn  rtd       DIR      179,2     <span style="color:#3677a9">4096</span>        <span style="color:#3677a9">101</span> /home/openvpn
 
@@ -357,7 +361,7 @@ openvpn    <span style="color:#3677a9">9930</span>         openvpn  rtd       DI
 </code></pre></div><ul>
 <li>Connectivity</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/home/openvpn# netstat -uptan | grep <span style="color:#3677a9">443</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/home/openvpn# netstat -uptan | grep <span style="color:#3677a9">443</span>
 udp        <span style="color:#3677a9">0</span>      192.168.178.163:443             0.0.0.0:*                           9930/openvpn    
 </code></pre></div><p>Looks good.</p>
 <h1 id="configure-client">Configure client</h1>
@@ -366,14 +370,14 @@ udp        <span style="color:#3677a9">0</span>      192.168.178.163:443        
 <ul>
 <li>Specify we&rsquo;re operating in client mode</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Specify that we are a client and that we</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Specify that we are a client and that we</span>
 <span style="color:#999;font-style:italic"># will be pulling certain config file directives</span>
 <span style="color:#999;font-style:italic"># from the server.</span>
 client
 </code></pre></div><ul>
 <li>Specify TUN/TAP device for the client</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"> Use the same setting as you are using on
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"> Use the same setting as you are using on
 <span style="color:#999;font-style:italic"># the server.</span>
 <span style="color:#999;font-style:italic"># On most systems, the VPN will not function</span>
 <span style="color:#999;font-style:italic"># unless you partially or fully disable</span>
@@ -383,7 +387,7 @@ dev tun
 </code></pre></div><ul>
 <li>Connection details</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Are we connecting to a TCP or</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Are we connecting to a TCP or</span>
 <span style="color:#999;font-style:italic"># UDP server?  Use the same setting as</span>
 <span style="color:#999;font-style:italic"># on the server.</span>
 ;proto tcp
@@ -399,7 +403,7 @@ remote 10.0.1.169 <span style="color:#3677a9">443</span>
 <ul>
 <li>Specify previously generated client certificate and key</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"> SSL/TLS parms.
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"> SSL/TLS parms.
 <span style="color:#999;font-style:italic"># See the server config file for more</span>
 <span style="color:#999;font-style:italic"># description.  It&#39;s best to use</span>
 <span style="color:#999;font-style:italic"># a separate .crt/.key file pair</span>
@@ -411,7 +415,7 @@ key victor.key
 </code></pre></div><ul>
 <li>Verify server certificate</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Verify server certificate by checking that the</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Verify server certificate by checking that the</span>
 <span style="color:#999;font-style:italic"># certicate has the correct key usage set.</span>
 <span style="color:#999;font-style:italic"># This is an important precaution to protect against</span>
 <span style="color:#999;font-style:italic"># a potential attack discussed here:</span>
@@ -427,21 +431,21 @@ remote-cert-tls server
 </code></pre></div><ul>
 <li>Verify server&rsquo;s CN</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">verify-x509-name <span style="color:#ed9d13">&#39;C=NU, O=dornea.nu, OU=dornea.nu Root CA, CN=vpn.dornea.nu&#39;</span> subject
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">verify-x509-name <span style="color:#ed9d13">&#39;C=NU, O=dornea.nu, OU=dornea.nu Root CA, CN=vpn.dornea.nu&#39;</span> subject
 </code></pre></div><ul>
 <li>Use <strong>tls-auth</strong> key (make sure you use the same one as on the server)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># If a tls-auth key is used on the server</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># If a tls-auth key is used on the server</span>
 <span style="color:#999;font-style:italic"># then every client must also have the key.</span>
 tls-auth ta.key <span style="color:#3677a9">1</span>
 </code></pre></div><ul>
 <li>Use SHA2 as MAC</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">auth SHA512
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">auth SHA512
 </code></pre></div><ul>
 <li>Select cryptographic cipher (same as on the server)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Select a cryptographic cipher.</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Select a cryptographic cipher.</span>
 <span style="color:#999;font-style:italic"># If the cipher option is used on the server</span>
 <span style="color:#999;font-style:italic"># then you must also specify it here.</span>
 cipher cipher AES-256-CFB
@@ -449,7 +453,7 @@ cipher cipher AES-256-CFB
 <ul>
 <li>Initial try (with errors, see below)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">OpenVPN 2.3_git [git:master/60fd44e501f20024+] x86_64-unknown-linux-gnu [SSL (OpenSSL)] [LZO] [SNAPPY] [LZ4] [EPOLL] [MH] [IPv6] built on Jun <span style="color:#3677a9">11</span> <span style="color:#3677a9">2015</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">OpenVPN 2.3_git [git:master/60fd44e501f20024+] x86_64-unknown-linux-gnu [SSL (OpenSSL)] [LZO] [SNAPPY] [LZ4] [EPOLL] [MH] [IPv6] built on Jun <span style="color:#3677a9">11</span> <span style="color:#3677a9">2015</span>
 library versions: OpenSSL 1.0.2d <span style="color:#3677a9">9</span> Jul 2015, LZO 2.09
 Enter Private Key Password: ******************
 ...
@@ -460,12 +464,12 @@ TLS Error: TLS object -&gt; incoming plaintext <span style="color:#24909d">read<
 TLS Error: TLS handshake failed
 ...
 </code></pre></div><p>We can see that the <strong>certificate verification</strong> has failed. So the client is not able to verify the certificate presented by the server because it doesn&rsquo;t have the <strong>root cert</strong>. Let&rsquo;s adapt the config:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># SSL/TLS parms.</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># SSL/TLS parms.</span>
 ...
 ca vpn-ca-chain.pem
 ...
 </code></pre></div><p>Give it another try:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">OpenVPN 2.3_git [git:master/60fd44e501f20024+] x86_64-unknown-linux-gnu [SSL (OpenSSL)] [LZO] [SNAPPY] [LZ4] [EPOLL] [MH] [IPv6] built on Jun <span style="color:#3677a9">11</span> <span style="color:#3677a9">2015</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">OpenVPN 2.3_git [git:master/60fd44e501f20024+] x86_64-unknown-linux-gnu [SSL (OpenSSL)] [LZO] [SNAPPY] [LZ4] [EPOLL] [MH] [IPv6] built on Jun <span style="color:#3677a9">11</span> <span style="color:#3677a9">2015</span>
 library versions: OpenSSL 1.0.2d <span style="color:#3677a9">9</span> Jul 2015, LZO 2.09
 NOTE: the current --script-security setting may allow this configuration to call user-defined scripts
 Enter Private Key Password: ******************
@@ -519,7 +523,7 @@ Initialization Sequence Completed
 <ul>
 <li>Server logs</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">TLS: Initial packet from [AF_INET]10.0.1.1:59824, <span style="color:#40ffff">sid</span>=230b4633 1fb1bfae
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">TLS: Initial packet from [AF_INET]10.0.1.1:59824, <span style="color:#40ffff">sid</span>=230b4633 1fb1bfae
 VERIFY OK: <span style="color:#40ffff">depth</span>=2, <span style="color:#40ffff">C</span>=NU, <span style="color:#40ffff">O</span>=dornea.nu, <span style="color:#40ffff">OU</span>=dornea.nu Root CA, <span style="color:#40ffff">CN</span>=dornea.nu Root CA
 VERIFY OK: <span style="color:#40ffff">depth</span>=1, <span style="color:#40ffff">C</span>=NU, <span style="color:#40ffff">O</span>=dornea.nu, <span style="color:#40ffff">OU</span>=dornea.nu Root CA, <span style="color:#40ffff">CN</span>=vpn.dornea.nu CA
 VERIFY OK: <span style="color:#40ffff">depth</span>=0, <span style="color:#40ffff">C</span>=NU, <span style="color:#40ffff">ST</span>=/dev/null, <span style="color:#40ffff">L</span>=/dev/random, <span style="color:#40ffff">O</span>=dornea.nu, <span style="color:#40ffff">OU</span>=vpn.dornea.nu, <span style="color:#40ffff">CN</span>=Victor Dorneanu
@@ -539,7 +543,7 @@ Victor Dorneanu/10.0.1.1:59824 SENT CONTROL [Victor Dorneanu]: <span style="colo
 <ul>
 <li>Port scanning</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo nmap -sU 192.168.178.163 -p <span style="color:#3677a9">443</span> 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo nmap -sU 192.168.178.163 -p <span style="color:#3677a9">443</span> 
 
 Starting Nmap 6.47 ( http://nmap.org ) at 2015-11-11 20:24 CET
 Nmap scan report <span style="color:#6ab825;font-weight:bold">for</span> debian.local (192.168.178.163)
@@ -552,7 +556,7 @@ Nmap <span style="color:#6ab825;font-weight:bold">done</span>: <span style="colo
 
 </code></pre></div><p>So <code>tls-auth</code> seems to work.</p>
 <h1 id="routing">Routing</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%nwdiag
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%nwdiag
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;↔</span>
 
     client              [shape = <span style="color:#ed9d13">&#34;cisco.pc&#34;</span>];
@@ -582,7 +586,7 @@ Nmap <span style="color:#6ab825;font-weight:bold">done</span>: <span style="colo
 }
 </code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/openvpn-for-paranoias/output_7_0.png" alt="png"></p>
 <p>We have a typical <strong>road-warrior</strong> use case where a single client connects to a remote subnet using a VPN. Afer sucessfully establishing the VPN connection the client will be part of the <code>vpn-net</code> subnet:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%nwdiag
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%nwdiag
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
  nwdiag {
     <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">obj_old</span>       [color = lighgray,style = dotted];
@@ -626,7 +630,7 @@ Nmap <span style="color:#6ab825;font-weight:bold">done</span>: <span style="colo
 <p>Having advertised the network address of <code>home-net</code> the client should be able to access <code>Laptop</code> (192.168.178.24) or <code>Storage</code> (192.168.178.25). Also keep in mind that the client will be able to access the whole <code>192.168.178.0/24</code> range. You may want to add client-specific <strong>access policies</strong>.</p>
 <h2 id="nating-client-traffic-to-the-internet">NATing client traffic to the Internet</h2>
 <p>By passing client&rsquo;s traffic through the OpenVPN server you&rsquo;ll need to implement <strong>NAT</strong>ing in order to let your clients access the Internet or other subnets.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/# iptables -t nat -A POSTROUTING -s 10.66.0.0/24 -o eth0 -j MASQUERADE
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">root@debian:/# iptables -t nat -A POSTROUTING -s 10.66.0.0/24 -o eth0 -j MASQUERADE
 </code></pre></div><h1 id="client-based-attack-vectors">Client based attack vectors</h1>
 <p>Regardless the countermeasures taken to secure the server, as a client you want your VPN connection to be safe and secure. In a hostile environment like a coffee shop or on any security conferences you want to keep your data safe from any curios eyes. Using a VPN no one could have a look at at the data inside the &ldquo;stream&rdquo; but there are some problems you should be aware of.</p>
 <p>An attacker could bring down your VPN connection by spoofing the server and sending you TCP packets with a RST flag inside it. As a consequence this might destroy the virtual interface which in turn will remove all routing rules previously added by the OpenVPN client regarding that specific interface. Afterwards you will be using your physical interface without any further protection. And the worst thing about it: <strong>You won&rsquo;t even notice it!</strong></p>
@@ -634,22 +638,22 @@ Nmap <span style="color:#6ab825;font-weight:bold">done</span>: <span style="colo
 <h2 id="dns">DNS</h2>
 <p>Even though your VPN provider will &ldquo;push&rdquo; to the clients a trust DNS server, the DHCP server might override this information causing the client to use an untrusted DNS server. In that case the retrieval of DNS information over DHCP should be avoided. Hard-coding an IP address of a trusted DNS server like <code>8.8.8.8</code> is recommended.</p>
 <p>The client will get the DNS information from the server, however the <code>/etc/resolv.conf</code> has to be adapted as well. I&rsquo;ve found some <a href="https://github.com/masterkorp/openvpn-update-resolv-conf">hook script</a> which will modify your <code>resolv.conf</code> with the information from the server. On Arch Linux there is an <a href="https://aur.archlinux.org/packages/openvpn-update-resolv-conf/">AUR package</a> as well. After installing the hook script, also change the <strong>client</strong> config file to make this work:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">script-security <span style="color:#3677a9">2</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">script-security <span style="color:#3677a9">2</span>
 up /etc/openvpn/update-resolv-conf
 down /etc/openvpn/update-resolv-conf
 </code></pre></div><p>After connecting to the server, you should see sth like this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">...
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">...
 Mon Nov <span style="color:#3677a9">16</span> 14:05:45 <span style="color:#3677a9">2015</span> /etc/openvpn/update-resolv-conf tun0 <span style="color:#3677a9">1500</span> <span style="color:#3677a9">1570</span> 10.66.0.6 10.66.0.5 init
 push <span style="color:#ed9d13">&#34;dhcp-option DNS 208.67.222.222&#34;</span>
 push <span style="color:#ed9d13">&#34;dhcp-option DNS 8.8.8.8&#34;</span>
 ...
 </code></pre></div><p><strong>[Update 2015-11-24]</strong>: The <code>update-resolv-conf</code> is now called from <a href="https://gist.github.com/dorneanu/9303dca4a81898b74fa6#file-init-sh">another script</a> (see below). The config file should now look like this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Run scripts after tunnel is up or down</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Run scripts after tunnel is up or down</span>
 up <span style="color:#ed9d13">&#34;./init.sh -u&#34;</span>
 down <span style="color:#ed9d13">&#34;./init.sh -d&#34;</span>
 </code></pre></div><h2 id="denial-of-service">Denial of Service</h2>
 <p>In the case of our VPN connection DoS attacks would bring down the TCP stream which in turn will cause the virtual interface go down and finally also removing all routing information. In the worst case the client won&rsquo;t have any protection at all (otherwise provided by the VPN tunnel). But first let&rsquo;s have a look at what happens when a client connects to the VPN server:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">1) Fri Nov <span style="color:#3677a9">13</span> 13:17:13 <span style="color:#3677a9">2015</span> /usr/bin/ip link <span style="color:#24909d">set</span> dev tun0 up mtu <span style="color:#3677a9">1500</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">1) Fri Nov <span style="color:#3677a9">13</span> 13:17:13 <span style="color:#3677a9">2015</span> /usr/bin/ip link <span style="color:#24909d">set</span> dev tun0 up mtu <span style="color:#3677a9">1500</span>
 2) Fri Nov <span style="color:#3677a9">13</span> 13:17:13 <span style="color:#3677a9">2015</span> /usr/bin/ip addr add dev tun0 <span style="color:#24909d">local</span> 10.66.0.6 peer 10.66.0.5
 3) Fri Nov <span style="color:#3677a9">13</span> 13:17:13 <span style="color:#3677a9">2015</span> /usr/bin/ip route add xx.xx.xx.xx/32 via 192.168.66.1
 4) Fri Nov <span style="color:#3677a9">13</span> 13:17:13 <span style="color:#3677a9">2015</span> /usr/bin/ip route add 0.0.0.0/1 via 10.66.0.5
@@ -666,9 +670,9 @@ down <span style="color:#ed9d13">&#34;./init.sh -d&#34;</span>
 <li>Route for the server IP address in the <code>vpn-net</code> subnet</li>
 </ol>
 <p>Now if a DHCP server pushes a subnet mask for a bigger subnet then this will mask/override the masks from the VPN server. So in some cases the routing information from the DHCP server will be more specific than the OpenVPN routes. For example</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip route add 8.8.8.0/16 via 192.168.66.2
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip route add 8.8.8.0/16 via 192.168.66.2
 </code></pre></div><p>will be more specific than:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip route add 128.0.0.0/1 via 10.66.0.5
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip route add 128.0.0.0/1 via 10.66.0.5
 /usr/bin/ip route add 192.168.178.0/24 via 10.66.0.5
 </code></pre></div><p>I&rsquo;ve found some ways how to prevent this kind of attacks. On a Linux based system one could use <strong>different routing tables</strong> or harden <strong>firewall rules</strong> to restrict connection outside the VPN tunnel.</p>
 <h3 id="use-of-different-routing-tables">Use of different routing tables</h3>
@@ -695,7 +699,7 @@ lookup is terminated. Otherwise, the RPDB program continues with the next rule.<
 <li>Priority: 32767, Selector: match anything, Action: lookup routing table <strong>default</strong> (ID 253).  The default table is empty. It is reserved for some post-processing if no previous default rules selected the packet.  This rule may also be deleted.</li>
 </ol>
 <p>Let&rsquo;s have a look at the configuration:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip rule add to &lt;openvpn-server&gt; table main pref <span style="color:#3677a9">1000</span>    (1)
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip rule add to &lt;openvpn-server&gt; table main pref <span style="color:#3677a9">1000</span>    (1)
 /usr/bin/ip rule add to &lt;openvpn-server&gt; unreachable pref <span style="color:#3677a9">1001</span>   (2)
 /usr/bin/ip rule add table <span style="color:#3677a9">94</span> pref <span style="color:#3677a9">1002</span>                          (3)
 /usr/bin/ip rule add unreachable pref <span style="color:#3677a9">1003</span>                       (4)
@@ -707,7 +711,7 @@ lookup is terminated. Otherwise, the RPDB program continues with the next rule.<
 <li>The last rules prevents packets from using the <strong>main</strong> table in case the OpenVPN table (id = 94) is empty.</li>
 </ol>
 <p>Let&rsquo;s have a look at the <strong>IP rule policy</strong> after the rules have been added:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ip rule
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ip rule
 0:	from all lookup <span style="color:#24909d">local</span> 
 1000:	from all to &lt;server IP addr&gt; lookup main 
 1001:	from all to &lt;server IP addr&gt; unreachable
@@ -721,19 +725,19 @@ lookup is terminated. Otherwise, the RPDB program continues with the next rule.<
 <li>All other traffic should lookup for routing information in table <strong>94</strong>.</li>
 </ol>
 <p>So let&rsquo;s try that out! Here are routes for table <strong>main</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) ip route show
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) ip route show
 default via 192.168.66.1 dev wlan0  proto static  metric <span style="color:#3677a9">600</span> 
 192.168.66.0/24 dev wlan0  proto kernel  scope link  src 192.168.66.61  metric <span style="color:#3677a9">600</span> 
 </code></pre></div><p>Although there is a default route in the main table, packets shouldn&rsquo;t be able to be sent because we have not defined yet any routes for table <strong>94</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ping h.de
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ping h.de
 connect: Network is unreachable
 </code></pre></div><p>After removing the IP rules:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip rule del to &lt;openvpn-server&gt;table main pref <span style="color:#3677a9">1000</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/usr/bin/ip rule del to &lt;openvpn-server&gt;table main pref <span style="color:#3677a9">1000</span>
 /usr/bin/ip rule del to &lt;openvpn-server&gt; unreachable pref <span style="color:#3677a9">1001</span>
 /usr/bin/ip rule del table <span style="color:#3677a9">94</span> pref <span style="color:#3677a9">1002</span>
 /usr/bin/ip rule del unreachable pref <span style="color:#3677a9">1003</span>
 </code></pre></div><p>&hellip; everything is back to normal:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) ping h.de -c <span style="color:#3677a9">3</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) ping h.de -c <span style="color:#3677a9">3</span>
 PING h.de (212.34.167.36) 56(84) bytes of data.
 <span style="color:#3677a9">64</span> bytes from plesk3.odn.de (212.34.167.36): <span style="color:#40ffff">icmp_seq</span>=<span style="color:#3677a9">1</span> <span style="color:#40ffff">ttl</span>=<span style="color:#3677a9">53</span> <span style="color:#40ffff">time</span>=27.8 ms
 <span style="color:#3677a9">64</span> bytes from plesk3.odn.de (212.34.167.36): <span style="color:#40ffff">icmp_seq</span>=<span style="color:#3677a9">2</span> <span style="color:#40ffff">ttl</span>=<span style="color:#3677a9">53</span> <span style="color:#40ffff">time</span>=32.1 ms
@@ -744,30 +748,30 @@ PING h.de (212.34.167.36) 56(84) bytes of data.
 rtt min/avg/max/mdev = 27.817/30.167/32.187/1.804 ms
 </code></pre></div><h3 id="adding-routes-to-the-openvpn-table">Adding routes to the OpenVPN table</h3>
 <p>In the next steps OpenVPN should add its routing information to the previously created routing table and <strong>not</strong> the <strong>main</strong> one.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/sbin/ip route add 0.0.0.0/0.0.0.0 table <span style="color:#3677a9">94</span> dev tun0 via 10.66.0.5
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">/sbin/ip route add 0.0.0.0/0.0.0.0 table <span style="color:#3677a9">94</span> dev tun0 via 10.66.0.5
 /sbin/ip route add 10.66.0.1/255.255.255.255 table <span style="color:#3677a9">94</span> dev tun0 via 10.66.0.5
 </code></pre></div><p>Now you review the routing information in table <strong>94</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ip route show table <span style="color:#3677a9">94</span>  
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ip route show table <span style="color:#3677a9">94</span>  
 default via 10.66.0.5 dev tun0 
 10.66.0.1 via 10.66.0.5 dev tun0 
 10.66.0.5 dev tun0  proto kernel  scope link  src 10.66.0.6 
 </code></pre></div><p><a href="https://www.agwa.name/blog/post/hardening_openvpn_for_def_con">Andrew</a> wrote some hook script you can <a href="https://www.agwa.name/blog/post/hardening_openvpn_for_def_con/media/route">download here</a>. Save this to you machine and make it executable:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># wget https://www.agwa.name/blog/post/hardening\_openvpn\_for\_def\_con/media/route</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># wget https://www.agwa.name/blog/post/hardening\_openvpn\_for\_def\_con/media/route</span>
 <span style="color:#999;font-style:italic"># cp route /usr/local/bin/route</span>
 <span style="color:#999;font-style:italic"># chmod a+x /usr/local/bin/route</span>
 </code></pre></div><p>Now the <strong>client</strong> config file has to be modified:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">setenv OPENVPN<span style="color:#ed9d13">\_</span>ROUTE<span style="color:#ed9d13">\_</span>TABLE <span style="color:#3677a9">94</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">setenv OPENVPN<span style="color:#ed9d13">\_</span>ROUTE<span style="color:#ed9d13">\_</span>TABLE <span style="color:#3677a9">94</span>
 route-noexec
 route-up /usr/local/bin/route
 route 0.0.0.0 0.0.0.0
 </code></pre></div><p>The <strong>server</strong> config has to be modified as well by removing the <strong>remote-gateway</strong> option:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># push &#34;redirect-gateway def1&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># push &#34;redirect-gateway def1&#34;</span>
 </code></pre></div><h3 id="conclusion">Conclusion</h3>
 <p>This solution seems to be very clever, however I&rsquo;ve had <strong>performance</strong> issues and also multiple <strong>routing</strong> problems. Perhaps will somebody see and comment what I&rsquo;m doing wrong.</p>
 <h2 id="use-of-firewall-rules">Use of firewall rules</h2>
 <h3 id="uncomplicated-firewall-ufw">Uncomplicated Firewall (ufw)</h3>
 <p>I&rsquo;ll be using <a href="https://launchpad.net/ufw">ufw</a> for setting up my firewall. First add these lines to <code>/etc/ufw/before.rules</code> before the &ldquo;filer* line:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># NAT (Network Address Translation) table rules</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># NAT (Network Address Translation) table rules</span>
 *nat
 :POSTROUTING ACCEPT [0:0]
 
@@ -778,12 +782,12 @@ route 0.0.0.0 0.0.0.0
 *filter
 ...
 </code></pre></div><p>Now enable the firewall:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># ufw enable</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># ufw enable</span>
 Firewall is active and enabled on system startup
 <span style="color:#999;font-style:italic"># ufw status</span>
 Status: active
 </code></pre></div><p>&hellip; add some <strong>ufw</strong> rules:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#40ffff">SERVER</span>=<span style="color:#ed9d13">`</span>host &lt;vpn-server&gt; | awk <span style="color:#ed9d13">&#39;{ print \\)4; }&#39;</span><span style="color:#ed9d13">`</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#40ffff">SERVER</span>=<span style="color:#ed9d13">`</span>host &lt;vpn-server&gt; | awk <span style="color:#ed9d13">&#39;{ print \\)4; }&#39;</span><span style="color:#ed9d13">`</span>
 
 <span style="color:#999;font-style:italic"># Default policies</span>
 ufw default deny incoming
@@ -810,7 +814,7 @@ ufw allow in from any to any port <span style="color:#3677a9">53</span>
 ufw allow out from any to any port <span style="color:#3677a9">53</span>
 
 </code></pre></div><p>Check that:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ufw status verbose
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( ufw status verbose
 Status: active
 
 To                         Action      From
@@ -829,7 +833,7 @@ Anywhere                   ALLOW OUT   &lt;vpn-server&gt; 80/udp on wlan0
 </code></pre></div><p><strong>[Update 2014-11-24]</strong>: The <a href="https://gist.github.com/dorneanu/9303dca4a81898b74fa6#file-init-sh">initialization script</a> called by OpenVPN uses <code>iptables</code>. But feel free to adapt if you want to stick with <code>ufw</code>.</p>
 <h3 id="using-iptables-prefered">Using iptables (prefered)</h3>
 <p><strong>[Update 2015-11-24]</strong>: If you don&rsquo;t want any fancy firewall frameworks, you can of course stick to <code>iptables</code>.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># VPN server address</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># VPN server address</span>
 VPN<span style="color:#ed9d13">\_</span>SERVER=&lt;vpn-server&gt;
 
 <span style="color:#999;font-style:italic"># Local LAN subnet</span>
@@ -869,7 +873,7 @@ ip6tables -P INPUT DROP
 ip6tables -P OUTPUT DROP
 ip6tables -P FORWARD DROP
 </code></pre></div><p>All these rules are part of <a href="https://gist.github.com/dorneanu/9303dca4a81898b74fa6#file-init-sh">this script</a> which is called by OpenVPN (up/down commands):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Run scripts after tunnel is up or down</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Run scripts after tunnel is up or down</span>
 up <span style="color:#ed9d13">&#34;./init.sh -u&#34;</span>
 down <span style="color:#ed9d13">&#34;./init.sh -d&#34;</span>
 </code></pre></div><p>Have a look at the <a href="https://gist.github.com/dorneanu/9303dca4a81898b74fa6#file-init-sh">script</a> and add your own actions to be executed when the tunnel is up or down. Also make sure you save the script in the same directory where the configuration files resides.</p>
@@ -877,7 +881,7 @@ down <span style="color:#ed9d13">&#34;./init.sh -d&#34;</span>
 <ul>
 <li>Before establishing the VPN tunnel</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) ping h.de -c <span style="color:#3677a9">4</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) ping h.de -c <span style="color:#3677a9">4</span>
 PING h.de (212.34.167.36) 56(84) bytes of data.
 ^C
 --- h.de ping statistics ---
@@ -886,7 +890,7 @@ PING h.de (212.34.167.36) 56(84) bytes of data.
 </code></pre></div><ul>
 <li>After establishing the VPN</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ping h.de -c <span style="color:#3677a9">4</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ping h.de -c <span style="color:#3677a9">4</span>
 PING h.de (212.34.167.36) 56(84) bytes of data.
 <span style="color:#3677a9">64</span> bytes from plesk3.odn.de (212.34.167.36): <span style="color:#40ffff">icmp_seq</span>=<span style="color:#3677a9">1</span> <span style="color:#40ffff">ttl</span>=<span style="color:#3677a9">50</span> <span style="color:#40ffff">time</span>=<span style="color:#3677a9">122</span> ms
 <span style="color:#3677a9">64</span> bytes from plesk3.odn.de (212.34.167.36): <span style="color:#40ffff">icmp_seq</span>=<span style="color:#3677a9">2</span> <span style="color:#40ffff">ttl</span>=<span style="color:#3677a9">50</span> <span style="color:#40ffff">time</span>=83.8 ms
@@ -1041,6 +1045,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

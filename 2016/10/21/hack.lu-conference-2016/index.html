@@ -26,7 +26,7 @@ Talks I think there were some realy good talks. Unfortunately I&rsquo;ve seen on
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ Talks I think there were some realy good talks. Unfortunately I&rsquo;ve seen on
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -179,9 +183,9 @@ mentioned as well:</p>
 </li>
 </ul>
 <p>One thing that caught my attention was the fact that when doing <strong>string analysis</strong>, you can use old good <code>strings</code> also for unicode strings:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ strings -eL &lt;file&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ strings -eL &lt;file&gt;
 </code></pre></div><p>From the manpage:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">--encoding=encoding
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">--encoding=encoding
 	   Select the character encoding of the strings that are to be found.  Possible values for encoding are: s = single-7-bit-byte characters (ASCII, ISO 8859, etc., default), S = single-8-bit-byte characters, b = 16-bit
 	   bigendian, l = 16-bit littleendian, B = 32-bit bigendian, L = 32-bit littleendian.  Useful for finding wide character strings. (l and b apply to, for example, Unicode UTF-16/UCS-2 encodings).
 </code></pre></div><p>Nice. Also make sure you&rsquo;ll have a look at the <a href="https://docs.google.com/presentation/d/1j1y97LUw9AHapfcFICVOZ3hGxaT6jYSwk_gm4iQjEnA/edit">presentation</a> and the <a href="http://vandeplas.com/hacklu/">provided data sources</a>. Happy DFIR!</p>
@@ -191,7 +195,7 @@ mentioned as well:</p>
 <p><a href="https://twitter.com/cryptax">Axelle Apvrille</a> had a workshop on <a href="http://2016.hack.lu/talks/#android-malware-reverse-engineering">Android Malware Reverse Engineering</a>. While the first part covered the
 &ldquo;basics&rdquo; (static code analysis and dynamic analysis) not that interesting to me (due to previous work: <a href="http://blog.dornea.nu/2014/07/07/disect-android-apks-like-a-pro-static-code-analysis/">here</a>, <a href="http://blog.dornea.nu/2014/08/05/android-dynamic-code-analysis-mastering-droidbox/">here</a> and also <a href="http://blog.dornea.nu/2014/08/21/howto-debug-android-apks-with-eclipse-and-ddms/">here</a>) the second part dealed with <strong>obfuscation</strong> and <strong>packed</strong> samples.</p>
 <p>Installing the workshop VM (ca. 5 GB) was also quite easy:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ docker pull cryptax/android-re
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ docker pull cryptax/android-re
 $ docker run -d --name androidre -p 5022:22 -p 5900:5900 cryptax/android-re
 </code></pre></div><p>Like mentioned before the 2nd part of the workshop was rather the fun part. By structuring the whole workshop in several labs, the students were able to dissect the APKs locally and play with
 the provided tools. In lab 6 e.g. we had to analyze an <strong>infected version of Pokemon Go</strong> by using <a href="https://github.com/androguard/androguard">AndroGuard</a>. Students were then asked to
@@ -222,7 +226,7 @@ the ARM shellcodes are in thumb mode was discussed extensively.</p>
 and which parameters you need to use insde the registers (in ARM you don&rsquo;t push the arguments on the stack) you should be able to
 write your very first shellcode. In fact it is much easier to write ASM assembly due to the small instruction set (you do have a lot of
 variations but the set is much smaller than the x68 one). Just one example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">* ARM execve shellcode
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">* ARM execve shellcode
  * --------------------
  * by Saumil Shah, ARM Exploit Lab
  * @therealsaumil
@@ -245,7 +249,7 @@ _start:
 
 .ascii &#34;/bin/sh\0&#34;
 </code></pre></div><p>Switching between the modes is also very simple:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">/* ARM/THUMB execve shellcode
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">/* ARM/THUMB execve shellcode
  * --------------------------
  * by Saumil Shah, ARM Exploit Lab
  * @therealsaumil
@@ -419,6 +423,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

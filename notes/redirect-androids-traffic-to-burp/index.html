@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -129,16 +133,16 @@ internet &ndash; router;</p>
 <p>%}</p>
 <p>Let&rsquo;s begin:</p>
 <h3 id="flush-iptables-nat-table">Flush iptables NAT table</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -F&#34;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -F&#34;
 </code></pre></div><h3 id="redirect-http-traffic-to-burp">Redirect HTTP traffic to Burp</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 192.168.0.2:8080
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 192.168.0.2:8080
 </code></pre></div><h3 id="redirect-https-traffic-to-burp">Redirect HTTPS traffic to Burp</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 192.168.0.2:8080
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 192.168.0.2:8080
 </code></pre></div><h3 id="activate-masquerading">Activate Masquerading</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE&#34;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE&#34;
 $ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE&#34;
 </code></pre></div><p>That&rsquo;s it. You can test it by making a HTTPS connection to <code>paypal.com</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ curl -I https://www.paypal.com
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ curl -I https://www.paypal.com
 curl: (60) SSL certificate problem, verify that the CA cert is OK. Details:
 error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
 More details here: http://curl.haxx.se/docs/sslcerts.html
@@ -280,6 +284,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

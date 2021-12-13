@@ -26,7 +26,7 @@ Updated network topology %%blockdiag # &lt;!-- collapse=True --&gt; diagram admi
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ Updated network topology %%blockdiag # &lt;!-- collapse=True --&gt; diagram admi
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -87,7 +91,7 @@ type="image/x-icon"/>
   </p>
   <div class="lh-copy post-content"><p>Continuing my <a href="http://blog.dornea.nu/tag/ccna/">CCNA</a> journey I&rsquo;d like to address <em>inter VLAN switching</em> in a more detailed way. In this post I&rsquo;ll configure my <a href="http://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/">previous topology</a> to use <strong>VTP</strong> and let <strong>STP</strong> prevent <em>frame looping</em> and other &ldquo;anomalies&rdquo; on <em>Layer 2</em>.</p>
 <h2 id="updated-network-topology">Updated network topology</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
@@ -158,7 +162,7 @@ diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 <li>all <strong>others</strong> switches in <strong>client</strong> mode</li>
 </ul>
 <h3 id="configure-sw1">Configure SW1</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1&gt;enable
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1&gt;enable
 Password: 
 SW1#conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
@@ -188,7 +192,7 @@ Configuration last modified by 0.0.0.0 at 3-1-93 01:14:24
 Local updater ID is 30.30.30.1 on interface Vl30 (lowest numbered VLAN interface found)
 </code></pre></div><h3 id="configure-vtp-clients">Configure VTP clients</h3>
 <p>The configuration of the remaining switches is pretty straight-forward. Let&rsquo;s have a look at an example (in this case <code>SW2</code>):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#conf t
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
 SW2(config)<span style="color:#999;font-style:italic">#vtp domain ccna-lab</span>
 Domain name already <span style="color:#24909d">set</span> to ccna-lab.
@@ -213,19 +217,19 @@ MD5 digest                      : 0xD4 0x40 0x89 0x49 0x1A 0x6E 0x7A 0xBE
 Configuration last modified by 30.30.30.1 at 3-1-93 01:04:21
 </code></pre></div><h3 id="testing-setup">Testing setup</h3>
 <p>In order to test the configuration I&rsquo;ll add <strong>VLAN 40</strong> (Testing) on <code>SW1</code> and check if that gets advertised:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1(config)<span style="color:#999;font-style:italic">#vlan 40</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1(config)<span style="color:#999;font-style:italic">#vlan 40</span>
 SW1(config-vlan)<span style="color:#999;font-style:italic">#name Testing</span>
 </code></pre></div><p>Right after we verify if the clients got the VTP advertisements:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh vlan brief
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh vlan brief
 
 VLAN Name                             Status    Ports
 ...  
 <span style="color:#3677a9">40</span>   Testing                          active    
 ...
 </code></pre></div><p>If I again delete <strong>VLAN 40</strong> from <code>SW1</code> then the clients should delete it as well:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1(config)<span style="color:#999;font-style:italic">#no vlan 40</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1(config)<span style="color:#999;font-style:italic">#no vlan 40</span>
 </code></pre></div><p>And now test it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh vlan brief
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh vlan brief
 
 VLAN Name                             Status    Ports
 ---- -------------------------------- --------- -------------------------------
@@ -244,7 +248,7 @@ VLAN Name                             Status    Ports
 <span style="color:#3677a9">1005</span> trnet-default                    active    
 </code></pre></div><h2 id="spanning-tree-protocol">Spanning Tree Protocol</h2>
 <p>Since we now have to deal with <strong>interconnected</strong> switches and <em>frame looping</em> might be an issue, activating <strong>STP</strong> (Spanning Tree Protocol) will help mitigate the impacts of <em>broadcast storms</em> or <em>multiple frame tranmissions</em>. Cisco devices usually use <strong>Per VLAN Spanning Tree Protocol</strong> (PVST+, PVSTP) which is <em>proprietary</em>. The biggest difference to the &ldquo;normal&rdquo; STP (<strong>802.1D</strong>) is that PVST+ creates a different topology <em>per VLAN</em>. That means you can elect different roots (and thus different topology) for every available VLAN. Let&rsquo;s have a look at the desired topology for <code>VLAN 30</code> (Management):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
@@ -261,7 +265,7 @@ diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 </code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_8_0.png" alt="png"></p>
 <h3 id="roots-election">Root(s) election</h3>
 <p>In terms of <strong>STP</strong> <code>SW4</code> will be the <strong>p</strong>rimary (p) and <code>SW2</code> the <strong>s</strong>econdary (s) root. Let&rsquo;s configure <code>Sw4</code> and <code>Sw2</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">! SW4 configuration
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">! SW4 configuration
 SW4(config)<span style="color:#999;font-style:italic">#spanning-tree vlan 30 root primary</span>
 
 ! SW2 configuration
@@ -274,7 +278,7 @@ SW2(config)<span style="color:#999;font-style:italic">#spanning-tree vlan 30 roo
 <ul>
 <li><code>SW2</code> (secondary root)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span style="color:#3677a9">30</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span style="color:#3677a9">30</span>
 VLAN0030
   Spanning tree enabled protocol ieee
   Root ID    Priority    <span style="color:#3677a9">20510</span>
@@ -303,7 +307,7 @@ Fa0/5            Root FWD <span style="color:#3677a9">19</span>        128.5    
 <ul>
 <li><code>SW4</code> (primary root)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span style="color:#3677a9">30</span> 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span style="color:#3677a9">30</span> 
 VLAN0030
   Spanning tree enabled protocol ieee
   Root ID    Priority    <span style="color:#3677a9">20510</span>
@@ -329,7 +333,7 @@ Po1              Desg FWD <span style="color:#3677a9">9</span>         128.27   
 <ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span style="color:#3677a9">30</span> 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span style="color:#3677a9">30</span> 
 VLAN0030
   Spanning tree enabled protocol ieee
   Root ID    Priority    <span style="color:#3677a9">20510</span>
@@ -360,7 +364,7 @@ Po2              Root FWD <span style="color:#3677a9">9</span>         128.27   
 <p>As previosuly mentioned there are 2 port links between <code>SW3</code> and <code>SW4</code>. <strong>EtherChannel</strong> provides a way to prevent convergence (STP) when a single port or cable failure occurs. The switches will treat the EtherChannel as a single interface. The big advantage is that if one of the links fails, STP convergence does not have to occur if at least one of the links is up. Besides that the switches will now have a <strong>load-balancing</strong> effect which will spread the traffic load accross the active links in the (Ether)channel.</p>
 <h4 id="manual-etherchannel">Manual EtherChannel</h4>
 <p>So when using EtherChannels STP will operate on the EtherChannel itself rather than on the individual physical links. STP will then either forward or block traffic on the entire logical EtherChannel for a specific VLAN. Probably the most simple way to activate EtherChannel is to put the physical interfaces into the same <strong>channel-group</strong>. Let&rsquo;s have a look how this is done:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3(config)<span style="color:#999;font-style:italic">#int f0/4</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3(config)<span style="color:#999;font-style:italic">#int f0/4</span>
 SW3(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode on</span>
 SW3(config-if)<span style="color:#999;font-style:italic">#</span>
 %LINK-5-CHANGED: Interface Port-channel 1, changed state to up
@@ -374,7 +378,7 @@ SW3(config-if)<span style="color:#999;font-style:italic">#</span>
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Port-channel 2, changed state to down
 </code></pre></div><p>And now for <code>SW4</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int f0/2</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int f0/2</span>
 SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 2 mode on</span>
 SW4(config-if)<span style="color:#999;font-style:italic">#</span>
 %LINK-5-CHANGED: Interface Port-channel 2, changed state to up
@@ -405,14 +409,14 @@ SW4(config-if)<span style="color:#999;font-style:italic">#</span>
 <ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3(config)<span style="color:#999;font-style:italic">#int f0/4</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3(config)<span style="color:#999;font-style:italic">#int f0/4</span>
 SW3(config-if)<span style="color:#999;font-style:italic">#channel-group 2 mode desirable</span>
 SW3(config-if)<span style="color:#999;font-style:italic">#int f0/5</span>
 SW3(config-if)<span style="color:#999;font-style:italic">#channel-group 2 mode desirable</span>
 </code></pre></div><ul>
 <li><code>SW4</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int f0/2</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int f0/2</span>
 SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode auto</span>
 SW4(config-if)<span style="color:#999;font-style:italic">#int f0/5</span>
 SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode auto</span>
@@ -421,7 +425,7 @@ SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode a
 <ul>
 <li><code>SW4</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh eth sum
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh eth sum
 Flags:  D - down        P - in port-channel
         I - stand-alone s - suspended
         H - Hot-standby (LACP only)
@@ -444,7 +448,7 @@ Group  Port-channel  Protocol    Ports
 <ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh eth sum
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh eth sum
 Flags:  D - down        P - in port-channel
         I - stand-alone s - suspended
         H - Hot-standby (LACP only)
@@ -465,13 +469,13 @@ Group  Port-channel  Protocol    Ports
 <span style="color:#3677a9">2</span>      Po2(SU)           -      Fa0/4(P) Fa0/5(P) 
 </code></pre></div><p>Again <code>Po2</code> is a working port-channel and consists of <code>Fa0/4</code> and <code>Fa0/5</code>.
 You also should have noticed that the ports on each switch belong to different channel groups. You can now treat <code>Po1</code> and <code>Po2</code> as interfaces, bring them up or down. If your port-channel is down, do following:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int Po1</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int Po1</span>
 SW4(config-if)<span style="color:#999;font-style:italic">#no shutdown </span>
 </code></pre></div><p>You can also add <strong>VLANs</strong> to it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config-if)<span style="color:#999;font-style:italic">#switchport mode trunk</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config-if)<span style="color:#999;font-style:italic">#switchport mode trunk</span>
 SW4(config-if)<span style="color:#999;font-style:italic">#switchport trunk allowed vlan 10,20,30</span>
 </code></pre></div><p>Afterwards you should be able to verify that:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh int trunk
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh int trunk
 Port        Mode         Encapsulation  Status        Native vlan
 Fa0/1       on           802.1q         trunking      <span style="color:#3677a9">1</span>
 Fa0/3       on           802.1q         trunking      <span style="color:#3677a9">1</span>
@@ -501,7 +505,7 @@ Po1         10,20,30
 </ul>
 <p>I was able to nail down the problem using STP related information. Furthermore it turned out that the <strong>EtherChannel</strong> was not working at all, causing certain frames to be dropped without reaching their final destination. So how might one <em>guess</em> how data would be routed based on output from the <code>show</code> commands?</p>
 <p>Let&rsquo;s suppose <code>PC1</code> (10.10.10.101) cannot reach <code>PC5</code> (10.10.10.105). Also keep in mind that both hosts belong to the same <strong>VLAN</strong> (10 = Students). Our simplified topology would look like this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;↔</span>
 
      SW1 -- SW2 [<span style="color:#24909d">dir</span>=both, label = <span style="color:#ed9d13">&#34;Fa0/1 - Fa0/1&#34;</span>, arrowhead=normal];
@@ -525,7 +529,7 @@ Po1         10,20,30
 <ul>
 <li><code>SW1</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1#sh spanning-tree vlan <span style="color:#3677a9">10</span>
 VLAN0010
 ...
 
@@ -538,7 +542,7 @@ Fa0/4            Root FWD <span style="color:#3677a9">19</span>        128.4    
 </code></pre></div><ul>
 <li><code>SW2</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span style="color:#3677a9">10</span>
 VLAN0010
 ...
 
@@ -551,7 +555,7 @@ Fa0/6            Desg FWD <span style="color:#3677a9">19</span>        128.6    
 </code></pre></div><ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span style="color:#3677a9">10</span>
 ...
 
 Interface        Role Sts Cost      Prio.Nbr Type
@@ -562,7 +566,7 @@ Po2              Desg FWD <span style="color:#3677a9">9</span>         128.27   
 </code></pre></div><ul>
 <li><code>SW4</code></li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span style="color:#3677a9">10</span>
 ...
 
 Interface        Role Sts Cost      Prio.Nbr Type
@@ -572,7 +576,7 @@ Fa0/3            Desg FWD <span style="color:#3677a9">19</span>        128.3    
 Fa0/5            Desg FWD <span style="color:#3677a9">19</span>        128.5    P2p
 Po1              Root FWD <span style="color:#3677a9">9</span>         128.27   Shr
 </code></pre></div><p>Based of the previous outputs our topology now looks like this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;↔</span>
 
      SW1 -- SW2 [<span style="color:#24909d">dir</span>=both, arrowtail=box];
@@ -599,7 +603,7 @@ Po1              Root FWD <span style="color:#3677a9">9</span>         128.27   
 <li>all other ports are in <strong>forwarding</strong> state</li>
 </ul>
 <p>In this case there is <strong>only</strong> one way <code>PC1</code> could send frames to <code>PC5</code>  (red lines):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
  graph mylab {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
@@ -743,6 +747,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

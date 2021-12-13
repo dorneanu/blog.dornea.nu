@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -106,21 +110,21 @@ type="image/x-icon"/>
 <p>Pretty much for a DB! The really cool thing about SQLite is the fact that there are no additional steps required in order to create and maintain the DB. I really like PostgreSQL/MySQL &amp; Co. but the whole configuration process is driving me nuts. With SQLite you just create the file, put some schema to it and you&rsquo;re done. Last but not least: It&rsquo;s fast! Although the document is outdated you could have a look at the speed comparsion <!-- raw HTML omitted -->here<!-- raw HTML omitted -->.</p>
 <h2 id="database-schema">Database schema</h2>
 <p>Now let&rsquo;s have a closer look at the interna of our DB. Let&rsquo;s start with the simplest table: the <strong>organization</strong> table.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">TABLE</span> <span style="color:#ed9d13">&#34;organization&#34;</span> (
-    <span style="color:#ed9d13">&#34;id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">PRIMARY</span> <span style="color:#6ab825;font-weight:bold">KEY</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;name&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>
-);
-</code></pre></div><p>That should do the job since you need only the organizations name and some primary key. Usually an organization offers serveral services. So we&rsquo;ll create the 2nd table: the <strong>service</strong> table.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">TABLE</span> <span style="color:#ed9d13">&#34;service&#34;</span> (
-    <span style="color:#ed9d13">&#34;id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">PRIMARY</span> <span style="color:#6ab825;font-weight:bold">KEY</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;host&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;port&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-    <span style="color:#ed9d13">&#34;organization_id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-
-    <span style="color:#6ab825;font-weight:bold">CONSTRAINT</span> fk_service_organization_id <span style="color:#6ab825;font-weight:bold">FOREIGN</span> <span style="color:#6ab825;font-weight:bold">KEY</span> (organization_id) <span style="color:#6ab825;font-weight:bold">REFERENCES</span> <span style="color:#447fcf">organization</span>(id)
-);
-</code></pre></div><p>Assuming we have <code>Firm A</code> in our organization table, then its services will be stored in this way:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sqlite&gt; SELECT * FROM organization;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TABLE</span><span style="color:#666"> </span><span style="color:#ed9d13">&#34;organization&#34;</span><span style="color:#666"> </span>(<span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#ed9d13">&#34;id&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTEGER</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">PRIMARY</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">KEY</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#ed9d13">&#34;name&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TEXT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span><span style="color:#666">
+</span><span style="color:#666"></span>);<span style="color:#666">
+</span></code></pre></div><p>That should do the job since you need only the organizations name and some primary key. Usually an organization offers serveral services. So we&rsquo;ll create the 2nd table: the <strong>service</strong> table.</p>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TABLE</span><span style="color:#666"> </span><span style="color:#ed9d13">&#34;service&#34;</span><span style="color:#666"> </span>(<span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#ed9d13">&#34;id&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTEGER</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">PRIMARY</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">KEY</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#ed9d13">&#34;host&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TEXT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#ed9d13">&#34;port&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTEGER</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#ed9d13">&#34;organization_id&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTEGER</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">    </span><span style="color:#6ab825;font-weight:bold">CONSTRAINT</span><span style="color:#666"> </span>fk_service_organization_id<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">FOREIGN</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">KEY</span><span style="color:#666"> </span>(organization_id)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">REFERENCES</span><span style="color:#666"> </span><span style="color:#447fcf">organization</span>(id)<span style="color:#666">
+</span><span style="color:#666"></span>);<span style="color:#666">
+</span></code></pre></div><p>Assuming we have <code>Firm A</code> in our organization table, then its services will be stored in this way:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sqlite&gt; SELECT * FROM organization;
 id          name
 ----------  ----------
 1           Firm A
@@ -132,18 +136,18 @@ id          host         port        organization_id
 </code></pre></div><p>I think you got the point. You&rsquo;ll need a PK (primary key) , a host (actually this should be called <code>url</code>), a port number and the organization ID offering the service.</p>
 <p>By now the schema was quite simple. We got the organization and its services. The <strong>account</strong> will interfere with both of them. First let&rsquo;s have a look the table:</p>
 <!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span> <span style="color:#6ab825;font-weight:bold">TABLE</span> <span style="color:#ed9d13">&#34;account&#34;</span> (
-        <span style="color:#ed9d13">&#34;id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">PRIMARY</span> <span style="color:#6ab825;font-weight:bold">KEY</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;created&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;expires&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;user&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-        <span style="color:#ed9d13">&#34;passwd&#34;</span> <span style="color:#6ab825;font-weight:bold">TEXT</span>,
-        <span style="color:#ed9d13">&#34;service_id&#34;</span> <span style="color:#6ab825;font-weight:bold">INTEGER</span> <span style="color:#6ab825;font-weight:bold">NOT</span> <span style="color:#40ffff">NULL</span>,
-
-        <span style="color:#6ab825;font-weight:bold">CONSTRAINT</span> fk_account_service_id <span style="color:#6ab825;font-weight:bold">FOREIGN</span> <span style="color:#6ab825;font-weight:bold">KEY</span> (service_id) <span style="color:#6ab825;font-weight:bold">REFERENCES</span> <span style="color:#447fcf">service</span>(id)
-);
-</code></pre></div><p>I think the attributes are self-explanatory. Here are some sample entries:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sqlite&gt; SELECT * FROM accounts;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TABLE</span><span style="color:#666"> </span><span style="color:#ed9d13">&#34;account&#34;</span><span style="color:#666"> </span>(<span style="color:#666">
+</span><span style="color:#666">        </span><span style="color:#ed9d13">&#34;id&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTEGER</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">PRIMARY</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">KEY</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">        </span><span style="color:#ed9d13">&#34;created&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TEXT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">        </span><span style="color:#ed9d13">&#34;expires&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TEXT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">        </span><span style="color:#ed9d13">&#34;user&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TEXT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">        </span><span style="color:#ed9d13">&#34;passwd&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">TEXT</span>,<span style="color:#666">
+</span><span style="color:#666">        </span><span style="color:#ed9d13">&#34;service_id&#34;</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTEGER</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
+</span><span style="color:#666">
+</span><span style="color:#666">        </span><span style="color:#6ab825;font-weight:bold">CONSTRAINT</span><span style="color:#666"> </span>fk_account_service_id<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">FOREIGN</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">KEY</span><span style="color:#666"> </span>(service_id)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">REFERENCES</span><span style="color:#666"> </span><span style="color:#447fcf">service</span>(id)<span style="color:#666">
+</span><span style="color:#666"></span>);<span style="color:#666">
+</span></code></pre></div><p>I think the attributes are self-explanatory. Here are some sample entries:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sqlite&gt; SELECT * FROM accounts;
 id          created     expires     user                    passwd      host         port
 ----------  ----------  ----------  ----------------------  ----------  -----------  ----------
 1           2011-07-23  2012-07-26  victor.dorneanu@blab    XXXXXX      smtp.kjs.de  25
@@ -153,7 +157,7 @@ id          created     expires     user                    passwd      host    
 <p>This is for the ER-Modell freaks among you&hellip;</p>
 <p><img src="https://blog.dornea.nu/posts/img/2011/255/er-modell.png" alt="ER model"></p>
 <p>Graphviz code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">graph ER {
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">graph ER {
     node [shape=box, style=filled, color=yellow]; organization; service; account;
     node [shape=ellipse, style=filled, color=green]; acc_id; created; expires; user; passwd; org_id; org_name; serv_id; host;
     port;
@@ -197,11 +201,11 @@ ER Modell (dornea.nu)&#34;;
 <li>good security (CBC mode, key derivation)</li>
 </ul>
 <p>In order to use SQLCipher you&rsquo;ll have to build the SQLite package with the enhanced features. Just follow the instructions on <!-- raw HTML omitted --><a href="http://sqlcipher.net/introduction/">http://sqlcipher.net/introduction/</a><!-- raw HTML omitted --> and use following command to configure and build the package:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">./configure --prefix=/usr/local --enable-tempstore=yes CFLAGS=&#34;-DSQLITE_HAS_CODEC&#34; LDFLAGS=&#34;-lcrypto&#34;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">./configure --prefix=/usr/local --enable-tempstore=yes CFLAGS=&#34;-DSQLITE_HAS_CODEC&#34; LDFLAGS=&#34;-lcrypto&#34;
 make
 make install
 </code></pre></div><p>Then you should have a working binary in /usr/local/bin. I suggest you create a new encrypted DB rather than encrypt an existing one. There are several <!-- raw HTML omitted -->hints<!-- raw HTML omitted --> how to do this, but I recommend you starting with a new fresh DB. Let&rsquo;s get started:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/local/bin/sqlite3 new_db.db
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/local/bin/sqlite3 new_db.db
 SQLite version 3.7.2
 Enter &#34;.help&#34; for instructions
 Enter SQL statements terminated with a &#34;;&#34;
@@ -210,7 +214,7 @@ sqlite&gt; PRAGMA cipher = &#39;aes-256-cfb&#39;;
 sqlite&gt; PRAGMA kdf_iter = &#39;1000&#39;;
 sqlite&gt;
 </code></pre></div><p>Now you&rsquo;re ready to create your DB schema. I&rsquo;d create some SQL file, set the DB key and afterwards create the table. Create some new file (e.g. dump.sql) and paste these line to it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">PRAGMA key = &#39;crackme&#39;;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">PRAGMA key = &#39;crackme&#39;;
 PRAGMA cipher = &#39;aes-256-cfb&#39;;
 PRAGMA kdf_iter = &#39;1000&#39;;
 BEGIN TRANSACTION;
@@ -242,7 +246,7 @@ CREATE TABLE &#34;account&#34; (
 
 END TRANSACTION;
 </code></pre></div><p>Then create your encrypted DB using:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/local/bin/sqlite3 -init dump.sql encrypted.db
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/local/bin/sqlite3 -init dump.sql encrypted.db
 SQLite version 3.7.2
 Enter &#34;.help&#34; for instructions
 Enter SQL statements terminated with a &#34;;&#34;
@@ -250,7 +254,7 @@ sqlite&gt; .tables
 account       organization  service
 sqlite&gt;
 </code></pre></div><p>Voila! Is the file <code>encrypted.db</code> really encrypted? Let&rsquo;s have a look:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ file encrypted.db
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ file encrypted.db
 encrypted.db: data
 $ hexdump -C encrypted.db
 00000000  e4 2a cd 22 4f d4 30 a6  b7 95 9c 28 19 f5 4a 45  |.*.&#34;O.0....(..JE|
@@ -439,6 +443,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

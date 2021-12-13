@@ -26,7 +26,7 @@ $ readelf IntelligenSoftware -h ELF Header: Magic: 7f 45 4c 46 02 01 01 00 00 00
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ $ readelf IntelligenSoftware -h ELF Header: Magic: 7f 45 4c 46 02 01 01 00 00 00
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -86,7 +90,7 @@ type="image/x-icon"/>
     
   </p>
   <div class="lh-copy post-content"><p>First let&rsquo;s collect some information about the binary itself:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf IntelligenSoftware -h
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf IntelligenSoftware -h
 ELF Header:
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
   Class:                             ELF64
@@ -109,7 +113,7 @@ ELF Header:
   Section header string table index: 27
 
 </code></pre></div><p>Let&rsquo;s see some code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ objdump -d IntelligentSoftware -j .text 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ objdump -d IntelligentSoftware -j .text 
 ...
 0000000000400660 &lt;main&gt;:
   400660:       48 83 ec 08             sub    $0x8,%rsp
@@ -124,7 +128,7 @@ ELF Header:
   400683:       48 83 c4 08             add    $0x8,%rsp
   400687:       c3                      retq
 </code></pre></div><p>Nothing interesting here. But there is a <code>call</code> to <code>get_flag</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">0000000000400780 &lt;get_flag&gt;:
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">0000000000400780 &lt;get_flag&gt;:
   400780:       53                      push   %rbx
   400781:       bf 00 04 00 00          mov    $0x400,%edi
   400786:       e8 05 fe ff ff          callq  400590 &lt;malloc@plt&gt;
@@ -149,7 +153,7 @@ you have a look at:</p>
 </ul>
 <h3 id="dynamic-analysis">Dynamic analysis</h3>
 <p>Again using <code>radare</code> I&rsquo;ll disassemble <code>get_flag</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ sym.get_flag
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ sym.get_flag
 / (fcn) sym.get_flag 73
 |   sym.get_flag ();
 |       |   ; CALL XREF from 0x0040067c (sym.main)
@@ -174,7 +178,7 @@ you have a look at:</p>
 \       `=&lt; 0x004007c4      e987fdffff     jmp sym.imp.puts
 </code></pre></div><p>Nothing suspicious about it: <code>malloc</code> is being called and then <code>free</code>. Now let&rsquo;s have a look at the constructors, which are usually
 called before <code>main</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ entry0
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ entry0
             ;-- _start:
 / (fcn) entry0 41
 |   entry0 ();
@@ -191,7 +195,7 @@ called before <code>main</code>:</p>
 |           0x004006a5      48c7c7600640.  mov rdi, sym.main           ; &#34;H......`&#34; @ 0x400660
 \           0x004006ac      e8bffeffff     call sym.imp.__libc_start_main; int __libc_start_main(func main, int argc, char **ubp_av, func init, func fini, func rtld_fini, void *stack_end);
 </code></pre></div><p>Ahh, there we go. From the links mentioned before we know that <code>__libc_start_main</code> has following syntax:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">__libc_start_main</span>( 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">__libc_start_main</span>( 
 	<span style="color:#6ab825;font-weight:bold">int</span> (*main) (<span style="color:#6ab825;font-weight:bold">int</span>, <span style="color:#6ab825;font-weight:bold">char</span> * *, <span style="color:#6ab825;font-weight:bold">char</span> * *), 
 	<span style="color:#6ab825;font-weight:bold">int</span> argc, 
 	<span style="color:#6ab825;font-weight:bold">char</span> * * ubp_av, 
@@ -292,7 +296,7 @@ the following:</p>
 <li>Calls exit with the return value of main</li>
 </ul>
 <p>The <code>init</code> argument is set to <code>__libc_csu_init</code>. In the <strong>glibc</strong> source tree you will find <code>csu/elf-init.c</code> which contains <code>__libc_csu_init</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">__libc_csu_init</span> (<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv, <span style="color:#6ab825;font-weight:bold">char</span> **envp) {
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">__libc_csu_init</span> (<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv, <span style="color:#6ab825;font-weight:bold">char</span> **envp) {
 	 _init (); 
 	
 	<span style="color:#6ab825;font-weight:bold">const</span> size_t size = __init_array_end - __init_array_start; 
@@ -300,7 +304,7 @@ the following:</p>
 		(*__init_array_start [i]) (argc, argv, envp); 
 }
 </code></pre></div><p>Let&rsquo;s have a look at the disassembly:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ sym.__libc_csu_init
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pdf @ sym.__libc_csu_init
 / (fcn) sym.__libc_csu_init 101
 |   sym.__libc_csu_init ();
 |           ; DATA XREF from 0x0040069e (entry0)
@@ -342,7 +346,7 @@ the following:</p>
 |           0x00400832      415f           pop r15
 \           0x00400834      c3             ret
 </code></pre></div><p>You can definitely see the call to <code>_init()</code>. The loop inside looks very interesting:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">|       |   0x08048592      8db600000000   lea esi, [esi]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">|       |   0x08048592      8db600000000   lea esi, [esi]
 |      .--&gt; 0x08048598      8b442438       mov eax, dword [esp + arg_38h] ; [0x38:4]=52 ; &#39;8&#39;
 |      ||   0x0804859c      892c24         mov dword [esp], ebp
 |      ||   0x0804859f      89442408       mov dword [esp + local_8h], eax
@@ -353,7 +357,7 @@ the following:</p>
 |      ||   0x080485b5      39fe           cmp esi, edi
 |      `==&lt; 0x080485b7      75df           jne 0x8048598
 </code></pre></div><p>Let&rsquo;s have a look what&rsquo;s happening inside this loop:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; b *0x0000000000400803
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; b *0x0000000000400803
 gef&gt; r
 gef&gt; 
 0x0000000000400819    &lt;__libc_csu_init+73&gt;     call   QWORD PTR [r12+rbx*8]   &lt;- $pc
@@ -367,13 +371,13 @@ execution will jump to the address <code>0x00400750</code>. But where does this 
 <h3 id="constructors">Constructors</h3>
 <p>As you have seen previously an <code>init_array</code> is used to call some functions. In C you&rsquo;d usually
 implement some constructors using <code>__attribute__</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">init</span>(<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv, <span style="color:#6ab825;font-weight:bold">char</span> **envp) { 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">init</span>(<span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span> **argv, <span style="color:#6ab825;font-weight:bold">char</span> **envp) { 
 	printf(<span style="color:#ed9d13">&#34;INIT!&#34;</span>); 
 }
 __attribute__((section(<span style="color:#ed9d13">&#34;.init_array&#34;</span>))) typeof(init) *__init = init;
 </code></pre></div><p>This whole information is stored inside the ELF binary at a section called <code>init_array</code>. Let&rsquo;s
 see what it contains:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ objdump -d -j .init_array IntelligentSoftware
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ objdump -d -j .init_array IntelligentSoftware
 
 IntelligentSoftware:     file format elf64-x86-64
 
@@ -383,14 +387,14 @@ Disassembly of section .init_array:
 0000000000600e08 &lt;__frame_dummy_init_array_entry&gt;:
   600e08:       50 07 40 00 00 00 00 00 b0 05 40 00 00 00 00 00     P.@.......@.....
 </code></pre></div><p>Did you recognize the address <code>0x600e08</code> and the value <code>0x00400750</code>? Let&rsquo;s go back to <code>radare</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pxr @ obj.__frame_dummy_init_array_entry
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; pxr @ obj.__frame_dummy_init_array_entry
 0x00600e08  0x0000000000400750   P.@..... (.text) sym.frame_dummy sym.frame_dummy R X &#39;cmp qword [rip + 0x2006c8], 0&#39;
 0x00600e10  0x00000000004005b0   ..@..... (.text) sym.__libc_csu_ctor sym.__libc_csu_ctor R X &#39;sub rsp, 0x48&#39;
 0x00600e18  0x0000000000400730   0.@..... (.text) sym.__do_global_dtors_aux sym.__do_global_dtors_aux R X &#39;cmp byte [rip + 0x200998], 0&#39;
 0x00600e20  0x0000000000000000   ........ section_end.GNU_STACK
 ...
 </code></pre></div><p>Let&rsquo;s have a look at the <strong>2nd</strong>  constructor/entry:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">/ (fcn) sym.__libc_csu_ctor 216
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">/ (fcn) sym.__libc_csu_ctor 216
 |   sym.__libc_csu_ctor ();
 |           ; var int local_8h @ rsp+0x8
 |           ; var int local_10h @ rsp+0x10
@@ -437,7 +441,7 @@ Disassembly of section .init_array:
 
 </code></pre></div><p>Do you see how the string <code>FLAG-</code> is being concatenated? Let&rsquo;s <code>seek</code> to that address and let <code>radare</code> give us some
 graphics:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; s 0x00000000004005b
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x00400688]&gt; s 0x00000000004005b
 [0x004005b0]&gt; VV
 
                                                          =---------------------------------=
@@ -523,7 +527,7 @@ graphics:</p>
 to <code>0x4005ea</code> or <code>sym.imp.__stack_chk_fail</code> if sth was wrong with the stack (this function
 wil be called if the stack canaries were modified). Now let&rsquo;s have a look what happens inside
 the first block:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">                =----------------------------------------------------------------------------=
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">                =----------------------------------------------------------------------------=
                 | [0x4005b0]                                                                 |
                 |   ;-- section_end..plt:                                                    |
                 |   ;-- section..text:                                                       |
@@ -565,10 +569,10 @@ the first block:</p>
     =---------------------------------------------------------------=     |
 
 </code></pre></div><p>Apparently the programm will jump to <code>0x4005ef</code> only if <code>$al = 0xcc</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">|           0x004005d6      3ccc           cmp al, 0xcc
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">|           0x004005d6      3ccc           cmp al, 0xcc
 |       ,=&lt; 0x004005d8      7415           je 0x4005ef
 </code></pre></div><p>Let&rsquo;s debug the binary and see what happens:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt;  b *0x004005d6
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt;  b *0x004005d6
 Breakpoint 1 at 0x4005d6
 gef&gt;  r
 gef&gt;  set $al=0xcc
@@ -701,6 +705,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -144,14 +148,14 @@ type="image/x-icon"/>
 <p>The Burp Extender API is the main component and plays a crucial role in automating burp. There are a lot of extension (Java, Python, Ruby) and you could easily write your <a href="http://blog.portswigger.net/2012/12/writing-your-first-burp-extension.html">own</a> one. As you might have noticed there are 3 main supported languages: Java, Ruby and Python. And because I love the pythonic way of life I had closer look at the Jython Burp API. As stated on the github page you can get a jython console to interact with Burp. That&rsquo;s crazy! And this was one of my main requirements.</p>
 <h1 id="jython-burp-api">Jython Burp API</h1>
 <p>First I&rsquo;ve cloned the github repo and copied Burp into the* jython-burp-api *folder as described in the README.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l
 total 13173
 drwxr-xr-x 3 vd vd     1024 2013-07-31 14:50 custom-modules
 drwxr-xr-x 4 vd vd     1024 2013-08-02 11:27 jython-burp-api-master
 lrwxrwxrwx 1 vd vd       28 2013-07-31 14:19 jython.jar -&gt; jython-standalone-2.7-b1.jar
 -rw-r--r-- 1 vd vd 13432713 2013-07-31 13:49 jython-standalone-2.7-b1.jar
 </code></pre></div><p>I *cd <em>into</em> jython-burp-api-master, *copied Burp into it and compiled the Burp Extender files:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l
 total 9068
 -rw-r--r-- 1 vd vd    2087 2013-05-13 20:27 burp.ini
 -rwxr-x--- 1 vd vd 9225061 2013-07-31 14:07 burpsuite_pro_v1.5.11.jar
@@ -163,7 +167,7 @@ drwxr-xr-x 3 vd vd    1024 2013-07-31 15:39 Lib
 
 $ javac -cp ../jython.jar java/src/*.java java/src/burp/*.java
 </code></pre></div><p>Afterwards I tried to start Burp (as described in the README) using:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -Xmx1g -jar ../jython.jar run.py -i -d -B burpsuite_pro_v1.5.11.jar
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -Xmx1g -jar ../jython.jar run.py -i -d -B burpsuite_pro_v1.5.11.jar
 Traceback (most recent call last):
   File &#34;run.py&#34;, line 117, in &lt;module&gt;
     start_burp(opt, *args)
@@ -171,7 +175,7 @@ Traceback (most recent call last):
     from burp_extender import BurpExtender as MyBurpExtender, ConsoleThread
 ImportError: No module named burp_extender
 </code></pre></div><p>Hmmm.. Strange. I&rsquo;ve created this <a href="https://github.com/mwielgoszewski/jython-burp-api/issues/7">issue</a> and informed the developer about the bug. Finally I was able to solve it by myself. The problem was that jython didn&rsquo;t know where to find the module *burp_extender. *So the class path had to be changed:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/ run.py -B burpsuite_pro_v1.5.11.jar -i -d -v
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/ run.py -B burpsuite_pro_v1.5.11.jar -i -d -v
 
 Jython 2.7b1 (default:ac42d59644e9, Feb 9 2013, 15:24:52) 
 [OpenJDK 64-Bit Server VM (Sun Microsystems Inc.)] on java1.6.0_20
@@ -184,9 +188,9 @@ help
 </code></pre></div><p>Ahh there we go! Now you should have Burp fired up and a jython console to interact with. Check out <a href="https://github.com/mwielgoszewski/jython-burp-api#examples">examples</a> for some commands.</p>
 <h1 id="automation">Automation</h1>
 <p>Having this done the next step was to automate the scanning process. The jython console is very helpful but I somehow have to automate Burp with one command. Sth like:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/  run.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://dornea.nu --add-to-scope http://dornea.nu -i
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/  run.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://dornea.nu --add-to-scope http://dornea.nu -i
 </code></pre></div><p>Well I had some closer look at the *run.py *and modified it a little bit. This is what came out (own modifications have been highlighted):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># -*- coding: utf-8 -*-
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># -*- coding: utf-8 -*-
 from java.lang import System
 
 from org.python.util import JLineConsole, PythonInterpreter
@@ -334,7 +338,7 @@ if __name__ == &#39;__main__&#39;:
 <li>send some URL to the spider</li>
 <li>add URL to the scope</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/  testing.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://heise.de --add-to-scope http://heise.de -i 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ java -jar ../jython.jar -Dpython.path=Lib/  testing.py -B burpsuite_pro_v1.5.11.jar --send-to-spider http://heise.de --add-to-scope http://heise.de -i 
 [--] Added new scope ...
 [--] Starting spider ...
 ...
@@ -467,6 +471,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

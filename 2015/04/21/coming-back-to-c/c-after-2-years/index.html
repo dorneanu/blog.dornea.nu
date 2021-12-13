@@ -26,7 +26,7 @@ It&rsquo;s low.. Very low Having started a new project I didn&rsquo;t feel like 
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ It&rsquo;s low.. Very low Having started a new project I didn&rsquo;t feel like 
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -92,7 +96,7 @@ type="image/x-icon"/>
 <strong>declare</strong> functions and use <strong>header</strong> files. After initial difficulties I was able to run my code and compile it using <code>-Wall</code> without any warnings. Perfect.</p>
 <p>The project itself is about implementing SSL/TLS in C since I&rsquo;ve never done that before. The executable
 will take an <em>UR</em>L and optionally a <em>proxy</em> as arguments:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ./main -u http://blog.dornea.nu/ -p http://username:password@localhost:8080
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ./main -u http://blog.dornea.nu/ -p http://username:password@localhost:8080
 </code></pre></div><p>The very first problem I&rsquo;ve encountered was <strong>parsing</strong>. While in Python you usually have pretty good
 string operations you can apply on your string, in C you have to take of everything. In my case
 I had to parse the proxy argument for its specific parts:</p>
@@ -104,14 +108,14 @@ I had to parse the proxy argument for its specific parts:</p>
 <li>port</li>
 </ul>
 <p>And if that wasn&rsquo;t enought, I also have to take care about <strong>error handling</strong> in case the proxy URL is malformed.  Speaking of <em>error handling</em>: It was indeed tempted to think of some <code>try .. catch</code> construct. Naaah! I remember &hellip; The typical construct you should use:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">if</span> (not sth) {
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">if</span> (not sth) {
     <span style="color:#999;font-style:italic">// this is very bad
 </span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">return</span> &lt;whatever&gt;
 } <span style="color:#6ab825;font-weight:bold">else</span> {
     <span style="color:#999;font-style:italic">// This is was ok
 </span><span style="color:#999;font-style:italic"></span>}
 </code></pre></div><p>Ok. What about <strong>logging</strong>? I remember having implemented some <strong>macros</strong> in the past and finally found this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#cd2828;font-weight:bold">#define log_err(M, ...) fprintf(stderr, &#34;ERROR: \t(%s:%d: errno: %s) &#34; M &#34;\n&#34;,\     
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#cd2828;font-weight:bold">#define log_err(M, ...) fprintf(stderr, &#34;ERROR: \t(%s:%d: errno: %s) &#34; M &#34;\n&#34;,\     
 </span><span style="color:#cd2828;font-weight:bold"></span>                       __FILE__, __LINE__, clean_errno(), <span style="color:#a61717;background-color:#e3d2d2">##</span>__VA_ARGS__) 
 
 <span style="color:#cd2828;font-weight:bold">#define log_warn(M, ...) fprintf(stderr, &#34;WARN: \t(%s:%d: errno: %s) &#34; M &#34;\n&#34;,\
@@ -122,7 +126,7 @@ I had to parse the proxy argument for its specific parts:</p>
 mindset change. Almost everything is a pointer to some data structure, to some memory region etc.
 Using pointers the right way has always been a challenge. Let&rsquo;s first have a look at some struct
 I&rsquo;m using to collect information and store global accessible data:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">typedef</span> <span style="color:#6ab825;font-weight:bold">struct</span> globalargs {
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">typedef</span> <span style="color:#6ab825;font-weight:bold">struct</span> globalargs {
     <span style="color:#6ab825;font-weight:bold">char</span> *prog;
     <span style="color:#6ab825;font-weight:bold">char</span> *url;
     <span style="color:#6ab825;font-weight:bold">char</span> *proxy_uri;
@@ -140,7 +144,7 @@ I&rsquo;m using to collect information and store global accessible data:</p>
 </code></pre></div><p>So we&rsquo;ve got pointers everywhere. I use this struct to collect the CLI arguments using <code>getopt</code>. Besides that
 I&rsquo;m using <code>globalargs</code> to store information which should be available in all &ldquo;modules&rdquo; (I don&rsquo;t have any yet but
 just for the explanation &hellip;). But let me explain this using some example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold"></span>
 <span style="color:#6ab825;font-weight:bold">typedef</span> <span style="color:#6ab825;font-weight:bold">struct</span> myStruct {
@@ -181,7 +185,7 @@ just for the explanation &hellip;). But let me explain this using some example:<
     <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">0</span>;
 }
 </code></pre></div><p>When compiled and executed this produces following output:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gcc -Wall -o n n.c &amp;&amp; ./n
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gcc -Wall -o n n.c &amp;&amp; ./n
 Username: username0
 Username: username0
 Username: username2
@@ -192,7 +196,7 @@ I should definitely improve my pointer arithmetics :)</p>
 <p>For almost every data structure memory has to be allocated. While this in OOP (object oriented programming) is usually done
 by just creating a new instance of a new object, in C everything has to be done &ldquo;manually&rdquo;. In our example allocating memory
 for <code>myStruct</code> should be easy and straight forward:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">...
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">...
     <span style="color:#6ab825;font-weight:bold">if</span> (!(ms = malloc(<span style="color:#6ab825;font-weight:bold">sizeof</span>(myStruct)))) {
         printf(<span style="color:#ed9d13">&#34;Failed allocating memory!&#34;</span>);
         <span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
@@ -321,6 +325,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

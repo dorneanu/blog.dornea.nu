@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -96,18 +100,18 @@ type="image/x-icon"/>
 <p><em>DroidBox</em> is very easy to use and consists of an own system image and kernel meant to log one applications activities. Using <code>adb logcat</code> <em>DroidBox</em> will look for certain debug messages and collect anything related to the monitored app. However I must say that loged data isn&rsquo;t always complete. Sometimes you&rsquo;ll get only a <em>striped</em> version of the data which caused the activity. In that case it&rsquo;s almost impossible e.g. to have a deep look at the network traffic (especially HTTP). You won&rsquo;t be able to construct a full request-response-sequence due to missing data. Nevertheless you can use DroidBox to get an overview of malicious activities triggered by the app. For a more technical analysis of the data you&rsquo;ll need additional tools (more to come in future posts).</p>
 <h3 id="requirements-for-droidbox">Requirements for DroidBox</h3>
 <p>First you&rsquo;ll have to install some requirements DroidBox needs. First make sure you have the system relevant packages installed:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@kali:~# apt-get install python-virtualenv libatlas-dev liblapack-dev libblas-dev
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@kali:~# apt-get install python-virtualenv libatlas-dev liblapack-dev libblas-dev
 </code></pre></div><p>You&rsquo;ll need those in order to use <code>scipy</code>, <code>matplotlib</code> and <code>numpy</code> along with Droidbox. Now create a virtual environment and install <em>python</em> dependencies:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@kali:~/work/apk# mkdir env
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@kali:~/work/apk# mkdir env
 root@kali:~/work/apk# virtualenv env
 ...
 root@kali:~/work/apk# <span style="color:#24909d">source</span> env/bin/activate
 (env)root@kali:~/work/apk# pip install numpy scipy matplotlib
 </code></pre></div><h3 id="install-droidbox">Install Droidbox</h3>
 <p>Download the package:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(env)root@kali:~/work/apk# wget https://droidbox.googlecode.com/files/DroidBox411RC.tar.gz
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(env)root@kali:~/work/apk# wget https://droidbox.googlecode.com/files/DroidBox411RC.tar.gz
 </code></pre></div><h3 id="setup-path">Setup PATH</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import os
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">import os
 import sys
 
 # Setup new PATH
@@ -118,7 +122,7 @@ os.environ[&#39;PATH&#39;] = new_path
 # Change working directory
 os.chdir(&#34;/root/work/apk/DroidBox_4.1.1/&#34;)
 </code></pre></div><h3 id="setup-ipython-settings">Setup IPython settings</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%pylab inline
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%pylab inline
 import binascii
 import pandas as pd
 import numpy as np
@@ -143,7 +147,7 @@ pd.set_option(&#39;display.column_space&#39;, 1000)
 height has been deprecated.
 </code></pre>
 <h3 id="external-extensions">External extensions</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Install
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Install
 %install_ext https://raw.githubusercontent.com/dorneanu/ipython/master/extensions/diagmagic.py
     
 # Then load extensions
@@ -152,7 +156,7 @@ height has been deprecated.
   %load_ext diagmagic
 </code></pre>
 <h3 id="utilities">Utilities</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">from IPython import display
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">from IPython import display
 from IPython.core.magic import register_cell_magic, Magics, magics_class, cell_magic
 import jinja2
 
@@ -214,7 +218,7 @@ ip.register_magics(JinjaMagics)
 </code></pre></div><h2 id="create-android-virtual-device-adv">Create Android Virtual Device (ADV)</h2>
 <p>Now you&rsquo;ll have to install an Android device virtually in order to analyze the APK. Supposing you have installed the SDK in the previous step now you should have some <em>targets</em> available on your machine. If not (that was my case) then make sure you have a X session running and run <code>android</code> from the console. In my case I&rsquo;ve fired up <code>vnc</code> and connected to the Kali machine.</p>
 <p>This is what I&rsquo;ve got:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 android list targets | head -n <span style="color:#3677a9">10</span>
 </code></pre></div><pre><code>Available Android targets:
 ----------
@@ -228,7 +232,7 @@ id: 1 or &quot;android-16&quot;
 ----------
 </code></pre>
 <p>Now we <strong>create</strong> the AVD using following command:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># android create avd --abi default/armeabi-v7a -n android-4.1.2-droidbox -t 1 -c 1000M
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># android create avd --abi default/armeabi-v7a -n android-4.1.2-droidbox -t 1 -c 1000M
 Android 4.1.2 is a basic Android platform.
 Do you wish to create a custom hardware profile [no]
 Created AVD &#39;android-4.1.2-droidbox&#39; based on Android 4.1.2, ARM (armeabi-v7a) processor,
@@ -238,7 +242,7 @@ hw.ramSize=512
 hw.sdCard=yes
 vm.heapSize=48
 
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 android list avd
 </code></pre></div><pre><code>Available Android Virtual Devices:
     Name: android-4.1.2-droidbox
@@ -250,18 +254,18 @@ android list avd
 </code></pre>
 <h3 id="start-the-emulator">Start the emulator</h3>
 <p>In <code>DroidBox</code>s package directory you&rsquo;ll find <code>startemu.sh</code>. Open it and add your favourite parameters.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 cat startemu.sh
 </code></pre></div><pre><code>#!/usr/bin/env bash
 
 emulator -avd $1 -system images/system.img -ramdisk images/ramdisk.img -wipe-data -prop dalvik.vm.execution-mode=int:portable &amp;
 </code></pre>
 <p>Afterwards make sure you have a X session and <strong>run</strong> the emulator with your previously created AVD:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(env)root@kali:~/work/apk/DroidBox# ./startemu.sh android-4.1.2-droidbox
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(env)root@kali:~/work/apk/DroidBox# ./startemu.sh android-4.1.2-droidbox
 ...
 </code></pre></div><p>Now you should see your emulator booting &hellip;</p>
 <h3 id="run-droidbox">Run DroidBox</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!./droidbox.sh /root/work/apk/DroidBox_4.1.1/APK/FakeBanker.apk
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!./droidbox.sh /root/work/apk/DroidBox_4.1.1/APK/FakeBanker.apk
 </code></pre></div><pre><code>[H[2J ____                        __  ____
 /\  _`\               __    /\ \/\  _`\
 \ \ \/\ \  _ __  ___ /\_\   \_\ \ \ \L\ \   ___   __  _
@@ -289,7 +293,7 @@ DroidBox will output its results as a JSON file. <strong>I&rsquo;ve uploaded the
 </blockquote>
 <h2 id="results-analysis">Results analysis</h2>
 <p>First let&rsquo;s download the data and let python parse it</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 import json
 import urllib
 url = &#34;http://pastebin.com/raw.php?i=7YSb3EMW&#34;
@@ -320,7 +324,7 @@ result.keys()
 <p>So we have diffenrent categories of activities we can look at. After analyzing the JSON content I&rsquo;ve come to following most important activities.</p>
 <h2 id="file-system-activities">File system activities</h2>
 <p>Let&rsquo;s have a look at the file system access actions triggered by the application. Due to DroidBox limitations I couldn&rsquo;t have a look at the <strong>complete</strong> raw data.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 # Convert timestamps to human readable time delta
 timestamps = [str(datetime.timedelta(seconds=(round(float(i.encode(&#34;utf-8&#34;)))))) for i in result[&#39;fdaccess&#39;].keys()]
 
@@ -342,7 +346,7 @@ df_accessedfiles[[&#39;operation&#39;, &#39;path&#39;, &#39;rawdata&#39;]].reset
 </code></pre></div><!-- raw HTML omitted -->
 <h2 id="network-activities">Network activities</h2>
 <h3 id="opened-connections-opennet">Opened connections (opennet)</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 # Convert timestamps to human readable time delta
 timestamps = [str(datetime.timedelta(seconds=(round(float(i.encode(&#34;utf-8&#34;)))))) for i in result[&#39;opennet&#39;].keys()]
 
@@ -361,7 +365,7 @@ df_opennet.reset_index()
 </code></pre></div><!-- raw HTML omitted -->
 <h3 id="sent-data-sendnet">Sent data (sendnet)</h3>
 <p>Here you can have a look at the sent data. Again: The POST/GET requests are not fully complete.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 # Convert timestamps to human readable time delta
 timestamps = [str(datetime.timedelta(seconds=(round(float(i.encode(&#34;utf-8&#34;)))))) for i in result[&#39;sendnet&#39;].keys()]
 # Create list of accessed files entries
@@ -381,7 +385,7 @@ df_sendnet[&#39;rawdata&#39;] = unhexed_data
 df_sendnet[[&#39;desthost&#39;, &#39;destport&#39;, &#39;fd&#39;, &#39;operation&#39;, &#39;type&#39;, &#39;rawdata&#39;]].reset_index()
 </code></pre></div><!-- raw HTML omitted -->
 <h3 id="received-data-recvnet">Received data (recvnet)</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 # Convert timestamps to human readable time delta
 timestamps = [str(datetime.timedelta(seconds=(round(float(i.encode(&#34;utf-8&#34;)))))) for i in result[&#39;recvnet&#39;].keys()]
 
@@ -403,7 +407,7 @@ df_recvnet[[&#39;host&#39;, &#39;port&#39;, &#39;type&#39;, &#39;rawdata&#39;]].
 </code></pre></div><!-- raw HTML omitted -->
 <h2 id="requests-sequence">Requests sequence</h2>
 <p>Since I was not able to get the full contents of the POST/GET requests (and their equivalent responses), I had to rely on the information found <a href="http://www.apk-analyzer.net/analysis/646/3752/0/html">here</a>. Below is a short sequence diagramm describing the general process of the communication. Keep in mind that the sequence only tries to give you a short overview of the data exchange between the process and the webserver.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%%seqdiag
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%%seqdiag
 # &lt;!-- collapse=True --&gt;
 seqdiag {
   application  -&gt; citroen-club.ch [label = &#34;POST /images/1.php HTTP/1.1&#34;];
@@ -419,7 +423,7 @@ seqdiag {
 </code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2014/android-dynamic-code-analysis-mastering-droidbox/output_44_0.png" alt="png"></p>
 <p>And now a complete request/response pair:</p>
 <p><strong>Request</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">POST /gallery/4.php HTTP/1.1
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">POST /gallery/4.php HTTP/1.1
 User-agent: Mozilla/4.76 (Java; U;Linux i686 3.0.36-android-x86-eeepc+; ru; The Android Project 0)
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 Pragma: no-cache
@@ -430,7 +434,7 @@ Content-Length: 86
 Data Raw: 64 61 74 61 3d 55 32 6c 74 55 33 52 68 64 47 55 67 50 53 42 4f 54 31 51 67 55 6b 56 42 52 46 6b 67 43 67 25 33 44 25 33 44 25 30 41 26 4c 6f 67 43 6f 64 65 3d 43 4f 4e 46 26 4c 6f 67 54 65 78 74 3d 43 68 65 63 6b 2b 70 75 6c 6c 2b 6f 66 66 2b 75 72 6c 73 26 
 Data Ascii: data=U2ltU3RhdGUgPSBOT1QgUkVBRFkgCg%3D%3D%0A&amp;LogCode=CONF&amp;LogText=Check+pull+off+urls&amp;
 </code></pre></div><p><strong>Response</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">HTTP/1.1 403 Forbidden
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">HTTP/1.1 403 Forbidden
 Date: Thu, 21 Nov 2013 12:37:26 GMT
 Server: Apache/2.2.3 (CentOS)
 Content-Length: 299
@@ -439,7 +443,7 @@ Content-Type: text/html; charset=iso-8859-1
 
 &lt;!DOCTYPE HTML PUBLIC &#34;-//IETF//DTD HTML 2.0//EN&#34;&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;403 Forbidden&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Forbidden&lt;/h1&gt;&lt;p&gt;You don&#39;t have permission to access /gallery/4.phpon this server.&lt;/p&gt;&lt;hr&gt;&lt;address&gt;Apache/2.2.3 (CentOS) Server at best-invest-int.com Port 80&lt;/address&gt;&lt;/body&gt;&lt;/html&gt;
 </code></pre></div><h2 id="crypto-activities">Crypto activities</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 # Convert timestamps to human readable time delta
 timestamps = [str(datetime.timedelta(seconds=(round(float(i.encode(&#34;utf-8&#34;)))))) for i in result[&#39;cryptousage&#39;].keys()]
 
@@ -460,7 +464,7 @@ df_cryptousage.reset_index()
 </code></pre></div><!-- raw HTML omitted -->
 <h2 id="activities-chart">Activities chart</h2>
 <p>Now let&rsquo;s have a look in which <em>order</em> the several activities took place. Below you&rsquo;ll find a table containing the timestamp, operation and category of each specific activity (e.g. file system access, network read/write etc.)</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
 # Create df
 df_activities = pd.DataFrame(columns=[[&#39;Timestamp&#39;, &#39;Operation&#39;, &#39;Category&#39;]])
 
@@ -499,7 +503,7 @@ json_data = json.dumps(json.loads(d), ensure_ascii=False).encode(&#34;utf-8&#34;
 df_activities
 </code></pre></div><!-- raw HTML omitted -->
 <p>A fancier overview &hellip;</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%%jinja html
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%%jinja html
 &lt;!-- collapse=True --&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -531,9 +535,9 @@ df_activities
 </ul>
 <h2 id="conclusion">Conclusion</h2>
 <p>I think <code>DroidBox</code> is a very good tool to deal with Android APKs and analyze their behaviour during run-time. It comes with a working mobile sandbox meant to inspect and monitor an applications activities. However during my analysis I had to rely on previous analysis since the results didn&rsquo;t contain the full details. Not only the network traffic but also the contents read from files weren&rsquo;t complete. In order to fully unterstand one malware I need complete details about its behaviour.  For example I had following response from the server which is completely useless:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">HTTP/1.1 406 Not Acceptable\r\nDate: Mon, 28 Jul 2014 13:29:38 GMT\r\nServer: Apache\r\nContent-...
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">HTTP/1.1 406 Not Acceptable\r\nDate: Mon, 28 Jul 2014 13:29:38 GMT\r\nServer: Apache\r\nContent-...
 </code></pre></div><p>Besides that I was indeed able to see that the application is reading from some file. But the delivered content was once again striped:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39; standalone=&#39;yes&#39; ?&gt;\n&lt;map&gt;\n&lt;string name=&#34;DOWNLOADDOMAIN&#34;&gt;c...
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">&lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39; standalone=&#39;yes&#39; ?&gt;\n&lt;map&gt;\n&lt;string name=&#34;DOWNLOADDOMAIN&#34;&gt;c...
 </code></pre></div><p>I hope the developers will see this as a vital necessity and update as soon as possible. Furthermore I&rsquo;ll look forward to other mobile sandboxes which have data instrumentation capabilities. Next time I&rsquo;ll have a deeper look at Androids <a href="http://developer.android.com/tools/debugging/ddms.html">DDMS</a>.</p>
 </div>
   <div id="comments">
@@ -657,6 +661,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

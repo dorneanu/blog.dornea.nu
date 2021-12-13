@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -89,11 +93,11 @@ type="image/x-icon"/>
 <p>According to the author Nginx <code>is an HTTP and reverse proxy server, as well as a mail proxy server</code>. I thought I should give it a try and test its performance against Lighttpd. Meanwhile I&rsquo;m using Lighttpd <code>'AND</code>' Nginx on my server due to some regexp issue that have to be solved very soon. In that case Nginx acts a a proxy server (see below for configuration stuff).</p>
 <h2 id="get-it">Get it!</h2>
 <p>Before going further you should have the latest (stable) available Nginx version. If you use Debian make sure, you add following to your <code>/etc/apt/sources.list</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">deb-src http://nginx.org/packages/debian/ squeeze nginx
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">deb-src http://nginx.org/packages/debian/ squeeze nginx
 </code></pre></div><p>On my system I have currently version <code>1.0.9-1</code> installed.</p>
 <h2 id="basic-configuration">Basic configuration</h2>
 <p>The main file for this part is <code>/etc/nginx/nginx.conf</code>. This is my <code>nginx.conf</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">user www-data;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">user www-data;
 worker_processes  5;
 worker_rlimit_nofile 8192;
 
@@ -136,7 +140,7 @@ http {
 </code></pre></div><p>I won&rsquo;t explain every line since this is not what I&rsquo;m supposed to do. Please have a look at the links at the end of this article for additional links.</p>
 <h2 id="vhost-configuration">vHost configuration</h2>
 <p>Well this is probably the most interesting part. You should have a configuration file per each vhost located at <code>/etc/nginx/conf.d/</code>. In my case the configuration was adapted to Drupals system and needs. Let&rsquo;s have a look:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">server {
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">server {
         listen 80;
         server_name dornea.nu;
 
@@ -243,7 +247,7 @@ http {
         }
 }
 </code></pre></div><p>Having Drupals boost module enabled you should have static pages on your server which will be served by the memcache daemon. At the beginning of the configuration nginx checks if any static content should be served at all (ist the user logged in? etc.) If there is a html file which correlates with the URI then nginx will load the files content from memcache. If not: the PHP script will be executed. Speaking of PHP.. Lets have a look at <code>/etc/nginx/</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># cat /etc/nginx/fastcgi_params 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># cat /etc/nginx/fastcgi_params 
 fastcgi_pass   unix:/tmp/fcgi.sock;
 fastcgi_param  QUERY_STRING       $query_string;
 fastcgi_param  REQUEST_METHOD     $request_method;
@@ -266,7 +270,7 @@ fastcgi_index  index.php;
 
 fastcgi_param  REDIRECT_STATUS    200;
 </code></pre></div><p>I use a socket instead of child processes. The socket can be created using <code>/etc/init.d/fastcgi</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#999;font-style:italic"># cat /etc/init.d/fastcgi </span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#999;font-style:italic"># cat /etc/init.d/fastcgi </span>
 <span style="color:#999;font-style:italic">#!/bin/sh</span>
 
 <span style="color:#999;font-style:italic">### BEGIN INIT INFO</span>
@@ -308,12 +312,12 @@ fastcgi_param  REDIRECT_STATUS    200;
 <span style="color:#6ab825;font-weight:bold">esac</span>
 <span style="color:#24909d">exit</span> <span style="color:#40ffff">$RETVAL</span>
 </code></pre></div><p><code>php-fastcgi</code> is located at /usr/local/bin/:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#999;font-style:italic"># cat /usr/local/bin/php-fastcgi </span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#999;font-style:italic"># cat /usr/local/bin/php-fastcgi </span>
 <span style="color:#999;font-style:italic">#!/bin/sh</span>
 /usr/bin/spawn-fcgi -F <span style="color:#3677a9">1</span> -C <span style="color:#3677a9">10</span> -a 127.0.0.1 -s /tmp/fcgi.sock -u www-data -g www-data -f <span style="color:#ed9d13">&#34;/usr/bin/php5-cgi -c /etc/php5/cgi/php.ini&#34;</span> -P /var/run/fastcgi-php.pid
 </code></pre></div><h2 id="nginx-as-proxy-server">Nginx as proxy server</h2>
 <p>As already mentioned nginx can be used as a proxy server. In my case I need nginx to redirect requests on a certain subdomain to <code>lighttpd</code> listening to a local interface. The configuration:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">### dl.dornea.nu
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">### dl.dornea.nu
 server {
     listen 80;
     server_name dl.dornea.nu;
@@ -347,7 +351,7 @@ server {
 <h2 id="benchmarks">Benchmarks</h2>
 <h3 id="ab-apache-suite-benchmark">ab (apache suite) benchmark</h3>
 <h4 id="lighttpd">lighttpd</h4>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ab -n <span style="color:#3677a9">1000</span> -c <span style="color:#3677a9">2</span> http://dornea.nu/
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ab -n <span style="color:#3677a9">1000</span> -c <span style="color:#3677a9">2</span> http://dornea.nu/
 This is ApacheBench, Version 2.3 &lt;<span style="color:#40ffff">$Revision</span>: <span style="color:#3677a9">655654</span> $&gt;
 Copyright <span style="color:#3677a9">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
@@ -403,7 +407,7 @@ Percentage of the requests served within a certain <span style="color:#24909d">t
   99%   <span style="color:#3677a9">9111</span>
  100%  <span style="color:#3677a9">15536</span> (longest request)
 </code></pre></div><h4 id="nginx">nginx</h4>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ab -n <span style="color:#3677a9">1000</span> -c <span style="color:#3677a9">2</span> http://dornea.nu/
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ab -n <span style="color:#3677a9">1000</span> -c <span style="color:#3677a9">2</span> http://dornea.nu/
 This is ApacheBench, Version 2.3 &lt;<span style="color:#40ffff">$Revision</span>: <span style="color:#3677a9">655654</span> $&gt;
 Copyright <span style="color:#3677a9">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
@@ -599,6 +603,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

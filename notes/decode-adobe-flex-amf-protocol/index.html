@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -91,7 +95,7 @@ data back and forth. One might think that <a href="http://portswigger.net/burp/"
 for <em>AMF</em>. Although this is the case I found Burp&rsquo;s decoding to be more confusing than useful. So I&rsquo;ve searched for other
 ways to decode <em>AMF</em> encoded data.</p>
 <p>When looking at the plain-text traffic, you won&rsquo;t see much:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">...
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">...
 Content-Type: application/x-amf
 Content-Length: 1373
 ...
@@ -104,13 +108,13 @@ I was able to decode the AMF data in way I could easily understand its inner str
 <pre><code>$ pip install pyamf
 </code></pre>
 <p>Then read the request data:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">1</span>]: <span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">1</span>]: <span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span>
 
 In [<span style="color:#3677a9">2</span>]: <span style="color:#6ab825;font-weight:bold">with</span> <span style="color:#24909d">open</span>(<span style="color:#ed9d13">&#39;/home/victor/tmp/neu.req&#39;</span>, <span style="color:#ed9d13">&#39;r&#39;</span>) <span style="color:#6ab825;font-weight:bold">as</span> f:
     content = f.read()
        ...: 
 </code></pre></div><p>And finally decode that data:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">3</span>]: <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span> <span style="color:#6ab825;font-weight:bold">import</span> remoting
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">3</span>]: <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span> <span style="color:#6ab825;font-weight:bold">import</span> remoting
 
 In [<span style="color:#3677a9">4</span>]: decoded = remoting.decode(content)
 
@@ -120,7 +124,7 @@ Out[<span style="color:#3677a9">5</span>]: pyamf.remoting.Envelope
 In [<span style="color:#3677a9">11</span>]: decoded
 Out[<span style="color:#3677a9">11</span>]: 
 &lt;Envelope amfVersion=<span style="color:#3677a9">3</span>&gt;
- (<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;/46&#39;</span>, &lt;Request target=<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;null&#39;</span>&gt;[&lt;RemotingMessage  body=[[{<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;ExternalListGUID&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_SELECT_DEFAULT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Options&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#3677a9">5</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;projectversionid&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_PROJECT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Project Version&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: True, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SecurityIssueDetails&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;BOOLEAN&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Detailed Report&#39;</span>}
+ (<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;/46&#39;</span>, &lt;Request target=<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;null&#39;</span>&gt;[&lt;RemotingMessage  body=[[{<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;ExternalListGUID&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_SELECT_DEFAULT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Options&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#3677a9">5</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;projectversionid&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_PROJECT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Project Version&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#6ab825;font-weight:bold">True</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SecurityIssueDetails&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;BOOLEAN&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Detailed Report&#39;</span>}
  ...
 </code></pre></div><p>I hope that helped!</p>
 </div>
@@ -228,6 +232,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

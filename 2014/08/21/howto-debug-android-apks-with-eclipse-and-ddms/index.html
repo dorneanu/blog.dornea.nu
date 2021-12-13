@@ -26,7 +26,7 @@ Revisions  UPDATE 2014-12-09:  Before looking at the next steps, make sure you&r
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ Revisions  UPDATE 2014-12-09:  Before looking at the next steps, make sure you&r
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -94,7 +98,7 @@ After hours of wild googling these are the steps to make your APK debuggable und
 <p>Before looking at the next steps, make sure you&rsquo;ll have a look at <a href="http://adus.dev.dornea.nu/">ADUS</a>. It will help you with the automation of several steps described in this post. Added some additional infos regarding the breakpoints.</p>
 <h2 id="dump-the-apk">Dump the APK</h2>
 <p>First of all make sure you&rsquo;ll have the latest version of <code>apktool</code>. I&rsquo;ve compiled it by myself:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">
 <span style="color:#999;font-style:italic"># git clone git://github.com/iBotPeaches/Apktool.git</span>
 oCloning into <span style="color:#ed9d13">&#39;Apktool&#39;</span>...    
 remote: Counting objects: 9605, <span style="color:#6ab825;font-weight:bold">done</span>.
@@ -108,12 +112,12 @@ Checking connectivity... <span style="color:#6ab825;font-weight:bold">done</span
 <span style="color:#999;font-style:italic"># ./gradlew build fatJar</span>
 [o...]
 </code></pre></div><p>Afterwards you&rsquo;ll get a new fresh <code>apktool</code> to use within the next steps:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># find . -name &#34;apktool-cli.jar&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># find . -name &#34;apktool-cli.jar&#34;</span>
 ./obrut.apktool/apktool-cli/build/libs/apktool-cli.jar
 
 <span style="color:#999;font-style:italic"># cp ./brut.apktool/apktool-cli/build/libs/apktool-cli.jar /tmp</span>
 </code></pre></div><p>After having installed the right tool it&rsquo;s time to dump the APK contents:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># java -jar /tmp/apktool-cli.jar d -d FakeBanker.apk -o source</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># java -jar /tmp/apktool-cli.jar d -d FakeBanker.apk -o source</span>
 I: Using Apktool 2.0.0-3d2e93-SNAPSHOT on FakeBanker.apk
 I: Loading resource table...
 I: Loading resource table...
@@ -127,7 +131,7 @@ I: Copying assets and libs...
 I: Copying unknown files...
 I: Copying original files...
 </code></pre></div><p>Afterwards I got following file structure:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">tree -L <span style="color:#3677a9">2</span> <span style="color:#24909d">source</span> 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">tree -L <span style="color:#3677a9">2</span> <span style="color:#24909d">source</span> 
 <span style="color:#24909d">source</span>
 ├── AndroidManifest.xml
 ├── apktool.yml
@@ -155,12 +159,12 @@ I: Copying original files...
 <li>using apktool</li>
 </ul>
 <p>If you want to do it manually open the <code>AndroidManifest.xml</code> file and search for the <code>application</code> tag. Then insert new attribute <code>android:debuggable='true'</code> like I did:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">...
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">...
 <span style="color:#6ab825;font-weight:bold">&lt;application</span> <span style="color:#bbb">android:theme=</span><span style="color:#ed9d13">&#34;@style/AppTheme&#34;</span> <span style="color:#bbb">android:label=</span><span style="color:#ed9d13">&#34;@string/app_name&#34;</span> <span style="color:#bbb">android:icon=</span><span style="color:#ed9d13">&#34;@drawable/ic_launcher1&#34;</span> <span style="color:#bbb">android:debuggable=</span><span style="color:#ed9d13">&#34;true&#34;</span> <span style="color:#bbb">android:allowBackup=</span><span style="color:#ed9d13">&#34;false&#34;</span><span style="color:#6ab825;font-weight:bold">&gt;</span>
 ...
 </code></pre></div><h2 id="build-new-app">Build new APP</h2>
 <p>Now you&rsquo;re ready to build you new debuggable APK using <code>apktool</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">java -jar /tmp/apktool-cli.jar b -d <span style="color:#24909d">source</span> FakeBanker.Debug.apk
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">java -jar /tmp/apktool-cli.jar b -d <span style="color:#24909d">source</span> FakeBanker.Debug.apk
 I: Using Apktool 2.0.0-3d2e93-SNAPSHOT on <span style="color:#24909d">source</span>
 I: Checking whether sources has changed...
 I: Smaling smali folder into classes.dex...
@@ -183,7 +187,7 @@ I: Building apk file...
 </ul>
 <h2 id="extract-sources">Extract sources</h2>
 <p>I&rsquo;ll be using <code>jd-gui</code> to <strong>undex</strong> the dex files inside the newly created package. First let&rsquo;s unpack <code>FakeBanker.Debug.apk</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># unzip FakeBanker.Debug.apk -d unpacked</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># unzip FakeBanker.Debug.apk -d unpacked</span>
 Archive:  FakeBanker.Debug.apk
  extracting: unpacked/res/drawable-hdpi/ic_launcher1.png  
  extracting: unpacked/res/drawable-hdpi/logo.png  
@@ -200,24 +204,24 @@ Archive:  FakeBanker.Debug.apk
   inflating: unpacked/classes.dex    
   inflating: unpacked/resources.arsc  
 </code></pre></div><p>Let <code>dex2jar</code> do its job:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># cd unpacked</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># cd unpacked</span>
 <span style="color:#999;font-style:italic"># dex2jar classes.dex</span>
 dex2jar classes.dex -&gt; classes-dex2jar.jar
 </code></pre></div><p>Now open the jar file using <code>jd-gui</code> and save the sources as zip like I did:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/jd-gui.png" alt=""></p>
 <h2 id="sign-the-apk">Sign the APK</h2>
 <p>In order to push your APK to the device you&rsquo;ll have to <strong>sign</strong> it. I&rsquo;ll therefor using a test <a href="http://developer.android.com/tools/publishing/app-signing.html">certificate</a>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># git clone https://github.com/appium/sign</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># git clone https://github.com/appium/sign</span>
 Cloning into <span style="color:#ed9d13">&#39;sign&#39;</span>...
 remote: Counting objects: 49, <span style="color:#6ab825;font-weight:bold">done</span>.
 remote: Total <span style="color:#3677a9">49</span> (delta 0), reused <span style="color:#3677a9">0</span> (delta 0)
 Unpacking objects: 100% (49/49), <span style="color:#6ab825;font-weight:bold">done</span>.
 Checking connectivity... <span style="color:#6ab825;font-weight:bold">done</span>.
 </code></pre></div><p>Now let&rsquo;s sign it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># java -jar sign/dist/signapk.jar sign/testkey.x509.pem sign/testkey.pk8 FakeBanker.Debug.apk FakeBanker.Debug.Signed.apk          </span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># java -jar sign/dist/signapk.jar sign/testkey.x509.pem sign/testkey.pk8 FakeBanker.Debug.apk FakeBanker.Debug.Signed.apk          </span>
 </code></pre></div><h2 id="install-the-apk">Install the APK</h2>
 <p>Having signed the APK now you&rsquo;re ready to push it to your device and have some fun.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># adb devices -l  </span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># adb devices -l  </span>
 List of devices attached 
 emulator-5554          device product:sdk model:sdk device:generic
 
@@ -228,14 +232,14 @@ Success
 </code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_installed.png" alt=""></p>
 <h2 id="add-sources">Add sources</h2>
 <p>We&rsquo;ll add the Java sources to the <code>source</code> directory structure:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># mkdir source/src</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># mkdir source/src</span>
 <span style="color:#999;font-style:italic"># unzip classes-dex2jar.src.zip -d source/src </span>
 Archive:  classes-dex2jar.src.zip
    creating: source/src/android/
    creating: source/src/android/support/
 ...
 </code></pre></div><p>The new directory structure will be:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># tree -L 2 source </span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># tree -L 2 source </span>
 <span style="color:#24909d">source</span>
 ├── AndroidManifest.xml
 ├── apktool.yml
@@ -455,6 +459,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

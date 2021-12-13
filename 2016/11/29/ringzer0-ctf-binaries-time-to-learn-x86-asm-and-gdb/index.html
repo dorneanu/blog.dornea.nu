@@ -26,7 +26,7 @@ $ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a [0x08048380]&gt; iI havecode true pic 
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ $ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a [0x08048380]&gt; iI havecode true pic 
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -86,7 +90,7 @@ type="image/x-icon"/>
     
   </p>
   <div class="lh-copy post-content"><p>This one was a quite easy one. Using radare let&rsquo;s find more information about the binary:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a
 
 [0x08048380]&gt; iI
 havecode true
@@ -116,7 +120,7 @@ relocs   true
 rpath    NONE
 binsz    7450
 </code></pre></div><p>Ok, now let&rsquo;s have a look at the <strong>entry point</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x08048380]&gt; pdf @ sym.main
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[0x08048380]&gt; pdf @ sym.main
 ;-- main:
 / (fcn) sym.main 231
    sym.main ();
@@ -184,24 +188,24 @@ binsz    7450
            0x08048552      c3             ret
 
 </code></pre></div><p>Indeed, this is a lot of information. Let&rsquo;s dissect the programm&rsquo;s flow:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x0804846c      55             push ebp
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x0804846c      55             push ebp
            0x0804846d      89e5           mov ebp, esp
            0x0804846f      57             push edi
            0x08048470      83e4f0         and esp, 0xfffffff0
            0x08048473      83ec30         sub esp, 0x30               ; &#39;0&#39;
 </code></pre></div><p>This looks like a function <strong>prologue</strong>: Save the <strong>stack base pointer</strong>, allocate additional stack place (0x30).</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x08048476      c744242c0000.  mov dword [esp + arg_2ch], 0
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x08048476      c744242c0000.  mov dword [esp + arg_2ch], 0
            0x0804847e      c70424180000.  mov dword [esp], 0x18       ; [0x18:4]=0x8048380 sym._start
            0x08048485      e8a6feffff     call sym.imp.malloc        ;  void *malloc(size_t size);
 </code></pre></div><p>Allocate some heap using <code>malloc</code> &hellip;</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x0804848a      8944242c       mov dword [esp + arg_2ch], eax
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x0804848a      8944242c       mov dword [esp + arg_2ch], eax
            0x0804848e      c74424081800.  mov dword [esp + local_8h], 0x18 ; [0x18:4]=0x8048380 sym._start
            0x08048496      c74424040000.  mov dword [esp + local_4h], 0
            0x0804849e      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
            0x080484a2      890424         mov dword [esp], eax
            0x080484a5      e8c6feffff     call sym.imp.memset
 </code></pre></div><p>The syntax for <code>memset</code> looks like this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">SYNOPSIS
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">SYNOPSIS
     <span style="color:#6ab825;font-weight:bold">void</span> *<span style="color:#447fcf">memset</span>(<span style="color:#6ab825;font-weight:bold">void</span> *s, <span style="color:#6ab825;font-weight:bold">int</span> c, size_t n);
 
 DESCRIPTION
@@ -217,53 +221,53 @@ arguments for <code>memset</code> are being pushed into the stack:</p>
     
   </summary>
   <pre><code>dot {
-    digraph G {
+	digraph G {
 	 
-        // Define layout
-        graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
-        rankdir=LR;
-        node [shape=&quot;record&quot;];
-        rank=same;
+		// Define layout
+		graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
+		rankdir=LR;
+		node [shape=&quot;record&quot;];
+		rank=same;
 	 
-        // Define pointers
-        rsp [
-            label=&quot;&lt;p&gt; $rsp \l&quot;, height=&quot;0.1&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
-        rbp [
-            label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
+		// Define pointers
+		rsp [
+			label=&quot;&lt;p&gt; $rsp \l&quot;, height=&quot;0.1&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+		];
+		rbp [
+			label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+		];
 	 
-        rsp_4 [
-            label=&quot;&lt;p&gt; $rsp + 4 \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
+		rsp_4 [
+			label=&quot;&lt;p&gt; $rsp + 4 \l&quot;, height=&quot;0.01&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+		];
 	 
 	 
-        rsp_8 [
-            label=&quot;&lt;p&gt; $rsp + 8 \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        ];
+		rsp_8 [
+			label=&quot;&lt;p&gt; $rsp + 8 \l&quot;, height=&quot;0.01&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+		];
 	 
-        // rsp_12 [
-        // 	label=&quot;&lt;p&gt; $rsp + 12 \l&quot;, height=&quot;0.01&quot;,
-        // 	color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        // ];
+		// rsp_12 [
+		// 	label=&quot;&lt;p&gt; $rsp + 12 \l&quot;, height=&quot;0.01&quot;,
+		// 	color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+		// ];
 	 
-        // Define stack
-        stack [
-            width=&quot;3&quot;,
-            label=&quot;&lt;p&gt;\nStack\n\n | &lt;bp&gt;\n...\n\n | &lt;8&gt;0x8 \l | &lt;4&gt;0x0  \l | &lt;0&gt;pointer to memory allocated by malloc() \l&quot;
-        ];
+		// Define stack
+		stack [
+			width=&quot;3&quot;,
+			label=&quot;&lt;p&gt;\nStack\n\n | &lt;bp&gt;\n...\n\n | &lt;8&gt;0x8 \l | &lt;4&gt;0x0  \l | &lt;0&gt;pointer to memory allocated by malloc() \l&quot;
+		];
 	   
 	   
-        // Pointer -&gt; Stack edges
-        rbp:p -&gt; stack:bp [style=dotted];
-        rsp:p -&gt; stack:0 [style=dotted];
-        rsp_4:p -&gt; stack:4 [style=invis];
-        rsp_8:p -&gt; stack:8 [style=invis];
-    }
+		// Pointer -&gt; Stack edges
+		rbp:p -&gt; stack:bp [style=dotted];
+		rsp:p -&gt; stack:0 [style=dotted];
+		rsp_4:p -&gt; stack:4 [style=invis];
+		rsp_8:p -&gt; stack:8 [style=invis];
+	}
 }
 </code></pre>
 
@@ -272,7 +276,7 @@ arguments for <code>memset</code> are being pushed into the stack:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2016/r0-binaries/stack.dot.png" alt="stack"></p>
 <p>So <code>memset</code> will set the value &ldquo;0&rdquo; 8 times at the address pointed by <code>eax</code>. Afterwards
 some values will be <code>mov</code>ed into the previously allocated memory range:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
            0x080484ae      c700464c4147   mov dword [eax], 0x47414c46 ; [0x47414c46:4]=-1
            0x080484b4      c740042d3430.  mov dword [eax + 4], 0x3930342d ; [0x3930342d:4]=-1
            0x080484bb      66c740083200   mov word [eax + 8], 0x32    ; &#39;2&#39; ; [0x32:2]=27 ; &#39;2&#39;
@@ -293,7 +297,7 @@ some values will be <code>mov</code>ed into the previously allocated memory rang
            0x080484f6      66c740086600   mov word [eax + 8], 0x66    ; &#39;f&#39; ; [0x66:2]=0 ; &#39;f&#39;
            0x080484fc      c70424f88504.  mov dword [esp], str.Loading... ; [0x80485f8:4]=0x64616f4c LEA str.Loading... ; &#34;Loading...&#34; @ 0x80485f8
 </code></pre></div><p>At this point I&rsquo;ll switch to <strong>dynamic analysis</strong> and therefore <strong>run</strong> the code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gdb 88eb31060c4abd0931878bf7d2dd8c1a
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gdb 88eb31060c4abd0931878bf7d2dd8c1a
 ...
 gef&gt; b *0x080484aa
 gef&gt; r
@@ -305,68 +309,68 @@ should have sth like:</p>
     
   </summary>
   <pre><code>dot {
-    digraph G {
+	digraph G {
 	 
-        // Define layout
-        graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
-        rankdir=LR;
-        node [shape=&quot;record&quot;];
-        rank=same;
+		// Define layout
+		graph [pad=&quot;.75&quot;, ranksep=&quot;0.95&quot;, nodesep=&quot;0.05&quot;];
+		rankdir=LR;
+		node [shape=&quot;record&quot;];
+		rank=same;
 	 
-        // Define pointers
-        rsp [
-            label=&quot;&lt;p&gt; $rsp \l&quot;, height=&quot;0.1&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
-        rbp [
-            label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
+		// Define pointers
+		rsp [
+			label=&quot;&lt;p&gt; $rsp \l&quot;, height=&quot;0.1&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+		];
+		rbp [
+			label=&quot;&lt;p&gt; $rbp \l&quot;, height=&quot;0.1&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+		];
 	 
-        rsp_4 [
-            label=&quot;&lt;p&gt; $rsp + 4 \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
-        ];
+		rsp_4 [
+			label=&quot;&lt;p&gt; $rsp + 4 \l&quot;, height=&quot;0.01&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white
+		];
 	 
 	 
-        rsp_8 [
-            label=&quot;&lt;p&gt; $rsp + 8 \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        ];
+		rsp_8 [
+			label=&quot;&lt;p&gt; $rsp + 8 \l&quot;, height=&quot;0.01&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+		];
 	 
-        rsp_12 [
-            label=&quot;&lt;p&gt; $rsp + 12 \l&quot;, height=&quot;0.01&quot;,
-            color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
-        ];
+		rsp_12 [
+			label=&quot;&lt;p&gt; $rsp + 12 \l&quot;, height=&quot;0.01&quot;,
+			color=white, fontcolor=black,fontsize=9,style=filled, fillcolor=white,
+		];
 	 
-        // Define stack
-        stack [
-            width=&quot;3&quot;,
-            label=&quot;&lt;p&gt;\nStack\n\n | &lt;bp&gt;\n...\n\n | &lt;12&gt;0x080485b2  \l | &lt;8&gt;0x18 \l | &lt;4&gt;0x0  \l | &lt;0&gt;0x0804b008 \l&quot;
-        ];
+		// Define stack
+		stack [
+			width=&quot;3&quot;,
+			label=&quot;&lt;p&gt;\nStack\n\n | &lt;bp&gt;\n...\n\n | &lt;12&gt;0x080485b2  \l | &lt;8&gt;0x18 \l | &lt;4&gt;0x0  \l | &lt;0&gt;0x0804b008 \l&quot;
+		];
 	   
-        // Define values
-        val [
-            width=&quot;5&quot;,color=blue,
-            label=&quot;&lt;p&gt;\nValues\n\n | \n...\n\n | &lt;1&gt;FLAG-4092849uio2jf \l | &lt;2&gt;(__libc_csu_init+82): add esi,0x1 \l&quot;
-        ];
+		// Define values
+		val [
+			width=&quot;5&quot;,color=blue,
+			label=&quot;&lt;p&gt;\nValues\n\n | \n...\n\n | &lt;1&gt;FLAG-4092849uio2jf \l | &lt;2&gt;(__libc_csu_init+82): add esi,0x1 \l&quot;
+		];
 	   
 	   
-        // Pointer -&gt; Stack edges
-        rbp:p -&gt; stack:bp [style=dotted];
-        rsp:p -&gt; stack:0 [style=dotted];
-        rsp_4:p -&gt; stack:4 [style=invis];
-        rsp_8:p -&gt; stack:8 [style=invis];
-        rsp_12:p -&gt; stack:12 [style=invis];
+		// Pointer -&gt; Stack edges
+		rbp:p -&gt; stack:bp [style=dotted];
+		rsp:p -&gt; stack:0 [style=dotted];
+		rsp_4:p -&gt; stack:4 [style=invis];
+		rsp_8:p -&gt; stack:8 [style=invis];
+		rsp_12:p -&gt; stack:12 [style=invis];
 	 
-        // Trick to have everything horizontally aligned
-        stack:p -&gt; val:p [style=invis];
+		// Trick to have everything horizontally aligned
+		stack:p -&gt; val:p [style=invis];
 	   
-        // Stack -&gt; Values edges
-        edge[style=dotted];
-        stack:0 -&gt; val:1 [color=red];
-        stack:12 -&gt; val:2;
-    }
+		// Stack -&gt; Values edges
+		edge[style=dotted];
+		stack:0 -&gt; val:1 [color=red];
+		stack:12 -&gt; val:2;
+	}
 </code></pre>
 
 </details>
@@ -478,6 +482,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

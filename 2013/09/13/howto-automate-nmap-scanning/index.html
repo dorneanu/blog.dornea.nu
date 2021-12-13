@@ -27,7 +27,7 @@ Configuration Make sure you you have downloaded the archive and open src/core/wn
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -43,6 +43,10 @@ Configuration Make sure you you have downloaded the archive and open src/core/wn
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -96,7 +100,7 @@ type="image/x-icon"/>
 </ul>
 <h2 id="running-the-tool">Running the tool</h2>
 <p>Now the obligatory -help message:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">-==[ wnmap by nrz@nullsecurity.net ]==--
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">-==[ wnmap by nrz@nullsecurity.net ]==--
 Usage: wnmap [options] &lt;target specification&gt; | &lt;misc&gt;
 TARGET SPECIFICATION:
     Can pass hostname or IP address.
@@ -123,7 +127,7 @@ EXAMPLES:
     wnmap -a &#34;-I;iddle-scan;-P0 -p- -sI sweet.host.com;true&#34;
     wnmap -e # edit modes
 </code></pre></div><p>As you can see the tool comes along with several **predefined **running modes. You can easily edit them at <strong>src/core/wmodes.conf:</strong></p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% cat src/core/wmodes.conf
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% cat src/core/wmodes.conf
 # SAMPLE FILE !!! DEFINE YOUR OWN MAGIC !!!
 # wnmap_arg; mode_name; nmap_args; sudo?
 -F;fast;-F;false
@@ -135,11 +139,11 @@ EXAMPLES:
 <h2 id="add-new-mode">Add new mode</h2>
 <p>Let&rsquo;s say I want to add a new mode, which will scan all hosts at port 80 and 443 for web services. In particular I want to the the supported HTTP methods at those ports.<br>
 You can easily use the command line to insert the new mode:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -a &#34;-H;http-methods;-P0 --script=http-methods.nse -p 80,443;false&#34;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -a &#34;-H;http-methods;-P0 --script=http-methods.nse -p 80,443;false&#34;
 --==[ wnmap by nrz@nullsecurity.net ]==--
 [+] New mode added!
 </code></pre></div><p>or edit **src/core/wmodes.conf **directly.Now let&rsquo;s scan a host using the newly inserted mode:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -H scanme.nmap.org
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -H scanme.nmap.org
 --==[ wnmap by nrz@nullsecurity.net ]==--
 [+] Creating scanme.nmap.org/http-methods
 [+] Scanning scanme.nmap.org
@@ -153,16 +157,16 @@ PORT    STATE  SERVICE REASON
 443/tcp closed https   conn-refused
 Nmap done: 1 IP address (1 host up) scanned in 0.69 seconds
 </code></pre></div><p>Now you should see a directory called <strong>scanme.nmap.org</strong> inside your working directory. The output of the scan was saved as a regular nmap file and as XML.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org
 scanme.nmap.org
 `-- http-methods
     |-- scanme.nmap.org.nmap
     `-- scanme.nmap.org.xml
 </code></pre></div><h2 id="combine-modes">Combine modes</h2>
 <p>You could now combine the modes:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -H -F scanme.nmap.org
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -H -F scanme.nmap.org
 </code></pre></div><p>And you&rsquo;ll get:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org 
 scanme.nmap.org
 |-- fast
 |   |-- scanme.nmap.org.nmap
@@ -292,6 +296,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

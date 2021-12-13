@@ -26,7 +26,7 @@ In this article I&rsquo;ll have a look how Python, Java and openssl (command lin
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ In this article I&rsquo;ll have a look how Python, Java and openssl (command lin
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -94,7 +98,7 @@ type="image/x-icon"/>
 </ol>
 <h2 id="java">Java</h2>
 <p>Let&rsquo;s take a look at some routines in <code>Java</code>. You can also view/download the following code on this <a href="https://gist.github.com/dorneanu/b8e53b034d89f6be383c">GitHub Gist</a>.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#999;font-style:italic">/*
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#999;font-style:italic">/*
 </span><span style="color:#999;font-style:italic"> * Based on https://raw.githubusercontent.com/usefulfor/usefulfor/master/security/JBoss.java
 </span><span style="color:#999;font-style:italic"> *
 </span><span style="color:#999;font-style:italic"> * JBoss.java - Blowfish encryption/decryption tool with JBoss default password
@@ -183,7 +187,7 @@ type="image/x-icon"/>
 <li><code>-d &lt;Base64&gt;</code>: will decrypt the specified Base64 string &lt; Base64 &gt;</li>
 </ul>
 <p>The encryption <code>key</code> and the <code>IV</code> (initialization vector) are static. Let&rsquo;s see an example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># javac JBlowfish.java</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># javac JBlowfish.java</span>
 <span style="color:#999;font-style:italic"># java -cp . JBlowfish -e secretmessage</span>
 -- Settings -----------
 KEY:     <span style="color:#3677a9">736563726574</span>
@@ -192,7 +196,7 @@ IV:      <span style="color:#3677a9">3132333435363738</span>
 Base64:  <span style="color:#40ffff">2CEndW0AA2xpsYz3XrXnrA</span>==
 HEX:     D82127756D00036C69B18CF75EB5E7AC
 </code></pre></div><p>We just <em>encrypted</em> the message <em>&ldquo;secretmessage</em>&rdquo; with <em>Blowfish/CBC</em>. In the <em>settings</em> section you&rsquo;ll see the <code>KEY</code> and the <code>IV</code> in their <em>hex</em> representation. Afterwards the programm will show the <code>Base64</code> and the <code>hex</code> representation of <strong>encrypted</strong> message. <em>Decryption</em> works quite straightforward:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># java -cp . JBlowfish -d 2CEndW0AA2xpsYz3XrXnrA==</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># java -cp . JBlowfish -d 2CEndW0AA2xpsYz3XrXnrA==</span>
 -- Settings -----------
 KEY:     <span style="color:#3677a9">736563726574</span>
 IV:      <span style="color:#3677a9">3132333435363738</span>
@@ -202,7 +206,7 @@ PLAIN:   secretmessage
 </code></pre></div><p>Our little Java application does its job pretty fine. Ok, now let&rsquo;s have a look at <code>openssl</code>.</p>
 <h2 id="openssl---java">OpenSSL &lt;-&gt; Java</h2>
 <p>Using <code>openssl</code> I&rsquo;ll encrypt/decrypt the previous secret message with the same cipher:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;secretmessage&#34; | openssl bf-cbc -nosalt -a -pass pass:victor -iv 3132333435363738 -p</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;secretmessage&#34; | openssl bf-cbc -nosalt -a -pass pass:victor -iv 3132333435363738 -p</span>
 <span style="color:#40ffff">key</span>=FFC150A160D37E92012C196B6AF4160D
 <span style="color:#40ffff">iv</span> =<span style="color:#3677a9">3132333435363738</span>
 +NtBjHQzii7i//apIvfHkw==
@@ -242,7 +246,7 @@ PLAIN:   secretmessage
 <p>Besides the IV everything looks different :(</p>
 <h2 id="python---java">Python &lt;-&gt; Java</h2>
 <p>Let&rsquo;s also have a look at <em>Python</em>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">67</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">67</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto</span> <span style="color:#6ab825;font-weight:bold">import</span> Random
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">struct</span> <span style="color:#6ab825;font-weight:bold">import</span> pack
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">binascii</span> <span style="color:#6ab825;font-weight:bold">import</span> hexlify, unhexlify
@@ -256,9 +260,9 @@ PLAIN:   secretmessage
 
             cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
             message = cipher.decrypt(ciphertext)
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;KEY: &#34;</span> + KEY.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;IV: &#34;</span> + IV.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;Message: &#34;</span> + message)
+            <span style="color:#24909d">print</span>(<span style="color:#ed9d13">&#34;KEY: &#34;</span> + KEY.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
+            <span style="color:#24909d">print</span>(<span style="color:#ed9d13">&#34;IV: &#34;</span> + IV.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
+            <span style="color:#24909d">print</span>(<span style="color:#ed9d13">&#34;Message: &#34;</span> + message)
 
 Out:        KEY: <span style="color:#3677a9">736563726574</span>
             IV: <span style="color:#3677a9">3132333435363738</span>
@@ -287,7 +291,7 @@ Out:        KEY: <span style="color:#3677a9">736563726574</span>
 </table>
 <h2 id="python---openssl">Python &lt;-&gt; openssl</h2>
 <p>This time let&rsquo;s encrypt some message using Python:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">71</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">71</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto</span> <span style="color:#6ab825;font-weight:bold">import</span> Random
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">struct</span> <span style="color:#6ab825;font-weight:bold">import</span> pack
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">binascii</span> <span style="color:#6ab825;font-weight:bold">import</span> hexlify, unhexlify
@@ -300,13 +304,13 @@ Out:        KEY: <span style="color:#3677a9">736563726574</span>
 
             cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
             ciphertext = cipher.encrypt(message)
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;HEX: &#34;</span> + ciphertext.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;Base64: &#34;</span> + ciphertext.encode(<span style="color:#ed9d13">&#34;base64&#34;</span>))
+            <span style="color:#24909d">print</span>(<span style="color:#ed9d13">&#34;HEX: &#34;</span> + ciphertext.encode(<span style="color:#ed9d13">&#34;hex&#34;</span>))
+            <span style="color:#24909d">print</span>(<span style="color:#ed9d13">&#34;Base64: &#34;</span> + ciphertext.encode(<span style="color:#ed9d13">&#34;base64&#34;</span>))
 
 Out:        HEX: <span style="color:#3677a9">010</span>a0d9149750a32
             Base64: AQoNkUl1CjI=
 </code></pre></div><p>Now decrypt that ciphertext using openssl:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;AQoNkUl1CjI=&#34; | openssl bf-cbc -d -a -nosalt -pass pass:secret -iv 3132333435363738  -p</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;AQoNkUl1CjI=&#34; | openssl bf-cbc -d -a -nosalt -pass pass:secret -iv 3132333435363738  -p</span>
 <span style="color:#40ffff">key</span>=5EBE2294ECD0E0F08EAB7690D2A6EE69
 <span style="color:#40ffff">iv</span> =<span style="color:#3677a9">3132333435363738</span>
 bad decrypt
@@ -323,12 +327,12 @@ bad decrypt
 </blockquote>
 <p>as stated <a href="http://juliusdavies.ca/commons-ssl/download.html">here</a>.</p>
 <p>If you still want some compatibility between <code>openssl</code> and your code, you should use the <code>key</code> and <code>IV</code> from openssl. Example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;this-is-secret&#34; | openssl bf-cbc -a -nosalt -pass pass:secret -iv 12345678 -p</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># echo &#34;this-is-secret&#34; | openssl bf-cbc -a -nosalt -pass pass:secret -iv 12345678 -p</span>
 <span style="color:#40ffff">key</span>=5EBE2294ECD0E0F08EAB7690D2A6EE69
 <span style="color:#40ffff">iv</span> =<span style="color:#3677a9">1234567800000000</span>
 <span style="color:#40ffff">2whDyIn5hRdyXpRZbMZayw</span>==
 </code></pre></div><p>Now use those values in your code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">72</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">72</span>]:    <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Cipher</span> <span style="color:#6ab825;font-weight:bold">import</span> Blowfish
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto</span> <span style="color:#6ab825;font-weight:bold">import</span> Random
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">struct</span> <span style="color:#6ab825;font-weight:bold">import</span> pack
             <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">binascii</span> <span style="color:#6ab825;font-weight:bold">import</span> hexlify, unhexlify
@@ -342,7 +346,7 @@ bad decrypt
             cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
             ciphertext = cipher.decrypt(ciphertext)
 
-            <span style="color:#6ab825;font-weight:bold">print</span>(<span style="color:#ed9d13">&#34;Message: &#34;</span> + message)
+            <span style="color:#24909d">print</span>(<span style="color:#ed9d13">&#34;Message: &#34;</span> + message)
 
 Out:        Message: <span style="color:#3677a9">12345678</span>
 </code></pre></div><p>Also have a look at <a href="http://stackoverflow.com/questions/12227510/how-to-decrypt-unsalted-openssl-compatible-blowfish-cbc-pkcs5padding-password-in">this</a>. That&rsquo;s all for today. Cya next time!</p>
@@ -468,6 +472,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

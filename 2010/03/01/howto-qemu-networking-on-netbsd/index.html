@@ -26,7 +26,7 @@ $ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0 Using this ex
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ $ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0 Using this ex
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -86,7 +90,7 @@ type="image/x-icon"/>
     
   </p>
   <div class="lh-copy post-content"><p>In this tutorial I&rsquo;d like to give you some useful examples how to configure network when using Qemu as virtualization machine. The videos in this HowTo were taken on a NetBSD-5_STABLE/amd64 machine using  Qemu 0.11.1. **Attention: **On my system I&rsquo;ve used a patched version of Qemu as reported <a href="http://mail-index.netbsd.org/pkgsrc-bugs/2009/12/18/msg035190.html">here</a>. However you can use the <code>fd=</code> option to specify an open socket to be used. Example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0
 </code></pre></div><p>Using this example `tap0″ should be created before the qemu command. The shown examples might work on other platforms too. Be sure to have TUN/TAP device support built-in and the Qemu suite installed. Check out <strong>References</strong> for further information.</p>
 <h2 id="usermode-network-stack">Usermode network stack</h2>
 <p>Probably the simplest method of connecting your host and the guest system. In this mode Qemu will create a :</p>
@@ -100,15 +104,15 @@ type="image/x-icon"/>
 <ol>
 <li>[ host system ] Launch Qemu process:</li>
 </ol>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu -net nic -net user -cdrom [iso file]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu -net nic -net user -cdrom [iso file]
 </code></pre></div><ol start="2">
 <li>[ guest system] Get an IP address:</li>
 </ol>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ dhclient [interface]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ dhclient [interface]
 </code></pre></div><ol start="3">
 <li>[ guest system] Check settings and Internet connectivity:</li>
 </ol>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface]
 $ ftp [ftp site]
 </code></pre></div><p>On my system the firewall was blocking any ICMP packets so ping might not work. But don&rsquo;t get disoriented (like I did). Try to ssh or ftp any known host to check the connection.</p>
 <h2 id="connecting-vlans">Connecting VLANs</h2>
@@ -120,35 +124,35 @@ $ ftp [ftp site]
 </ul>
 <p>Host <strong>A</strong> will listen for incomming connections on port 8010 and host <strong>B</strong> will be configured to connect to host <strong>A</strong>.</p>
 <h3 id="create-host-a">Create host A</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,macaddr=52:54:00:12:34:57 -net socket,listen=:8010  
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,macaddr=52:54:00:12:34:57 -net socket,listen=:8010  
       -cdrom [iso file]
 </code></pre></div><h3 id="create-host-b">Create host B</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,vlan=2,macaddr=52:54:00:12:34:56 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,vlan=2,macaddr=52:54:00:12:34:56 
       -net socket,vlan=2,connect=127.0.0.1:8010 
       -cdrom [iso file]
 </code></pre></div><h3 id="configure-host-a">Configure host A</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.100 netmask 255.255.255.0 up
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.100 netmask 255.255.255.0 up
 </code></pre></div><h3 id="configure-host-b">Configure host B</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
 </code></pre></div><p>Using this configuration you should be able to access host <strong>B</strong> from host <strong>A</strong> and vice versa.</p>
 <h2 id="connecting-vlans-to-tap-device-1-host">Connecting VLANs to TAP device (1 host)</h2>
 <p>There is another option to create VLANs: Using a virtual Ethernet device (tap device). Any frames transmitted through this device will also appear on the VLAN of your guest OS. Of course any frames sent to guest&rsquo;s VLAN will be also received by the TAP device.</p>
 <p>Using the kernel TAP/TUN device driver applications are allowed to interact with a network device using a simple file descriptor. Any data sent over the file descriptor will be received on both sides. That means that applications running on the guest system(s) will be able to access and connect to applications running on the host system. If port forwarding is allowed, guest applications can also access the Internet.</p>
 <p>First we create a TAP device:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 create
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 create
 $ ifconfig tap0
 tap0: flags=8802  mtu 1500
         address: f2:0b:a4:86:42:08
         media: Ethernet autoselect
 $ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
 </code></pre></div><h3 id="launch-qemu-process">Launch Qemu process:</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu -net nic,vlan=0 -net tap,vlan=0,ifname=tap0 -cdrom  [iso file]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu -net nic,vlan=0 -net tap,vlan=0,ifname=tap0 -cdrom  [iso file]
 </code></pre></div><h3 id="configure-virtual-host">Configure virtual host:</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
 </code></pre></div><p>You should now be able to access your Qemu host from your guest host (ping 10.0.2.101). 10.0.100 (guest system) should be also accessible from your Qemu process.</p>
 <h2 id="connecting-vlans-to-tap-devices-2-hosts">Connecting VLANs to TAP devices (2 hosts)</h2>
 <p>In this example we&rsquo;ll have 2 guests (= 2 TAP devices). Each guest is connected to the host system by a TAP device. In order to allow inter-connectivity the gust system should have a bridge between both TAP devices. The bridge will act as a central network node between the guest and both virtual hosts. For Internet access IP forwarding should be enabled (disabled by default). First we&rsquo;ll have to create the TAP devices:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 create
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 create
 $ ifconfig tap1 create
 $ ifconfig tap0
 tap0: flags=8802 mtu 1500
@@ -159,19 +163,19 @@ tap1: flags=8802 mtu 1500
         address: f2:0b:a4:86:61:01
         media: Ethernet autoselect
 </code></pre></div><h3 id="launch-guest-a">Launch guest A</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,macaddr=52:54:00:12:34:56 -net tap,ifname=tap0 -cdrom [iso file]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,macaddr=52:54:00:12:34:56 -net tap,ifname=tap0 -cdrom [iso file]
 </code></pre></div><h3 id="launch-guest-b">Launch guest B</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"> $ qemu  -net nic,macaddr=52:54:00:12:34:57 -net tap,ifname=tap1 -cdrom [iso file]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"> $ qemu  -net nic,macaddr=52:54:00:12:34:57 -net tap,ifname=tap1 -cdrom [iso file]
 </code></pre></div><h3 id="setup-tap-devices-networking-settings">Setup TAP devices networking settings:</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
 $ ifconfig tap1 10.0.3.100 netmask 255.255.255.0 up
 </code></pre></div><h3 id="create-bridge-interface">Create bridge interface:</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig bridge0 create
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig bridge0 create
 $ brconfig bridge0 add tap0 add tap1 up
 </code></pre></div><h3 id="setup-network-settings-for-guest-a">Setup network settings for guest A</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.0.0 up
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.0.0 up
 </code></pre></div><h3 id="setup-network-settings-for-guest-b">Setup network settings for guest B</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.3.101 netmask 255.255.0.0 up
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.3.101 netmask 255.255.0.0 up
 </code></pre></div><p>Now try following:</p>
 <ol>
 <li>From your host system: ping 10.0.2.101; ping 10.0.3.101</li>
@@ -179,7 +183,7 @@ $ brconfig bridge0 add tap0 add tap1 up
 <li>From guest B: ping 10.0.3.101; ping 10.0.2.101; ping 10.0.2.100</li>
 </ol>
 <p>For Internet access the guest system should be connected to the Internet and allow IP forwarding:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sysctl -w net.inet.ip.forwarding=1
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sysctl -w net.inet.ip.forwarding=1
 </code></pre></div><p>In all cases you should be able to ping/access any system no matter what system you operate on. </p>
 <h2 id="references">References</h2>
 <p>a) <a href="http://wiki.qemu.org/Main_Page">http://wiki.qemu.org/Main_Page</a></p>
@@ -308,6 +312,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

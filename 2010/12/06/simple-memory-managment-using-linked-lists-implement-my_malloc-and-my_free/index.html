@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -88,7 +92,7 @@ type="image/x-icon"/>
 <p>The same task caused me a few weeks ago a lot of head scratching. Although I had a framework I could work with, it was more sophisticated than I thought. But let&rsquo;s start with simple things and have a look at the memory I was supposed to use:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_char_memory.png" alt="Memory representation"></p>
 <p>So that&rsquo;s my memory: a simple char array of BUFFSIZE elements. My code is supposed to use this range of memory in an intelligent way. Therefore we&rsquo;ll have to split the memory into multiple <strong>fragments</strong>. Each fragment has a certain size (they don&rsquo;t have to be at the same size) and coresponds to memory that has been allocated to a variable.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> *a = (<span style="color:#6ab825;font-weight:bold">int</span>*)my_malloc(<span style="color:#6ab825;font-weight:bold">sizeof</span>(<span style="color:#6ab825;font-weight:bold">int</span>));
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> *a = (<span style="color:#6ab825;font-weight:bold">int</span>*)my_malloc(<span style="color:#6ab825;font-weight:bold">sizeof</span>(<span style="color:#6ab825;font-weight:bold">int</span>));
 *a = <span style="color:#3677a9">5</span>;
 
 <span style="color:#6ab825;font-weight:bold">char</span>* b = (<span style="color:#6ab825;font-weight:bold">char</span>*)my_malloc(<span style="color:#3677a9">100</span>);
@@ -100,7 +104,7 @@ b[<span style="color:#3677a9">3</span>] = <span style="color:#ed9d13">&#39;l&#39
 b[<span style="color:#3677a9">4</span>] = <span style="color:#ed9d13">&#39;�&#39;</span>;
 </code></pre></div><p><strong>my_malloc(int size)</strong> returns the address of the fragment that has been assigned to variable a or b. When there is no more space left on the memory, NULL will be returned. The same applies when free fragments can&rsquo;t be merged together to a bigger one - in this case we&rsquo;ll have to remap the fragments in order to have enough space for later memory allocations.  Furthermore you can tell* my_malloc* how much space to allocate.</p>
 <p>So there must be a way how to organize our fragments inside the memory. By using only pointer to certain addresses within the memory space we have no information about its size, the data size it is storing or the next fragment. That&rsquo;s why a so called <strong>memoryBlock</strong> will be used to store this information. Given a <strong>head</strong> block a linked list should allow us to access all blocks in the memory.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">enum</span> memBlockState{not_allocated=<span style="color:#3677a9">0</span>, allocated=<span style="color:#3677a9">1</span>};
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">enum</span> memBlockState{not_allocated=<span style="color:#3677a9">0</span>, allocated=<span style="color:#3677a9">1</span>};
 
 <span style="color:#999;font-style:italic">// memory block
 </span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">typedef</span> <span style="color:#6ab825;font-weight:bold">struct</span> _memoryblock {
@@ -119,7 +123,7 @@ b[<span style="color:#3677a9">4</span>] = <span style="color:#ed9d13">&#39;�&#
 <p>Now we&rsquo;ll have to inter-connect the memory blocks. Therefor we&rsquo;ll be using a <strong>pointer</strong> to next block. In that way we can iterate the blocks, (re)move them or find a suitable place where to place a new block.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_head_nextblock.png" alt="nextBlock pointer"></p>
 <p>So those are the most important programm structures. Let&rsquo;s have a look at the main function within the C-code (see appendix):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#999;font-style:italic">// my_alloc will try to allocate &lt;byteCount&gt; bytes within our char memory. 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#999;font-style:italic">// my_alloc will try to allocate &lt;byteCount&gt; bytes within our char memory. 
 </span><span style="color:#999;font-style:italic">// The function will return the address of the allocated memory.
 </span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">void</span>* <span style="color:#447fcf">my_malloc</span>(<span style="color:#6ab825;font-weight:bold">int</span> byteCount)
 {
@@ -142,7 +146,7 @@ b[<span style="color:#3677a9">4</span>] = <span style="color:#ed9d13">&#39;�&#
 </span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">return</span> tmp-&gt;data;
 }
 </code></pre></div><p>Before beeing able to allocate some memory, the <strong>head</strong> block must be initialized.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">initialize</span>()
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">initialize</span>()
 {
     <span style="color:#6ab825;font-weight:bold">if</span>(!b_initialized)
     {
@@ -165,7 +169,7 @@ b[<span style="color:#3677a9">4</span>] = <span style="color:#ed9d13">&#39;�&#
 <li>a smaller unused/unallocated memory block (new size = old size - byteCount)</li>
 <li>an allocated memory block (size = byteCount)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">memoryBlock *<span style="color:#447fcf">splitBlock</span>(memoryBlock* block, <span style="color:#6ab825;font-weight:bold">int</span> byteCount)
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">memoryBlock *<span style="color:#447fcf">splitBlock</span>(memoryBlock* block, <span style="color:#6ab825;font-weight:bold">int</span> byteCount)
 {
     memoryBlock *new_block;
 
@@ -199,7 +203,7 @@ b[<span style="color:#3677a9">4</span>] = <span style="color:#ed9d13">&#39;�&#
 <p>In the end I&rsquo;d like to show you some debugging stuff I&rsquo;ve made with <strong>ddd</strong>. As you see each (allocated) portion of memory has its memory header (consisting of the memoryBlock structure) plus a (void *) pointer  to an address inside the memory, where data is stored.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_ddd_session.png" alt="Memory Block(s) inside memory"></p>
 <p>Finally some output generated by the programm:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Uebersicht des Speichers: 10216 / 10240 Speicher frei
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Uebersicht des Speichers: 10216 / 10240 Speicher frei
 ------------------------------------------------
 #  at            allocated       space   data                   next block
 1  0x5024a0      FALSE           10216   [0x5026e0,0x504ec7]    0x0
@@ -418,6 +422,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

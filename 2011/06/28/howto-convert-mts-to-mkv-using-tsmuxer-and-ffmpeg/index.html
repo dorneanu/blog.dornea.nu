@@ -28,7 +28,7 @@ Now you should have following files on your disk:" />
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -44,6 +44,10 @@ Now you should have following files on your disk:" />
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -94,21 +98,21 @@ type="image/x-icon"/>
 <p>I&rsquo;ve used <strong>tsMuxeR</strong> from SmartLabs to demux the files. Here&rsquo;s what I did:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2011/253/tsmuxer.png" alt="tsmuxer"></p>
 <p>Now you should have following files on your disk:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># ls -ltr 00001.*
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># ls -ltr 00001.*
 -rwxr-xr-x 1 root root 1259520 Jun 27 21:31 00001.MTS
 -rw-r----- 1 root root    8906 Jun 28 10:09 00001.track_4608.sup
 -rw-r----- 1 root root   25344 Jun 28 10:09 00001.track_4352.ac3
 -rw-r----- 1 root root 1150138 Jun 28 10:09 00001.track_4113.264
 </code></pre></div><h2 id="put-things-together">Put things together</h2>
 <p>Now using <strong>ffmpeg</strong> let&rsquo;s create some MKV from previously demuxed files. Make sure you have ffmpeg with libx264 built-in support (&quot;-enable-libx264&quot; when configuring). For Gentoo users this are my USE flags:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># eix -e ffmpeg
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># eix -e ffmpeg
 [I] media-video/ffmpeg
 ...
      Installed versions:  0.7_rc1(09:28:59 PM 06/27/2011)(3dnow 3dnowext X alsa avx bzip2 encode hardcoded-tables mmx mmxext ssse3 truetype v4l v4l2 x264 xvid zlib -aac -altivec -amr -bindist -celt -cpudetection -custom-cflags -debug -dirac -doc -faac -frei0r -gsm -ieee1394 -jack -jpeg2k -mp3 -network -oss -pic -qt-faststart -rtmp -schroedinger -sdl -speex -static-libs -test -theora -threads -vaapi -vdpau -video_cards_nvidia -vorbis -vpx)
 </code></pre></div><p>Now all you have to do is to type:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ffmpeg -i 00001.*.264 -i 00001.*.ac3 -vcodec libx264 -acodec ac3 -b 2000k output.mkv
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ffmpeg -i 00001.*.264 -i 00001.*.ac3 -vcodec libx264 -acodec ac3 -b 2000k output.mkv
 </code></pre></div><p>You should get some crazy output like:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ffmpeg version 0.7-rc1, Copyright (c) 2000-2011 the FFmpeg developers
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ffmpeg version 0.7-rc1, Copyright (c) 2000-2011 the FFmpeg developers
   built on Jun 27 2011 21:28:51 with gcc 4.4.4
   configuration: --prefix=/usr --libdir=/usr/lib64 --shlibdir=/usr/lib64 --mandir=/usr/share/man --enable-shared --cc=x86_64-pc-linux-gnu-gcc --disable-static --enable-gpl --enable-postproc --enable-avfilter --disable-stripping --disable-debug --disable-doc --disable-network --disable-vaapi --disable-ffplay --disable-vdpau --enable-libx264 --enable-libxvid --disable-indev=oss --disable-indev=jack --enable-x11grab --disable-outdev=oss --enable-libfreetype --disable-altivec --enable-hardcoded-tables
   libavutil    50. 40. 1 / 50. 40. 1
@@ -267,6 +271,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

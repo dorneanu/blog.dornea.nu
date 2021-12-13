@@ -27,7 +27,7 @@ There are serveral (good!) tutorials out there. Among these I&rsquo;ve used:
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -43,6 +43,10 @@ There are serveral (good!) tutorials out there. Among these I&rsquo;ve used:
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -115,7 +119,7 @@ type="image/x-icon"/>
 <p>There is no need for additional explanations! Just follow the instructions in the tutorial and you&rsquo;re done.</p>
 <h2 id="my-initramfs">My initramfs</h2>
 <p>Here is my initramfs structure I&rsquo;m using:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ tree
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ tree
 .
 â”œâ”€â”€ bin
 â”‚   â”œâ”€â”€ busybox
@@ -142,7 +146,7 @@ type="image/x-icon"/>
 
 15 directories, 7 files
 </code></pre></div><p>Make sure all <strong>binaries</strong> are <strong>statically</strong> linked. And this is my <strong>init script</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat init 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat init 
 #!/bin/busybox sh
 
 # Some useful functions
@@ -187,7 +191,7 @@ umount -l /sys
 # Start new system
 exec switch_root /new-root /sbin/init || rescue_shell
 </code></pre></div><p>Don&rsquo;t forget to copy your <strong>keys</strong> to */root/keys/ *and rename them properly. Afterwards all you have to do is to create the initramfs file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cd /usr/src/initramfs
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cd /usr/src/initramfs
 $ find . -print0 | cpio --null -ov --format=newc | gzip -9 &gt; /boot/initramfs.cpio.gz
 </code></pre></div><p>That&rsquo;s all!</p>
 </div>
@@ -312,6 +316,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

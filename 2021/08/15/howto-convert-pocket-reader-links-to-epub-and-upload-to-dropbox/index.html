@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -43,6 +43,10 @@
 
     <link rel="stylesheet" type="text/css" href="https://blog.dornea.nu/css/asciinema-player.css" />
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -91,7 +95,7 @@ type="image/x-icon"/>
 app, on my desktop systems (mostly tmux +<a href="https://brainfck.org/#Emacs"> Emacs</a>) I use <a href="https://github.com/alphapapa/pocket-reader.el">pocket-reader.el</a> quite heavily to collect/organize/archive my list of
 articles. After my transition from <a href="https://www.spacemacs.org/">Spacemacs</a> to <a href="https://github.com/hlissner/doom-emacs">Doom Emacs</a> I still love <a href="https://github.com/emacs-evil/evil">evil</a> mode and like to do most of the stuff in <code>normal</code>
 mode. That&rsquo;s why I&rsquo;ve added some <a href="https://github.com/dorneanu/dotfiles/blob/master/emacs/doom/.doom.d/%2Bbindings.el#L25">keybindings to pocket-reader</a>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp">(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">pocket-reader-mode-map</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp">(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">pocket-reader-mode-map</span>
       <span style="color:#24909d">:after</span> <span style="color:#40ffff">pocket-reader</span>
       <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;d&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-delete</span>
       <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;a&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-toggle-archived</span>
@@ -109,13 +113,13 @@ and send these to my device. Fortunately PocketBook devices can sync with Dropbo
 is activated. That&rsquo;s first step of automation.</p>
 <p>As for the Epub conversion I&rsquo;ve used <a href="https://pandoc.org/">pandoc</a> in the past which still does its job great. Initially I&rsquo;ve used <a href="https://github.com/Y2Z/monolith">monolith</a> to save complete web pages as HTML but I&rsquo;ve realized the HTML also contained useless ads, images, text. That&rsquo;s why I&rsquo;ve searched for
 ways how to make the content more <strong>readable</strong> and discovered <a href="https://github.com/eafer/rdrview">rdrview</a>. It&rsquo;s written in C and applies <a href="https://support.mozilla.org/en-US/kb/firefox-reader-view-clutter-free-web-pages">Firefox&rsquo;s reader view</a> to web pages. Here are some examples:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -M http://blog.dornea.nu/2021/06/13/note-taking-in-2021/
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -M http://blog.dornea.nu/2021/06/13/note-taking-in-2021/
 Title: Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
 Excerpt: [Update 2021-06-22] If you’re more interested in the Tiddlywiki aspect of this post you can also check this Tiddlywiki Google Groups thread. [Update 2021-06-18] This post caught some attention on this Hackernews thread. You might want to check the comments. Based on the recommendations in the thread I’ve put together a list of (digital) solutions (besides the preferred ones) Almost <span style="color:#3677a9">6</span> years ago I was blogging about organizing and visualizing knowledge.
 Readerable: Yes
 </code></pre></div><!-- raw HTML omitted -->
 <p>And now I&rsquo;m using some <code>xpath</code> to extract the title:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -T title,body -H http://blog.dornea.nu/2021/06/13/note-taking-in-2021/ | xmllint --html --xpath <span style="color:#ed9d13">&#34;//div/h1/text()&#34;</span> -
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -T title,body -H http://blog.dornea.nu/2021/06/13/note-taking-in-2021/ | xmllint --html --xpath <span style="color:#ed9d13">&#34;//div/h1/text()&#34;</span> -
 Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
 </code></pre></div><p>Below I&rsquo;ve glued everything together in order to:</p>
 <ul>
@@ -125,7 +129,7 @@ Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
 <li>use <a href="https://rclone.org/">rclone</a> to copy the file to Dropbox</li>
 </ul>
 <!-- raw HTML omitted -->
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#cd2828;font-weight:bold">#!/bin/bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#cd2828;font-weight:bold">#!/bin/bash
 </span><span style="color:#cd2828;font-weight:bold"></span>
 <span style="color:#40ffff">RDRVIEW_OUTPUT</span>=~/work/dropbox/rdrview
 <span style="color:#40ffff">DROPBOX_DIR</span>=<span style="color:#ed9d13">&#34;dropbox:Apps/Dropbox PocketBook/articles/2021/&#34;</span>
@@ -158,7 +162,7 @@ add_link_to_dropbox() {
 
 add_link_to_dropbox <span style="color:#40ffff">$1</span>
 </code></pre></div><p>Let&rsquo;s give it a try using <a href="https://pandoc.org/">https://pandoc.org/</a> as an URL:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ~/work/dropbox/add_links_to_dropbox https://pandoc.org/
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ~/work/dropbox/add_links_to_dropbox https://pandoc.org/
 [-] Converting Pandoc - About pandoc
 [-] Successfully added /home/victor/work/dropbox/rdrview/Pandoc_-_About_pandoc.epub to dropbox.
 </code></pre></div><h2 id="emacs-for-everything">Emacs for Everything</h2>
@@ -174,7 +178,7 @@ The most difficult part here was to come up with some valid Elisp code. What I w
 </li>
 </ul>
 <p>And this is what I&rsquo;ve got (my first elisp <a href="https://github.com/dorneanu/dotfiles/blob/master/emacs/doom/.doom.d/%2Bfunctions.el#L159">function</a> ever):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp"><span style="color:#999;font-style:italic">;; Copy current url to scratch buffer</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp"><span style="color:#999;font-style:italic">;; Copy current url to scratch buffer</span>
 (<span style="color:#24909d">defun</span> <span style="color:#40ffff">dorneanu/pocket-reader-copy-to-scratch</span> ()
   <span style="color:#ed9d13">&#34;Copy URL of current item to kill-ring/clipboard.&#34;</span>
   (<span style="color:#24909d">interactive</span>)
@@ -331,6 +335,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
     <script src="https://blog.dornea.nu/js/asciinema-player.js"></script>

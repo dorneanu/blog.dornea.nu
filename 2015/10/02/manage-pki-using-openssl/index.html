@@ -26,7 +26,7 @@ Before implementing the PKI let&rsquo;s have a look what a PKI should definitely
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@ Before implementing the PKI let&rsquo;s have a look what a PKI should definitely
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -164,7 +168,7 @@ type="image/x-icon"/>
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {↔
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {↔
 
 // Define class (list of attributes)
 class emphasis [color = pink, style = dashed];
@@ -206,7 +210,7 @@ Intermediate_CA3 -&gt; Signing_CA3_0 [class = &#34;blackline&#34;];
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
 // Define orientation
 orientation = portrait;
 
@@ -239,7 +243,7 @@ Root_CA -&gt; Signing_CA3;
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
 // Define orientation
 orientation = portrait;
 
@@ -278,16 +282,16 @@ Signing_CA3 -&gt; VPN_Client_CA;
 </blockquote>
 <h2 id="openssl">OpenSSL</h2>
 <p><a href="https://www.openssl.org">OpenSSL</a> is probably the most known cryptography software and SSL/TLS toolkit. Let&rsquo;s have look how things are done using OpenSSL. First of all I&rsquo;ll setup a directory structure to represent each of the PKI component in a clean way.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%bash<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%bash<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
 </code></pre></div><p>Initialize and create cert database:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 touch ca/root-ca/db/root-ca.db
 touch ca/root-ca/db/root-ca.db.attr
 <span style="color:#24909d">echo</span> <span style="color:#3677a9">01</span> &gt; ca/root-ca/db/root-ca.crt.srl
 <span style="color:#24909d">echo</span> <span style="color:#3677a9">01</span> &gt; ca/root-ca/db/root-ca.crl.srl
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 tree /tmp/pki
 </code></pre></div><pre><code>/tmp/pki
 └── ca
@@ -314,7 +318,7 @@ tree /tmp/pki
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
 // Define orientation
 orientation = portrait;
 
@@ -347,7 +351,7 @@ Signing_CA3 -&gt; VPN_Client_CA;
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_14_0.png" alt="png"></p>
 <p>The configuration file can be shown here:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/root-ca.conf
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/root-ca.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 
 <span style="color:#999;font-style:italic"># dornea.nu Root CA</span>
@@ -449,10 +453,10 @@ authorityKeyIdentifier  = keyid:always
 authorityInfoAccess     = <span style="color:#ffa500">@issuer_info</span>
 
 [ issuer_info ]
-caIssuers;URI.<span style="color:#3677a9">0</span>         = <span style="color:#a61717;background-color:#e3d2d2">$</span>aia_url
+caIssuers;URI<span style="color:#3677a9">.0</span>         = <span style="color:#a61717;background-color:#e3d2d2">$</span>aia_url
 
 [ crl_info ]
-URI.<span style="color:#3677a9">0</span>                   = <span style="color:#a61717;background-color:#e3d2d2">$</span>crl_url
+URI<span style="color:#3677a9">.0</span>                   = <span style="color:#a61717;background-color:#e3d2d2">$</span>crl_url
 
 <span style="color:#999;font-style:italic"># Policy OIDs</span>
 
@@ -464,7 +468,7 @@ oid_section             = additional_oids
 </code></pre></div><pre><code>Writing /tmp/pki/ca/conf/root-ca.conf
 </code></pre>
 <p>Now let&rsquo;s create the <strong>CA request</strong>. The configuration for the creation of the <strong>CSR</strong> if found in the <em>configuration</em> file in the section <code>[req]</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl req -new <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -config ca/conf/root-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -out ca/root-ca/root-ca.csr <span style="color:#ed9d13">\
@@ -478,7 +482,7 @@ Enter PEM pass phrase:
 Verifying - Enter PEM pass phrase:
 -----
 </code></pre></div><p>Now create the <strong>CA certificate</strong> (will be valid for 10 years):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl ca -selfsign <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>           -config ca/conf/root-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>           -in ca/root-ca/root-ca.csr <span style="color:#ed9d13">\
@@ -519,7 +523,7 @@ Write out database with <span style="color:#3677a9">1</span> new entries
 Data Base Updated
           
 </code></pre></div><p>Now you can check the <strong>status</strong> of the previously generated certificate (serial number = <strong>1</strong>):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl -config ca/conf/root-ca.conf -status <span style="color:#3677a9">01</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl -config ca/conf/root-ca.conf -status <span style="color:#3677a9">01</span>
 Using configuration from ca/conf/root-ca.conf
 <span style="color:#40ffff">01</span>=Valid (V)
 </code></pre></div><h3 id="create-devdorneanu-ca">Create dev.dornea.nu CA</h3>
@@ -528,7 +532,7 @@ Using configuration from ca/conf/root-ca.conf
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
 // Define orientation
 orientation = portrait;
 
@@ -561,17 +565,17 @@ Signing_CA3 -&gt; VPN_Client_CA;
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_20_0.png" alt="png"></p>
 <p>Create the directories:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%bash<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%bash<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
 </code></pre></div><p>Initialize the database:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 touch ca/dev-ca/db/dev-ca.db
 touch ca/dev-ca/db/dev-ca.db.attr
 <span style="color:#24909d">echo</span> <span style="color:#3677a9">01</span> &gt; ca/dev-ca/db/dev-ca.crt.srl
 <span style="color:#24909d">echo</span> <span style="color:#3677a9">01</span> &gt; ca/dev-ca/db/dev-ca.crl.srl
 </code></pre></div><p>Configure the CA:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/dev-ca.conf
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/dev-ca.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 
 <span style="color:#999;font-style:italic"># dev.dornea.nu CA</span>
@@ -684,15 +688,15 @@ authorityKeyIdentifier  = keyid:always
 authorityInfoAccess     = <span style="color:#ffa500">@issuer_info</span>
 
 [ issuer_info ]
-caIssuers;URI.<span style="color:#3677a9">0</span>         = <span style="color:#a61717;background-color:#e3d2d2">$</span>aia_url
+caIssuers;URI<span style="color:#3677a9">.0</span>         = <span style="color:#a61717;background-color:#e3d2d2">$</span>aia_url
 
 [ crl_info ]
-URI.<span style="color:#3677a9">0</span>                   = <span style="color:#a61717;background-color:#e3d2d2">$</span>crl_url
+URI<span style="color:#3677a9">.0</span>                   = <span style="color:#a61717;background-color:#e3d2d2">$</span>crl_url
 
 </code></pre></div><pre><code>Writing /tmp/pki/ca/conf/dev-ca.conf
 </code></pre>
 <p>Create <strong>CA signing request</strong> (CSR):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl req -new <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -config ca/conf/dev-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -out ca/dev-ca/dev-ca.csr <span style="color:#ed9d13">\
@@ -707,7 +711,7 @@ Verifying - Enter PEM pass phrase:
 -----
 
 </code></pre></div><p>Now we use the <strong>root CA</strong> to create the <strong>dev-ca</strong> certificate:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/root-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>           -in ca/dev-ca/dev-ca.csr <span style="color:#ed9d13">\ </span>      
            -out ca/dev-ca/dev-ca.crt <span style="color:#ed9d13">\
@@ -759,7 +763,7 @@ Data Base Updated
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
@@ -791,18 +795,18 @@ Data Base Updated
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_30_0.png" alt="png"></p>
 <p>Create the directories:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/vpn-ca/ ca/vpn-ca/private ca/vpn-ca/db ca/vpn-ca/certs
 </code></pre></div><p>Initialize the database:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 touch ca/vpn-ca/db/vpn-ca.db
 touch ca/vpn-ca/db/vpn-ca.db.attr
 <span style="color:#24909d">echo</span> <span style="color:#3677a9">01</span> &gt; ca/vpn-ca/db/vpn-ca.crt.srl
 <span style="color:#24909d">echo</span> <span style="color:#3677a9">01</span> &gt; ca/vpn-ca/db/vpn-ca.crl.srl
 </code></pre></div><p>Configure CA:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-ca.conf
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-ca.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 
 <span style="color:#999;font-style:italic"># vpn.dornea.nu CA</span>
@@ -915,15 +919,15 @@ authorityKeyIdentifier  = keyid:always
 authorityInfoAccess     = <span style="color:#ffa500">@issuer_info</span>
 
 [ issuer_info ]
-caIssuers;URI.<span style="color:#3677a9">0</span>         = <span style="color:#a61717;background-color:#e3d2d2">$</span>aia_url
+caIssuers;URI<span style="color:#3677a9">.0</span>         = <span style="color:#a61717;background-color:#e3d2d2">$</span>aia_url
 
 [ crl_info ]
-URI.<span style="color:#3677a9">0</span>                   = <span style="color:#a61717;background-color:#e3d2d2">$</span>crl_url
+URI<span style="color:#3677a9">.0</span>                   = <span style="color:#a61717;background-color:#e3d2d2">$</span>crl_url
 
 </code></pre></div><pre><code>Overwriting /tmp/pki/ca/conf/vpn-ca.conf
 </code></pre>
 <p>Create <strong>CA signing request</strong> (CSR):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl req -new <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -config ca/conf/vpn-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -out ca/vpn-ca/vpn-ca.csr <span style="color:#ed9d13">\
@@ -938,7 +942,7 @@ Verifying - Enter PEM pass phrase:
 -----
 
 </code></pre></div><p>Now we use the <strong>root CA</strong> to create the <strong>vpn-ca</strong> certificate:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/root-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>           -in ca/vpn-ca/vpn-ca.csr <span style="color:#ed9d13">\ </span>      
            -out ca/vpn-ca/vpn-ca.crt <span style="color:#ed9d13">\
@@ -985,11 +989,11 @@ Write out database with <span style="color:#3677a9">1</span> new entries
 Data Base Updated
            
 </code></pre></div><h2 id="create-dev-ca-ca-chain">Create dev-ca CA chain</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 cat ca/dev-ca/dev-ca.crt ca/root-ca/root-ca.crt &gt; ca/dev-ca/dev-ca-chain.pem
 </code></pre></div><h2 id="create-vpn-ca-ca-chain">Create vpn-ca CA chain</h2>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 cat ca/vpn-ca/vpn-ca.crt ca/root-ca/root-ca.crt &gt; ca/vpn-ca/vpn-ca-chain.pem
 </code></pre></div><h1 id="issue-dev-ca-certificates">Issue dev-CA certificates</h1>
@@ -1000,7 +1004,7 @@ cat ca/vpn-ca/vpn-ca.crt ca/root-ca/root-ca.crt &gt; ca/vpn-ca/vpn-ca-chain.pem
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
@@ -1044,7 +1048,7 @@ cat ca/vpn-ca/vpn-ca.crt ca/root-ca/root-ca.crt &gt; ca/vpn-ca/vpn-ca-chain.pem
 <li>etc.</li>
 </ul>
 <p>Let&rsquo;s have a look at the config file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-server-cert.conf
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-server-cert.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 
 <span style="color:#999;font-style:italic"># # Code-signing certificate request for the VPN server</span>
@@ -1080,18 +1084,18 @@ subjectKeyIdentifier    = <span style="color:#24909d">hash</span>
 subjectAltName          = <span style="color:#ffa500">@alt_names</span>
 
 [alt_names]
-DNS.<span style="color:#3677a9">1</span> = dev.dornea.nu
-DNS.<span style="color:#3677a9">2</span> = dev2.dornea.nu
-IP.<span style="color:#3677a9">1</span> = <span style="color:#3677a9">10.10</span>.<span style="color:#3677a9">10.1</span>
-IP.<span style="color:#3677a9">2</span> = <span style="color:#3677a9">10.20</span>.<span style="color:#3677a9">20.1</span>
+DNS<span style="color:#3677a9">.1</span> = dev.dornea.nu
+DNS<span style="color:#3677a9">.2</span> = dev2.dornea.nu
+IP<span style="color:#3677a9">.1</span> = <span style="color:#3677a9">10.10.10.1</span>
+IP<span style="color:#3677a9">.2</span> = <span style="color:#3677a9">10.20.20.1</span>
 </code></pre></div><pre><code>Overwriting /tmp/pki/ca/conf/dev-server-ca.conf
 </code></pre>
 <p>Create directories:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/dev-server-ca/ ca/dev-server-ca/private ca/dev-server-ca/db ca/dev-server-ca/certs
 </code></pre></div><p>Create a private key and CSR for the TLS server certificate:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl req -new <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -config ca/conf/dev-server-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -out ca/dev-server-ca/certs/dev.dornea.nu.csr <span style="color:#ed9d13">\
@@ -1116,7 +1120,7 @@ If you enter <span style="color:#ed9d13">&#39;.&#39;</span>, the field will be l
 5. Organizational Unit Name (eg, section)   []:dev.dornea.nu
 6. Common Name              (eg, FQDN)      []:dev.dornea.nu
 </code></pre></div><p>Now use the <strong>dev-ca</strong> certificate to issue the TLS server certificate:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/dev-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -in ca/dev-server-ca/certs/dev.dornea.nu.csr <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -out ca/dev-server-ca/certs/dev.dornea.nu.crt <span style="color:#ed9d13">\
@@ -1126,7 +1130,7 @@ If you enter <span style="color:#ed9d13">&#39;.&#39;</span>, the field will be l
 <p>PKCS#12 defines an archive file format to store crypto stuff inside a <em>single</em> file. It is usually used to store a
 <em>private key</em> along with the <em>X.509 certificate</em>. The PKCS#12 file may be <em>encrypted</em> and <em>signed</em>.</p>
 </blockquote>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( <span style="color:#24909d">cd</span> /tmp/pki
 <span style="color:#ed9d13">\\</span>) openssl pkcs12 -export <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>                -name <span style="color:#ed9d13">&#34;dev.dornea.nu (Developer)&#34;</span> <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>                -caname <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span> <span style="color:#ed9d13">\
@@ -1139,7 +1143,7 @@ Enter Export Password:
 Verifying - Enter Export Password:
 </code></pre></div><h3 id="verify-pkcs12-bundle">Verify PKCS#12 bundle</h3>
 <p>You can now verify the bundle:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl pkcs12 -in ca/dev-server-ca/certs/dev.dornea.nu.p12 -info | egrep -e <span style="color:#ed9d13">&#34;issuer&#34;</span> -e <span style="color:#ed9d13">&#34;subject&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl pkcs12 -in ca/dev-server-ca/certs/dev.dornea.nu.p12 -info | egrep -e <span style="color:#ed9d13">&#34;issuer&#34;</span> -e <span style="color:#ed9d13">&#34;subject&#34;</span>
 Enter Import Password:
 MAC Iteration <span style="color:#3677a9">2048</span>
 MAC verified OK
@@ -1162,7 +1166,7 @@ Enter PEM pass phrase:
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
@@ -1199,16 +1203,16 @@ Enter PEM pass phrase:
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_52_0.png" alt="png"></p>
 <p>Create directories:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/dev-client-ca/ ca/dev-client-ca/ ca/dev-client-ca/db ca/dev-client-ca/certs
 </code></pre></div><p>Create config:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/dev-client-ca.conf<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/dev-client-ca.conf<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 
 </code></pre></div><pre><code>Overwriting /tmp/pki/ca/conf/dev-client-ca.conf
 </code></pre>
 <p>Now I&rsquo;ll create a new CSR for the user <strong>victor</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl req -new <span style="color:#ed9d13">\\</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl req -new <span style="color:#ed9d13">\\</span>
             -config ca/conf/dev-client-ca.conf <span style="color:#ed9d13">\\</span>
             -out ca/dev-client-ca/certs/victor.csr <span style="color:#ed9d13">\\</span>
             -keyout ca/dev-client-ca/certs/victor.key
@@ -1234,7 +1238,7 @@ If you enter <span style="color:#ed9d13">&#39;.&#39;</span>, the field will be l
 6. Common Name              (eg, full name) []:Victor Dorneanu
 7. Email Address            (eg, name@fqdn) []:blabla@dornea.nu
 </code></pre></div><p>Now create the TLS client certificate:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/dev-ca.conf <span style="color:#ed9d13">\
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/dev-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -in ca/dev-client-ca/certs/victor.csr <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -out ca/dev-client-ca/certs/victor.crt <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>            -extensions client_ext
@@ -1286,7 +1290,7 @@ Write out database with <span style="color:#3677a9">1</span> new entries
 Data Base Updated
 
 </code></pre></div><h3 id="create-pkcs12-bundle">Create PKCS#12 bundle</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl pkcs12 -export <span style="color:#ed9d13">\\</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl pkcs12 -export <span style="color:#ed9d13">\\</span>
                  -name <span style="color:#ed9d13">&#34;dev.dornea.nu (Developer)&#34;</span> <span style="color:#ed9d13">\\</span>
                  -caname <span style="color:#ed9d13">&#34;dev.dornea.nu CA&#34;</span> <span style="color:#ed9d13">\\</span>
                  -caname <span style="color:#ed9d13">&#34;dornea.nu Root CA&#34;</span> <span style="color:#ed9d13">\\</span>
@@ -1298,7 +1302,7 @@ Enter pass phrase <span style="color:#6ab825;font-weight:bold">for</span> ca/dev
 Enter Export Password:
 Verifying - Enter Export Password:
 </code></pre></div><p>Now <em>verify</em> the bundle:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl pkcs12 -in ca/dev-client-ca/certs/victor.p12 -info | egrep -e <span style="color:#ed9d13">&#34;issuer&#34;</span> -e <span style="color:#ed9d13">&#34;subject&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl pkcs12 -in ca/dev-client-ca/certs/victor.p12 -info | egrep -e <span style="color:#ed9d13">&#34;issuer&#34;</span> -e <span style="color:#ed9d13">&#34;subject&#34;</span>
 Enter Import Password:
 MAC Iteration <span style="color:#3677a9">2048</span>
 MAC verified OK
@@ -1325,7 +1329,7 @@ Verifying - Enter PEM pass phrase:
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {↔
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {↔
 
   // Define class (list of attributes)
   class emphasis [color = pink, style = dashed];
@@ -1356,10 +1360,10 @@ Verifying - Enter PEM pass phrase:
 </details>
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_60_0.png" alt="png"></p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/vpn-ca/certs/vpn-server
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-server-cert.conf
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-server-cert.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 
 <span style="color:#999;font-style:italic"># dev.dornea.nu server certificate</span>
@@ -1393,7 +1397,7 @@ subjectKeyIdentifier    = <span style="color:#24909d">hash</span>
 </code></pre>
 <h3 id="create-csr">Create CSR</h3>
 <p>And now create the <strong>CSR</strong> (Code Signing Request):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl req -new <span style="color:#ed9d13">\\</span>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl req -new <span style="color:#ed9d13">\\</span>
             -config ca/conf/vpn-server-cert.conf <span style="color:#ed9d13">\\</span>
             -out ca/vpn-ca/certs/vpn-server/raspberry<span style="color:#ed9d13">\_</span>pi.csr <span style="color:#ed9d13">\\</span>
             -keyout ca/vpn-ca/certs/vpn-server/raspberry<span style="color:#ed9d13">\_</span>pi.key
@@ -1424,7 +1428,7 @@ If you enter <span style="color:#ed9d13">&#39;.&#39;</span>, the field will be l
 
 </code></pre></div><h3 id="sign-certificate">Sign certificate</h3>
 <p>Now use the <strong>VPN-CA</strong> to issue the <strong>CRT</strong> (Code Signing Certificate):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/vpn-ca.conf <span style="color:#ed9d13">\ </span>                                                              <span style="color:#3677a9">1</span> ↵
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/vpn-ca.conf <span style="color:#ed9d13">\ </span>                                                              <span style="color:#3677a9">1</span> ↵
                 -in ca/vpn-ca/certs/vpn-server/raspberry_pi.csr <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>                -out ca/vpn-ca/certs/vpn-server/raspberry_pi.crt <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>                -extensions server_ext
@@ -1475,7 +1479,7 @@ Data Base Updated
 
 </code></pre></div><h3 id="create-pkcs12-bundle-1">Create PKCS12 bundle</h3>
 <p>Now bundle the <strong>root</strong> CA, <strong>VPN</strong> ca and the VPN <strong>server</strong> cert into one file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl pkcs12 -export <span style="color:#ed9d13">\ </span>                                                   
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl pkcs12 -export <span style="color:#ed9d13">\ </span>                                                   
     -name <span style="color:#ed9d13">&#34;VPN Server (Raspberry Pi)&#34;</span> <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>    -caname <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span> <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>    -caname <span style="color:#ed9d13">&#34;dornea.nu Root CA&#34;</span> <span style="color:#ed9d13">\
@@ -1493,7 +1497,7 @@ Verifying - Enter Export Password:
     blockdiag code
     
   </summary>
-  <div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
+  <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">blockdiag {
   // Define orientation
   orientation = portrait;
 
@@ -1526,10 +1530,10 @@ Verifying - Enter Export Password:
 </details>
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/manage-a-pki-using-openssl/output_65_0.png" alt="png"></p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#24909d">cd</span> /tmp/pki
 mkdir -p ca/vpn-ca/certs/vpn-client
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-client-cert.conf
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%writefile /tmp/pki/ca/conf/vpn-client-cert.conf
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
 
 <span style="color:#999;font-style:italic"># VPN client certificate</span>
@@ -1566,7 +1570,7 @@ subjectAltName          = email:move
 </code></pre>
 <h3 id="create-csr-1">Create CSR</h3>
 <p>Now create the <strong>CSR</strong> for the user <strong>victor</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl req -new <span style="color:#ed9d13">\\</span>                      
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>( openssl req -new <span style="color:#ed9d13">\\</span>                      
             -config ca/conf/vpn-client-cert.conf <span style="color:#ed9d13">\\</span>               
             -out ca/vpn-ca/certs/vpn-client/victor.csr <span style="color:#ed9d13">\\</span>      
             -keyout ca/vpn-ca/certs/vpn-client/victor.key    
@@ -1595,7 +1599,7 @@ If you enter <span style="color:#ed9d13">&#39;.&#39;</span>, the field will be l
 
 </code></pre></div><h3 id="sign-the-csr">Sign the CSR</h3>
 <p>Sign the <strong>CSR</strong> using <strong>VPN-CA</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/vpn-ca.conf <span style="color:#ed9d13">\
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#ed9d13">\\</span>) openssl ca -config ca/conf/vpn-ca.conf <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>                -in ca/vpn-ca/certs/vpn-client/victor.csr <span style="color:#ed9d13">\ </span>     
                 -out ca/vpn-ca/certs/vpn-client/victor.crt <span style="color:#ed9d13">\ </span>     
                 -extensions client_ext              
@@ -1648,7 +1652,7 @@ Data Base Updated
 
 </code></pre></div><h3 id="create-pkcs12-bundle-2">Create PKCS#12 bundle</h3>
 <p>Bundle the <strong>root CA</strong>, **VPN CA ** and the VPN <strong>client</strong> cert into a single file:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl pkcs12 -export <span style="color:#ed9d13">\
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ openssl pkcs12 -export <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>    -name <span style="color:#ed9d13">&#34;VPN Client (Victor)&#34;</span> <span style="color:#ed9d13">\ </span>     
     -caname <span style="color:#ed9d13">&#34;vpn.dornea.nu CA&#34;</span> <span style="color:#ed9d13">\
 </span><span style="color:#ed9d13"></span>    -caname <span style="color:#ed9d13">&#34;dornea.nu Root CA&#34;</span> <span style="color:#ed9d13">\
@@ -1791,6 +1795,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

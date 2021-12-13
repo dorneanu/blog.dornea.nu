@@ -27,7 +27,7 @@ Basically the tags works as follows:" />
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -43,6 +43,10 @@ Basically the tags works as follows:" />
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -89,14 +93,14 @@ type="image/x-icon"/>
   <div class="lh-copy post-content"><p>I really like keeping things simple. And I also like generating figures from code using <code>Graphviz</code>. And since there was no Graphviz <strong>plugin</strong> for <strong>pelican</strong> I wrote my own one.</p>
 <p>Using <a href="https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags">liquid tags</a> I wanted to get my graphviz code rendered and automatically included as a <strong>base64 encoded</strong> image in my HTML code. I&rsquo;ve created a <a href="https://github.com/getpelican/pelican-plugins/pull/356">pull request</a> but you can find a fork at <a href="https://github.com/dorneanu/pelican-plugins">dorneanu-pelican</a>.</p>
 <p>Basically the tags works as follows:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
 	&lt;program&gt; {
 		&lt;DOT CODE&gt;
 	}
 %}
 </code></pre></div><p><code>program</code> could be <code>dot</code>, <code>neato</code>, <code>twopi</code>, <code>circo</code> etc. The <code>DOT CODE</code> is simply sent to the binary utility and the output (PNG data) is saved into the document.</p>
 <p>This is some minimal example:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
 	dot { 
 			digraph graphname { 
 				a -&gt; b -&gt; c; 
@@ -122,7 +126,7 @@ e -&gt; f;
 
 <p><img src="https://blog.dornea.nu/posts/img/2014/pelican-graphviz-liquid-tags/example1.dot.png" alt="example1"></p>
 <p>You could then use <code>neato</code> instead of <code>dot</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
 neato { 
         digraph graphname { 
             a -&gt; b -&gt; c; 
@@ -161,31 +165,31 @@ e -&gt; f;
     
   </summary>
   <pre><code>dot {
-    digraph g {
-        node [fontname=Verdana,fontsize=12]
-        node [style=filled]
-        node [fillcolor=&quot;#EEEEEE&quot;]
-        node [color=&quot;#EEEEEE&quot;]
-        edge [color=&quot;#31CEF0&quot;]
-        node [shape = record,height=.1];
-        node0[label = &quot; | G| &quot;];
-        node1[label = &quot; | E| &quot;];
-        node2[label = &quot; | B| &quot;];
-        node3[label = &quot; | F| &quot;];
-        node4[label = &quot; | R| &quot;];
-        node5[label = &quot; | H| &quot;];
-        node6[label = &quot; | Y| &quot;];
-        node7[label = &quot; | A| &quot;];
-        node8[label = &quot; | C| &quot;];
-        &quot;node0&quot;:f2 -&gt; &quot;node4&quot;:f1;
-        &quot;node0&quot;:f0 -&gt; &quot;node1&quot;:f1;
-        &quot;node1&quot;:f0 -&gt; &quot;node2&quot;:f1;
-        &quot;node1&quot;:f2 -&gt; &quot;node3&quot;:f1;
-        &quot;node2&quot;:f2 -&gt; &quot;node8&quot;:f1;
-        &quot;node2&quot;:f0 -&gt; &quot;node7&quot;:f1;
-        &quot;node4&quot;:f2 -&gt; &quot;node6&quot;:f1;
-        &quot;node4&quot;:f0 -&gt; &quot;node5&quot;:f1;
-    }
+	digraph g {
+		node [fontname=Verdana,fontsize=12]
+		node [style=filled]
+	 	node [fillcolor=&quot;#EEEEEE&quot;]
+	 	node [color=&quot;#EEEEEE&quot;]
+	 	edge [color=&quot;#31CEF0&quot;]
+		node [shape = record,height=.1];
+		node0[label = &quot; | G| &quot;];
+		node1[label = &quot; | E| &quot;];
+		node2[label = &quot; | B| &quot;];
+		node3[label = &quot; | F| &quot;];
+		node4[label = &quot; | R| &quot;];
+		node5[label = &quot; | H| &quot;];
+		node6[label = &quot; | Y| &quot;];
+		node7[label = &quot; | A| &quot;];
+		node8[label = &quot; | C| &quot;];
+		&quot;node0&quot;:f2 -&gt; &quot;node4&quot;:f1;
+		&quot;node0&quot;:f0 -&gt; &quot;node1&quot;:f1;
+		&quot;node1&quot;:f0 -&gt; &quot;node2&quot;:f1;
+		&quot;node1&quot;:f2 -&gt; &quot;node3&quot;:f1;
+		&quot;node2&quot;:f2 -&gt; &quot;node8&quot;:f1;
+		&quot;node2&quot;:f0 -&gt; &quot;node7&quot;:f1;
+		&quot;node4&quot;:f2 -&gt; &quot;node6&quot;:f1;
+		&quot;node4&quot;:f0 -&gt; &quot;node5&quot;:f1;
+	}
 }
 </code></pre>
 
@@ -205,34 +209,34 @@ e -&gt; f;
     
   </summary>
   <pre><code>dot {
-    digraph G {
-        node [fontname=Verdana,fontsize=12]
-        node [style=filled]
-        node [fillcolor=&quot;#EEEEEE&quot;]
-        node [color=&quot;#EEEEEE&quot;]
-        edge [color=&quot;#31CEF0&quot;]
+	digraph G {
+		node [fontname=Verdana,fontsize=12]
+		node [style=filled]
+	 	node [fillcolor=&quot;#EEEEEE&quot;]
+	 	node [color=&quot;#EEEEEE&quot;]
+	 	edge [color=&quot;#31CEF0&quot;]
 
-        subgraph cluster_0 {
-            label = &quot;hello world&quot;;
-            a -&gt; b;
-            a -&gt; c;
-            color = hot_pink;
-        }
+		subgraph cluster_0 {
+			label = &quot;hello world&quot;;
+			a -&gt; b;
+			a -&gt; c;
+			color = hot_pink;
+		}
 
-        subgraph cluster_1 {
-            label = &quot;MSDOT&quot;;
-            style= &quot;dashed&quot;;
-            color=purple;
-            x -&gt; y;
-            x -&gt; z;
-            y -&gt; z;
-            y -&gt; q;
-        }
+		subgraph cluster_1 {
+			label = &quot;MSDOT&quot;;
+			style= &quot;dashed&quot;;
+			color=purple;
+			x -&gt; y;
+			x -&gt; z;
+			y -&gt; z;
+			y -&gt; q;
+		}
 
-        top -&gt; a;
-        top -&gt; y;
-        y -&gt; b;
-    }
+		top -&gt; a;
+		top -&gt; y;
+		y -&gt; b;
+	}
 }
 </code></pre>
 
@@ -248,109 +252,109 @@ e -&gt; f;
     
   </summary>
   <pre><code>neato {
-    graph G
-    {
+	graph G
+	{
 
-      node [color=Red]
+	  node [color=Red]
 
-      r01
-      r02
+	  r01
+	  r02
 
-      r03
+	  r03
 
-      r04
-      r05
+	  r04
+	  r05
 
-      r06
-      r07
-      r08
-      r09
+	  r06
+	  r07
+	  r08
+	  r09
 
-      r10
-      r11
+	  r10
+	  r11
 
-      node [color=Blue]
+	  node [color=Blue]
 
-      p01
-      p02
+	  p01
+	  p02
 
-      p03
+	  p03
 
-      p04
-      p05
-      p06
+	  p04
+	  p05
+	  p06
 
-      p07
-      p08
-      p09
-      p10
-      p11
+	  p07
+	  p08
+	  p09
+	  p10
+	  p11
 
-      p12
-      p13
+	  p12
+	  p13
 
-      r01 -- r02
-      r01 -- p01
-      r01 -- p02
-      r02 -- p01
-      r02 -- p02
-      p01 -- p02
+	  r01 -- r02
+	  r01 -- p01
+	  r01 -- p02
+	  r02 -- p01
+	  r02 -- p02
+	  p01 -- p02
 
-      r03 -- p03
+	  r03 -- p03
 
-      r04 -- r05
-      r04 -- p04
-      r04 -- p05
-      r04 -- p06
-      r05 -- p04
-      r05 -- p06
-      p04 -- p05
-      p04 -- p06
+	  r04 -- r05
+	  r04 -- p04
+	  r04 -- p05
+	  r04 -- p06
+	  r05 -- p04
+	  r05 -- p06
+	  p04 -- p05
+	  p04 -- p06
 
-      r06 -- r07
-      r06 -- r08
-      r06 -- r09
-      r06 -- p07
-      r06 -- p08
-      r06 -- p09
-      r06 -- p10
-      r06 -- p11
-      r07 -- r08
-      r07 -- r09
-      r07 -- p07
-      r07 -- p08
-      r07 -- p09
-      r07 -- p10
-      r07 -- p11
-      r08 -- r09
-      r08 -- p07
-      r08 -- p08
-      r08 -- p09
-      r08 -- p10
-      r08 -- p11
-      r09 -- p07
-      r09 -- p08
-      r09 -- p09
-      r09 -- p10
-      r09 -- p11
-      p07 -- p08
-      p07 -- p09
-      p07 -- p10
-      p07 -- p11
-      p08 -- p09
-      p08 -- p10
-      p08 -- p11
-      p09 -- p10
-      p09 -- p11
-      p10 -- p11
+	  r06 -- r07
+	  r06 -- r08
+	  r06 -- r09
+	  r06 -- p07
+	  r06 -- p08
+	  r06 -- p09
+	  r06 -- p10
+	  r06 -- p11
+	  r07 -- r08
+	  r07 -- r09
+	  r07 -- p07
+	  r07 -- p08
+	  r07 -- p09
+	  r07 -- p10
+	  r07 -- p11
+	  r08 -- r09
+	  r08 -- p07
+	  r08 -- p08
+	  r08 -- p09
+	  r08 -- p10
+	  r08 -- p11
+	  r09 -- p07
+	  r09 -- p08
+	  r09 -- p09
+	  r09 -- p10
+	  r09 -- p11
+	  p07 -- p08
+	  p07 -- p09
+	  p07 -- p10
+	  p07 -- p11
+	  p08 -- p09
+	  p08 -- p10
+	  p08 -- p11
+	  p09 -- p10
+	  p09 -- p11
+	  p10 -- p11
 
-      r10 -- r11
-      r10 -- p12
-      r10 -- p13
-      r11 -- p12
-      r11 -- p13
-      p12 -- p13
-    }
+	  r10 -- r11
+	  r10 -- p12
+	  r10 -- p13
+	  r11 -- p12
+	  r11 -- p13
+	  p12 -- p13
+	}
 }
 </code></pre>
 
@@ -363,28 +367,28 @@ e -&gt; f;
     
   </summary>
   <pre><code>neato {
-    graph ER {
-        node [shape=box]; course; institute; student;
-        node [shape=ellipse]; {node [label=&quot;name&quot;] name0; name1; name2;}
-            code; grade; number;
-        node [shape=diamond,style=filled,color=lightgrey]; &quot;C-I&quot;; &quot;S-C&quot;; &quot;S-I&quot;;
+	graph ER {
+		node [shape=box]; course; institute; student;
+		node [shape=ellipse]; {node [label=&quot;name&quot;] name0; name1; name2;}
+			code; grade; number;
+		node [shape=diamond,style=filled,color=lightgrey]; &quot;C-I&quot;; &quot;S-C&quot;; &quot;S-I&quot;;
 
-        name0 -- course;
-        code -- course;
-        course -- &quot;C-I&quot; [label=&quot;n&quot;,len=1.00];
-        &quot;C-I&quot; -- institute [label=&quot;1&quot;,len=1.00];
-        institute -- name1;
-        institute -- &quot;S-I&quot; [label=&quot;1&quot;,len=1.00];
-        &quot;S-I&quot; -- student [label=&quot;n&quot;,len=1.00];
-        student -- grade;
-        student -- name2;
-        student -- number;
-        student -- &quot;S-C&quot; [label=&quot;m&quot;,len=1.00];
-        &quot;S-C&quot; -- course [label=&quot;n&quot;,len=1.00];
+		name0 -- course;
+		code -- course;
+		course -- &quot;C-I&quot; [label=&quot;n&quot;,len=1.00];
+		&quot;C-I&quot; -- institute [label=&quot;1&quot;,len=1.00];
+		institute -- name1;
+		institute -- &quot;S-I&quot; [label=&quot;1&quot;,len=1.00];
+		&quot;S-I&quot; -- student [label=&quot;n&quot;,len=1.00];
+		student -- grade;
+		student -- name2;
+		student -- number;
+		student -- &quot;S-C&quot; [label=&quot;m&quot;,len=1.00];
+		&quot;S-C&quot; -- course [label=&quot;n&quot;,len=1.00];
 
-        label = &quot;\n\nEntity Relation Diagram\ndrawn by NEATO&quot;;
-        fontsize=20;
-    }
+		label = &quot;\n\nEntity Relation Diagram\ndrawn by NEATO&quot;;
+		fontsize=20;
+	}
 }
 </code></pre>
 
@@ -400,30 +404,30 @@ e -&gt; f;
     
   </summary>
   <pre><code>twopi {
-    digraph G
-    {
-            center = v21;
+	digraph G
+	{
+	        center = v21;
 
-            center -&gt; v11;
-            center -&gt; v12;
-            center -&gt; v13;
+	        center -&gt; v11;
+	        center -&gt; v12;
+	        center -&gt; v13;
 
-            v11 -&gt; v21;
-            v11 -&gt; v22;
-            v11 -&gt; v23;
+	        v11 -&gt; v21;
+	        v11 -&gt; v22;
+	        v11 -&gt; v23;
 
-            v21 -&gt; v22;
-            v22 -&gt; v23;
-            v23 -&gt; v21;
+	        v21 -&gt; v22;
+	        v22 -&gt; v23;
+	        v23 -&gt; v21;
 
-            v21 -&gt; v31;
-            v21 -&gt; v32;
-            v21 -&gt; v33;
+	        v21 -&gt; v31;
+	        v21 -&gt; v32;
+	        v21 -&gt; v33;
 
-            v32 -&gt; v41;
-            v32 -&gt; v42;
-            v33 -&gt; v43;
-    }
+	        v32 -&gt; v41;
+	        v32 -&gt; v42;
+	        v33 -&gt; v43;
+	}
 }
 </code></pre>
 
@@ -439,12 +443,12 @@ e -&gt; f;
     
   </summary>
   <pre><code>circo {
-    digraph g1 {
-        node [shape = doublecircle]; N4 N6;
-        node [shape = circle];
-        edge[label=&quot;{1,0}&quot;];
-        N0 -&gt; N1 -&gt; N2 -&gt; N3 -&gt; N4 -&gt; N5 -&gt; N6 -&gt; N0;
-    }
+	digraph g1 {
+	    node [shape = doublecircle]; N4 N6;
+	    node [shape = circle];
+	    edge[label=&quot;{1,0}&quot;];
+	    N0 -&gt; N1 -&gt; N2 -&gt; N3 -&gt; N4 -&gt; N5 -&gt; N6 -&gt; N0;
+	}
 }
 </code></pre>
 
@@ -460,22 +464,22 @@ e -&gt; f;
     
   </summary>
   <pre><code>dot {
-    digraph G {
-     node [fontname=Verdana,fontsize=12]
-     node [style=filled]
-     node [fillcolor=&quot;#EEEEEE&quot;]
-     node [color=&quot;#EEEEEE&quot;]
-     edge [color=&quot;#31CEF0&quot;]
+	digraph G {
+	 node [fontname=Verdana,fontsize=12]
+	 node [style=filled]
+	 node [fillcolor=&quot;#EEEEEE&quot;]
+	 node [color=&quot;#EEEEEE&quot;]
+	 edge [color=&quot;#31CEF0&quot;]
 	 
-     main -&gt; parse -&gt; execute
-     main -&gt; init
-     main -&gt; cleanup
-     execute -&gt; make_string
-     execute -&gt; printf
-     init -&gt; make_string
-     main -&gt; printf
-     execute -&gt; compare
-    }
+	 main -&gt; parse -&gt; execute
+	 main -&gt; init
+	 main -&gt; cleanup
+	 execute -&gt; make_string
+	 execute -&gt; printf
+	 init -&gt; make_string
+	 main -&gt; printf
+	 execute -&gt; compare
+	}
 }
 </code></pre>
 
@@ -587,6 +591,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

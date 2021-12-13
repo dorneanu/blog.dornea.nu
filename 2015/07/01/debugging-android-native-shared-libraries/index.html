@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -87,7 +91,7 @@ type="image/x-icon"/>
   <div class="lh-copy post-content"><p>Since I haven&rsquo;t done this before, I thought I could share some experiences with you. All this began during some APK analysis which was heavily using <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>s. In my particular case <em>Java Native Interfaces</em> were used to call functions inside libraries written in C/C++. At that time I was quite unfamiliar with JNIs and how they actually work. Besides that I haven&rsquo;t debugged any native applications/libraries on Android before. So this was the perfect opportunity to have a closer look at <a href="https://developer.android.com/tools/sdk/ndk/index.html">Android NDK</a> and its debugging features.</p>
 <h2 id="create-eclipse-project">Create Eclipse project</h2>
 <p>In this post I&rsquo;ll first create and build a <em>simple</em> Android project that includes native code using the <strong>JNI</strong>. As a main source I have used this extraordinary <a href="http://blog.edwards-research.com/2012/04/tutorial-android-jni/">Android JNI tutorial</a> which I highly appreciate. Following the instructions described in the post, I have managed to successfully create an empty Android project (File -&gt; New -&gt; Project -&gt; Android Application Project) for my purposes.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 tree -L <span style="color:#3677a9">1</span>
 </code></pre></div><pre><code>.
 ├── AndroidManifest.xml
@@ -101,7 +105,7 @@ tree -L <span style="color:#3677a9">1</span>
 4 directories, 3 files
 </code></pre>
 <p>And in <code>src</code> we have following <strong>classes</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%ls -lR src/com/example/jni_debug_demo
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%ls -lR src/com/example/jni_debug_demo
 </code></pre></div><pre><code>src/com/example/jni_debug_demo:
 total 8
 -rw-r--r-- 1 victor users 1183 Jun 30 16:44 MainActivity.java
@@ -109,14 +113,14 @@ total 8
 </code></pre>
 <h2 id="create-android-project">Create Android project</h2>
 <p>In order to be able to build the APK, you&rsquo;ll have to create a new Android project:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 /home/victor/work/android-sdk/tools/android update project --target android-19 -p .
 </code></pre></div><pre><code>Updated and renamed default.properties to project.properties
 Updated local.properties
 Added file ./proguard-project.txt
 </code></pre>
 <p>Now you should be able to <strong>build</strong> the project and also generate the <strong>APK</strong>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 ant clean release | grep BUILD
 </code></pre></div><pre><code>BUILD SUCCESSFUL
 </code></pre>
@@ -124,7 +128,7 @@ ant clean release | grep BUILD
 <p>Now that we have the base Android project, let&rsquo;s add some <strong>JNI</strong> functionalities to the project. To compile the shared library (using gcc/g++) we&rsquo;ll need a valid C <strong>header</strong> which can be computed from <em>SquaredWrapper</em> (class used in previously mentioned tutorial).</p>
 <h3 id="c-header">C header</h3>
 <p>The compiled classes are now in &ldquo;<code>./bin/classes</code>&rdquo;. Let&rsquo;s generate the <strong>header</strong> files for <code>SquaredWrapper</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 javah -jni -classpath ~/work/android-sdk/platforms/android-19/android.jar:./bin/classes -o square.h com.example.jni_debug_demo.SquaredWrapper
 cat square.h
 </code></pre></div><pre><code>/* DO NOT EDIT THIS FILE - it is machine generated */
@@ -150,12 +154,12 @@ JNIEXPORT jint JNICALL Java_com_example_jni_1debug_1demo_SquaredWrapper_squared
 #endif
 </code></pre>
 <p>So there is a function <strong>Java_com_example_jni_1debug_1demo_SquaredWrapper_squared</strong> (pay attention to the naming convention) which has 3 arguments. I won&rsquo;t discuss this further and I&rsquo;ll simple copy the file into a new folder <code>jni</code> inside the project:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 mkdir jni
 mv square.h jni/
 </code></pre></div><h3 id="c-source">C source</h3>
 <p>Now that we have the <strong>function definition</strong> and the prototype generated by <code>javah</code> we can easily implement the <strong>C source</strong> as follows:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%cat jni/square.c
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%cat jni/square.c
 </code></pre></div><pre><code>#include &quot;square.h&quot;
  
 JNIEXPORT jint JNICALL Java_com_example_jni_1debug_1demo_SquaredWrapper_squared (JNIEnv * je, jclass jc, jint base)
@@ -166,7 +170,7 @@ JNIEXPORT jint JNICALL Java_com_example_jni_1debug_1demo_SquaredWrapper_squared 
 <p>So nothing special about it. Due to the introductory aspect of this post I&rsquo;ll try to keep things simple. You can of course go further and implement more complex functions.</p>
 <h3 id="build-the-library">Build the library</h3>
 <p>Create a <strong>Makefile</strong> for all the Android build tools.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%cat jni/Android.mk
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%cat jni/Android.mk
 </code></pre></div><pre><code>LOCAL_PATH := $(call my-dir)
  
 include $(CLEAR_VARS)
@@ -179,7 +183,7 @@ LOCAL_SRC_FILES := square.c
 include $(BUILD_SHARED_LIBRARY)
 </code></pre>
 <p>And now <strong>build</strong> the library (remember to set the <em>NDK_DEBUG</em> flag otherwise you won&rsquo;t be able to debug your native code):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 <span style="color:#40ffff">NDK_DEBUG</span>=<span style="color:#3677a9">1</span> /home/victor/work/android-ndk-r10e/ndk-build 
 readelf -h libs/armeabi/libsquared.so
 </code></pre></div><pre><code>Android NDK: WARNING: APP_PLATFORM android-19 is larger than android:minSdkVersion 16 in ./AndroidManifest.xml    
@@ -211,7 +215,7 @@ ELF Header:
 </code></pre>
 <h2 id="call-the-library">Call the library</h2>
 <p>In <code>MainActivity</code> some static routines of the class <code>SquaredWrapper</code> are being called:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.java" data-lang=".java"><span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">MainActivity</span> <span style="color:#6ab825;font-weight:bold">extends</span> Activity {
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.java" data-lang=".java"><span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">MainActivity</span> <span style="color:#6ab825;font-weight:bold">extends</span> Activity {
     <span style="color:#6ab825;font-weight:bold">private</span> EditText etInput;
     <span style="color:#6ab825;font-weight:bold">private</span> TextView txtTo2;
     <span style="color:#6ab825;font-weight:bold">private</span> TextView txtTo4;
@@ -244,30 +248,30 @@ ELF Header:
     }
 }
 </code></pre></div><p>Build the project again:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 ant clean release | grep -e <span style="color:#ed9d13">&#34;^BUILD&#34;</span>
 </code></pre></div><pre><code>BUILD SUCCESSFUL
 </code></pre>
 <h2 id="run-the-demo-application">Run the demo application</h2>
 <p>First let&rsquo;s build the APK with <strong>debug</strong> enabled and sign it using a debug key:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 ant clean debug | grep -e <span style="color:#ed9d13">&#34;^BUILD&#34;</span>
 </code></pre></div><pre><code>BUILD SUCCESSFUL
 </code></pre>
 <p>Now you can <strong>install</strong> <code>./bin/MainActivity-debug.apk</code> on your Android device (whether virtual or real)</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 /home/victor/work/android-sdk/platform-tools/adb devices
 </code></pre></div><pre><code>List of devices attached 
 0123456789ABCDEF	device
 </code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb install ./bin/MainActivity-debug.apk 2&gt; /dev/null
 </code></pre></div><pre><code>WARNING: linker: libvc1dec_sa.ca7.so has text relocations. This is wasting memory and is a security risk. Please fix.
 WARNING: linker: libvc1dec_sa.ca7.so has text relocations. This is wasting memory and is a security risk. Please fix.
-    pkg: /data/local/tmp/MainActivity-debug.apk
+	pkg: /data/local/tmp/MainActivity-debug.apk
 Success
 </code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash 
 adb shell am start -n com.example.jni_debug_demo/com.example.jni_debug_demo.MainActivity
 </code></pre></div><pre><code>WARNING: linker: libvc1dec_sa.ca7.so has text relocations. This is wasting memory and is a security risk. Please fix.
 WARNING: linker: libvc1dec_sa.ca7.so has text relocations. This is wasting memory and is a security risk. Please fix.
@@ -275,7 +279,7 @@ Starting: Intent { cmp=com.example.jni_debug_demo/.MainActivity }
 </code></pre>
 <p><img src="https://blog.dornea.nu/posts/img/2015/android-solib/a74f0e9adca736086c2834fb63c793ad.png" alt="JNI Debug Demo Application"></p>
 <p>Greping for the <strong>logcat messages</strong> shows:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb logcat -s JNIDemo
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb logcat -s JNIDemo
 --------- beginning of /dev/log/system
 --------- beginning of /dev/log/main
 I/JNIDemo ( 5524): 3-&gt;81
@@ -286,19 +290,19 @@ I/JNIDemo ( 5524): 3-&gt;81
 <p>For the next steps a <strong>rooted</strong> device is <em>required</em>. Besides that you should install the <em>Android NDK</em> if you haven&rsquo;t done this yet.</p>
 <h3 id="remount-system-as-rw">Remount /system as rw</h3>
 <p>First you&rsquo;ll have to <em>mount</em> <code>/system</code> with read-write rights:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb shell mount | grep -e <span style="color:#ed9d13">&#34;system&#34;</span>
 </code></pre></div><pre><code>/emmc@android /system ext4 ro,seclabel,noatime,noauto_da_alloc,commit=1,data=ordered 0 0
 </code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb shell <span style="color:#ed9d13">&#34;su -c &#39;mount -o rw,remount /system&#39;&#34;</span>
-</code></pre></div><div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb shell mount | grep -e <span style="color:#ed9d13">&#34;system&#34;</span>
 </code></pre></div><pre><code>/emmc@android /system ext4 rw,seclabel,relatime,noauto_da_alloc,commit=1,data=ordered 0 0
 </code></pre>
 <h3 id="copy-gdbserver-to-device">Copy gdbserver to device</h3>
 <p>Now you&rsquo;ll have to copy the <strong>gdbserver</strong> from the Android NDK into <code>/system/bin</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 find /home/victor/work/android-ndk-r10e/ -type f -name <span style="color:#ed9d13">&#34;gdbserver&#34;</span>
 </code></pre></div><pre><code>/home/victor/work/android-ndk-r10e/prebuilt/android-mips/gdbserver/gdbserver
 /home/victor/work/android-ndk-r10e/prebuilt/android-x86_64/gdbserver/gdbserver
@@ -307,34 +311,34 @@ find /home/victor/work/android-ndk-r10e/ -type f -name <span style="color:#ed9d1
 /home/victor/work/android-ndk-r10e/prebuilt/android-mips64/gdbserver/gdbserver
 /home/victor/work/android-ndk-r10e/prebuilt/android-arm/gdbserver/gdbserver
 </code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb shell cat /proc/cpuinfo | grep -e <span style="color:#ed9d13">&#34;Processor&#34;</span>
 </code></pre></div><pre><code>Processor	: ARMv7 Processor rev 3 (v7l)
 </code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb push /home/victor/work/android-ndk-r10e/prebuilt/android-arm/gdbserver/gdbserver /mnt/sdcard/tmp 2&gt; /dev/null
 adb shell <span style="color:#ed9d13">&#34;su -c &#39;cp /mnt/sdcard/tmp/gdbserver /system/bin/&#39;&#34;</span>
 </code></pre></div><h3 id="copy-arm-libraries-to-your-client">Copy ARM libraries to your client</h3>
 <p>In order to be able to find debug information/symbols you&rsquo;ll need  all ARM libraries all your device/emulator to be copied to your PC. <code>gdb</code> will need them later on.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 mkdir system_lib
 <span style="color:#24909d">cd</span> system_lib
 adb pull /system/lib 2&gt; /dev/null
 </code></pre></div><h3 id="run-the-application">Run the application</h3>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb shell am start -n com.example.jni_debug_demo/com.example.jni_debug_demo.MainActivity
 </code></pre></div><pre><code>WARNING: linker: libvc1dec_sa.ca7.so has text relocations. This is wasting memory and is a security risk. Please fix.
 WARNING: linker: libvc1dec_sa.ca7.so has text relocations. This is wasting memory and is a security risk. Please fix.
 Starting: Intent { cmp=com.example.jni_debug_demo/.MainActivity }
 </code></pre>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 adb shell ps | grep jni_debug_demo
 </code></pre></div><pre><code>u0_a159   28054 135   554400 14484 ffffffff 00000000 S com.example.jni_debug_demo
 </code></pre>
 <p>Now that the app is running we&rsquo;re ready to start the debugger and attach it to the process ID <em>28054</em>.</p>
 <h3 id="attach-gdb-to-process">Attach gdb to process</h3>
 <p>In project&rsquo;s root directory you&rsquo;ll run <code>ndk-gdb</code> which is part of the <em>Android NDK</em> package.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
 ndk-gdb --verbose &gt; /dev/null
 </code></pre></div><pre><code>warning: Could not load shared library symbols for 108 libraries, e.g. libstdc++.so.
 Use the &quot;info sharedlibrary&quot; command to see the complete listing.
@@ -345,7 +349,7 @@ Do you need &quot;set solib-search-path&quot; or &quot;set sysroot&quot;?
 <li>check if application is running</li>
 <li>setup network redirection (port forwarding)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">adb_cmd forward tcp:5039 localfilesystem:/data/data/com.example.jni_debug_demo/debug-socket
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">adb_cmd forward tcp:5039 localfilesystem:/data/data/com.example.jni_debug_demo/debug-socket
 </code></pre></div><ul>
 <li>pull several utilities (app_process, linker) from the device/emulator</li>
 <li>start <code>gdb</code></li>
@@ -355,11 +359,11 @@ Do you need &quot;set solib-search-path&quot; or &quot;set sysroot&quot;?
 <ol>
 <li>Do port <em>forwarding</em>:</li>
 </ol>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">\\( adb forward tcp:1337 tcp:1337
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">\\( adb forward tcp:1337 tcp:1337
 </code></pre></div><ol>
 <li>Attach <code>gdbserver</code> to the process (on the device)</li>
 </ol>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@Android:/ # ps | grep jni
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@Android:/ # ps | grep jni
 u0\_a159   28054 135   561056 14100 ffffffff 400a499c S com.example.jni\_debug\_demo
 root@Android:/ # gdbserver :1337 --attach 28054                                
 Attached; pid = 28054
@@ -368,20 +372,20 @@ Listening on port 1337
 </code></pre></div><ol start="2">
 <li>Connect gdb <code>client</code> to the server:</li>
 </ol>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">\\) /home/victor/work/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gdb
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">\\) /home/victor/work/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gdb
 ...
 &gt; target remote :1337
 ...
 </code></pre></div><p>But I still recommend using <code>ndk-gdb</code>.</p>
 <h3 id="read-debugging-information">Read debugging information</h3>
 <p>And now let&rsquo;s go back to the previously mentioned <code>warning</code> message:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">warning: Could not load shared library symbols for 108 libraries, e.g. libstdc++.so.
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">warning: Could not load shared library symbols for 108 libraries, e.g. libstdc++.so.
 </code></pre></div><p><code>gdb</code> is telling us that it can&rsquo;t find any <strong>debugging symbols</strong> for the loaded (ARM) libraries. In that case we&rsquo;ll have to specify the <strong>path</strong> where it can find that information:</p>
 <ul>
 <li><code>system_lib</code>: contains all ARM libraries from the device (/system/lib)</li>
 <li><code>obj/local/armeabi</code>: contains debugging information about <code>libsquared.so</code> (our target)</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ndk-gdb --verbose
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ndk-gdb --verbose
 ...
 gef&gt; set solib-search-path system_lib/:obj/local/armeabi/
 Reading symbols from system_lib/libc.so...(no debugging symbols found)...done.
@@ -396,7 +400,7 @@ Reading symbols from system_lib/libcutils.so...(no debugging symbols found)...do
 ...
 
 </code></pre></div><p>You can now <strong>verify</strong> the debugging information via <code>info sharedlibrary</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; info sharedlibrary
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; info sharedlibrary
 From        To          Syms Read   Shared Object Library
 0x40053a80  0x400619e8  Yes (*)     /home/victor/workspace/jni_debug_demo/obj/local/armeabi/linker
 0x4008c500  0x400d2e54  Yes (*)     /home/victor/workspace/jni_debug_demo/system_lib/libc.so
@@ -414,15 +418,15 @@ From        To          Syms Read   Shared Object Library
 <p>From last output you can see that <code>libsquared.so</code> starts at address <strong>0x60b5bbe4</strong>. Let&rsquo;s see what we can find there:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2015/android-solib/b85df1e566b46ed748e315c3d4f043ed.png" alt="jni_debug_demo libsquared"></p>
 <p>Bingo! So <code>Java_com_example_jni_1debug_1demo_SquaredWrapper_squared</code> starts at <strong>0x60b5bc28</strong>. We&rsquo;ll definitely set a <strong>breakpoint</strong> at that address:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; b Java_com_example_jni_1debug_1demo_SquaredWrapper_squared
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; b Java_com_example_jni_1debug_1demo_SquaredWrapper_squared
 Breakpoint 1 at 0x60b5bc40: file jni/square.c, line 5.
 gef&gt;
 </code></pre></div><h3 id="trigger-and-debug-function">Trigger and debug function</h3>
 <p>For the targeted function to be executed we&rsquo;ll have to trigger its execution by clicking on the &ldquo;Calculate&rdquo; button in the UI. <strong>Before</strong> doing that you should tell <code>gdb</code> to <em>continue</em> execution:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; continue
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; continue
 Continuing.
 </code></pre></div><p>After having pressed the button in the UI, you should see sth similar to this:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; continue
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">gef&gt; continue
 Continuing.
 --------------------------------------------------------------------------------[regs]
 \\(r0    0x4187fe30 \\)r1    0x7a100019 \\(r2    0x00000008 \\)r3    0x578bbd18 
@@ -592,6 +596,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

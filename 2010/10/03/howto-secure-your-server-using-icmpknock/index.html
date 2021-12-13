@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -41,6 +41,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -87,7 +91,7 @@ type="image/x-icon"/>
   <div class="lh-copy post-content"><p>This time I&rsquo;d like to give you a short usage description of <a href="http://github.com/dorneanu/icmpKNOCK">icmpKNOCK</a> that was recently released. The main reason I wrote it was lack of security measurements on my boxes. I didn&rsquo;t want any sophisticated IDS tools nor complicated monitoring services. I wanted to implement something which will run on (almost) any platform without any external toolsb. Since the ping utility is available on most modern systems using ICMP packets to communicate with the server was the most reasonable approach. There are plenty of other <strong>port knocking</strong> tools but these are mostly binaries. These have to be first compiled on the running system which is bad. So the second thought was to use a programming language powerful enough to fulfill my needs and be portable. It had to be Python.</p>
 <h2 id="getting-started">Getting started</h2>
 <p>First you&rsquo;ll have to get the latest version of icmpKNOCK. Please check the SVN download <a href="http://github.com/dorneanu/icmpKNOCK">link</a> for the newest packages. Then make sure to upload the package to your server and copy it to a secret place where nobody - besides you - has read permissions on the actions file. Why is that important? Because the actions file contains your <code>secret</code> hex sequences used to trigger certain actions. So you don&rsquo;t want anybody to know these ones. In that case potential attackers might manipulate the behaviour of your system without noticing it.</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">~/icmpknock/v0.2.r9# ls -l
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">~/icmpknock/v0.2.r9# ls -l
 total 32
 -rw-r--r-- 1 root root   35 Sep  9 13:45 AUTHORS
 -rw-r--r-- 1 root root  340 Sep  9 14:19 CHANGELOG
@@ -98,7 +102,7 @@ drwxr-xr-x 2 root root 4096 Sep 30 16:11 modules
 drwxr-xr-x 2 root root 4096 Sep 30 16:11 scripts
 </code></pre></div><h2 id="generate-hex-sequences">Generate hex sequences</h2>
 <p>Now you&rsquo;ll have to generate your keys. You could use MD4, MD5, SHA-1 etc hashes. This is what I did:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ for i in `seq 1 10`; 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ for i in `seq 1 10`; 
 do pwgen 20 1 | md5; 
 done        
 bf6e1e0c0ce8fedb43146e50d1b281f9                                                
@@ -115,18 +119,18 @@ b124d903a6c510fbba2b1ccb23a11f2d
 <h2 id="define-actions">Define actions</h2>
 <p>This is the most interesting part. In this HowTo I&rsquo;ll give you an example how to block/open SSH port 22 using icmpKNOCK. Therefor I&rsquo;ll be using iptables which should be available within every Linux distribution. So let&rsquo;s start&hellip;</p>
 <p>For this tutorial the SSH port should be always closed. Let&rsquo;s define the action describing that:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[stop_ssh]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[stop_ssh]
 keys = &lt;your secret keys here&gt;
 payload = iptables -A INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
 </code></pre></div><p>Everytime the server receives the secret hex sequences it will close port 22 to block any external connections. What about opening it?</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[start_ssh]
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[start_ssh]
 keys = &lt;your secret keys here&gt;
 payload = iptables -D INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
 </code></pre></div><p>In that case you simply delete the previously created rule. Afterwards port 22 should be open again.</p>
 <p>Of course: There are lot of other possible configurations. Perhaps it is a better idea to define only 1 action which allows you to connect to port 22 within 20 seconds, close the port again after 20 seconds and keep the established connections. Feel free to use your brain.</p>
 <h2 id="prepare-your-scripts">Prepare your scripts</h2>
 <p>Your server - along with the Python application - will listen for incoming ICMP packets. Your client will be the ping utility as described above. In order to send your sequences to the server you&rsquo;ll need a small bash script which will do the rest for you:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd2828;font-weight:bold">#!/bin/sh
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd2828;font-weight:bold">#!/bin/sh
 </span><span style="color:#cd2828;font-weight:bold"></span>
 <span style="color:#40ffff">HOST</span>=&lt;your host here&gt;
 <span style="color:#40ffff">keys</span>=&lt;your keys here&gt;<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>
@@ -259,6 +263,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

