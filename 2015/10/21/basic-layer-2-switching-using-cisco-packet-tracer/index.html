@@ -221,7 +221,50 @@ diagram admin {
 }
 </code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/basic-layer-2-switching-using-cisco-packet-tracer/output_5_0.png" alt="png"></p>
 <p>Following table shows the links between the switches and the PCs and which <strong>switch ports</strong> are being used:</p>
-<!-- raw HTML omitted -->
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
+  <tr>
+    <th>PC</th>
+    <th>SW1</th>
+    <th>SW2</th>
+    <th>SW3</th>
+  </tr>
+  <tr>
+    <td>PC1</td>
+    <td>F0/2</td>
+    <td></td>
+    <td></td>
+  </tr>
+    <tr>
+    <td>PC2</td>
+    <td>F0/3</td>
+    <td></td>
+    <td></td>  
+  </tr>
+    <tr>
+    <td>PC3</td>
+    <td></td>
+    <td>F0/3</td>
+    <td></td>
+  </tr>
+   <tr>
+    <td>PC4</td>
+    <td></td>
+    <td>F0/4</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>PC5</td>
+    <td></td>
+    <td></td>
+    <td>F0/3</td>
+  </tr>
+  <tr>
+    <td>PC6</td>
+    <td></td>
+    <td></td>
+    <td>F0/4</td>
+  </tr>
+</table>
 <h3 id="configure-links-between-switches">Configure links between switches</h3>
 <p>Now I&rsquo;ll configure the ports on between <code>SW1</code> and <code>SW2</code>:</p>
 <ul>
@@ -314,7 +357,43 @@ FastEthernet0/1 is up, line protocol is up (connected)
 </li>
 </ul>
 <p>Additionally every host PC gets following IP addresss:</p>
-<!-- raw HTML omitted -->
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
+  <tr>
+    <th>Host</th>
+    <th>IP</th>
+    <th>VLAN</th>
+  </tr>
+  <tr>
+    <td>PC1</td>
+    <td>10.10.10.101</td>
+    <td>Students</td>
+  </tr>
+  <tr>
+    <td>PC2</td>
+    <td>10.10.10.102</td>
+    <td>Students</td>
+  </tr>
+  <tr>
+    <td>PC3</td>
+    <td>20.20.20.103</td>
+    <td>Teachers</td>
+  </tr>
+  <tr>
+    <td>PC4</td>
+    <td>20.20.20.104</td>
+    <td>Teachers</td>
+  </tr>
+  <tr>
+    <td>PC5</td>
+    <td>10.10.10.105</td>
+    <td>Students</td>
+  </tr>
+  <tr>
+    <td>PC6</td>
+    <td>20.20.20.106</td>
+    <td>Teachers</td>
+  </tr>
+</table>
 <p>Now let&rsquo;s have a look at our topology:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
 <span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
@@ -434,7 +513,28 @@ Fa0/2       10,20
 </code></pre></div><h3 id="configure-switch-virtual-interfaces">Configure Switch Virtual Interfaces</h3>
 <p>Traditionally switches operate on <em>Layer 2</em>. By using <strong>SVI</strong>s (Switch Virtual Interface) the switches uses a virtual <em>Layer 3</em> interface to route traffic to other <em>Layer 3</em> interface without any physical router. VLANs divide networks into smaller segments which keep traffic inside the VLAN. And because each VLAN has its own domain, a mechanism is needed to pass data to other VLANs.</p>
 <p>In our case we&rsquo;ll have to add each switch to some VLAN and assign some SVI a valid routable IP address.</p>
-<!-- raw HTML omitted -->
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
+  <tr>
+    <th>Switch </th>
+    <th>IP address</th>
+    <th>VLAN</th>
+  </tr>
+  <tr>
+    <td>SW1</td>
+    <td>30.30.30.1</td>
+    <td>Management</td>
+  </tr>
+  <tr>
+    <td>SW2</td>
+    <td>30.30.30.2</td>
+    <td>Management</td>
+  </tr>
+  <tr>
+    <td>SW3</td>
+    <td>30.30.30.3</td>
+    <td>Management</td>
+  </tr>
+</table>
 <ul>
 <li>Configure <code>SW1</code>:</li>
 </ul>

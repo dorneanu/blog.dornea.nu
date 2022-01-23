@@ -271,7 +271,43 @@ SW4(config)<span style="color:#999;font-style:italic">#spanning-tree vlan 30 roo
 ! SW2 configuration
 SW2(config)<span style="color:#999;font-style:italic">#spanning-tree vlan 30 root secondary</span>
 </code></pre></div><p>And now let&rsquo;s have a look at the <strong>port connectivity</strong> matrix:</p>
-<!-- raw HTML omitted -->
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
+  <tr>
+    <th> </th>
+    <th>SW1</th>
+    <th>SW2</th>
+    <th>SW3</th>
+    <th>SW4</th>
+  </tr>
+  <tr>
+    <td>SW1</td>
+    <td>-</td>
+    <td>Fa0/1 - Fa0/1</td>
+    <td>-</td>
+    <td>Fa0/4 - Fa0/1</td>
+  </tr>
+  <tr>
+    <td>SW2</td>
+    <td>Fa0/1 - Fa0/1</td>
+    <td>-</td>
+    <td>Fa0/2 - Fa0/1</td>
+    <td>Fa0/5 - Fa0/3</td>
+  </tr>
+  <tr>
+    <td>SW3</td>
+    <td>-</td>
+    <td>Fa0/1 - Fa0/2</td>
+    <td> - </td>
+    <td>Fa0/4, Fa0/5 - Fa0/2, Fa0/4</td>
+  </tr>
+  <tr>
+    <td>SW4</td>
+    <td>Fa0/1 - Fa0/4</td>
+    <td>Fa0/3 - Fa0/5</td>
+    <td>Fa0/2, Fa0/4 - Fa0/4, Fa0/5</td>
+    <td> - </td>
+  </tr>
+</table>
 <p>So <code>SW1</code> (Fa0/1) is connected to <code>SW2</code> (Fa0/1), <code>SW3</code> (Fa0/3) is connected to <code>SW2</code> (Fa0/2) and so on. You may have noticed that <code>SW3</code> and <code>SW4</code> are connected to each other using <strong>4 ports</strong>. In that case we have a <em>redundant</em> connection between both switches. In this case we&rsquo;ll later on configure the redundant connection as an <a href="https://en.wikipedia.org/wiki/EtherChannel"><strong>EtherChannel</strong></a>.</p>
 <h3 id="testing-the-stp-configuration">Testing the STP configuration</h3>
 <p>And now let&rsquo;s have a look at the STP information:</p>
@@ -358,7 +394,28 @@ Po2              Root FWD <span style="color:#3677a9">9</span>         128.27   
 </ol>
 <h3 id="port-cost">Port cost</h3>
 <p>Now you may have noticed the diffrent <strong>port costs</strong>. A port cost is an integer assigned to each interface per VLAN for providing a good way for measuring a port&rsquo;s connectivity.</p>
-<!-- raw HTML omitted -->
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
+  <tr>
+    <th>Ethernet </th>
+    <th>Cost</th>
+  </tr>
+  <tr>
+    <td>10 Mbps</td>
+    <td>100</td>
+  </tr>
+  <tr>
+    <td>100 Mbps</td>
+    <td>19</td>
+  </tr>
+  <tr>
+    <td>1 Gbps</td>
+    <td>4</td>
+  </tr>
+  <tr>
+    <td>10 Gbps</td>
+    <td>2</td>
+  </tr>
+</table>
 <p>So because most of the ports are <em>FastEthernet</em> ports they will get a port cost of 19 (when connected directly to the root).</p>
 <h3 id="etherchannel">EtherChannel</h3>
 <p>As previosuly mentioned there are 2 port links between <code>SW3</code> and <code>SW4</code>. <strong>EtherChannel</strong> provides a way to prevent convergence (STP) when a single port or cable failure occurs. The switches will treat the EtherChannel as a single interface. The big advantage is that if one of the links fails, STP convergence does not have to occur if at least one of the links is up. Besides that the switches will now have a <strong>load-balancing</strong> effect which will spread the traffic load accross the active links in the (Ether)channel.</p>

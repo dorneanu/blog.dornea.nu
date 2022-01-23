@@ -99,7 +99,24 @@ type="image/x-icon"/>
 </ul>
 <p>At least for the last one some additional steps are required to route your traffic <strong>only</strong> through the VPN tunnel. As a client you don&rsquo;t want your connection to be &ldquo;downgraded&rdquo; (in terms of security) without even realizing it. That&rsquo;s why you might want to restrict your routes and allow outbound connection only through the (virtual) interface dedicated to the VPN. How this is done and which methods exist, is covered later on.</p>
 <h2 id="revision">Revision</h2>
-<!-- raw HTML omitted -->
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
+  <tr>
+    <th><b>Date</b></th>
+    <th><b>Description</b></th>
+  </tr>
+  <tr>
+    <td>2015-11-17</td>
+    <td>First release</td>
+  </tr>
+  <tr>
+    <td>2015-11-19</td>
+    <td>Improved <b>ufw</b> script</b></td>
+  </tr>
+  <tr>
+    <td>2015-11-24</td>
+    <td>Added <b>iptables</b> and <b>initialization</b> script. The firewall rules are now set by iptables.</b></td>
+  </tr>
+</table>
 <h1 id="create-certificates">Create certificates</h1>
 <p>In the last <a href="http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/">post</a> I&rsquo;ve already created the <a href="http://blog.dornea.nu/2015/10/02/manage-pki-using-openssl/#Create-vpn.dornea.nu-CA">VPN CA</a> and also <strong>issued</strong> certificates for server and client. Perhaps you do remember the PKI:</p>
 <div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
@@ -721,7 +738,7 @@ lookup is terminated. Otherwise, the RPDB program continues with the next rule.<
 32767:	from all lookup default 
 </code></pre></div><p>In order of priority the rules say:</p>
 <ol>
-<li>All traffic destinated to the <!-- raw HTML omitted --> should lookup for routing information in table <strong>main</strong></li>
+<li>All traffic destinated to the <server IP addr> should lookup for routing information in table <strong>main</strong></li>
 <li>All other traffic should lookup for routing information in table <strong>94</strong>.</li>
 </ol>
 <p>So let&rsquo;s try that out! Here are routes for table <strong>main</strong>:</p>
