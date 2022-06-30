@@ -13,6 +13,140 @@
     
     
     <item>
+      <title>RSS/Atom, Emacs and elfeed</title>
+      <link>https://blog.dornea.nu/2022/06/29/rss/atom-emacs-and-elfeed/</link>
+      <pubDate>Wed, 29 Jun 2022 21:04:00 +0200</pubDate>
+      
+      <guid>https://blog.dornea.nu/2022/06/29/rss/atom-emacs-and-elfeed/</guid>
+      <content:encoded><![CDATA[<p>In <a href="/2022/06/13/rss-and-atom-for-digital-minimalists/">my last post</a> I wrote about RSS/Atom and how these technologies can be used
+to declutter your digital life and reduce your exposure to the attention
+economy. <a href="/tags/emacs">Emacs</a> (and all the amazing packages) taught me <a href="https://orgmode.org">ORG mode</a>, some basic <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/">Elisp</a>
+and how to be a minimalist and use just one tool for almost everything.</p>
+<p>Staying up-to-date with current technological trends, Security advisories, blog
+posts from smart people (and many other things) while not having to subscribe to every
+single newsletter, led me to <a href="https://github.com/skeeto/elfeed">elfeed</a>:</p>
+<blockquote>
+<p>Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS. - <a href="https://github.com/skeeto/elfeed">Source</a></p>
+</blockquote>
+<h2 id="configuration">Configuration</h2>
+
+
+
+<blockquote class="notice info">
+  My elfeed related configuration is available in <a href="https://github.com/dorneanu/dotfiles/blob/master/dot_doom.d/config.org#elfeed">config.org</a>.
+</blockquote>
+
+<p>Usually you would organize your feed entries as a list:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span style="color:#999;font-style:italic">;; Somewhere in your .emacs file</span>
+(<span style="color:#24909d">setq</span> <span style="color:#40ffff">elfeed-feeds</span>
+      &#39;(<span style="color:#ed9d13">&#34;http://nullprogram.com/feed/&#34;</span>
+        <span style="color:#ed9d13">&#34;https://planet.emacslife.com/atom.xml&#34;</span>))
+</code></pre></div><p>I didn&rsquo;t like this approach since the initial list was way to big to be managed.
+Then I came across <a href="https://github.com/remyhonig/elfeed-org">elfeed-org</a> which lets you organize your feeds in an ORG file.</p>
+
+    
+
+
+<a href="/posts/img/2022/rss/elfeed-org.png" class="glightbox" data-glightbox="title:elfeed entries; description: I have my bookmarks/feeds structured in ORG mode and each category/item is tagged accordingly.; descPosition: left">
+    <img src="/posts/img/2022/rss/elfeed-org.png" alt="image">
+</a>
+
+<h2 id="workflow">Workflow</h2>
+<h3 id="daily-view">Daily view</h3>
+<p>This is what I get whenever I hit <strong>M-x elfeed</strong>:</p>
+
+    
+
+
+<a href="/posts/img/2022/rss/elfeed-search.png" class="glightbox" data-glightbox="title:Daily view in elfeed; description: This is my daily view of RSS entries. Each lines has a timestamp, the feed entry name, a tag list and the corresponding feed entry title.; descPosition: left">
+    <img src="/posts/img/2022/rss/elfeed-search.png" alt="image">
+</a>
+
+<p>And this is how I actually consume my feeds:</p>
+
+    
+
+
+<a href="/posts/img/2022/rss/elfeed-search-workflow.gif" class="glightbox" data-glightbox="title:Workflow in elfeed; description: I usually start with a predefined query and then while I go through the list I mark each entry as read. In the right corner (I&#39;ve activated keycast-tab-bar-mode) you&#39;ll also see my keystrokes. ; descPosition: left">
+    <img src="/posts/img/2022/rss/elfeed-search-workflow.gif" alt="image">
+</a>
+
+<p>I usually start with a predefined filter: <code>@1-week-ago +unread +daily -youtube</code>. This gives me all entries:</p>
+<ul>
+<li>not older than 1 week AND</li>
+<li>not yet read AND</li>
+<li>are tagged by <code>daily</code> AND</li>
+<li>are NOT tagged by <code>youtube</code></li>
+</ul>
+<p>Simple, isn&rsquo;t it? :) In the gif you can see that I change the filter to also show the entries marked by <code>read</code>.
+Whenever I want to actually visit an entry link, I press <strong>RET</strong> to get the excerpt or <strong>b</strong> to open that specific link
+in an external browser (or <strong>B</strong> to open it in an <code>eww</code> buffer).</p>
+<h2 id="getpocket-integration">getpocket integration</h2>
+<p>If you&rsquo;ve read my getpocket article last year, you know I use <a href="https://getpocket.com">getpocket.com</a> to save links/articles to read later. In <code>elfeed</code> I
+can easily add a link to getpocket (thanks to <a href="https://github.com/alphapapa/pocket-reader.el">pocket-reader.el</a>). I use these <a href="https://github.com/dorneanu/dotfiles/blob/master/dot_doom.d/config.org#elfeed">key bindings</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span style="color:#999;font-style:italic">;; Define maps</span>
+(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">elfeed-search-mode-map</span>
+    <span style="color:#24909d">:after</span> <span style="color:#40ffff">elfeed-search</span>
+    [<span style="color:#40ffff">remap</span> <span style="color:#40ffff">kill-this-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
+    [<span style="color:#40ffff">remap</span> <span style="color:#447fcf">kill-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
+    <span style="color:#24909d">:n</span> <span style="color:#40ffff">doom-leader-key</span> <span style="color:#40ffff">nil</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;q&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">+rss/quit</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;e&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-update</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;r&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-untag-all-unread</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;u&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-tag-all-unread</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;s&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-live-filter</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;RET&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-show-entry</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;p&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-pdf</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;+&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-tag-all</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;-&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-untag-all</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;S&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-set-filter</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;b&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-browse-url</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;B&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-eww-open</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;a&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-elfeed-search-add-link</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-yank</span>)
+(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">elfeed-show-mode-map</span>
+    <span style="color:#24909d">:after</span> <span style="color:#40ffff">elfeed-show</span>
+    [<span style="color:#40ffff">remap</span> <span style="color:#40ffff">kill-this-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
+    [<span style="color:#40ffff">remap</span> <span style="color:#447fcf">kill-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
+    <span style="color:#24909d">:n</span> <span style="color:#40ffff">doom-leader-key</span> <span style="color:#40ffff">nil</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;q&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">+rss/delete-pane</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;a&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-elfeed-entry-add-link</span>
+    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;B&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-eww-open</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;o&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">ace-link-elfeed</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;RET&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">org-ref-elfeed-add</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;n&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-next</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;N&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-prev</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;p&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-pdf</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;+&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-tag</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;-&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-untag</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;s&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-new-live-search</span>
+    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-yank</span>)
+</code></pre></div><p>Whenever I press <strong>a</strong> in an <code>elfeed</code> related buffer the entries link will be added to getpocket.</p>
+<h2 id="bookmarks">Bookmarks</h2>
+<p>I use <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Bookmarks.html">bookmarks</a> to specify elfeed filters. This allows me to quickly jump to a certain view without
+having to change the filter in-between:</p>
+
+    
+
+
+<a href="/posts/img/2022/rss/bookmarks.png" class="glightbox" data-glightbox="title:Bookmarks for managing predefined filters; description: I use bookmarks to have a list of predefined elfeed filters.; descPosition: left">
+    <img src="/posts/img/2022/rss/bookmarks.png" alt="image">
+</a>
+
+<h2 id="podcasts">Podcasts</h2>
+<p>As already described <a href="/2022/06/13/rss-and-atom-for-digital-minimalists/#podcasts">here</a> I use RSS/Atom feed to regularly check for new podcast episodes. Here&rsquo;s my workflow:</p>
+
+    
+
+
+<a href="/posts/img/2022/rss/elfeed-podcasts.gif" class="glightbox" data-glightbox="title:Managing podcasts in elfeed; description: I use tags (e.g. 2listen) to mark episodes I&#39;d like to put into my todo/to-listen queue; descPosition: left">
+    <img src="/posts/img/2022/rss/elfeed-podcasts.gif" alt="image">
+</a>
+
+]]></content:encoded>
+    </item>
+    
+    <item>
       <title>RSS and Atom for digital minimalists</title>
       <link>https://blog.dornea.nu/2022/06/13/rss-and-atom-for-digital-minimalists/</link>
       <pubDate>Mon, 13 Jun 2022 07:00:00 +0200</pubDate>

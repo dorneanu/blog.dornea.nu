@@ -13,6 +13,140 @@
     
     
     <item>
+      <title>RSS/Atom, Emacs and elfeed</title>
+      <link>https://blog.dornea.nu/2022/06/29/rss/atom-emacs-and-elfeed/</link>
+      <pubDate>Wed, 29 Jun 2022 21:04:00 +0200</pubDate>
+      
+      <guid>https://blog.dornea.nu/2022/06/29/rss/atom-emacs-and-elfeed/</guid>
+      <description>&lt;p&gt;In &lt;a href=&#34;https://blog.dornea.nu/2022/06/13/rss-and-atom-for-digital-minimalists/&#34;&gt;my last post&lt;/a&gt; I wrote about RSS/Atom and how these technologies can be used
+to declutter your digital life and reduce your exposure to the attention
+economy. &lt;a href=&#34;https://blog.dornea.nu/tags/emacs&#34;&gt;Emacs&lt;/a&gt; (and all the amazing packages) taught me &lt;a href=&#34;https://orgmode.org&#34;&gt;ORG mode&lt;/a&gt;, some basic &lt;a href=&#34;https://www.gnu.org/software/emacs/manual/html_node/elisp/&#34;&gt;Elisp&lt;/a&gt;
+and how to be a minimalist and use just one tool for almost everything.&lt;/p&gt;
+&lt;p&gt;Staying up-to-date with current technological trends, Security advisories, blog
+posts from smart people (and many other things) while not having to subscribe to every
+single newsletter, led me to &lt;a href=&#34;https://github.com/skeeto/elfeed&#34;&gt;elfeed&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Elfeed is an extensible web feed reader for Emacs, supporting both Atom and RSS. - &lt;a href=&#34;https://github.com/skeeto/elfeed&#34;&gt;Source&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;configuration&#34;&gt;Configuration&lt;/h2&gt;
+
+
+
+&lt;blockquote class=&#34;notice info&#34;&gt;
+  My elfeed related configuration is available in &lt;a href=&#34;https://github.com/dorneanu/dotfiles/blob/master/dot_doom.d/config.org#elfeed&#34;&gt;config.org&lt;/a&gt;.
+&lt;/blockquote&gt;
+
+&lt;p&gt;Usually you would organize your feed entries as a list:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-emacs-lisp&#34; data-lang=&#34;emacs-lisp&#34;&gt;&lt;span style=&#34;color:#999;font-style:italic&#34;&gt;;; Somewhere in your .emacs file&lt;/span&gt;
+(&lt;span style=&#34;color:#24909d&#34;&gt;setq&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-feeds&lt;/span&gt;
+      &amp;#39;(&lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;http://nullprogram.com/feed/&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;https://planet.emacslife.com/atom.xml&amp;#34;&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I didn&amp;rsquo;t like this approach since the initial list was way to big to be managed.
+Then I came across &lt;a href=&#34;https://github.com/remyhonig/elfeed-org&#34;&gt;elfeed-org&lt;/a&gt; which lets you organize your feeds in an ORG file.&lt;/p&gt;
+
+    
+
+
+&lt;a href=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-org.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:elfeed entries; description: I have my bookmarks/feeds structured in ORG mode and each category/item is tagged accordingly.; descPosition: left&#34;&gt;
+    &lt;img src=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-org.png&#34; alt=&#34;image&#34;&gt;
+&lt;/a&gt;
+
+&lt;h2 id=&#34;workflow&#34;&gt;Workflow&lt;/h2&gt;
+&lt;h3 id=&#34;daily-view&#34;&gt;Daily view&lt;/h3&gt;
+&lt;p&gt;This is what I get whenever I hit &lt;strong&gt;M-x elfeed&lt;/strong&gt;:&lt;/p&gt;
+
+    
+
+
+&lt;a href=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-search.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Daily view in elfeed; description: This is my daily view of RSS entries. Each lines has a timestamp, the feed entry name, a tag list and the corresponding feed entry title.; descPosition: left&#34;&gt;
+    &lt;img src=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-search.png&#34; alt=&#34;image&#34;&gt;
+&lt;/a&gt;
+
+&lt;p&gt;And this is how I actually consume my feeds:&lt;/p&gt;
+
+    
+
+
+&lt;a href=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-search-workflow.gif&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Workflow in elfeed; description: I usually start with a predefined query and then while I go through the list I mark each entry as read. In the right corner (I&amp;#39;ve activated keycast-tab-bar-mode) you&amp;#39;ll also see my keystrokes. ; descPosition: left&#34;&gt;
+    &lt;img src=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-search-workflow.gif&#34; alt=&#34;image&#34;&gt;
+&lt;/a&gt;
+
+&lt;p&gt;I usually start with a predefined filter: &lt;code&gt;@1-week-ago +unread +daily -youtube&lt;/code&gt;. This gives me all entries:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;not older than 1 week AND&lt;/li&gt;
+&lt;li&gt;not yet read AND&lt;/li&gt;
+&lt;li&gt;are tagged by &lt;code&gt;daily&lt;/code&gt; AND&lt;/li&gt;
+&lt;li&gt;are NOT tagged by &lt;code&gt;youtube&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Simple, isn&amp;rsquo;t it? :) In the gif you can see that I change the filter to also show the entries marked by &lt;code&gt;read&lt;/code&gt;.
+Whenever I want to actually visit an entry link, I press &lt;strong&gt;RET&lt;/strong&gt; to get the excerpt or &lt;strong&gt;b&lt;/strong&gt; to open that specific link
+in an external browser (or &lt;strong&gt;B&lt;/strong&gt; to open it in an &lt;code&gt;eww&lt;/code&gt; buffer).&lt;/p&gt;
+&lt;h2 id=&#34;getpocket-integration&#34;&gt;getpocket integration&lt;/h2&gt;
+&lt;p&gt;If you&amp;rsquo;ve read my getpocket article last year, you know I use &lt;a href=&#34;https://getpocket.com&#34;&gt;getpocket.com&lt;/a&gt; to save links/articles to read later. In &lt;code&gt;elfeed&lt;/code&gt; I
+can easily add a link to getpocket (thanks to &lt;a href=&#34;https://github.com/alphapapa/pocket-reader.el&#34;&gt;pocket-reader.el&lt;/a&gt;). I use these &lt;a href=&#34;https://github.com/dorneanu/dotfiles/blob/master/dot_doom.d/config.org#elfeed&#34;&gt;key bindings&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-emacs-lisp&#34; data-lang=&#34;emacs-lisp&#34;&gt;&lt;span style=&#34;color:#999;font-style:italic&#34;&gt;;; Define maps&lt;/span&gt;
+(&lt;span style=&#34;color:#40ffff&#34;&gt;map!&lt;/span&gt; &lt;span style=&#34;color:#24909d&#34;&gt;:map&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-mode-map&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:after&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search&lt;/span&gt;
+    [&lt;span style=&#34;color:#40ffff&#34;&gt;remap&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;kill-this-buffer&lt;/span&gt;] &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;q&amp;#34;&lt;/span&gt;
+    [&lt;span style=&#34;color:#40ffff&#34;&gt;remap&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;kill-buffer&lt;/span&gt;] &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;q&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;doom-leader-key&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;nil&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;q&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;+rss/quit&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-update&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-untag-all-unread&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;u&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-tag-all-unread&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;s&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-live-filter&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;RET&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-show-entry&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;p&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-pdf&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;+&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-tag-all&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;-&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-untag-all&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;S&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-set-filter&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-browse-url&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;B&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-eww-open&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;pocket-reader-elfeed-search-add-link&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-search-yank&lt;/span&gt;)
+(&lt;span style=&#34;color:#40ffff&#34;&gt;map!&lt;/span&gt; &lt;span style=&#34;color:#24909d&#34;&gt;:map&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-mode-map&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:after&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show&lt;/span&gt;
+    [&lt;span style=&#34;color:#40ffff&#34;&gt;remap&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;kill-this-buffer&lt;/span&gt;] &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;q&amp;#34;&lt;/span&gt;
+    [&lt;span style=&#34;color:#40ffff&#34;&gt;remap&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;kill-buffer&lt;/span&gt;] &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;q&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;doom-leader-key&lt;/span&gt; &lt;span style=&#34;color:#40ffff&#34;&gt;nil&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;q&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;+rss/delete-pane&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;pocket-reader-elfeed-entry-add-link&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:n&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;B&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-eww-open&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;o&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;ace-link-elfeed&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;RET&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;org-ref-elfeed-add&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;n&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-next&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;N&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-prev&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;p&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-pdf&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;+&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-tag&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;-&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-untag&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;s&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-new-live-search&lt;/span&gt;
+    &lt;span style=&#34;color:#24909d&#34;&gt;:nm&lt;/span&gt; &lt;span style=&#34;color:#ed9d13&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#447fcf&#34;&gt;#&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#40ffff&#34;&gt;elfeed-show-yank&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Whenever I press &lt;strong&gt;a&lt;/strong&gt; in an &lt;code&gt;elfeed&lt;/code&gt; related buffer the entries link will be added to getpocket.&lt;/p&gt;
+&lt;h2 id=&#34;bookmarks&#34;&gt;Bookmarks&lt;/h2&gt;
+&lt;p&gt;I use &lt;a href=&#34;https://www.gnu.org/software/emacs/manual/html_node/emacs/Bookmarks.html&#34;&gt;bookmarks&lt;/a&gt; to specify elfeed filters. This allows me to quickly jump to a certain view without
+having to change the filter in-between:&lt;/p&gt;
+
+    
+
+
+&lt;a href=&#34;https://blog.dornea.nu/posts/img/2022/rss/bookmarks.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Bookmarks for managing predefined filters; description: I use bookmarks to have a list of predefined elfeed filters.; descPosition: left&#34;&gt;
+    &lt;img src=&#34;https://blog.dornea.nu/posts/img/2022/rss/bookmarks.png&#34; alt=&#34;image&#34;&gt;
+&lt;/a&gt;
+
+&lt;h2 id=&#34;podcasts&#34;&gt;Podcasts&lt;/h2&gt;
+&lt;p&gt;As already described &lt;a href=&#34;https://blog.dornea.nu/2022/06/13/rss-and-atom-for-digital-minimalists/#podcasts&#34;&gt;here&lt;/a&gt; I use RSS/Atom feed to regularly check for new podcast episodes. Here&amp;rsquo;s my workflow:&lt;/p&gt;
+
+    
+
+
+&lt;a href=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-podcasts.gif&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Managing podcasts in elfeed; description: I use tags (e.g. 2listen) to mark episodes I&amp;#39;d like to put into my todo/to-listen queue; descPosition: left&#34;&gt;
+    &lt;img src=&#34;https://blog.dornea.nu/posts/img/2022/rss/elfeed-podcasts.gif&#34; alt=&#34;image&#34;&gt;
+&lt;/a&gt;
+
+</description>
+    </item>
+    
+    <item>
       <title>RSS and Atom for digital minimalists</title>
       <link>https://blog.dornea.nu/2022/06/13/rss-and-atom-for-digital-minimalists/</link>
       <pubDate>Mon, 13 Jun 2022 07:00:00 +0200</pubDate>
