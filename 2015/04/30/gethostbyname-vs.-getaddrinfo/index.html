@@ -41,6 +41,7 @@ The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are 
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,9 +86,18 @@ type="image/x-icon"/>
     <time>30 Apr 2015</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/c' class="link silver">c</a> <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>After started coding in C <a href="http://blog.dornea.nu/2015/04/21/coming-back-to-cc-after-2-years">again</a> I&rsquo;ve had a look
 at some basic network stuff like: <strong>socket()</strong>, <strong>connect()</strong> etc. In order to resolve domain names, one was used to
@@ -100,32 +110,78 @@ Applications should use getaddrinfo(3), getnameinfo(3), and gai_strerror(3) inst
 the results into a <em>struct sockaddr_in</em>  and use it for your futher calls. A better option is <strong>getaddrinfo()</strong> which
 supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. Perfect!</p>
 <p>So what do you need? First you&rsquo;ll need some variables:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">int</span> status;
-<span style="color:#6ab825;font-weight:bold">char</span> ip_addr[INET6_ADDRSTRLEN];
-<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in *remote;
-<span style="color:#6ab825;font-weight:bold">struct</span> addrinfo hints, *res, *p;
-</code></pre></div><p>And then the call:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">if</span> ((status=getaddrinfo(server_hostname, port, &amp;hints, &amp;res)) != <span style="color:#3677a9">0</span>) {
-    log_err(<span style="color:#ed9d13">&#34;getaddrinfo failed: %s&#34;</span>, gai_strerror(status));
-    <span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
-}
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">status</span><span class="p">;</span>
+<span class="kt">char</span> <span class="n">ip_addr</span><span class="p">[</span><span class="n">INET6_ADDRSTRLEN</span><span class="p">];</span>
+<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="n">remote</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span><span class="p">,</span> <span class="o">*</span><span class="n">res</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>And then the call:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">((</span><span class="n">status</span><span class="o">=</span><span class="n">getaddrinfo</span><span class="p">(</span><span class="n">server_hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">res</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">log_err</span><span class="p">(</span><span class="s">&#34;getaddrinfo failed: %s&#34;</span><span class="p">,</span> <span class="n">gai_strerror</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
 
-</code></pre></div><p><code>res</code> is a linked list which has to be looped to fetch the results:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">while</span> (p = res; p != <span style="color:#24909d">NULL</span>; p = p-&gt;ai_next) {
-    <span style="color:#6ab825;font-weight:bold">void</span> *addr;
-    remote = (<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in *)p-&gt;ai_addr;
-    addr = &amp;(remote-&gt;sin_addr);
+</code></pre></td></tr></table>
+</div>
+</div><p><code>res</code> is a linked list which has to be looped to fetch the results:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">while</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">res</span><span class="p">;</span> <span class="n">p</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_next</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">;</span>
+    <span class="n">remote</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">;</span>
+    <span class="n">addr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">remote</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">);</span>
 
-    <span style="color:#999;font-style:italic">// Convert IP to string
-</span><span style="color:#999;font-style:italic"></span>    inet_ntop(p-&gt;ai_family, addr, ip_addr, <span style="color:#6ab825;font-weight:bold">sizeof</span>(ip_addr));
+    <span class="c1">// Convert IP to string
+</span><span class="c1"></span>    <span class="n">inet_ntop</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">));</span>
 
-    printf(<span style="color:#ed9d13">&#34;%s</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, ip_addr);
-}
-</code></pre></div><p>Now you could create your socket, connect to the host, read data and so on:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6ab825;font-weight:bold">if</span> ((socketfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol)) &lt; <span style="color:#3677a9">0</span>) {
-    log_err(<span style="color:#ed9d13">&#34;Failed creating socket!&#34;</span>);
-    <span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
-</code></pre></div></div>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now you could create your socket, connect to the host, read data and so on:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">((</span><span class="n">socketfd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_socktype</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_protocol</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">log_err</span><span class="p">(</span><span class="s">&#34;Failed creating socket!&#34;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div></div>
   <div id="comments">
       
 <div id="disqus_thread"></div>

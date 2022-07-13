@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="Continuing my CCNA journey I&rsquo;d like to address inter VLAN switching in a more detailed way. In this post I&rsquo;ll configure my previous topology to use VTP and let STP prevent frame looping and other &ldquo;anomalies&rdquo; on Layer 2.
-Updated network topology %%blockdiag # &lt;!-- collapse=True --&gt; diagram admin {↔ PC1 [shape = &#34;cisco.pc&#34;]; PC2 [shape = &#34;cisco.pc&#34;]; PC3 [shape = &#34;cisco.pc&#34;]; PC4 [shape = &#34;cisco.pc&#34;]; PC5 [shape = &#34;cisco.pc&#34;]; PC6 [shape = &#34;cisco." />
+Updated network topology 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37  %%blockdiag # &lt;!" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2015/11/06/advanced-inter-vlan-switching-using-cisco/" />
 
@@ -41,6 +41,7 @@ Updated network topology %%blockdiag # &lt;!-- collapse=True --&gt; diagram admi
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,50 +86,102 @@ type="image/x-icon"/>
     <time>06 Nov 2015</time> 
      | 
     
+
+    
+     ~
+  
+
+15 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/cisco' class="link silver">cisco</a> <a href='https://blog.dornea.nu/tags/ccna' class="link silver">ccna</a> <a href='https://blog.dornea.nu/tags/layer-2' class="link silver">layer 2</a> <a href='https://blog.dornea.nu/tags/switch' class="link silver">switch</a> <a href='https://blog.dornea.nu/tags/vlan' class="link silver">vlan</a> <a href='https://blog.dornea.nu/tags/vtp' class="link silver">vtp</a> <a href='https://blog.dornea.nu/tags/stp' class="link silver">stp</a> <a href='https://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Continuing my <a href="http://blog.dornea.nu/tag/ccna/">CCNA</a> journey I&rsquo;d like to address <em>inter VLAN switching</em> in a more detailed way. In this post I&rsquo;ll configure my <a href="http://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/">previous topology</a> to use <strong>VTP</strong> and let <strong>STP</strong> prevent <em>frame looping</em> and other &ldquo;anomalies&rdquo; on <em>Layer 2</em>.</p>
 <h2 id="updated-network-topology">Updated network topology</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">blockdiag</span>
+<span class="c1"># &lt;!-- collapse=True --&gt;</span>
+<span class="n">diagram</span> <span class="n">admin</span> <span class="p">{</span><span class="err">↔</span>
 
-    PC1 [shape = <span style="color:#ed9d13">&#34;cisco.pc&#34;</span>];
-    PC2 [shape = <span style="color:#ed9d13">&#34;cisco.pc&#34;</span>];
-    PC3 [shape = <span style="color:#ed9d13">&#34;cisco.pc&#34;</span>];
-    PC4 [shape = <span style="color:#ed9d13">&#34;cisco.pc&#34;</span>];
-    PC5 [shape = <span style="color:#ed9d13">&#34;cisco.pc&#34;</span>];
-    PC6 [shape = <span style="color:#ed9d13">&#34;cisco.pc&#34;</span>];
+    <span class="n">PC1</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="s2">&#34;cisco.pc&#34;</span><span class="p">];</span>
+    <span class="n">PC2</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="s2">&#34;cisco.pc&#34;</span><span class="p">];</span>
+    <span class="n">PC3</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="s2">&#34;cisco.pc&#34;</span><span class="p">];</span>
+    <span class="n">PC4</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="s2">&#34;cisco.pc&#34;</span><span class="p">];</span>
+    <span class="n">PC5</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="s2">&#34;cisco.pc&#34;</span><span class="p">];</span>
+    <span class="n">PC6</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="s2">&#34;cisco.pc&#34;</span><span class="p">];</span>
 
-    SW4 &lt;-&gt; SW1, SW2, SW3 [color = <span style="color:#ed9d13">&#34;red&#34;</span>, style=<span style="color:#ed9d13">&#34;dotted&#34;</span>];
-    SW1 &lt;-&gt; SW2 [folded];
-    SW2 &lt;-&gt; SW3 [folded];
+    <span class="n">SW4</span> <span class="o">&lt;-&gt;</span> <span class="n">SW1</span><span class="p">,</span> <span class="n">SW2</span><span class="p">,</span> <span class="n">SW3</span> <span class="p">[</span><span class="n">color</span> <span class="o">=</span> <span class="s2">&#34;red&#34;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&#34;dotted&#34;</span><span class="p">];</span>
+    <span class="n">SW1</span> <span class="o">&lt;-&gt;</span> <span class="n">SW2</span> <span class="p">[</span><span class="n">folded</span><span class="p">];</span>
+    <span class="n">SW2</span> <span class="o">&lt;-&gt;</span> <span class="n">SW3</span> <span class="p">[</span><span class="n">folded</span><span class="p">];</span>
     
     
-    group {
-        label = <span style="color:#ed9d13">&#34;VLAN 10&#34;</span>;
-        color = <span style="color:#ed9d13">&#34;#FFF&#34;</span>;
-        SW1 &lt;-&gt; PC1;
-        SW1 &lt;-&gt; PC2;
-    }
+    <span class="n">group</span> <span class="p">{</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;VLAN 10&#34;</span><span class="p">;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&#34;#FFF&#34;</span><span class="p">;</span>
+        <span class="n">SW1</span> <span class="o">&lt;-&gt;</span> <span class="n">PC1</span><span class="p">;</span>
+        <span class="n">SW1</span> <span class="o">&lt;-&gt;</span> <span class="n">PC2</span><span class="p">;</span>
+    <span class="p">}</span>
     
-    group {
-        label = <span style="color:#ed9d13">&#34;VLAN 20&#34;</span>;
-        color = <span style="color:#ed9d13">&#34;#FFF&#34;</span>;
-        SW2 &lt;-&gt; PC3;
-        SW2 &lt;-&gt; PC4;
-    }
+    <span class="n">group</span> <span class="p">{</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;VLAN 20&#34;</span><span class="p">;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&#34;#FFF&#34;</span><span class="p">;</span>
+        <span class="n">SW2</span> <span class="o">&lt;-&gt;</span> <span class="n">PC3</span><span class="p">;</span>
+        <span class="n">SW2</span> <span class="o">&lt;-&gt;</span> <span class="n">PC4</span><span class="p">;</span>
+    <span class="p">}</span>
     
-    group {
-        label = <span style="color:#ed9d13">&#34;VLAN 10 + VLAN 20&#34;</span>;
-        color = <span style="color:#ed9d13">&#34;#FFF&#34;</span>;
-        SW3 &lt;-&gt; PC5;
-        SW3 &lt;-&gt; PC6;
-    }
-}
-</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_2_0.png" alt="png"></p>
+    <span class="n">group</span> <span class="p">{</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;VLAN 10 + VLAN 20&#34;</span><span class="p">;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&#34;#FFF&#34;</span><span class="p">;</span>
+        <span class="n">SW3</span> <span class="o">&lt;-&gt;</span> <span class="n">PC5</span><span class="p">;</span>
+        <span class="n">SW3</span> <span class="o">&lt;-&gt;</span> <span class="n">PC6</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_2_0.png" alt="png"></p>
 <p>The new added component <code>SW4</code> is connected to all other switches (red lines). Since a new switch has been added we&rsquo;ll have to add the existing <strong>VLANs</strong> to the corresponding interfaces as well. But this time I <strong>won&rsquo;t</strong> configure the ports manually. Instead I&rsquo;ll use a Cisco proprietary protocol called <code>VTP</code> to exchange information about VLAN accross all available switches. So called <code>VTP</code> advertisements can be sent over <code>ISL</code> or <code>802.1Q</code> (dot1q). Now let&rsquo;s have a look at the process of adding <code>VTP</code> to the existing infrastructure.</p>
 <h2 id="vlan-trunking-protocol">VLAN Trunking Protocol</h2>
 <p><code>VTP</code> has 3 operation modes:</p>
@@ -162,26 +215,58 @@ diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
 <li>all <strong>others</strong> switches in <strong>client</strong> mode</li>
 </ul>
 <h3 id="configure-sw1">Configure SW1</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1&gt;enable
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW1&gt;enable
 Password: 
 SW1#conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
-SW1(config)<span style="color:#999;font-style:italic">#vtp mode server</span>
+SW1<span class="o">(</span>config<span class="o">)</span><span class="c1">#vtp mode server</span>
 Device mode already VTP SERVER.
 
-SW1(config)<span style="color:#999;font-style:italic">#vtp domain ccna-lab</span>
+SW1<span class="o">(</span>config<span class="o">)</span><span class="c1">#vtp domain ccna-lab</span>
 Changing VTP domain name from NULL to ccna-lab
 
-SW1(config)<span style="color:#999;font-style:italic">#vtp password ccna</span>
+SW1<span class="o">(</span>config<span class="o">)</span><span class="c1">#vtp password ccna</span>
 Setting device VLAN database password to ccna
 
-SW1(config)<span style="color:#999;font-style:italic">#vtp version 2</span>
+SW1<span class="o">(</span>config<span class="o">)</span><span class="c1">#vtp version 2</span>
 
-SW1(config)<span style="color:#999;font-style:italic">#do show vtp status</span>
-VTP Version                     : <span style="color:#3677a9">2</span>
-Configuration Revision          : <span style="color:#3677a9">6</span>
-Maximum VLANs supported locally : <span style="color:#3677a9">255</span>
-Number of existing VLANs        : <span style="color:#3677a9">8</span>
+SW1<span class="o">(</span>config<span class="o">)</span><span class="c1">#do show vtp status</span>
+VTP Version                     : <span class="m">2</span>
+Configuration Revision          : <span class="m">6</span>
+Maximum VLANs supported locally : <span class="m">255</span>
+Number of existing VLANs        : <span class="m">8</span>
 VTP Operating Mode              : Server
 VTP Domain Name                 : ccna-lab
 VTP Pruning Mode                : Disabled
@@ -189,25 +274,54 @@ VTP V2 Mode                     : Disabled
 VTP Traps Generation            : Disabled
 MD5 digest                      : 0x8D 0xCD 0x81 0x32 0xF5 0xBA 0x71 0x33 
 Configuration last modified by 0.0.0.0 at 3-1-93 01:14:24
-Local updater ID is 30.30.30.1 on interface Vl30 (lowest numbered VLAN interface found)
-</code></pre></div><h3 id="configure-vtp-clients">Configure VTP clients</h3>
+Local updater ID is 30.30.30.1 on interface Vl30 <span class="o">(</span>lowest numbered VLAN interface found<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="configure-vtp-clients">Configure VTP clients</h3>
 <p>The configuration of the remaining switches is pretty straight-forward. Let&rsquo;s have a look at an example (in this case <code>SW2</code>):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#conf t
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW2#conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
-SW2(config)<span style="color:#999;font-style:italic">#vtp domain ccna-lab</span>
-Domain name already <span style="color:#24909d">set</span> to ccna-lab.
+SW2<span class="o">(</span>config<span class="o">)</span><span class="c1">#vtp domain ccna-lab</span>
+Domain name already <span class="nb">set</span> to ccna-lab.
 
-SW2(config)<span style="color:#999;font-style:italic">#vtp pass ccna</span>
+SW2<span class="o">(</span>config<span class="o">)</span><span class="c1">#vtp pass ccna</span>
 Setting device VLAN database password to ccna
 
-SW2(config)<span style="color:#999;font-style:italic">#vtp mode client</span>
+SW2<span class="o">(</span>config<span class="o">)</span><span class="c1">#vtp mode client</span>
 Setting device to VTP CLIENT mode.
 
-SW2(config)<span style="color:#999;font-style:italic">#do show vtp status</span>
-VTP Version                     : <span style="color:#3677a9">2</span>
-Configuration Revision          : <span style="color:#3677a9">7</span>
-Maximum VLANs supported locally : <span style="color:#3677a9">255</span>
-Number of existing VLANs        : <span style="color:#3677a9">8</span>
+SW2<span class="o">(</span>config<span class="o">)</span><span class="c1">#do show vtp status</span>
+VTP Version                     : <span class="m">2</span>
+Configuration Revision          : <span class="m">7</span>
+Maximum VLANs supported locally : <span class="m">255</span>
+Number of existing VLANs        : <span class="m">8</span>
 VTP Operating Mode              : Client
 VTP Domain Name                 : ccna-lab
 VTP Pruning Mode                : Disabled
@@ -215,62 +329,145 @@ VTP V2 Mode                     : Disabled
 VTP Traps Generation            : Disabled
 MD5 digest                      : 0xD4 0x40 0x89 0x49 0x1A 0x6E 0x7A 0xBE 
 Configuration last modified by 30.30.30.1 at 3-1-93 01:04:21
-</code></pre></div><h3 id="testing-setup">Testing setup</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="testing-setup">Testing setup</h3>
 <p>In order to test the configuration I&rsquo;ll add <strong>VLAN 40</strong> (Testing) on <code>SW1</code> and check if that gets advertised:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1(config)<span style="color:#999;font-style:italic">#vlan 40</span>
-SW1(config-vlan)<span style="color:#999;font-style:italic">#name Testing</span>
-</code></pre></div><p>Right after we verify if the clients got the VTP advertisements:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh vlan brief
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW1<span class="o">(</span>config<span class="o">)</span><span class="c1">#vlan 40</span>
+SW1<span class="o">(</span>config-vlan<span class="o">)</span><span class="c1">#name Testing</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Right after we verify if the clients got the VTP advertisements:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4#sh vlan brief
 
 VLAN Name                             Status    Ports
 ...  
-<span style="color:#3677a9">40</span>   Testing                          active    
+<span class="m">40</span>   Testing                          active    
 ...
-</code></pre></div><p>If I again delete <strong>VLAN 40</strong> from <code>SW1</code> then the clients should delete it as well:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1(config)<span style="color:#999;font-style:italic">#no vlan 40</span>
-</code></pre></div><p>And now test it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh vlan brief
+</code></pre></td></tr></table>
+</div>
+</div><p>If I again delete <strong>VLAN 40</strong> from <code>SW1</code> then the clients should delete it as well:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW1<span class="o">(</span>config<span class="o">)</span><span class="c1">#no vlan 40</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>And now test it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW2#sh vlan brief
 
 VLAN Name                             Status    Ports
 ---- -------------------------------- --------- -------------------------------
-<span style="color:#3677a9">1</span>    default                          active    Fa0/6, Fa0/7, Fa0/8, Fa0/9
+<span class="m">1</span>    default                          active    Fa0/6, Fa0/7, Fa0/8, Fa0/9
                                                 Fa0/10, Fa0/11, Fa0/12, Fa0/13
                                                 Fa0/14, Fa0/15, Fa0/16, Fa0/17
                                                 Fa0/18, Fa0/19, Fa0/20, Fa0/21
                                                 Fa0/22, Fa0/23, Fa0/24, Gig0/1
                                                 Gig0/2
-<span style="color:#3677a9">10</span>   Students                         active    
-<span style="color:#3677a9">20</span>   Teachers                         active    Fa0/3, Fa0/4
-<span style="color:#3677a9">30</span>   Management                       active    
-<span style="color:#3677a9">1002</span> fddi-default                     active    
-<span style="color:#3677a9">1003</span> token-ring-default               active    
-<span style="color:#3677a9">1004</span> fddinet-default                  active    
-<span style="color:#3677a9">1005</span> trnet-default                    active    
-</code></pre></div><h2 id="spanning-tree-protocol">Spanning Tree Protocol</h2>
+<span class="m">10</span>   Students                         active    
+<span class="m">20</span>   Teachers                         active    Fa0/3, Fa0/4
+<span class="m">30</span>   Management                       active    
+<span class="m">1002</span> fddi-default                     active    
+<span class="m">1003</span> token-ring-default               active    
+<span class="m">1004</span> fddinet-default                  active    
+<span class="m">1005</span> trnet-default                    active    
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="spanning-tree-protocol">Spanning Tree Protocol</h2>
 <p>Since we now have to deal with <strong>interconnected</strong> switches and <em>frame looping</em> might be an issue, activating <strong>STP</strong> (Spanning Tree Protocol) will help mitigate the impacts of <em>broadcast storms</em> or <em>multiple frame tranmissions</em>. Cisco devices usually use <strong>Per VLAN Spanning Tree Protocol</strong> (PVST+, PVSTP) which is <em>proprietary</em>. The biggest difference to the &ldquo;normal&rdquo; STP (<strong>802.1D</strong>) is that PVST+ creates a different topology <em>per VLAN</em>. That means you can elect different roots (and thus different topology) for every available VLAN. Let&rsquo;s have a look at the desired topology for <code>VLAN 30</code> (Management):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%blockdiag
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-diagram admin {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">blockdiag</span>
+<span class="c1"># &lt;!-- collapse=True --&gt;</span>
+<span class="n">diagram</span> <span class="n">admin</span> <span class="p">{</span><span class="err">↔</span>
 
 
-    group {
-        label = <span style="color:#ed9d13">&#34;VLAN 30 (Management)&#34;</span>
-        orientation = portrait;
-        color = <span style="color:#ed9d13">&#34;#FFF&#34;</span>
-        SW4 &lt;-&gt; SW1, SW2, SW3;
-        SW1 &lt;-&gt; SW2 [folded];
-        SW2 &lt;-&gt; SW3 [folded];
-    }
-}
-</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_8_0.png" alt="png"></p>
+    <span class="n">group</span> <span class="p">{</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;VLAN 30 (Management)&#34;</span>
+        <span class="n">orientation</span> <span class="o">=</span> <span class="n">portrait</span><span class="p">;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&#34;#FFF&#34;</span>
+        <span class="n">SW4</span> <span class="o">&lt;-&gt;</span> <span class="n">SW1</span><span class="p">,</span> <span class="n">SW2</span><span class="p">,</span> <span class="n">SW3</span><span class="p">;</span>
+        <span class="n">SW1</span> <span class="o">&lt;-&gt;</span> <span class="n">SW2</span> <span class="p">[</span><span class="n">folded</span><span class="p">];</span>
+        <span class="n">SW2</span> <span class="o">&lt;-&gt;</span> <span class="n">SW3</span> <span class="p">[</span><span class="n">folded</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_8_0.png" alt="png"></p>
 <h3 id="roots-election">Root(s) election</h3>
 <p>In terms of <strong>STP</strong> <code>SW4</code> will be the <strong>p</strong>rimary (p) and <code>SW2</code> the <strong>s</strong>econdary (s) root. Let&rsquo;s configure <code>Sw4</code> and <code>Sw2</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">! SW4 configuration
-SW4(config)<span style="color:#999;font-style:italic">#spanning-tree vlan 30 root primary</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">! SW4 configuration
+SW4<span class="o">(</span>config<span class="o">)</span><span class="c1">#spanning-tree vlan 30 root primary</span>
 
 ! SW2 configuration
-SW2(config)<span style="color:#999;font-style:italic">#spanning-tree vlan 30 root secondary</span>
-</code></pre></div><p>And now let&rsquo;s have a look at the <strong>port connectivity</strong> matrix:</p>
+SW2<span class="o">(</span>config<span class="o">)</span><span class="c1">#spanning-tree vlan 30 root secondary</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>And now let&rsquo;s have a look at the <strong>port connectivity</strong> matrix:</p>
 <table cellpadding="0" cellspacing="0" width="100%" border="0">
   <tr>
     <th> </th>
@@ -314,26 +511,51 @@ SW2(config)<span style="color:#999;font-style:italic">#spanning-tree vlan 30 roo
 <ul>
 <li><code>SW2</code> (secondary root)</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span style="color:#3677a9">30</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span class="m">30</span>
 VLAN0030
   Spanning tree enabled protocol ieee
-  Root ID    Priority    <span style="color:#3677a9">20510</span>
+  Root ID    Priority    <span class="m">20510</span>
              Address     00E0.F96C.2E07
-             Cost        <span style="color:#3677a9">19</span>
-             Port        5(FastEthernet0/5)
-             Hello Time  <span style="color:#3677a9">2</span> sec  Max Age <span style="color:#3677a9">20</span> sec  Forward Delay <span style="color:#3677a9">15</span> sec
+             Cost        <span class="m">19</span>
+             Port        5<span class="o">(</span>FastEthernet0/5<span class="o">)</span>
+             Hello Time  <span class="m">2</span> sec  Max Age <span class="m">20</span> sec  Forward Delay <span class="m">15</span> sec
 
-  Bridge ID  Priority    <span style="color:#3677a9">28702</span>  (priority <span style="color:#3677a9">28672</span> sys-id-ext 30)
+  Bridge ID  Priority    <span class="m">28702</span>  <span class="o">(</span>priority <span class="m">28672</span> sys-id-ext 30<span class="o">)</span>
              Address     0030.F222.3EE5
-             Hello Time  <span style="color:#3677a9">2</span> sec  Max Age <span style="color:#3677a9">20</span> sec  Forward Delay <span style="color:#3677a9">15</span> sec
-             Aging Time  <span style="color:#3677a9">20</span>
+             Hello Time  <span class="m">2</span> sec  Max Age <span class="m">20</span> sec  Forward Delay <span class="m">15</span> sec
+             Aging Time  <span class="m">20</span>
 
 Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
-Fa0/1            Desg FWD <span style="color:#3677a9">19</span>        128.1    P2p
-Fa0/2            Altn BLK <span style="color:#3677a9">19</span>        128.2    P2p
-Fa0/5            Root FWD <span style="color:#3677a9">19</span>        128.5    P2p
-</code></pre></div><p>We can notice that:</p>
+Fa0/1            Desg FWD <span class="m">19</span>        128.1    P2p
+Fa0/2            Altn BLK <span class="m">19</span>        128.2    P2p
+Fa0/5            Root FWD <span class="m">19</span>        128.5    P2p
+</code></pre></td></tr></table>
+</div>
+</div><p>We can notice that:</p>
 <ol>
 <li>The root has a MAC address of <code>00E0.F96C.2E07</code></li>
 <li><code>FastEthernet 0/5</code> is the <strong>root port</strong> with a <strong>cost</strong> of 19 and is in <strong>forwarding</strong> state</li>
@@ -343,25 +565,49 @@ Fa0/5            Root FWD <span style="color:#3677a9">19</span>        128.5    
 <ul>
 <li><code>SW4</code> (primary root)</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span style="color:#3677a9">30</span> 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span class="m">30</span> 
 VLAN0030
   Spanning tree enabled protocol ieee
-  Root ID    Priority    <span style="color:#3677a9">20510</span>
+  Root ID    Priority    <span class="m">20510</span>
              Address     00E0.F96C.2E07
              This bridge is the root
-             Hello Time  <span style="color:#3677a9">2</span> sec  Max Age <span style="color:#3677a9">20</span> sec  Forward Delay <span style="color:#3677a9">15</span> sec
+             Hello Time  <span class="m">2</span> sec  Max Age <span class="m">20</span> sec  Forward Delay <span class="m">15</span> sec
 
-  Bridge ID  Priority    <span style="color:#3677a9">20510</span>  (priority <span style="color:#3677a9">20480</span> sys-id-ext 30)
+  Bridge ID  Priority    <span class="m">20510</span>  <span class="o">(</span>priority <span class="m">20480</span> sys-id-ext 30<span class="o">)</span>
              Address     00E0.F96C.2E07
-             Hello Time  <span style="color:#3677a9">2</span> sec  Max Age <span style="color:#3677a9">20</span> sec  Forward Delay <span style="color:#3677a9">15</span> sec
-             Aging Time  <span style="color:#3677a9">20</span>
+             Hello Time  <span class="m">2</span> sec  Max Age <span class="m">20</span> sec  Forward Delay <span class="m">15</span> sec
+             Aging Time  <span class="m">20</span>
 
 Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
-Fa0/1            Desg FWD <span style="color:#3677a9">19</span>        128.1    P2p
-Fa0/3            Desg FWD <span style="color:#3677a9">19</span>        128.3    P2p
-Po1              Desg FWD <span style="color:#3677a9">9</span>         128.27   Shr
-</code></pre></div><p>We can notice that:</p>
+Fa0/1            Desg FWD <span class="m">19</span>        128.1    P2p
+Fa0/3            Desg FWD <span class="m">19</span>        128.3    P2p
+Po1              Desg FWD <span class="m">9</span>         128.27   Shr
+</code></pre></td></tr></table>
+</div>
+</div><p>We can notice that:</p>
 <ol>
 <li>This is indeed the root (<strong>&ldquo;This bridge is the root&rdquo;</strong>)</li>
 <li>All available ports are <strong>designated</strong> and in <strong>forwarding</strong> state (the root has <strong>no</strong> root port)</li>
@@ -369,25 +615,49 @@ Po1              Desg FWD <span style="color:#3677a9">9</span>         128.27   
 <ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span style="color:#3677a9">30</span> 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span class="m">30</span> 
 VLAN0030
   Spanning tree enabled protocol ieee
-  Root ID    Priority    <span style="color:#3677a9">20510</span>
+  Root ID    Priority    <span class="m">20510</span>
              Address     00E0.F96C.2E07
-             Cost        <span style="color:#3677a9">9</span>
-             Port        27(Port-channel 2)
-             Hello Time  <span style="color:#3677a9">2</span> sec  Max Age <span style="color:#3677a9">20</span> sec  Forward Delay <span style="color:#3677a9">15</span> sec
+             Cost        <span class="m">9</span>
+             Port        27<span class="o">(</span>Port-channel 2<span class="o">)</span>
+             Hello Time  <span class="m">2</span> sec  Max Age <span class="m">20</span> sec  Forward Delay <span class="m">15</span> sec
 
-  Bridge ID  Priority    <span style="color:#3677a9">32798</span>  (priority <span style="color:#3677a9">32768</span> sys-id-ext 30)
+  Bridge ID  Priority    <span class="m">32798</span>  <span class="o">(</span>priority <span class="m">32768</span> sys-id-ext 30<span class="o">)</span>
              Address     0003.E481.688D
-             Hello Time  <span style="color:#3677a9">2</span> sec  Max Age <span style="color:#3677a9">20</span> sec  Forward Delay <span style="color:#3677a9">15</span> sec
-             Aging Time  <span style="color:#3677a9">20</span>
+             Hello Time  <span class="m">2</span> sec  Max Age <span class="m">20</span> sec  Forward Delay <span class="m">15</span> sec
+             Aging Time  <span class="m">20</span>
 
 Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
-Fa0/1            Desg FWD <span style="color:#3677a9">19</span>        128.1    P2p
-Po2              Root FWD <span style="color:#3677a9">9</span>         128.27   Shr
-</code></pre></div><p>We can notice that:</p>
+Fa0/1            Desg FWD <span class="m">19</span>        128.1    P2p
+Po2              Root FWD <span class="m">9</span>         128.27   Shr
+</code></pre></td></tr></table>
+</div>
+</div><p>We can notice that:</p>
 <ol>
 <li><code>Po2</code> is the <strong>root port</strong> with a cost of 9 and in <strong>forwarding</strong> state</li>
 <li><code>FastEthernet 0/1</code> is a <strong>designated</strong> port with a cost of 19 and in <strong>forwarding</strong> state</li>
@@ -421,34 +691,72 @@ Po2              Root FWD <span style="color:#3677a9">9</span>         128.27   
 <p>As previosuly mentioned there are 2 port links between <code>SW3</code> and <code>SW4</code>. <strong>EtherChannel</strong> provides a way to prevent convergence (STP) when a single port or cable failure occurs. The switches will treat the EtherChannel as a single interface. The big advantage is that if one of the links fails, STP convergence does not have to occur if at least one of the links is up. Besides that the switches will now have a <strong>load-balancing</strong> effect which will spread the traffic load accross the active links in the (Ether)channel.</p>
 <h4 id="manual-etherchannel">Manual EtherChannel</h4>
 <p>So when using EtherChannels STP will operate on the EtherChannel itself rather than on the individual physical links. STP will then either forward or block traffic on the entire logical EtherChannel for a specific VLAN. Probably the most simple way to activate EtherChannel is to put the physical interfaces into the same <strong>channel-group</strong>. Let&rsquo;s have a look how this is done:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3(config)<span style="color:#999;font-style:italic">#int f0/4</span>
-SW3(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode on</span>
-SW3(config-if)<span style="color:#999;font-style:italic">#</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW3<span class="o">(</span>config<span class="o">)</span><span class="c1">#int f0/4</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 1 mode on</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#</span>
 %LINK-5-CHANGED: Interface Port-channel 1, changed state to up
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Port-channel 1, changed state to up
 
-SW3(config-if)<span style="color:#999;font-style:italic">#int f0/5</span>
-SW3(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode on</span>
-SW3(config-if)<span style="color:#999;font-style:italic">#</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#int f0/5</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 1 mode on</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#</span>
 %LINK-5-CHANGED: Interface Port-channel 2, changed state to down
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Port-channel 2, changed state to down
-</code></pre></div><p>And now for <code>SW4</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int f0/2</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 2 mode on</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>And now for <code>SW4</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4<span class="o">(</span>config<span class="o">)</span><span class="c1">#int f0/2</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 2 mode on</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#</span>
 %LINK-5-CHANGED: Interface Port-channel 2, changed state to up
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Port-channel 2, changed state to up
 
-SW4(config-if)<span style="color:#999;font-style:italic">#int f0/4</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 2 mode on</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#int f0/4</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 2 mode on</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#</span>
 %LINK-5-CHANGED: Interface Port-channel 1, changed state to down
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Port-channel 1, changed state to down
-</code></pre></div><h4 id="dynamically-configured-etherchannel">Dynamically configured EtherChannel</h4>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="dynamically-configured-etherchannel">Dynamically configured EtherChannel</h4>
 <p>If you don&rsquo;t want to manually configure the EtherChannel, one can let the switches <em>negotiate</em> the configuration for it. Cisco switches support</p>
 <ul>
 <li>Cisco proprietary Port Aggregation Protocol (<strong>PAgP</strong>)
@@ -466,77 +774,187 @@ SW4(config-if)<span style="color:#999;font-style:italic">#</span>
 <ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3(config)<span style="color:#999;font-style:italic">#int f0/4</span>
-SW3(config-if)<span style="color:#999;font-style:italic">#channel-group 2 mode desirable</span>
-SW3(config-if)<span style="color:#999;font-style:italic">#int f0/5</span>
-SW3(config-if)<span style="color:#999;font-style:italic">#channel-group 2 mode desirable</span>
-</code></pre></div><ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW3<span class="o">(</span>config<span class="o">)</span><span class="c1">#int f0/4</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 2 mode desirable</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#int f0/5</span>
+SW3<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 2 mode desirable</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li><code>SW4</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int f0/2</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode auto</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#int f0/5</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#channel-group 1 mode auto</span>
-</code></pre></div><h3 id="testing-etherchannel-connectivity">Testing EtherChannel connectivity</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4<span class="o">(</span>config<span class="o">)</span><span class="c1">#int f0/2</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 1 mode auto</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#int f0/5</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 1 mode auto</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="testing-etherchannel-connectivity">Testing EtherChannel connectivity</h3>
 <p>Now let&rsquo;s see of the <em>port channels</em> are working well:</p>
 <ul>
 <li><code>SW4</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh eth sum
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4#sh eth sum
 Flags:  D - down        P - in port-channel
         I - stand-alone s - suspended
-        H - Hot-standby (LACP only)
+        H - Hot-standby <span class="o">(</span>LACP only<span class="o">)</span>
         R - Layer3      S - Layer2
         U - in use      f - failed to allocate aggregator
-        u - unsuitable <span style="color:#6ab825;font-weight:bold">for</span> bundling
+        u - unsuitable <span class="k">for</span> bundling
         w - waiting to be aggregated
         d - default port
 
 
-Number of channel-groups in use: <span style="color:#3677a9">2</span>
-Number of aggregators:           <span style="color:#3677a9">2</span>
+Number of channel-groups in use: <span class="m">2</span>
+Number of aggregators:           <span class="m">2</span>
 
 Group  Port-channel  Protocol    Ports
-------|-------------|-----------|----------------------------------------------
+------<span class="p">|</span>-------------<span class="p">|</span>-----------<span class="p">|</span>----------------------------------------------
 
-<span style="color:#3677a9">1</span>      Po1(SU)           -      Fa0/4(P) Fa0/2(P) 
-<span style="color:#3677a9">2</span>      Po2(SD)           -      
-</code></pre></div><p>As you can see there is a port-channel <code>Po1</code> consisting of <code>Fa0/2</code> and <code>Fa0/4</code>. The port.channel is also working and in use.</p>
+<span class="m">1</span>      Po1<span class="o">(</span>SU<span class="o">)</span>           -      Fa0/4<span class="o">(</span>P<span class="o">)</span> Fa0/2<span class="o">(</span>P<span class="o">)</span> 
+<span class="m">2</span>      Po2<span class="o">(</span>SD<span class="o">)</span>           -      
+</code></pre></td></tr></table>
+</div>
+</div><p>As you can see there is a port-channel <code>Po1</code> consisting of <code>Fa0/2</code> and <code>Fa0/4</code>. The port.channel is also working and in use.</p>
 <ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh eth sum
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW3#sh eth sum
 Flags:  D - down        P - in port-channel
         I - stand-alone s - suspended
-        H - Hot-standby (LACP only)
+        H - Hot-standby <span class="o">(</span>LACP only<span class="o">)</span>
         R - Layer3      S - Layer2
         U - in use      f - failed to allocate aggregator
-        u - unsuitable <span style="color:#6ab825;font-weight:bold">for</span> bundling
+        u - unsuitable <span class="k">for</span> bundling
         w - waiting to be aggregated
         d - default port
 
 
-Number of channel-groups in use: <span style="color:#3677a9">2</span>
-Number of aggregators:           <span style="color:#3677a9">2</span>
+Number of channel-groups in use: <span class="m">2</span>
+Number of aggregators:           <span class="m">2</span>
 
 Group  Port-channel  Protocol    Ports
-------|-------------|-----------|----------------------------------------------
+------<span class="p">|</span>-------------<span class="p">|</span>-----------<span class="p">|</span>----------------------------------------------
 
-<span style="color:#3677a9">1</span>      Po1(SD)           -      
-<span style="color:#3677a9">2</span>      Po2(SU)           -      Fa0/4(P) Fa0/5(P) 
-</code></pre></div><p>Again <code>Po2</code> is a working port-channel and consists of <code>Fa0/4</code> and <code>Fa0/5</code>.
+<span class="m">1</span>      Po1<span class="o">(</span>SD<span class="o">)</span>           -      
+<span class="m">2</span>      Po2<span class="o">(</span>SU<span class="o">)</span>           -      Fa0/4<span class="o">(</span>P<span class="o">)</span> Fa0/5<span class="o">(</span>P<span class="o">)</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>Again <code>Po2</code> is a working port-channel and consists of <code>Fa0/4</code> and <code>Fa0/5</code>.
 You also should have noticed that the ports on each switch belong to different channel groups. You can now treat <code>Po1</code> and <code>Po2</code> as interfaces, bring them up or down. If your port-channel is down, do following:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config)<span style="color:#999;font-style:italic">#int Po1</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#no shutdown </span>
-</code></pre></div><p>You can also add <strong>VLANs</strong> to it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4(config-if)<span style="color:#999;font-style:italic">#switchport mode trunk</span>
-SW4(config-if)<span style="color:#999;font-style:italic">#switchport trunk allowed vlan 10,20,30</span>
-</code></pre></div><p>Afterwards you should be able to verify that:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh int trunk
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4<span class="o">(</span>config<span class="o">)</span><span class="c1">#int Po1</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#no shutdown </span>
+</code></pre></td></tr></table>
+</div>
+</div><p>You can also add <strong>VLANs</strong> to it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#switchport mode trunk</span>
+SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#switchport trunk allowed vlan 10,20,30</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Afterwards you should be able to verify that:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4#sh int trunk
 Port        Mode         Encapsulation  Status        Native vlan
-Fa0/1       on           802.1q         trunking      <span style="color:#3677a9">1</span>
-Fa0/3       on           802.1q         trunking      <span style="color:#3677a9">1</span>
-Po1         on           802.1q         trunking      <span style="color:#3677a9">1</span>
+Fa0/1       on           802.1q         trunking      <span class="m">1</span>
+Fa0/3       on           802.1q         trunking      <span class="m">1</span>
+Po1         on           802.1q         trunking      <span class="m">1</span>
 
 Port        Vlans allowed on trunk
 Fa0/1       10,20,30
@@ -552,7 +970,9 @@ Port        Vlans in spanning tree forwarding state and not pruned
 Fa0/1       10,20,30
 Fa0/3       10,20,30
 Po1         10,20,30
-</code></pre></div><h2 id="troubleshooting">Troubleshooting</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="troubleshooting">Troubleshooting</h2>
 <p>Although this is not a complex topology, adding STP to your switches, might increase the troubleshooting steps needed to localize your problem. In my particular case I was able to ping from <code>PC3</code> to <code>PC6</code>, however <code>PC1</code> wasn&rsquo;t able to reach <code>PC5</code>. After eliminating a list of might-be problems like:</p>
 <ul>
 <li>port security</li>
@@ -562,97 +982,208 @@ Po1         10,20,30
 </ul>
 <p>I was able to nail down the problem using STP related information. Furthermore it turned out that the <strong>EtherChannel</strong> was not working at all, causing certain frames to be dropped without reaching their final destination. So how might one <em>guess</em> how data would be routed based on output from the <code>show</code> commands?</p>
 <p>Let&rsquo;s suppose <code>PC1</code> (10.10.10.101) cannot reach <code>PC5</code> (10.10.10.105). Also keep in mind that both hosts belong to the same <strong>VLAN</strong> (10 = Students). Our simplified topology would look like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;↔</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">dot</span>
+<span class="c1"># &lt;!-- collapse=True --&gt;↔</span>
 
-     SW1 -- SW2 [<span style="color:#24909d">dir</span>=both, label = <span style="color:#ed9d13">&#34;Fa0/1 - Fa0/1&#34;</span>, arrowhead=normal];
-     SW2 -- SW3 [<span style="color:#24909d">dir</span>=both, label = <span style="color:#ed9d13">&#34;Fa0/2 - Fa0/1&#34;</span>, arrowhead=normal];
+     <span class="n">SW1</span> <span class="o">--</span> <span class="n">SW2</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;Fa0/1 - Fa0/1&#34;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">normal</span><span class="p">];</span>
+     <span class="n">SW2</span> <span class="o">--</span> <span class="n">SW3</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;Fa0/2 - Fa0/1&#34;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">normal</span><span class="p">];</span>
 
-     SW4 -- SW1 [<span style="color:#24909d">dir</span>=both, label = <span style="color:#ed9d13">&#34;Fa0/4 - Fa0/1&#34;</span>];
-     SW4 -- SW2 [<span style="color:#24909d">dir</span>=both,label = <span style="color:#ed9d13">&#34;Fa0/3 - Fa0/5&#34;</span>];
-     SW4 -- SW3 [<span style="color:#24909d">dir</span>=both,label = <span style="color:#ed9d13">&#34;Po1 - Po2&#34;</span>, arrowhead=normal];
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW1</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;Fa0/4 - Fa0/1&#34;</span><span class="p">];</span>
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW2</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;Fa0/3 - Fa0/5&#34;</span><span class="p">];</span>
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW3</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;Po1 - Po2&#34;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">normal</span><span class="p">];</span>
     
-     PC1 [label = <span style="color:#ed9d13">&#34;PC1 [.101]&#34;</span>];
-     PC4 [label = <span style="color:#ed9d13">&#34;PC5 [.105]&#34;</span>];
+     <span class="n">PC1</span> <span class="p">[</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;PC1 [.101]&#34;</span><span class="p">];</span>
+     <span class="n">PC4</span> <span class="p">[</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;PC5 [.105]&#34;</span><span class="p">];</span>
         
-     SW1 -- PC1 [<span style="color:#24909d">dir</span>=both, label = <span style="color:#ed9d13">&#34;Fa0/2 - Fa0&#34;</span>];
-     SW3 -- PC4 [<span style="color:#24909d">dir</span>=both, label = <span style="color:#ed9d13">&#34;Fa0/3 - Fa0&#34;</span>];
+     <span class="n">SW1</span> <span class="o">--</span> <span class="n">PC1</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;Fa0/2 - Fa0&#34;</span><span class="p">];</span>
+     <span class="n">SW3</span> <span class="o">--</span> <span class="n">PC4</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;Fa0/3 - Fa0&#34;</span><span class="p">];</span>
 
-     {rank = same; SW1; SW2; SW3;}
-     {rank = same; PC1; PC4;}
- }
-</code></pre></div><p><img src="output_13_0.svg" alt="svg"></p>
+     <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">SW1</span><span class="p">;</span> <span class="n">SW2</span><span class="p">;</span> <span class="n">SW3</span><span class="p">;}</span>
+     <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">PC1</span><span class="p">;</span> <span class="n">PC4</span><span class="p">;}</span>
+ <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="output_13_0.svg" alt="svg"></p>
 <p>There are several way how frames from <code>PC1</code> would reach <code>PC5</code>. However when dealing with <strong>STP</strong> some ports will in be <strong>blocking</strong> state. Let&rsquo;s check that out:</p>
 <ul>
 <li><code>SW1</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW1#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW1#sh spanning-tree vlan <span class="m">10</span>
 VLAN0010
 ...
 
 Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
-Fa0/1            Altn BLK <span style="color:#3677a9">19</span>        128.1    P2p
-Fa0/2            Desg FWD <span style="color:#3677a9">19</span>        128.2    P2p
-Fa0/3            Desg FWD <span style="color:#3677a9">19</span>        128.3    P2p
-Fa0/4            Root FWD <span style="color:#3677a9">19</span>        128.4    P2p
-</code></pre></div><ul>
+Fa0/1            Altn BLK <span class="m">19</span>        128.1    P2p
+Fa0/2            Desg FWD <span class="m">19</span>        128.2    P2p
+Fa0/3            Desg FWD <span class="m">19</span>        128.3    P2p
+Fa0/4            Root FWD <span class="m">19</span>        128.4    P2p
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li><code>SW2</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW2#sh spanning-tree vlan <span class="m">10</span>
 VLAN0010
 ...
 
 Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
-Fa0/1            Desg FWD <span style="color:#3677a9">19</span>        128.1    P2p
-Fa0/2            Root FWD <span style="color:#3677a9">19</span>        128.2    P2p
-Fa0/5            Altn BLK <span style="color:#3677a9">19</span>        128.5    P2p
-Fa0/6            Desg FWD <span style="color:#3677a9">19</span>        128.6    P2p
-</code></pre></div><ul>
+Fa0/1            Desg FWD <span class="m">19</span>        128.1    P2p
+Fa0/2            Root FWD <span class="m">19</span>        128.2    P2p
+Fa0/5            Altn BLK <span class="m">19</span>        128.5    P2p
+Fa0/6            Desg FWD <span class="m">19</span>        128.6    P2p
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li><code>SW3</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW3#sh spanning-tree vlan <span class="m">10</span>
 ...
 
 Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
-Fa0/1            Desg FWD <span style="color:#3677a9">19</span>        128.1    P2p
-Fa0/3            Desg FWD <span style="color:#3677a9">19</span>        128.3    P2p
-Po2              Desg FWD <span style="color:#3677a9">9</span>         128.27   Shr
-</code></pre></div><ul>
+Fa0/1            Desg FWD <span class="m">19</span>        128.1    P2p
+Fa0/3            Desg FWD <span class="m">19</span>        128.3    P2p
+Po2              Desg FWD <span class="m">9</span>         128.27   Shr
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li><code>SW4</code></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span style="color:#3677a9">10</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">SW4#sh spanning-tree vlan <span class="m">10</span>
 ...
 
 Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
-Fa0/1            Desg FWD <span style="color:#3677a9">19</span>        128.1    P2p
-Fa0/3            Desg FWD <span style="color:#3677a9">19</span>        128.3    P2p
-Fa0/5            Desg FWD <span style="color:#3677a9">19</span>        128.5    P2p
-Po1              Root FWD <span style="color:#3677a9">9</span>         128.27   Shr
-</code></pre></div><p>Based of the previous outputs our topology now looks like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;↔</span>
+Fa0/1            Desg FWD <span class="m">19</span>        128.1    P2p
+Fa0/3            Desg FWD <span class="m">19</span>        128.3    P2p
+Fa0/5            Desg FWD <span class="m">19</span>        128.5    P2p
+Po1              Root FWD <span class="m">9</span>         128.27   Shr
+</code></pre></td></tr></table>
+</div>
+</div><p>Based of the previous outputs our topology now looks like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">dot</span>
+<span class="c1"># &lt;!-- collapse=True --&gt;↔</span>
 
-     SW1 -- SW2 [<span style="color:#24909d">dir</span>=both, arrowtail=box];
-     SW2 -- SW3 [<span style="color:#24909d">dir</span>=both, arrowhead=normal];
+     <span class="n">SW1</span> <span class="o">--</span> <span class="n">SW2</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowtail</span><span class="o">=</span><span class="n">box</span><span class="p">];</span>
+     <span class="n">SW2</span> <span class="o">--</span> <span class="n">SW3</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">normal</span><span class="p">];</span>
 
-     SW4 -- SW1 [<span style="color:#24909d">dir</span>=both];
-     SW4 -- SW2 [<span style="color:#24909d">dir</span>=both, arrowhead=box];
-     SW4 -- SW3 [<span style="color:#24909d">dir</span>=both, arrowhead=normal];
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW1</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">];</span>
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW2</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">box</span><span class="p">];</span>
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW3</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">normal</span><span class="p">];</span>
     
-     PC1 [label = <span style="color:#ed9d13">&#34;PC1 [.101]&#34;</span>];
-     PC4 [label = <span style="color:#ed9d13">&#34;PC5 [.105]&#34;</span>];
+     <span class="n">PC1</span> <span class="p">[</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;PC1 [.101]&#34;</span><span class="p">];</span>
+     <span class="n">PC4</span> <span class="p">[</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;PC5 [.105]&#34;</span><span class="p">];</span>
         
-     SW1 -- PC1 [<span style="color:#24909d">dir</span>=both];
-     SW3 -- PC4 [<span style="color:#24909d">dir</span>=both];
+     <span class="n">SW1</span> <span class="o">--</span> <span class="n">PC1</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">];</span>
+     <span class="n">SW3</span> <span class="o">--</span> <span class="n">PC4</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">];</span>
 
-     {rank = same; SW1; SW2; SW3;}
-     {rank = same; PC1; PC4;}
- }
-</code></pre></div><p><img src="output_15_0.svg" alt="svg"></p>
+     <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">SW1</span><span class="p">;</span> <span class="n">SW2</span><span class="p">;</span> <span class="n">SW3</span><span class="p">;}</span>
+     <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">PC1</span><span class="p">;</span> <span class="n">PC4</span><span class="p">;}</span>
+ <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="output_15_0.svg" alt="svg"></p>
 <p>That means:</p>
 <ul>
 <li><code>SW1</code>s <strong>Fa0/1</strong> port is in <strong>blocking</strong> state (arrow endpoint is a box)</li>
@@ -660,27 +1191,53 @@ Po1              Root FWD <span style="color:#3677a9">9</span>         128.27   
 <li>all other ports are in <strong>forwarding</strong> state</li>
 </ul>
 <p>In this case there is <strong>only</strong> one way <code>PC1</code> could send frames to <code>PC5</code>  (red lines):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
-<span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
- graph mylab {<span style="color:#a61717;background-color:#e3d2d2">↔</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">dot</span>
+<span class="c1"># &lt;!-- collapse=True --&gt;</span>
+ <span class="n">graph</span> <span class="n">mylab</span> <span class="p">{</span><span class="err">↔</span>
 
-     SW1 -- SW2 [<span style="color:#24909d">dir</span>=both, arrowtail=box];
-     SW2 -- SW3 [<span style="color:#24909d">dir</span>=both, arrowhead=normal];
+     <span class="n">SW1</span> <span class="o">--</span> <span class="n">SW2</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowtail</span><span class="o">=</span><span class="n">box</span><span class="p">];</span>
+     <span class="n">SW2</span> <span class="o">--</span> <span class="n">SW3</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">normal</span><span class="p">];</span>
 
-     SW4 -- SW1 [<span style="color:#24909d">dir</span>=both, color=<span style="color:#ed9d13">&#34;red&#34;</span>];
-     SW4 -- SW2 [<span style="color:#24909d">dir</span>=both, arrowhead=box];
-     SW4 -- SW3 [<span style="color:#24909d">dir</span>=both, arrowhead=normal, color=<span style="color:#ed9d13">&#34;red&#34;</span>];
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW1</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;red&#34;</span><span class="p">];</span>
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW2</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">box</span><span class="p">];</span>
+     <span class="n">SW4</span> <span class="o">--</span> <span class="n">SW3</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="n">normal</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;red&#34;</span><span class="p">];</span>
     
-     PC1 [label = <span style="color:#ed9d13">&#34;PC1 [.101]&#34;</span>];
-     PC4 [label = <span style="color:#ed9d13">&#34;PC5 [.105]&#34;</span>];
+     <span class="n">PC1</span> <span class="p">[</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;PC1 [.101]&#34;</span><span class="p">];</span>
+     <span class="n">PC4</span> <span class="p">[</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&#34;PC5 [.105]&#34;</span><span class="p">];</span>
         
-     SW1 -- PC1 [<span style="color:#24909d">dir</span>=both, color=<span style="color:#ed9d13">&#34;red&#34;</span>];
-     SW3 -- PC4 [<span style="color:#24909d">dir</span>=both, color=<span style="color:#ed9d13">&#34;red&#34;</span>];
+     <span class="n">SW1</span> <span class="o">--</span> <span class="n">PC1</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;red&#34;</span><span class="p">];</span>
+     <span class="n">SW3</span> <span class="o">--</span> <span class="n">PC4</span> <span class="p">[</span><span class="nb">dir</span><span class="o">=</span><span class="n">both</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;red&#34;</span><span class="p">];</span>
 
-     {rank = same; SW1; SW2; SW3;}
-     {rank = same; PC1; PC4;}
- }
-</code></pre></div><p><img src="output_17_0.svg" alt="svg"></p>
+     <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">SW1</span><span class="p">;</span> <span class="n">SW2</span><span class="p">;</span> <span class="n">SW3</span><span class="p">;}</span>
+     <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">PC1</span><span class="p">;</span> <span class="n">PC4</span><span class="p">;}</span>
+ <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="output_17_0.svg" alt="svg"></p>
 <p>In the next posts I&rsquo;ll deal with <strong>IP routing</strong> on <strong>Layer 3</strong>.</p>
 </div>
   <div id="comments">

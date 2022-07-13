@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,9 +85,18 @@ type="image/x-icon"/>
     <time>06 May 2015</time> 
      | 
     
+
+    
+     ~
+  
+
+15 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/smalisca' class="link silver">smalisca</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>When it comes to parallelism Python has some constraints which have to be taken into consideration
 before starting coding. I think the biggest one has to do with the <a href="https://wiki.python.org/moin/GlobalInterpreterLock">Global Interpreter Lock</a> which prevents several threads from
@@ -115,61 +125,128 @@ at the <a href="https://github.com/dorneanu/smalisca/blob/master/smalisca/module
 <p>Ok, that sounds great!</p>
 <h2 id="some-basic-code">Some basic code</h2>
 <p>The basic idea is to &ldquo;walk&rdquo; through files and call a <em>function</em> for every single found file. You&rsquo;d usually start like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">for</span> root, dirs, files <span style="color:#6ab825;font-weight:bold">in</span> os.walk(location):
-    <span style="color:#999;font-style:italic"># call here some function(s) to do whatever with the dirs/files</span>
-</code></pre></div><p>But first an input filename list has to be generated:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"> <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">get_file_list</span>(folder):
-    <span style="color:#ed9d13">&#34;&#34;&#34; Returns a list of files inside the &lt;folder&gt; directory &#34;&#34;&#34;</span>
-    file_list = []
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+    <span class="c1"># call here some function(s) to do whatever with the dirs/files</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>But first an input filename list has to be generated:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"> <span class="k">def</span> <span class="nf">get_file_list</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34; Returns a list of files inside the &lt;folder&gt; directory &#34;&#34;&#34;</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span style="color:#999;font-style:italic"># &#34;Walk&#34; through folder</span>
-    <span style="color:#6ab825;font-weight:bold">for</span> root, dirs, files <span style="color:#6ab825;font-weight:bold">in</span> os.walk(folder):
-        <span style="color:#6ab825;font-weight:bold">for</span> filename <span style="color:#6ab825;font-weight:bold">in</span> files:
-            filepath = os.path.join(root, filename)
+    <span class="c1"># &#34;Walk&#34; through folder</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
-            <span style="color:#999;font-style:italic"># Check if it&#39;s file</span>
-            <span style="color:#6ab825;font-weight:bold">if</span> os.path.isfile(filepath):
-                file_list.append(filepath)
+            <span class="c1"># Check if it&#39;s file</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+                <span class="n">file_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
-    <span style="color:#6ab825;font-weight:bold">return</span> file_list
-</code></pre></div><p>In order to achieve concurrency the initial list has to be splitted into several sub-lists
+    <span class="k">return</span> <span class="n">file_list</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>In order to achieve concurrency the initial list has to be splitted into several sub-lists
 which are then distributed to some &ldquo;workers&rdquo; (aka processes). The best way to do this is to
 distribute the sub-lists equally to the number of available CPU cores. Given an initial
 <code>file_list</code> one could do following:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">cpu_cores = multiprocessing.cpu_count()
-<span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, cpu_cores):
-    sub_list = [file_list[j] <span style="color:#6ab825;font-weight:bold">for</span> j <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(file_list)) <span style="color:#6ab825;font-weight:bold">if</span> j % cpu_cores == i]
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">cpu_cores</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cpu_cores</span><span class="p">):</span>
+    <span class="n">sub_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_list</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span> <span class="o">%</span> <span class="n">cpu_cores</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
 
-    <span style="color:#6ab825;font-weight:bold">if</span> <span style="color:#24909d">len</span>(sub_list) &gt; <span style="color:#3677a9">0</span>:
-        <span style="color:#999;font-style:italic"># Start new process with sub-list</span>
-</code></pre></div><p>But wait a second&hellip; What should every process do? Well, the answer is quite obvious:
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Start new process with sub-list</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>But wait a second&hellip; What should every process do? Well, the answer is quite obvious:
 For every file in its sub-list, it has to call a certain function. Afterwards the process
 has to somehow return the results to the parent process. But how is this done?</p>
 <h2 id="communication-between-processes">Communication between processes</h2>
 <p>A simple way is to use <code>Queue</code> where you can pass messages back and forth between your processes. In a more complicated example you might use <code>JoinableQueue</code> where you have typical consumer scenario: Processes fetch data, modify it and then push them back into the queue (<a href="http://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem">producer consumer pattern</a>).</p>
 <p>In my case a <code>Queue</code> is perfectly fine. That way I have a safe way of letting the process pushing back the results into the queue, before merging all available results globally.
 Let&rsquo;s have a look at some example:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">process_files</span>(file_list, q):
-    <span style="color:#ed9d13">&#34;&#34;&#34; Proprocess every file in &lt;file_list&gt; and call parse_file() &#34;&#34;&#34;</span>
-    results = []
-    <span style="color:#6ab825;font-weight:bold">try</span>:
-        <span style="color:#6ab825;font-weight:bold">for</span> f <span style="color:#6ab825;font-weight:bold">in</span> file_list:
-            results.append(parse_file(f, <span style="color:#3677a9">3</span>))
-    <span style="color:#6ab825;font-weight:bold">except</span>:
-        q.put([])
-        <span style="color:#6ab825;font-weight:bold">raise</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">process_files</span><span class="p">(</span><span class="n">file_list</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34; Proprocess every file in &lt;file_list&gt; and call parse_file() &#34;&#34;&#34;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parse_file</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">([])</span>
+        <span class="k">raise</span>
 
-    <span style="color:#999;font-style:italic"># Put results into queue</span>
-    q.put(results)
-</code></pre></div><p><code>process_files</code> gets a file list (a sub-list from the big list) and a <em>queue</em>. After
+    <span class="c1"># Put results into queue</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>process_files</code> gets a file list (a sub-list from the big list) and a <em>queue</em>. After
 <em>parsing</em> the files, the function will simply <code>put</code> the results into the queue. This
 specific type of queue <em>should</em> be thread and process safe as the documentation states.</p>
 <h2 id="collecting-results">Collecting results</h2>
 <p>After all processes are done doing their job, it&rsquo;s time to collect the results:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">all_results = []
-<span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(procs)):
-    all_results.append(q.get())
-</code></pre></div><p><code>q</code> is the queue used by the processes. Just <code>get</code> all collected results and then you&rsquo;re
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">all_results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">procs</span><span class="p">)):</span>
+    <span class="n">all_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>q</code> is the queue used by the processes. Just <code>get</code> all collected results and then you&rsquo;re
 ready to go. You can found the whole code <a href="https://gist.github.com/dorneanu/2393d8d03d0ed443baeb">here</a>.</p>
 <p>Ok, I&rsquo;ve shown some introductory example how to use <code>multiprocessing</code> properly by using
 a very simplified code. Now let&rsquo;s move on to a more (or less) complicated scenrio:
@@ -306,35 +383,69 @@ into it. Well that&rsquo;s pretty much what I&rsquo;ve done except for the fact 
 
 <p><img src="https://blog.dornea.nu/posts/img/2015/smalisca-concurrency/paths-workers.dot.png" alt="paths-workers"></p>
 <p>So let&rsquo;s continue with some code examples. A typical <strong>parser process</strong> would look like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">SmaliParserProcess</span>(multiprocessing.Process):
-    <span style="color:#ed9d13">&#34;&#34;&#34;Implements a multiprocessing.Process
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">    Attributes:
-</span><span style="color:#ed9d13">        dirs (list): List of directory paths
-</span><span style="color:#ed9d13">        files (list): List of file paths
-</span><span style="color:#ed9d13">    &#34;&#34;&#34;</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">SmaliParserProcess</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34;Implements a multiprocessing.Process
+</span><span class="s2">
+</span><span class="s2">    Attributes:
+</span><span class="s2">        dirs (list): List of directory paths
+</span><span class="s2">        files (list): List of file paths
+</span><span class="s2">    &#34;&#34;&#34;</span>
 
-    <span style="color:#6ab825;font-weight:bold">def</span> __init__(self, dirs, suffix, result_queue):
-        multiprocessing.Process.__init__(self)
-        self.result_queue = result_queue
-        self.dirs = dirs
-        self.suffix = suffix
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">result_queue</span><span class="p">):</span>
+        <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_queue</span> <span class="o">=</span> <span class="n">result_queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span> <span class="o">=</span> <span class="n">dirs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span>
 
-    <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">run</span>(self):
-        <span style="color:#ed9d13">&#34;&#34;&#34;Runs the process&#34;&#34;&#34;</span>
-        c = <span style="color:#3677a9">0</span>
-        <span style="color:#6ab825;font-weight:bold">for</span> d <span style="color:#6ab825;font-weight:bold">in</span> self.dirs:
-            log.info(<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">%s</span><span style="color:#ed9d13"> </span><span style="color:#ed9d13">%d</span><span style="color:#ed9d13">/</span><span style="color:#ed9d13">%d</span><span style="color:#ed9d13"> Parsing </span><span style="color:#ed9d13">%s</span><span style="color:#ed9d13"> ... &#34;</span> % (self.name, c, <span style="color:#24909d">len</span>(self.dirs), d))
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&#34;&#34;&#34;Runs the process&#34;&#34;&#34;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> Parsing </span><span class="si">%s</span><span class="s2"> ... &#34;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">),</span> <span class="n">d</span><span class="p">))</span>
 
-            <span style="color:#999;font-style:italic"># Parse directory</span>
-            parser = SmaliParser(d, self.suffix)
-            parser.run()
+            <span class="c1"># Parse directory</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">SmaliParser</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
-            <span style="color:#999;font-style:italic"># Get and save results</span>
-            res = parser.get_results()
-            self.result_queue.put(res)
-            c += <span style="color:#3677a9">1</span>
-</code></pre></div><p>A process will have a list of directories to scan plus a results queue where to put
+            <span class="c1"># Get and save results</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">+=</span> <span class="mi">1</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>A process will have a list of directories to scan plus a results queue where to put
 its individual results.</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -372,53 +483,105 @@ its individual results.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2015/smalisca-concurrency/queue.dot.png" alt="queue"></p>
 <p>A <strong>controller</strong> should create and create the workers. Afterwards it should collect the
 results:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">ConcurrentParser</span>():
-    <span style="color:#ed9d13">&#34;&#34;&#34;Implements concurrency features
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">    Attributes:
-</span><span style="color:#ed9d13">        processes (list): List of processes/workers
-</span><span style="color:#ed9d13">        result_queue (Queue): Proxy to some thread-safe queue
-</span><span style="color:#ed9d13">    &#34;&#34;&#34;</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">ConcurrentParser</span><span class="p">():</span>
+    <span class="s2">&#34;&#34;&#34;Implements concurrency features
+</span><span class="s2">
+</span><span class="s2">    Attributes:
+</span><span class="s2">        processes (list): List of processes/workers
+</span><span class="s2">        result_queue (Queue): Proxy to some thread-safe queue
+</span><span class="s2">    &#34;&#34;&#34;</span>
 
-    <span style="color:#999;font-style:italic"># Use a manager to proxy access to the real queue</span>
-    multimanager = multiprocessing.Manager()
-    result_queue = multimanager.Queue()
+    <span class="c1"># Use a manager to proxy access to the real queue</span>
+    <span class="n">multimanager</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span>
+    <span class="n">result_queue</span> <span class="o">=</span> <span class="n">multimanager</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
 
-    processes = []
+    <span class="n">processes</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span style="color:#6ab825;font-weight:bold">def</span> __init__(self, location, suffix, jobs):
-        self.location = location
-        self.suffix = suffix
-        self.jobs = jobs
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">jobs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span> <span class="o">=</span> <span class="n">jobs</span>
 
-    <span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">run</span>(self):
-        <span style="color:#ed9d13">&#34;&#34;&#34;Parallelize parsing
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">        Split input list into sublists according to the number of
-</span><span style="color:#ed9d13">        specified jobs. Create new processes/workers and let them
-</span><span style="color:#ed9d13">        do the parsing job.
-</span><span style="color:#ed9d13">        &#34;&#34;&#34;</span>
-        <span style="color:#999;font-style:italic"># Create sub-lists</span>
-        <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, self.jobs):
-            sub_list = [self.dirs[j] <span style="color:#6ab825;font-weight:bold">for</span> j <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">0</span>, <span style="color:#24909d">len</span>(self.dirs))
-                        <span style="color:#6ab825;font-weight:bold">if</span> j % self.jobs == i]
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&#34;&#34;&#34;Parallelize parsing
+</span><span class="s2">
+</span><span class="s2">        Split input list into sublists according to the number of
+</span><span class="s2">        specified jobs. Create new processes/workers and let them
+</span><span class="s2">        do the parsing job.
+</span><span class="s2">        &#34;&#34;&#34;</span>
+        <span class="c1"># Create sub-lists</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">):</span>
+            <span class="n">sub_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">j</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
 
-            <span style="color:#999;font-style:italic"># Create new process</span>
-            <span style="color:#6ab825;font-weight:bold">if</span> <span style="color:#24909d">len</span>(sub_list) &gt; <span style="color:#3677a9">0</span>:
-                p = SmaliParserProcess(sub_list, self.suffix, self.result_queue)
-                self.processes.append(p)
+            <span class="c1"># Create new process</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">SmaliParserProcess</span><span class="p">(</span><span class="n">sub_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_queue</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-        <span style="color:#999;font-style:italic"># Start processes</span>
-        <span style="color:#6ab825;font-weight:bold">for</span> p <span style="color:#6ab825;font-weight:bold">in</span> self.processes:
-            p.start()
+        <span class="c1"># Start processes</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-        <span style="color:#999;font-style:italic"># Exit the completed processes</span>
-        <span style="color:#6ab825;font-weight:bold">for</span> p <span style="color:#6ab825;font-weight:bold">in</span> self.processes:
-            p.join()
+        <span class="c1"># Exit the completed processes</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-        <span style="color:#999;font-style:italic"># Get results</span>
-        results = [self.result_queue.get() <span style="color:#6ab825;font-weight:bold">for</span> p <span style="color:#6ab825;font-weight:bold">in</span> self.processes]
-</code></pre></div><p>Pretty straightforward, isn&rsquo;t it? Split the lists into sub-lists, assign each worker a sub-list and let them <em>run</em>. Then <em>join</em> the processes and collect the results.</p>
+        <span class="c1"># Get results</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">result_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="p">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Pretty straightforward, isn&rsquo;t it? Split the lists into sub-lists, assign each worker a sub-list and let them <em>run</em>. Then <em>join</em> the processes and collect the results.</p>
 <h2 id="concurrency-caveats">Concurrency caveats</h2>
 <p>In some initial code I&rsquo;ve had, I was using a simple <code>multiprocessing.Queue()</code> to collect
 the results. After some testing I&rsquo;ve noticed that my processes never <strong>terminated</strong>.
@@ -430,16 +593,36 @@ Looking at the <a href="https://docs.python.org/3.1/library/multiprocessing.html
 <p>Ä This means that whenever you use a queue you need to make sure that all items which have been put on the queue will eventually be removed before the process is joined. Otherwise you cannot be sure that processes which have put items on the queue will terminate. Remember also that non-daemonic processes will be automatically be joined.</p>
 </blockquote>
 <p>So my previous implementation was prone to a <strong>deadlock</strong>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">...
-queue = Queue()
-p = Process(target=f, args=(queue,))
-p.start()
-p.join()                    <span style="color:#999;font-style:italic"># this deadlocks</span>
-obj = queue.get() 
-</code></pre></div><p>OK, leason lerned! And then I&rsquo;ve found this <a href="http://code.activestate.com/lists/python-tutor/99561/">post</a> which deals with <code>multiprocessing.Manager</code>s. In my current code I&rsquo;m also using a <code>Queue</code> but <strong>proxied</strong>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">multimanager = multiprocessing.Manager()
-result_queue = multimanager.Queue()
-</code></pre></div><p>In this case <code>result_queue</code> is also a <code>Queue</code> wrapped by a proxy. As stated <a href="https://docs.python.org/3/library/multiprocessing.html#proxy-objects">here</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">...</span>
+<span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">queue</span><span class="p">,))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>                    <span class="c1"># this deadlocks</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>OK, leason lerned! And then I&rsquo;ve found this <a href="http://code.activestate.com/lists/python-tutor/99561/">post</a> which deals with <code>multiprocessing.Manager</code>s. In my current code I&rsquo;m also using a <code>Queue</code> but <strong>proxied</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">multimanager</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span>
+<span class="n">result_queue</span> <span class="o">=</span> <span class="n">multimanager</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>In this case <code>result_queue</code> is also a <code>Queue</code> wrapped by a proxy. As stated <a href="https://docs.python.org/3/library/multiprocessing.html#proxy-objects">here</a>:</p>
 <blockquote>
 <p>A proxy is an object which refers to a shared object which lives (presumably) in a different process. The shared object is said to be the referent of the proxy. Multiple proxy objects may have the same referent.
 ..
@@ -454,8 +637,24 @@ It kind of surprised me too. I&rsquo;ve compared the execution time (<strong>jus
 <li>using different number of jobs/workers</li>
 </ul>
 <p>I&rsquo;ve used my Laptop (<strong>Dell XPS 13 with Intel Core i7</strong>) for the testings. Using a larger code repository (bigger than the <em>FakeBanker</em> one) I&rsquo;ve first ran the <strong>old</strong> smalisca version (0.1). This what I&rsquo;ve got:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time smalisca parser -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
-$ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> | grep total; <span style="color:#6ab825;font-weight:bold">done</span> 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">export</span> <span class="nv">CMD</span><span class="o">=</span><span class="s2">&#34;time smalisca parser -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+$ <span class="k">for</span> i in <span class="o">{</span>1..10<span class="o">}</span><span class="p">;</span><span class="k">do</span> <span class="nb">eval</span> <span class="si">${</span><span class="nv">CMD</span><span class="si">}</span> <span class="p">|</span> grep total<span class="p">;</span> <span class="k">done</span> 
 smalisca parser -l  -s java -f sqlite -o   3.61s user 0.11s system 100% cpu 3.712 total
 smalisca parser -l  -s java -f sqlite -o   3.66s user 0.12s system 100% cpu 3.778 total
 smalisca parser -l  -s java -f sqlite -o   3.66s user 0.10s system 100% cpu 3.762 total
@@ -466,35 +665,73 @@ smalisca parser -l  -s java -f sqlite -o   3.55s user 0.11s system 100% cpu 3.66
 smalisca parser -l  -s java -f sqlite -o   3.63s user 0.12s system 100% cpu 3.746 total
 smalisca parser -l  -s java -f sqlite -o   3.52s user 0.16s system 100% cpu 3.681 total
 smalisca parser -l  -s java -f sqlite -o   3.55s user 0.11s system 100% cpu 3.658 total
-</code></pre></div><p>As you see it takes ca. <strong>3.5 seconds</strong> to finish the parsing. OK, now what about the
+</code></pre></td></tr></table>
+</div>
+</div><p>As you see it takes ca. <strong>3.5 seconds</strong> to finish the parsing. OK, now what about the
 <strong>concurrent</strong> version of smalisca?</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 2 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
-$ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> 2&gt;&amp;<span style="color:#3677a9">1</span> /dev/null | grep total; <span style="color:#6ab825;font-weight:bold">done</span> 
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.52s user 0.28s system 156% cpu 3.704 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.50s user 0.32s system 155% cpu 3.743 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.59s user 0.29s system 152% cpu 3.864 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.48s user 0.40s system 155% cpu 3.794 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.42s user 0.35s system 155% cpu 3.720 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.79s user 0.32s system 156% cpu 3.904 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.50s user 0.34s system 152% cpu 3.836 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.39s user 0.35s system 150% cpu 3.824 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.58s user 0.31s system 159% cpu 3.684 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">2</span> -l  -s java -f sqlite -o   5.44s user 0.33s system 155% cpu 3.707 total
-</code></pre></div><p><strong>5.5 seconds</strong>!!! It takes <strong>longer</strong>! Obviously the <code>Queue</code> processing and starting new processes increases
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">export</span> <span class="nv">CMD</span><span class="o">=</span><span class="s2">&#34;time ./smalisca-test.py parser --depth 2 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+$ <span class="k">for</span> i in <span class="o">{</span>1..10<span class="o">}</span><span class="p">;</span><span class="k">do</span> <span class="nb">eval</span> <span class="si">${</span><span class="nv">CMD</span><span class="si">}</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span> /dev/null <span class="p">|</span> grep total<span class="p">;</span> <span class="k">done</span> 
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.52s user 0.28s system 156% cpu 3.704 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.50s user 0.32s system 155% cpu 3.743 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.59s user 0.29s system 152% cpu 3.864 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.48s user 0.40s system 155% cpu 3.794 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.42s user 0.35s system 155% cpu 3.720 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.79s user 0.32s system 156% cpu 3.904 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.50s user 0.34s system 152% cpu 3.836 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.39s user 0.35s system 150% cpu 3.824 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.58s user 0.31s system 159% cpu 3.684 total
+./smalisca-test.py parser --depth <span class="m">2</span> -l  -s java -f sqlite -o   5.44s user 0.33s system 155% cpu 3.707 total
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>5.5 seconds</strong>!!! It takes <strong>longer</strong>! Obviously the <code>Queue</code> processing and starting new processes increases
 execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">export</span> <span style="color:#40ffff">CMD</span>=<span style="color:#ed9d13">&#34;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
-$ <span style="color:#6ab825;font-weight:bold">for</span> i in {1..10};<span style="color:#6ab825;font-weight:bold">do</span> <span style="color:#24909d">eval</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">CMD</span><span style="color:#ed9d13">}</span> 2&gt;&amp;<span style="color:#3677a9">1</span> /dev/null | grep total; <span style="color:#6ab825;font-weight:bold">done</span>
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.66s user 0.36s system 161% cpu 3.730 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.80s user 0.29s system 161% cpu 3.761 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.57s user 0.40s system 158% cpu 3.756 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.49s user 0.32s system 156% cpu 3.700 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.76s user 0.30s system 162% cpu 3.741 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.62s user 0.28s system 162% cpu 3.641 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.54s user 0.30s system 161% cpu 3.627 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.63s user 0.31s system 159% cpu 3.724 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.73s user 0.35s system 162% cpu 3.747 total
-./smalisca-test.py parser --depth <span style="color:#3677a9">3</span> -j <span style="color:#3677a9">8</span> -l  -s java -f sqlite -o   5.43s user 0.34s system 153% cpu 3.764 total
-</code></pre></div><p>Pretty much the <strong>same</strong> results. And here is the overall results table:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">export</span> <span class="nv">CMD</span><span class="o">=</span><span class="s2">&#34;time ./smalisca-test.py parser --depth 3 -j 8 -l /home/victor/work/Projects/XXX/source/smali -s java -f sqlite  -o ~/work/Projects/XXXX/db.sqlite&#34;</span>
+$ <span class="k">for</span> i in <span class="o">{</span>1..10<span class="o">}</span><span class="p">;</span><span class="k">do</span> <span class="nb">eval</span> <span class="si">${</span><span class="nv">CMD</span><span class="si">}</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span> /dev/null <span class="p">|</span> grep total<span class="p">;</span> <span class="k">done</span>
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.66s user 0.36s system 161% cpu 3.730 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.80s user 0.29s system 161% cpu 3.761 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.57s user 0.40s system 158% cpu 3.756 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.49s user 0.32s system 156% cpu 3.700 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.76s user 0.30s system 162% cpu 3.741 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.62s user 0.28s system 162% cpu 3.641 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.54s user 0.30s system 161% cpu 3.627 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.63s user 0.31s system 159% cpu 3.724 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.73s user 0.35s system 162% cpu 3.747 total
+./smalisca-test.py parser --depth <span class="m">3</span> -j <span class="m">8</span> -l  -s java -f sqlite -o   5.43s user 0.34s system 153% cpu 3.764 total
+</code></pre></td></tr></table>
+</div>
+</div><p>Pretty much the <strong>same</strong> results. And here is the overall results table:</p>
 <table>
 <thead>
 <tr>

@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
     <link rel="stylesheet" type="text/css" href="https://blog.dornea.nu/css/asciinema-player.css" />
 
@@ -86,45 +87,89 @@ type="image/x-icon"/>
     <time>15 Aug 2021</time> 
      | 
     
+
+    
+     ~
+  
+
+4 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/org' class="link silver">org</a> <a href='https://blog.dornea.nu/tags/pocket' class="link silver">pocket</a> <a href='https://blog.dornea.nu/tags/asciinema' class="link silver">asciinema</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/emacs' class="link silver">emacs</a> <a href='https://blog.dornea.nu/tags/productivity' class="link silver">productivity</a> <a href='https://blog.dornea.nu/tags/archive' class="link silver">ARCHIVE</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><h2 id="read-organize-archive">Read, organize, archive</h2>
 <p>I heavily use <a href="https://getpocket.com">getpocket</a> to collect articles and save them for later reading. While on my mobile devices I use the official
 app, on my desktop systems (mostly tmux +<a href="https://brainfck.org/#Emacs"> Emacs</a>) I use <a href="https://github.com/alphapapa/pocket-reader.el">pocket-reader.el</a> quite heavily to collect/organize/archive my list of
 articles. After my transition from <a href="https://www.spacemacs.org/">Spacemacs</a> to <a href="https://github.com/hlissner/doom-emacs">Doom Emacs</a> I still love <a href="https://github.com/emacs-evil/evil">evil</a> mode and like to do most of the stuff in <code>normal</code>
 mode. That&rsquo;s why I&rsquo;ve added some <a href="https://github.com/dorneanu/dotfiles/blob/master/emacs/doom/.doom.d/%2Bbindings.el#L25">keybindings to pocket-reader</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp">(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">pocket-reader-mode-map</span>
-      <span style="color:#24909d">:after</span> <span style="color:#40ffff">pocket-reader</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;d&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-delete</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;a&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-toggle-archived</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;TAB&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-open-url</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;tr&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-remove-tags</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;ta&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-add-tags</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;gr&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-refresh</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;p&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-search</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-copy-url</span>
-      <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;Y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">dorneanu/pocket-reader-copy-to-scratch</span>)
-</code></pre></div><p>This way I can add/remove tags, archive articles, open links without leaving normal mode in <code>evil</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-elisp" data-lang="elisp"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">pocket-reader-mode-map</span>
+      <span class="nb">:after</span> <span class="nv">pocket-reader</span>
+      <span class="nb">:nm</span> <span class="s">&#34;d&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-delete</span>
+      <span class="nb">:nm</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-toggle-archived</span>
+      <span class="nb">:nm</span> <span class="s">&#34;TAB&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-open-url</span>
+      <span class="nb">:nm</span> <span class="s">&#34;tr&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-remove-tags</span>
+      <span class="nb">:nm</span> <span class="s">&#34;ta&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-add-tags</span>
+      <span class="nb">:nm</span> <span class="s">&#34;gr&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-refresh</span>
+      <span class="nb">:nm</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-search</span>
+      <span class="nb">:nm</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-copy-url</span>
+      <span class="nb">:nm</span> <span class="s">&#34;Y&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/pocket-reader-copy-to-scratch</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This way I can add/remove tags, archive articles, open links without leaving normal mode in <code>evil</code>.</p>
 <h2 id="read-later-on-e-reader">Read later on E-Reader</h2>
 <p>Since I tend to read on my <a href="https://pocketbook.de/de%5Fde/inkpad-3-dark-brown">e-reader</a> most of the time, I also wanted to have an almost automated way of saving articles to <strong>Epub</strong>
 and send these to my device. Fortunately PocketBook devices can sync with Dropbox which made my life quite easy in the past. I just had to copy e-books, PDFs, Epubs to a specific folder in Dropbox and these will eventually sync with my device once WiFi
 is activated. That&rsquo;s first step of automation.</p>
 <p>As for the Epub conversion I&rsquo;ve used <a href="https://pandoc.org/">pandoc</a> in the past which still does its job great. Initially I&rsquo;ve used <a href="https://github.com/Y2Z/monolith">monolith</a> to save complete web pages as HTML but I&rsquo;ve realized the HTML also contained useless ads, images, text. That&rsquo;s why I&rsquo;ve searched for
 ways how to make the content more <strong>readable</strong> and discovered <a href="https://github.com/eafer/rdrview">rdrview</a>. It&rsquo;s written in C and applies <a href="https://support.mozilla.org/en-US/kb/firefox-reader-view-clutter-free-web-pages">Firefox&rsquo;s reader view</a> to web pages. Here are some examples:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -M http://blog.dornea.nu/2021/06/13/note-taking-in-2021/
-Title: Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
-Excerpt: [Update 2021-06-22] If you’re more interested in the Tiddlywiki aspect of this post you can also check this Tiddlywiki Google Groups thread. [Update 2021-06-18] This post caught some attention on this Hackernews thread. You might want to check the comments. Based on the recommendations in the thread I’ve put together a list of (digital) solutions (besides the preferred ones) Almost <span style="color:#3677a9">6</span> years ago I was blogging about organizing and visualizing knowledge.
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ rdrview -M http://blog.dornea.nu/2021/06/13/note-taking-in-2021/
+Title: Note taking in <span class="m">2021</span> - blog.dornea.nu
+Excerpt: <span class="o">[</span>Update 2021-06-22<span class="o">]</span> If you’re more interested in the Tiddlywiki aspect of this post you can also check this Tiddlywiki Google Groups thread. <span class="o">[</span>Update 2021-06-18<span class="o">]</span> This post caught some attention on this Hackernews thread. You might want to check the comments. Based on the recommendations in the thread I’ve put together a list of <span class="o">(</span>digital<span class="o">)</span> solutions <span class="o">(</span>besides the preferred ones<span class="o">)</span> Almost <span class="m">6</span> years ago I was blogging about organizing and visualizing knowledge.
 Readerable: Yes
-</code></pre></div><div class="src-block-caption">
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
   <span class="src-block-number">Code Snippet 1</span>:
   Get meta information
 </div>
 <p>And now I&rsquo;m using some <code>xpath</code> to extract the title:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ rdrview -T title,body -H http://blog.dornea.nu/2021/06/13/note-taking-in-2021/ | xmllint --html --xpath <span style="color:#ed9d13">&#34;//div/h1/text()&#34;</span> -
-Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
-</code></pre></div><p>Below I&rsquo;ve glued everything together in order to:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ rdrview -T title,body -H http://blog.dornea.nu/2021/06/13/note-taking-in-2021/ <span class="p">|</span> xmllint --html --xpath <span class="s2">&#34;//div/h1/text()&#34;</span> -
+Note taking in <span class="m">2021</span> - blog.dornea.nu
+</code></pre></td></tr></table>
+</div>
+</div><p>Below I&rsquo;ve glued everything together in order to:</p>
 <ul>
 <li>convert an URL to epub</li>
 <li>extract the title and use it as the filename for the Epub</li>
@@ -132,43 +177,90 @@ Note taking in <span style="color:#3677a9">2021</span> - blog.dornea.nu
 <li>use <a href="https://rclone.org/">rclone</a> to copy the file to Dropbox</li>
 </ul>
 <!--listend-->
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#cd2828;font-weight:bold">#!/bin/bash
-</span><span style="color:#cd2828;font-weight:bold"></span>
-<span style="color:#40ffff">RDRVIEW_OUTPUT</span>=~/work/dropbox/rdrview
-<span style="color:#40ffff">DROPBOX_DIR</span>=<span style="color:#ed9d13">&#34;dropbox:Apps/Dropbox PocketBook/articles/2021/&#34;</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="nv">RDRVIEW_OUTPUT</span><span class="o">=</span>~/work/dropbox/rdrview
+<span class="nv">DROPBOX_DIR</span><span class="o">=</span><span class="s2">&#34;dropbox:Apps/Dropbox PocketBook/articles/2021/&#34;</span>
 
-add_link_to_dropbox() {
-    <span style="color:#999;font-style:italic"># Create tmp file</span>
-    <span style="color:#40ffff">TEMP_FILE</span>=<span style="color:#6ab825;font-weight:bold">$(</span>mktemp<span style="color:#6ab825;font-weight:bold">)</span>
+add_link_to_dropbox<span class="o">()</span> <span class="o">{</span>
+    <span class="c1"># Create tmp file</span>
+    <span class="nv">TEMP_FILE</span><span class="o">=</span><span class="k">$(</span>mktemp<span class="k">)</span>
 
-    <span style="color:#999;font-style:italic"># Make link readable</span>
-    rdrview -T title,body -H <span style="color:#40ffff">$1</span> &gt; <span style="color:#40ffff">$TEMP_FILE</span>
+    <span class="c1"># Make link readable</span>
+    rdrview -T title,body -H <span class="nv">$1</span> &gt; <span class="nv">$TEMP_FILE</span>
 
-    <span style="color:#999;font-style:italic"># Extract title</span>
-    <span style="color:#40ffff">TITLE</span>=<span style="color:#6ab825;font-weight:bold">$(</span>xmllint --html --xpath <span style="color:#ed9d13">&#34;//div/h1/text()&#34;</span> 2&gt;/dev/null <span style="color:#ed9d13">${</span><span style="color:#40ffff">TEMP_FILE</span><span style="color:#ed9d13">}</span><span style="color:#6ab825;font-weight:bold">)</span>
-    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;[-] Converting </span><span style="color:#40ffff">$TITLE</span><span style="color:#ed9d13">&#34;</span>
+    <span class="c1"># Extract title</span>
+    <span class="nv">TITLE</span><span class="o">=</span><span class="k">$(</span>xmllint --html --xpath <span class="s2">&#34;//div/h1/text()&#34;</span> 2&gt;/dev/null <span class="si">${</span><span class="nv">TEMP_FILE</span><span class="si">}</span><span class="k">)</span>
+    <span class="nb">echo</span> <span class="s2">&#34;[-] Converting </span><span class="nv">$TITLE</span><span class="s2">&#34;</span>
 
-    <span style="color:#999;font-style:italic"># Convert to PDF</span>
-    <span style="color:#40ffff">OUTPUT_FILE</span>=<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">RDRVIEW_OUTPUT</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13">/</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">TITLE</span>// /_<span style="color:#ed9d13">}</span><span style="color:#ed9d13">&#34;</span>.epub
-    pandoc --pdf-engine=xelatex --metadata <span style="color:#40ffff">title</span>=<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">TITLE</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13">&#34;</span> -f html -t epub -o <span style="color:#ed9d13">${</span><span style="color:#40ffff">OUTPUT_FILE</span><span style="color:#ed9d13">}</span> <span style="color:#ed9d13">${</span><span style="color:#40ffff">TEMP_FILE</span><span style="color:#ed9d13">}</span>
+    <span class="c1"># Convert to PDF</span>
+    <span class="nv">OUTPUT_FILE</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">RDRVIEW_OUTPUT</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">TITLE</span><span class="p">// /_</span><span class="si">}</span><span class="s2">&#34;</span>.epub
+    pandoc --pdf-engine<span class="o">=</span>xelatex --metadata <span class="nv">title</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">TITLE</span><span class="si">}</span><span class="s2">&#34;</span> -f html -t epub -o <span class="si">${</span><span class="nv">OUTPUT_FILE</span><span class="si">}</span> <span class="si">${</span><span class="nv">TEMP_FILE</span><span class="si">}</span>
 
-    <span style="color:#999;font-style:italic"># Copy to dropbox</span>
-    rclone copy <span style="color:#ed9d13">${</span><span style="color:#40ffff">OUTPUT_FILE</span><span style="color:#ed9d13">}</span> <span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">${</span><span style="color:#40ffff">DROPBOX_DIR</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13">&#34;</span>
+    <span class="c1"># Copy to dropbox</span>
+    rclone copy <span class="si">${</span><span class="nv">OUTPUT_FILE</span><span class="si">}</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DROPBOX_DIR</span><span class="si">}</span><span class="s2">&#34;</span>
 
-    <span style="color:#999;font-style:italic"># Log</span>
-    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;[-] Successfully added </span><span style="color:#ed9d13">${</span><span style="color:#40ffff">OUTPUT_FILE</span><span style="color:#ed9d13">}</span><span style="color:#ed9d13"> to dropbox.&#34;</span>
+    <span class="c1"># Log</span>
+    <span class="nb">echo</span> <span class="s2">&#34;[-] Successfully added </span><span class="si">${</span><span class="nv">OUTPUT_FILE</span><span class="si">}</span><span class="s2"> to dropbox.&#34;</span>
 
-    <span style="color:#999;font-style:italic"># Clean up</span>
-    rm <span style="color:#40ffff">$TEMP_FILE</span>
-    rm <span style="color:#40ffff">$OUTPUT_FILE</span>
-}
+    <span class="c1"># Clean up</span>
+    rm <span class="nv">$TEMP_FILE</span>
+    rm <span class="nv">$OUTPUT_FILE</span>
+<span class="o">}</span>
 
-add_link_to_dropbox <span style="color:#40ffff">$1</span>
-</code></pre></div><p>Let&rsquo;s give it a try using <a href="https://pandoc.org/">https://pandoc.org/</a> as an URL:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ~/work/dropbox/add_links_to_dropbox https://pandoc.org/
+add_link_to_dropbox <span class="nv">$1</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s give it a try using <a href="https://pandoc.org/">https://pandoc.org/</a> as an URL:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ~/work/dropbox/add_links_to_dropbox https://pandoc.org/
 [-] Converting Pandoc - About pandoc
 [-] Successfully added /home/victor/work/dropbox/rdrview/Pandoc_-_About_pandoc.epub to dropbox.
-</code></pre></div><h2 id="emacs-for-everything">Emacs for Everything</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="emacs-for-everything">Emacs for Everything</h2>
 <p>Now I&rsquo;d like to be able to call that script from Emacs without copy/paste URLs and hand them over to my script.
 The most difficult part here was to come up with some valid Elisp code. What I wanted was:</p>
 <ul>
@@ -181,18 +273,35 @@ The most difficult part here was to come up with some valid Elisp code. What I w
 </li>
 </ul>
 <p>And this is what I&rsquo;ve got (my first elisp <a href="https://github.com/dorneanu/dotfiles/blob/master/emacs/doom/.doom.d/%2Bfunctions.el#L159">function</a> ever):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-elisp" data-lang="elisp"><span style="color:#999;font-style:italic">;; Copy current url to scratch buffer</span>
-(<span style="color:#24909d">defun</span> <span style="color:#40ffff">dorneanu/pocket-reader-copy-to-scratch</span> ()
-  <span style="color:#ed9d13">&#34;Copy URL of current item to kill-ring/clipboard.&#34;</span>
-  (<span style="color:#24909d">interactive</span>)
-  (<span style="color:#40ffff">when-let</span> ((<span style="color:#40ffff">id</span> (<span style="color:#40ffff">tabulated-list-get-id</span>))
-             (<span style="color:#40ffff">item</span> (<span style="color:#40ffff">ht-get</span> <span style="color:#40ffff">pocket-reader-items</span> <span style="color:#40ffff">id</span>))
-             (<span style="color:#40ffff">url</span> (<span style="color:#40ffff">pocket-reader--get-url</span> <span style="color:#40ffff">item</span>)))
-    (<span style="color:#24909d">with-current-buffer</span> <span style="color:#ed9d13">&#34;*scratch*&#34;</span>
-      (<span style="color:#447fcf">insert</span> <span style="color:#40ffff">url</span>)
-      (<span style="color:#40ffff">newline</span>))
-     (<span style="color:#447fcf">message</span> <span style="color:#ed9d13">&#34;Added: %s to scratch buffer&#34;</span> <span style="color:#40ffff">url</span>)))
-</code></pre></div><p>This will <code>insert</code> the URL into the <code>scratch</code> buffer and add a new line. Once you have your URLs in the buffer you can
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-elisp" data-lang="elisp"><span class="c1">;; Copy current url to scratch buffer</span>
+<span class="p">(</span><span class="nb">defun</span> <span class="nv">dorneanu/pocket-reader-copy-to-scratch</span> <span class="p">()</span>
+  <span class="s">&#34;Copy URL of current item to kill-ring/clipboard.&#34;</span>
+  <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">when-let</span> <span class="p">((</span><span class="nv">id</span> <span class="p">(</span><span class="nv">tabulated-list-get-id</span><span class="p">))</span>
+             <span class="p">(</span><span class="nv">item</span> <span class="p">(</span><span class="nv">ht-get</span> <span class="nv">pocket-reader-items</span> <span class="nv">id</span><span class="p">))</span>
+             <span class="p">(</span><span class="nv">url</span> <span class="p">(</span><span class="nv">pocket-reader--get-url</span> <span class="nv">item</span><span class="p">)))</span>
+    <span class="p">(</span><span class="nb">with-current-buffer</span> <span class="s">&#34;*scratch*&#34;</span>
+      <span class="p">(</span><span class="nf">insert</span> <span class="nv">url</span><span class="p">)</span>
+      <span class="p">(</span><span class="nv">newline</span><span class="p">))</span>
+     <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Added: %s to scratch buffer&#34;</span> <span class="nv">url</span><span class="p">)))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This will <code>insert</code> the URL into the <code>scratch</code> buffer and add a new line. Once you have your URLs in the buffer you can
 use <code>shell-command-on-region</code> with <code>xargs -n1 &lt;script&gt;</code> as shown in the asciinema below.</p>
 <h2 id="demo">Demo</h2>
 <p>

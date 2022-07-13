@@ -43,6 +43,7 @@ Now you should have following files on your disk:" />
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -87,9 +88,18 @@ type="image/x-icon"/>
     <time>28 Jun 2011</time> 
      | 
     
+
+    
+     ~
+  
+
+4 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/video' class="link silver">video</a> <a href='https://blog.dornea.nu/tags/media' class="link silver">media</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/tools' class="link silver">tools</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Since I wasn&rsquo;t able to find any acceptable Howto, I thought I&rsquo;d write my own one.</p>
 <h2 id="initial-situation">Initial situation</h2>
@@ -98,21 +108,90 @@ type="image/x-icon"/>
 <p>I&rsquo;ve used <strong>tsMuxeR</strong> from SmartLabs to demux the files. Here&rsquo;s what I did:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2011/253/tsmuxer.png" alt="tsmuxer"></p>
 <p>Now you should have following files on your disk:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># ls -ltr 00001.*
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># ls -ltr 00001.*
 -rwxr-xr-x 1 root root 1259520 Jun 27 21:31 00001.MTS
 -rw-r----- 1 root root    8906 Jun 28 10:09 00001.track_4608.sup
 -rw-r----- 1 root root   25344 Jun 28 10:09 00001.track_4352.ac3
 -rw-r----- 1 root root 1150138 Jun 28 10:09 00001.track_4113.264
-</code></pre></div><h2 id="put-things-together">Put things together</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="put-things-together">Put things together</h2>
 <p>Now using <strong>ffmpeg</strong> let&rsquo;s create some MKV from previously demuxed files. Make sure you have ffmpeg with libx264 built-in support (&quot;-enable-libx264&quot; when configuring). For Gentoo users this are my USE flags:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># eix -e ffmpeg
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># eix -e ffmpeg
 [I] media-video/ffmpeg
 ...
      Installed versions:  0.7_rc1(09:28:59 PM 06/27/2011)(3dnow 3dnowext X alsa avx bzip2 encode hardcoded-tables mmx mmxext ssse3 truetype v4l v4l2 x264 xvid zlib -aac -altivec -amr -bindist -celt -cpudetection -custom-cflags -debug -dirac -doc -faac -frei0r -gsm -ieee1394 -jack -jpeg2k -mp3 -network -oss -pic -qt-faststart -rtmp -schroedinger -sdl -speex -static-libs -test -theora -threads -vaapi -vdpau -video_cards_nvidia -vorbis -vpx)
-</code></pre></div><p>Now all you have to do is to type:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ffmpeg -i 00001.*.264 -i 00001.*.ac3 -vcodec libx264 -acodec ac3 -b 2000k output.mkv
-</code></pre></div><p>You should get some crazy output like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">ffmpeg version 0.7-rc1, Copyright (c) 2000-2011 the FFmpeg developers
+</code></pre></td></tr></table>
+</div>
+</div><p>Now all you have to do is to type:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ffmpeg -i 00001.*.264 -i 00001.*.ac3 -vcodec libx264 -acodec ac3 -b 2000k output.mkv
+</code></pre></td></tr></table>
+</div>
+</div><p>You should get some crazy output like:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">ffmpeg version 0.7-rc1, Copyright (c) 2000-2011 the FFmpeg developers
   built on Jun 27 2011 21:28:51 with gcc 4.4.4
   configuration: --prefix=/usr --libdir=/usr/lib64 --shlibdir=/usr/lib64 --mandir=/usr/share/man --enable-shared --cc=x86_64-pc-linux-gnu-gcc --disable-static --enable-gpl --enable-postproc --enable-avfilter --disable-stripping --disable-debug --disable-doc --disable-network --disable-vaapi --disable-ffplay --disable-vdpau --enable-libx264 --enable-libxvid --disable-indev=oss --disable-indev=jack --enable-x11grab --disable-outdev=oss --enable-libfreetype --disable-altivec --enable-hardcoded-tables
   libavutil    50. 40. 1 / 50. 40. 1
@@ -149,7 +228,9 @@ Stream mapping:
   Stream #1.0 -&gt; #0.1
 Press [q] to stop encoding
 ^Came=   22 fps=  0 q=0.0 size=       1kB time=10000000000.00 bitrate=   0.0kbits/s    
-</code></pre></div></div>
+</code></pre></td></tr></table>
+</div>
+</div></div>
   <div id="comments">
       
 <div id="disqus_thread"></div>

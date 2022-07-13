@@ -42,6 +42,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,9 +87,18 @@ type="image/x-icon"/>
     <time>26 Feb 2021</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/note' class="link silver">note</a> <a href='https://blog.dornea.nu/tags/aws' class="link silver">aws</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><h2 id="ami">AMI</h2>
 <h2 id="aws-cli">aws cli</h2>
@@ -198,10 +208,24 @@ type="image/x-icon"/>
 <li>
 <p>Delete multiple items</p>
 <p>Use <code>scan</code> to retrieve list of items and save to same file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">        $ aws dynamodb scan --table-name &lt;table name&gt; --filter-expression <span style="color:#ed9d13">&#34;repo_name = :repo&#34;</span> --expression-attribute-values <span style="color:#ed9d13">&#39;{&#34;:repo&#34;:{&#34;S&#34;:&#34;my_repo&#34;}}&#39;</span> --projection-expression <span style="color:#ed9d13">&#34;unique_id&#34;</span> &gt; results.log
-</code></pre></div><p>Then use <code>delete-item</code> to delete single entries:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">        $ cat results.log | jq -r <span style="color:#ed9d13">&#34;.Items[] | tojson&#34;</span> | tr <span style="color:#ed9d13">&#39;\n&#39;</span> <span style="color:#ed9d13">&#39;\0&#39;</span> | xargs -0 -I keyItem aws dynamodb delete-item --table-name &lt;table name&gt; --key=keyItem
-</code></pre></div></li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">        $ aws dynamodb scan --table-name &lt;table name&gt; --filter-expression <span class="s2">&#34;repo_name = :repo&#34;</span> --expression-attribute-values <span class="s1">&#39;{&#34;:repo&#34;:{&#34;S&#34;:&#34;my_repo&#34;}}&#39;</span> --projection-expression <span class="s2">&#34;unique_id&#34;</span> &gt; results.log
+</code></pre></td></tr></table>
+</div>
+</div><p>Then use <code>delete-item</code> to delete single entries:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">        $ cat results.log <span class="p">|</span> jq -r <span class="s2">&#34;.Items[] | tojson&#34;</span> <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;\0&#39;</span> <span class="p">|</span> xargs -0 -I keyItem aws dynamodb delete-item --table-name &lt;table name&gt; --key<span class="o">=</span>keyItem
+</code></pre></td></tr></table>
+</div>
+</div></li>
 </ul>
 </li>
 </ul>

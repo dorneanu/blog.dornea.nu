@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,9 +85,18 @@ type="image/x-icon"/>
     <time>22 Jun 2015</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/note' class="link silver">note</a> <a href='https://blog.dornea.nu/tags/burp' class="link silver">burp</a> <a href='https://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='https://blog.dornea.nu/tags/network' class="link silver">network</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/adobe' class="link silver">adobe</a> <a href='https://blog.dornea.nu/tags/flash' class="link silver">flash</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>If you ever had the opportunity to pentest Flash applications you might have had problems analyzing the traffic between the client
 and the backend. An increasing number of (web) applications is using <a href="http://www.adobe.com/products/flex.html">Adobe Flex</a> at the
@@ -95,38 +105,81 @@ data back and forth. One might think that <a href="http://portswigger.net/burp/"
 for <em>AMF</em>. Although this is the case I found Burp&rsquo;s decoding to be more confusing than useful. So I&rsquo;ve searched for other
 ways to decode <em>AMF</em> encoded data.</p>
 <p>When looking at the plain-text traffic, you won&rsquo;t see much:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">...
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">...
 Content-Type: application/x-amf
 Content-Length: 1373
 ...
-^@^C^@^@^@^A^@^Dnull^@^C/46^@^@^K&lt;<span style="color:#6ab825;font-weight:bold">C6</span>&gt;
+^@^C^@^@^@^A^@^Dnull^@^C/46^@^@^K<span class="p">&lt;</span><span class="nt">C6</span><span class="p">&gt;</span>
 ^@^@^@^A^Q
-&lt;<span style="color:#6ab825;font-weight:bold">81</span>&gt;^SOflex.messaging.messages.RemotingMessage^Msource^Soperation       body^QclientId^SmessageId^Oheaders^UtimeToLive^Stimestamp^Wdestination^A^F^]generateReport      ^K^A    ^M^A
+<span class="p">&lt;</span><span class="nt">81</span><span class="p">&gt;</span>^SOflex.messaging.messages.RemotingMessage^Msource^Soperation       body^QclientId^SmessageId^Oheaders^UtimeToLive^Stimestamp^Wdestination^A^F^]generateReport      ^K^A    ^M^A
 ...
-</code></pre></div><p>Well you can save the response body to some file and then analyze the contents. Using <a href="https://github.com/hydralabs/pyamf">pyamf</a>
+</code></pre></td></tr></table>
+</div>
+</div><p>Well you can save the response body to some file and then analyze the contents. Using <a href="https://github.com/hydralabs/pyamf">pyamf</a>
 I was able to decode the AMF data in way I could easily understand its inner structure. First <em>install</em> pyamf:</p>
 <pre><code>$ pip install pyamf
 </code></pre>
 <p>Then read the request data:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">1</span>]: <span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">pyamf</span>
 
-In [<span style="color:#3677a9">2</span>]: <span style="color:#6ab825;font-weight:bold">with</span> <span style="color:#24909d">open</span>(<span style="color:#ed9d13">&#39;/home/victor/tmp/neu.req&#39;</span>, <span style="color:#ed9d13">&#39;r&#39;</span>) <span style="color:#6ab825;font-weight:bold">as</span> f:
-    content = f.read()
-       ...: 
-</code></pre></div><p>And finally decode that data:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#3677a9">3</span>]: <span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">pyamf</span> <span style="color:#6ab825;font-weight:bold">import</span> remoting
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/victor/tmp/neu.req&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+       <span class="o">...</span><span class="p">:</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>And finally decode that data:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">pyamf</span> <span class="kn">import</span> <span class="n">remoting</span>
 
-In [<span style="color:#3677a9">4</span>]: decoded = remoting.decode(content)
+<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">decoded</span> <span class="o">=</span> <span class="n">remoting</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 
-In [<span style="color:#3677a9">5</span>]: <span style="color:#24909d">type</span>(decoded)
-Out[<span style="color:#3677a9">5</span>]: pyamf.remoting.Envelope
+<span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="nb">type</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">pyamf</span><span class="o">.</span><span class="n">remoting</span><span class="o">.</span><span class="n">Envelope</span>
 
-In [<span style="color:#3677a9">11</span>]: decoded
-Out[<span style="color:#3677a9">11</span>]: 
-&lt;Envelope amfVersion=<span style="color:#3677a9">3</span>&gt;
- (<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;/46&#39;</span>, &lt;Request target=<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;null&#39;</span>&gt;[&lt;RemotingMessage  body=[[{<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;ExternalListGUID&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_SELECT_DEFAULT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Options&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#3677a9">5</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;projectversionid&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SINGLE_PROJECT&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Project Version&#39;</span>}, {<span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;paramValue&#39;</span>: <span style="color:#6ab825;font-weight:bold">True</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;identifier&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;SecurityIssueDetails&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;type&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;BOOLEAN&#39;</span>, <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;name&#39;</span>: <span style="color:#ed9d13">u</span><span style="color:#ed9d13">&#39;Detailed Report&#39;</span>}
- ...
-</code></pre></div><p>I hope that helped!</p>
+<span class="n">In</span> <span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="n">decoded</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">11</span><span class="p">]:</span> 
+<span class="o">&lt;</span><span class="n">Envelope</span> <span class="n">amfVersion</span><span class="o">=</span><span class="mi">3</span><span class="o">&gt;</span>
+ <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;/46&#39;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Request</span> <span class="n">target</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;null&#39;</span><span class="o">&gt;</span><span class="p">[</span><span class="o">&lt;</span><span class="n">RemotingMessage</span>  <span class="n">body</span><span class="o">=</span><span class="p">[[{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;ExternalListGUID&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SINGLE_SELECT_DEFAULT&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Options&#39;</span><span class="p">},</span> <span class="p">{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;projectversionid&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SINGLE_PROJECT&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Project Version&#39;</span><span class="p">},</span> <span class="p">{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SecurityIssueDetails&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Detailed Report&#39;</span><span class="p">}</span>
+ <span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>I hope that helped!</p>
 </div>
   <div id="comments">
       

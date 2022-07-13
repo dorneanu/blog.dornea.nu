@@ -41,6 +41,7 @@ I was recently at some cafe and thought it would be a great ideea to test my con
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,13 +86,48 @@ type="image/x-icon"/>
     <time>09 Nov 2011</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='https://blog.dornea.nu/tags/dns' class="link silver">dns</a> <a href='https://blog.dornea.nu/tags/icmp' class="link silver">icmp</a> <a href='https://blog.dornea.nu/tags/ipv4' class="link silver">ipv4</a> <a href='https://blog.dornea.nu/tags/tools' class="link silver">tools</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>I always knew DNS/ICMP traffic is mostly allowed and un-monitored. It was about time to setup some DNS server on my vServer which would allow me to break free! Thanks God there is <a href="http://code.kryo.se/iodine/">iodine</a> which allows you to route IP traffic over DNS.</p>
 <p>I was recently at some cafe and thought it would be a great ideea to test my configuration. I&rsquo;ve setup the iodine server a few weeks before.This is what I did:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># iodine -fP (insert password here) *.*136.116 *.mooo.com
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># iodine -fP (insert password here) *.*136.116 *.mooo.com
 Opened dns0
 Opened UDP socket
 Sending DNS queries for tunnel.syngres.mooo.com to *.*.136.116
@@ -113,9 +149,18 @@ Autoprobing max downstream fragment size... (skip with -m fragsize)
 768 ok.. ...1152 not ok.. 960 ok.. ...1056 not ok.. 1008 ok.. 1032 ok.. 1044 ok.. will use 1044-2=1042
 Setting downstream fragment size to max 1042...
 Connection setup complete, transmitting data.
-</code></pre></div><p>Then setup the SSH connection:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># ssh -CD 9999 user@10.0.0.1 -p 1337
-</code></pre></div><p>This will create a <strong>local socket</strong> which can be used for further connections.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Then setup the SSH connection:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># ssh -CD 9999 user@10.0.0.1 -p 1337
+</code></pre></td></tr></table>
+</div>
+</div><p>This will create a <strong>local socket</strong> which can be used for further connections.</p>
 <h2 id="traffic-redirection">Traffic redirection</h2>
 <p>I use <strong>proxychains</strong> (but there is also socat, socksify, tsocks etc.) for traffic redirection. Simply add 127.0.0.1:9999 to your /etc/proxychains.conf and you&rsquo;ll have your desired traffic control.</p>
 <h2 id="screenshots">Screenshots</h2>

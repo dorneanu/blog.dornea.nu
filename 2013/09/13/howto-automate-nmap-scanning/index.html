@@ -42,6 +42,7 @@ Configuration Make sure you you have downloaded the archive and open src/core/wn
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,9 +87,18 @@ type="image/x-icon"/>
     <time>13 Sep 2013</time> 
      | 
     
+
+    
+     ~
+  
+
+3 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/tools' class="link silver">tools</a> <a href='https://blog.dornea.nu/tags/nmap' class="link silver">nmap</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Recently a <a href="http://nullsecurity.net/about.html">colleague</a> of mine at <a href="http://nullsecurity.net/">nullsecurity.net</a> released a new scanning tool called <a href="http://nullsecurity.net/tools/automation/wnmap-0.1.tar.gz">wnmap</a>. Basically it&rsquo;s a wrapper around nmap which helps automating the scanning process by using simple configuration files. Let&rsquo;s have a look at it..</p>
 <h2 id="configuration">Configuration</h2>
@@ -100,7 +110,37 @@ type="image/x-icon"/>
 </ul>
 <h2 id="running-the-tool">Running the tool</h2>
 <p>Now the obligatory -help message:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">-==[ wnmap by nrz@nullsecurity.net ]==--
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">-==[ wnmap by nrz@nullsecurity.net ]==--
 Usage: wnmap [options] &lt;target specification&gt; | &lt;misc&gt;
 TARGET SPECIFICATION:
     Can pass hostname or IP address.
@@ -126,8 +166,22 @@ EXAMPLES:
     wnmap -C scanme.nmap.org # give it all you got
     wnmap -a &#34;-I;iddle-scan;-P0 -p- -sI sweet.host.com;true&#34;
     wnmap -e # edit modes
-</code></pre></div><p>As you can see the tool comes along with several **predefined **running modes. You can easily edit them at <strong>src/core/wmodes.conf:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% cat src/core/wmodes.conf
+</code></pre></td></tr></table>
+</div>
+</div><p>As you can see the tool comes along with several **predefined **running modes. You can easily edit them at <strong>src/core/wmodes.conf:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% cat src/core/wmodes.conf
 # SAMPLE FILE !!! DEFINE YOUR OWN MAGIC !!!
 # wnmap_arg; mode_name; nmap_args; sudo?
 -F;fast;-F;false
@@ -135,15 +189,43 @@ EXAMPLES:
 -V;version;-sV -version-trace;false
 -O;os;-O --osscan-guess;true
 -M;script_malware;-script malware;false
-</code></pre></div><p>Quite handy, isn&rsquo;t it? You can <strong>chain</strong> the modes using **-C. **</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Quite handy, isn&rsquo;t it? You can <strong>chain</strong> the modes using **-C. **</p>
 <h2 id="add-new-mode">Add new mode</h2>
 <p>Let&rsquo;s say I want to add a new mode, which will scan all hosts at port 80 and 443 for web services. In particular I want to the the supported HTTP methods at those ports.<br>
 You can easily use the command line to insert the new mode:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -a &#34;-H;http-methods;-P0 --script=http-methods.nse -p 80,443;false&#34;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% ./wnmap -a &#34;-H;http-methods;-P0 --script=http-methods.nse -p 80,443;false&#34;
 --==[ wnmap by nrz@nullsecurity.net ]==--
 [+] New mode added!
-</code></pre></div><p>or edit **src/core/wmodes.conf **directly.Now let&rsquo;s scan a host using the newly inserted mode:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -H scanme.nmap.org
+</code></pre></td></tr></table>
+</div>
+</div><p>or edit **src/core/wmodes.conf **directly.Now let&rsquo;s scan a host using the newly inserted mode:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% ./wnmap -H scanme.nmap.org
 --==[ wnmap by nrz@nullsecurity.net ]==--
 [+] Creating scanme.nmap.org/http-methods
 [+] Scanning scanme.nmap.org
@@ -156,17 +238,49 @@ PORT    STATE  SERVICE REASON
 |_http-methods: GET HEAD POST OPTIONS
 443/tcp closed https   conn-refused
 Nmap done: 1 IP address (1 host up) scanned in 0.69 seconds
-</code></pre></div><p>Now you should see a directory called <strong>scanme.nmap.org</strong> inside your working directory. The output of the scan was saved as a regular nmap file and as XML.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org
+</code></pre></td></tr></table>
+</div>
+</div><p>Now you should see a directory called <strong>scanme.nmap.org</strong> inside your working directory. The output of the scan was saved as a regular nmap file and as XML.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org
 scanme.nmap.org
 `-- http-methods
     |-- scanme.nmap.org.nmap
     `-- scanme.nmap.org.xml
-</code></pre></div><h2 id="combine-modes">Combine modes</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="combine-modes">Combine modes</h2>
 <p>You could now combine the modes:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% ./wnmap -H -F scanme.nmap.org
-</code></pre></div><p>And you&rsquo;ll get:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% ./wnmap -H -F scanme.nmap.org
+</code></pre></td></tr></table>
+</div>
+</div><p>And you&rsquo;ll get:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org 
 scanme.nmap.org
 |-- fast
 |   |-- scanme.nmap.org.nmap
@@ -174,7 +288,9 @@ scanme.nmap.org
 `-- http-methods
     |-- scanme.nmap.org.nmap
     `-- scanme.nmap.org.xml
-</code></pre></div></div>
+</code></pre></td></tr></table>
+</div>
+</div></div>
   <div id="comments">
       
 <div id="disqus_thread"></div>

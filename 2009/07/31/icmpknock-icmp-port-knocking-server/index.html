@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,9 +85,18 @@ type="image/x-icon"/>
     <time>31 Jul 2009</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/icmp' class="link silver">icmp</a> <a href='https://blog.dornea.nu/tags/tools' class="link silver">tools</a> <a href='https://blog.dornea.nu/tags/icmpknock' class="link silver">icmpknock</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><h2 id="whats-this-about">Whats this about?</h2>
 <p>If you&rsquo;re familiar with port knocking, you should know the basics and how this technique basically works. If don&rsquo;t have a clue what I&rsquo;m talking about, feel free to have a look at the <em>Links</em> section. Most port knocking tools are listening for TCP or UDP packets to arrive on specific ports in a specific order. icmpKNOCK is waiting for ICMP echo requests and checks their payloads. Packets that match given criteria trigger some action, e.g. open/close port(s) etc. The main advantage of this tool is the fact that this approach works with all standard ping tools, regardless of your operating system.</p>
@@ -95,14 +105,37 @@ type="image/x-icon"/>
 b) Define actions (check out icmpKNOCK_actions.py)
 c) run icmpKNOCK.py as root!!! otherwise you won&rsquo;t be able to listen for incoming ICMP requests
 d) Using your <code>ping</code> utility you can pass hex patterns to the requests:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ping -p [hex pattern] [host]
-</code></pre></div><p>Be aware of the order in which you send the packets. Example:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">@set_action(hex1, hex2, hex3, ...)
-</code></pre></div><p>When you run ping keep in mind to first send key1, then key2, then&hellip; You got it, right? Example:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ping -p hex1 [host] 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ping -p [hex pattern] [host]
+</code></pre></td></tr></table>
+</div>
+</div><p>Be aware of the order in which you send the packets. Example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@set_action(hex1, hex2, hex3, ...)
+</code></pre></td></tr></table>
+</div>
+</div><p>When you run ping keep in mind to first send key1, then key2, then&hellip; You got it, right? Example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ping -p hex1 [host] 
 $ ping -p hex2 [host] 
 ... 
-</code></pre></div><h2 id="links">Links</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="links">Links</h2>
 <ul>
 <li><a href="http://www.portknocking.org/">http://www.portknocking.org/</a></li>
 <li><a href="http://www.faqs.org/rfcs/rfc791.html">http://www.faqs.org/rfcs/rfc791.html</a> * <a href="http://www.faqs.org/rfcs/rfc792.html">http://www.faqs.org/rfcs/rfc792.html</a></li>

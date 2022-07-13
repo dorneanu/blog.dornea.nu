@@ -41,6 +41,7 @@ Staying up-to-date with current technological trends, Security advisories, blog 
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,9 +86,18 @@ type="image/x-icon"/>
     <time>29 Jun 2022</time> 
      | 
     
+
+    
+     ~
+  
+
+3 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/rss' class="link silver">rss</a> <a href='https://blog.dornea.nu/tags/emacs' class="link silver">emacs</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>In <a href="https://blog.dornea.nu/2022/06/13/rss-and-atom-for-digital-minimalists/">my last post</a> I wrote about RSS/Atom and how these technologies can be used
 to declutter your digital life and reduce your exposure to the attention
@@ -108,11 +118,21 @@ single newsletter, led me to <a href="https://github.com/skeeto/elfeed">elfeed</
 </blockquote>
 
 <p>Usually you would organize your feed entries as a list:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span style="color:#999;font-style:italic">;; Somewhere in your .emacs file</span>
-(<span style="color:#24909d">setq</span> <span style="color:#40ffff">elfeed-feeds</span>
-      &#39;(<span style="color:#ed9d13">&#34;http://nullprogram.com/feed/&#34;</span>
-        <span style="color:#ed9d13">&#34;https://planet.emacslife.com/atom.xml&#34;</span>))
-</code></pre></div><p>I didn&rsquo;t like this approach since the initial list was way to big to be managed.
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="c1">;; Somewhere in your .emacs file</span>
+<span class="p">(</span><span class="nb">setq</span> <span class="nv">elfeed-feeds</span>
+      <span class="o">&#39;</span><span class="p">(</span><span class="s">&#34;http://nullprogram.com/feed/&#34;</span>
+        <span class="s">&#34;https://planet.emacslife.com/atom.xml&#34;</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>I didn&rsquo;t like this approach since the initial list was way to big to be managed.
 Then I came across <a href="https://github.com/remyhonig/elfeed-org">elfeed-org</a> which lets you organize your feeds in an ORG file.</p>
 
     
@@ -155,44 +175,87 @@ in an external browser (or <strong>B</strong> to open it in an <code>eww</code> 
 <h2 id="getpocket-integration">getpocket integration</h2>
 <p>If you&rsquo;ve read my getpocket article last year, you know I use <a href="https://getpocket.com">getpocket.com</a> to save links/articles to read later. In <code>elfeed</code> I
 can easily add a link to getpocket (thanks to <a href="https://github.com/alphapapa/pocket-reader.el">pocket-reader.el</a>). I use these <a href="https://github.com/dorneanu/dotfiles/blob/master/dot_doom.d/config.org#elfeed">key bindings</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span style="color:#999;font-style:italic">;; Define maps</span>
-(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">elfeed-search-mode-map</span>
-    <span style="color:#24909d">:after</span> <span style="color:#40ffff">elfeed-search</span>
-    [<span style="color:#40ffff">remap</span> <span style="color:#40ffff">kill-this-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
-    [<span style="color:#40ffff">remap</span> <span style="color:#447fcf">kill-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
-    <span style="color:#24909d">:n</span> <span style="color:#40ffff">doom-leader-key</span> <span style="color:#40ffff">nil</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;q&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">+rss/quit</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;e&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-update</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;r&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-untag-all-unread</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;u&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-tag-all-unread</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;s&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-live-filter</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;RET&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-show-entry</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;p&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-pdf</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;+&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-tag-all</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;-&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-untag-all</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;S&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-set-filter</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;b&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-browse-url</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;B&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-eww-open</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;a&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-elfeed-search-add-link</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-search-yank</span>)
-(<span style="color:#40ffff">map!</span> <span style="color:#24909d">:map</span> <span style="color:#40ffff">elfeed-show-mode-map</span>
-    <span style="color:#24909d">:after</span> <span style="color:#40ffff">elfeed-show</span>
-    [<span style="color:#40ffff">remap</span> <span style="color:#40ffff">kill-this-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
-    [<span style="color:#40ffff">remap</span> <span style="color:#447fcf">kill-buffer</span>] <span style="color:#ed9d13">&#34;q&#34;</span>
-    <span style="color:#24909d">:n</span> <span style="color:#40ffff">doom-leader-key</span> <span style="color:#40ffff">nil</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;q&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">+rss/delete-pane</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;a&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">pocket-reader-elfeed-entry-add-link</span>
-    <span style="color:#24909d">:n</span> <span style="color:#ed9d13">&#34;B&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-eww-open</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;o&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">ace-link-elfeed</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;RET&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">org-ref-elfeed-add</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;n&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-next</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;N&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-prev</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;p&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-pdf</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;+&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-tag</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;-&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-untag</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;s&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-new-live-search</span>
-    <span style="color:#24909d">:nm</span> <span style="color:#ed9d13">&#34;y&#34;</span> <span style="color:#447fcf">#&#39;</span><span style="color:#40ffff">elfeed-show-yank</span>)
-</code></pre></div><p>Whenever I press <strong>a</strong> in an <code>elfeed</code> related buffer the entries link will be added to getpocket.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="c1">;; Define maps</span>
+<span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-search-mode-map</span>
+    <span class="nb">:after</span> <span class="nv">elfeed-search</span>
+    <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+    <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+    <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
+    <span class="nb">:n</span> <span class="s">&#34;q&#34;</span> <span class="nf">#&#39;</span><span class="nv">+rss/quit</span>
+    <span class="nb">:n</span> <span class="s">&#34;e&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-update</span>
+    <span class="nb">:n</span> <span class="s">&#34;r&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-untag-all-unread</span>
+    <span class="nb">:n</span> <span class="s">&#34;u&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-tag-all-unread</span>
+    <span class="nb">:n</span> <span class="s">&#34;s&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-live-filter</span>
+    <span class="nb">:n</span> <span class="s">&#34;RET&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-show-entry</span>
+    <span class="nb">:n</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-pdf</span>
+    <span class="nb">:n</span> <span class="s">&#34;+&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-tag-all</span>
+    <span class="nb">:n</span> <span class="s">&#34;-&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-untag-all</span>
+    <span class="nb">:n</span> <span class="s">&#34;S&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-set-filter</span>
+    <span class="nb">:n</span> <span class="s">&#34;b&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-browse-url</span>
+    <span class="nb">:n</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-eww-open</span>
+    <span class="nb">:n</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-elfeed-search-add-link</span>
+    <span class="nb">:n</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-yank</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-show-mode-map</span>
+    <span class="nb">:after</span> <span class="nv">elfeed-show</span>
+    <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+    <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+    <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
+    <span class="nb">:nm</span> <span class="s">&#34;q&#34;</span> <span class="nf">#&#39;</span><span class="nv">+rss/delete-pane</span>
+    <span class="nb">:nm</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-elfeed-entry-add-link</span>
+    <span class="nb">:n</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-eww-open</span>
+    <span class="nb">:nm</span> <span class="s">&#34;o&#34;</span> <span class="nf">#&#39;</span><span class="nv">ace-link-elfeed</span>
+    <span class="nb">:nm</span> <span class="s">&#34;RET&#34;</span> <span class="nf">#&#39;</span><span class="nv">org-ref-elfeed-add</span>
+    <span class="nb">:nm</span> <span class="s">&#34;n&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-next</span>
+    <span class="nb">:nm</span> <span class="s">&#34;N&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-prev</span>
+    <span class="nb">:nm</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-pdf</span>
+    <span class="nb">:nm</span> <span class="s">&#34;+&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-tag</span>
+    <span class="nb">:nm</span> <span class="s">&#34;-&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-untag</span>
+    <span class="nb">:nm</span> <span class="s">&#34;s&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-new-live-search</span>
+    <span class="nb">:nm</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-yank</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Whenever I press <strong>a</strong> in an <code>elfeed</code> related buffer the entries link will be added to getpocket.</p>
 <h2 id="bookmarks">Bookmarks</h2>
 <p>I use <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Bookmarks.html">bookmarks</a> to specify elfeed filters. This allows me to quickly jump to a certain view without
 having to change the filter in-between:</p>
@@ -257,7 +320,7 @@ having to change the filter in-between:</p>
 <br>
   <p class="mb0 mt2">
   <a href="https://blog.dornea.nu/2022/06/13/rss-and-atom-for-digital-minimalists/">prev</a>
-  
+  <a href="https://blog.dornea.nu/2022/07/12/tiddlywiki-and-emacs/">next</a>
   </p>
 </div>
 

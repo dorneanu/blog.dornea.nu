@@ -41,6 +41,7 @@ I&rsquo;ve been using git-annex for some years but not like a pro user, rather t
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,9 +86,18 @@ type="image/x-icon"/>
     <time>16 Jun 2016</time> 
      | 
     
+
+    
+     ~
+  
+
+5 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/backup' class="link silver">backup</a> <a href='https://blog.dornea.nu/tags/git' class="link silver">git</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Backuping a whole bunch of photos and videos might be a difficult task. Taking care of the <strong>consistency</strong> of your backups is even more complicated task. Besides that you don&rsquo;t want to have your backups at a <strong>single place</strong>, thus mitigating the impact of a <strong>single point of data loss</strong>.</p>
 <p>I&rsquo;ve been using <code>git-annex</code> for some years but not like a <em>pro</em> user, rather than &ldquo;it just works&rdquo;. Meanwhile I&rsquo;ve heard of <code>ownCloud</code> and I&rsquo;ve liked it because one can access its data via <em>web</em>, <em>mobile client</em> or whatever. In connection with a <strong>VPN</strong> (I prefer <a href="http://blog.dornea.nu/2015/11/17/openvpn-for-paranoids">openvpn</a>) solution you can have a <strong>secure</strong> way of remotely accessing your data from everywhere.</p>
@@ -160,21 +170,57 @@ type="image/x-icon"/>
 </ul>
 <h3 id="gpg">GPG</h3>
 <p>Generating a GPG key was the easiest step. Afterwards I had to make sure that my <strong>keychain</strong> was available <code>git-annex</code> for a specific period of time. Here are my configuration files:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat ~/.gnupg/gpg.conf | tail -n 3
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ cat ~/.gnupg/gpg.conf | tail -n 3
 
 use-agent
 pinentry-mode loopback
 
-</code></pre></div><p>and then the GPG agent configuration:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ cat ~/.gnupg/gpg-agent.conf
+</code></pre></td></tr></table>
+</div>
+</div><p>and then the GPG agent configuration:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ cat ~/.gnupg/gpg-agent.conf
 
 pinentry-program /usr/bin/pinentry 
 default-cache-ttl 180000
 max-cache-ttl 864000
 allow-loopback-pinentry
-</code></pre></div><h3 id="keychain">Keychain</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="keychain">Keychain</h3>
 <p>Then I&rsquo;ve found <a href="http://www.funtoo.org/Keychain">keychain</a> which helps you manage your SSH and GPG keys in a secure manner. Adding this to your bashrc/zshrc/whatever</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ eval `keychain --inherit any --eval --agents ssh,gpg id_rsa_backup xxx`
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ eval `keychain --inherit any --eval --agents ssh,gpg id_rsa_backup xxx`
 
 * keychain 2.8.2 ~ http://www.funtoo.org
  * Inheriting ssh-agent (7268)
@@ -183,24 +229,97 @@ allow-loopback-pinentry
 
  * Known gpg key: xxxx
 
-</code></pre></div><p>will <strong>cache</strong> your GPG and SSH keys to a specific time of period.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>will <strong>cache</strong> your GPG and SSH keys to a specific time of period.</p>
 <h1 id="git-annex-reference">git-annex reference</h1>
 <h2 id="create-git-repo">Create git repo</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git init
-</code></pre></div><h2 id="create-git-annex-repo">Create git annex repo</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex init &lt;name&gt;
-</code></pre></div><h1 id="add-remotes">Add remotes</h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git init
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="create-git-annex-repo">Create git annex repo</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex init &lt;name&gt;
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="add-remotes">Add remotes</h1>
 <h2 id="create-bare-git-repo-on-the-server">Create bare git repo on the server</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git init --bare oc-encrypted 
-</code></pre></div><h2 id="add-special-remote--sshrsync">Add special remote  (ssh+rsync)</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex initremote oc-encrypted type=gcrypt gitrepo=ssh://backup.ext/home/backup/oc-encrypted keyid=xxxx
-</code></pre></div><h1 id="synchronize-data">Synchronize data</h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git init --bare oc-encrypted 
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="add-special-remote--sshrsync">Add special remote  (ssh+rsync)</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex initremote oc-encrypted type=gcrypt gitrepo=ssh://backup.ext/home/backup/oc-encrypted keyid=xxxx
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="synchronize-data">Synchronize data</h1>
 <h2 id="sync-only-git-repository-to-ssh-remote">Sync only git repository to ssh remote</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex sync oc-encrypted
-</code></pre></div><h2 id="sync-git-repo--content-to-ssh-remote">Sync git repo + content to ssh remote</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex sync --content oc-encrypted
-</code></pre></div><p>If you have a look at the repo <code>oc-encrypted</code> on the external server, you&rsquo;ll see only encrypted stuff:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">% tree | head -n 20 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex sync oc-encrypted
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="sync-git-repo--content-to-ssh-remote">Sync git repo + content to ssh remote</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex sync --content oc-encrypted
+</code></pre></td></tr></table>
+</div>
+</div><p>If you have a look at the repo <code>oc-encrypted</code> on the external server, you&rsquo;ll see only encrypted stuff:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% tree | head -n 20 
 .
 |-- HEAD
 |-- annex
@@ -225,14 +344,54 @@ allow-loopback-pinentry
 % file annex/objects/000/32a/GPGHMACSHA1--0222fb5a96702da2e0e0d763f3893d0a97897d32/GPGHMACSHA1--0222fb5a96702da2e0e0d763f3893d0a97897d32 
 annex/objects/000/32a/GPGHMACSHA1--0222fb5a96702da2e0e0d763f3893d0a97897d32/GPGHMACSHA1--0222fb5a96702da2e0e0d763f3893d0a97897d32: GPG symmetrically encrypted data (AES cipher)
 
-</code></pre></div><h1 id="troubleshooting">Troubleshooting</h1>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="troubleshooting">Troubleshooting</h1>
 <h2 id="find-broken-symlinks">Find broken symlinks</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ find . -xtype l
-</code></pre></div><p>or</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ find . -type l -! -exec test -e {} \; -print
-</code></pre></div><h1 id="garbage-collection">Garbage collection</h1>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ find . -xtype l
+</code></pre></td></tr></table>
+</div>
+</div><p>or</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ find . -type l -! -exec test -e {} \; -print
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="garbage-collection">Garbage collection</h1>
 <h2 id="delete-unused-annexed-data">Delete unused (annexed) data</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex unused 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex unused 
 unused . (checking for unused data...) (checking master...) 
   Some annexed data is no longer used by any files:
     NUMBER  KEY
@@ -252,16 +411,46 @@ unused . (checking for unused data...) (checking master...)
   To remove unwanted data: git-annex dropunused NUMBER
   
 ok
-</code></pre></div><p>Now you can <strong>drop</strong> the unused data:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex dropunused 1-4
-</code></pre></div><h2 id="delete-unused-remote">Delete unused remote</h2>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now you can <strong>drop</strong> the unused data:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex dropunused 1-4
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="delete-unused-remote">Delete unused remote</h2>
 <p>First you&rsquo;ll have to mark the repo as <strong>dead</strong>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex dead &lt;remote name&gt;
-</code></pre></div><p>Then you&rsquo;ll have to <strong>forget</strong> the <strong>dead</strong> repo:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git-annex forget --force --drop-dead
-</code></pre></div><p>And finally you can <strong>remove</strong> the remote using <code>git</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git remote remove &lt;repo name&gt;
-</code></pre></div></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex dead &lt;remote name&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>Then you&rsquo;ll have to <strong>forget</strong> the <strong>dead</strong> repo:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git-annex forget --force --drop-dead
+</code></pre></td></tr></table>
+</div>
+</div><p>And finally you can <strong>remove</strong> the remote using <code>git</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git remote remove &lt;repo name&gt;
+</code></pre></td></tr></table>
+</div>
+</div></div>
   <div id="comments">
       
 <div id="disqus_thread"></div>

@@ -42,6 +42,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,9 +87,18 @@ type="image/x-icon"/>
     <time>02 Dec 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+13 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='https://blog.dornea.nu/tags/appsec' class="link silver">appsec</a> <a href='https://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/mobile' class="link silver">mobile</a> <a href='https://blog.dornea.nu/tags/burp' class="link silver">burp</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/iptables' class="link silver">iptables</a> <a href='https://blog.dornea.nu/tags/firewall' class="link silver">firewall</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Proxying HTTP(s) traffic from Android devices through Burp should be actually no magic. Nevertheless you&rsquo;ll have to take some important steps into consideration:</p>
 <ul>
@@ -246,7 +256,24 @@ type="image/x-icon"/>
 <li><em>Proxy-Type</em>: HTTP</li>
 </ul>
 <p>On <code>192.168.1.2</code> <strong>burp</strong> is listening in port <code>8080</code> for incoming connections. Now let&rsquo;s have a look at the iptables rules:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client-# iptables -t nat -L                                              
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client-# iptables -t nat -L                                              
 
 [...]
 
@@ -259,7 +286,9 @@ REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:5228 redir
 
 [...]
 
-</code></pre></div><p>We can see that:</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>We can see that:</p>
 <ul>
 <li>Every TCP-Connection with destination port <code>www</code> (80) will be redirected to <code>localhost:8123</code></li>
 <li>Every TCP-Connection with destination port <code>https</code> (443) will be redirected to <code>localhost:8124</code></li>
@@ -267,7 +296,22 @@ REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:5228 redir
 <p>Apparently <em>ProxyDroid</em> itself listens on ports <em>8123, 8124</em> for incoming connections before redirecting them to <strong>burp</strong>. Just for the sake of completeness, let&rsquo;s have a look at the <em>other</em> proxy types.</p>
 <h4 id="socks4">SOCKS4</h4>
 <p>Using <code>SOCKS4</code> as proxy type you&rsquo;ll get:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -L
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -L
 
 [...]
 
@@ -278,10 +322,27 @@ REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
 
 [...]
 
-</code></pre></div><p>Regardless of the port all connection will be redirected first to <code>localhost:8123</code> (ProxyDroid) and then to the specified <code>&lt;host&gt;:&lt;port&gt;</code> pair.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Regardless of the port all connection will be redirected first to <code>localhost:8123</code> (ProxyDroid) and then to the specified <code>&lt;host&gt;:&lt;port&gt;</code> pair.</p>
 <h4 id="socks5">SOCKS5</h4>
 <p>The iptables rules for <code>SOCKS5</code> and <code>SOCKS4</code> are pretty similar:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -L
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -L
 
 [...]
 
@@ -292,7 +353,9 @@ REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
 
 [...]
 
-</code></pre></div><p>In other words the <em>connection flow</em> looks like this:</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>In other words the <em>connection flow</em> looks like this:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
     blockdiag code
@@ -313,7 +376,27 @@ REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
 <p><img src="https://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx06.png" alt="png"></p>
 <h3 id="testing-the-connection">Testing the connection</h3>
 <p>Using a <strong>HTTP proxy</strong> we&rsquo;ll test the connection between <strong>android-client</strong> and some webserver out there. Since the connection is proxied through <strong>burp</strong> we should be able to see it. On <strong>android-client</strong> I run:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://www.spiegel.de/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://www.spiegel.de/
 HTTP/1.0 200 OK
 Date: Sat, 29 Nov 2014 13:09:13 GMT
 Cache-Control: max-age=90
@@ -329,23 +412,61 @@ X-Cache: HIT from lnxp-3958.srv.mediaways.net
 X-Cache-Lookup: HIT from lnxp-3958.srv.mediaways.net:101
 Via: 1.1 www.spiegel.de, 1.0 lnxp-3958.srv.mediaways.net (squid/3.1.4)
 Connection: close
-</code></pre></div><p>On <strong>burp</strong> I can see the request:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">HEAD / HTTP/1.1
+</code></pre></td></tr></table>
+</div>
+</div><p>On <strong>burp</strong> I can see the request:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">HEAD / HTTP/1.1
 User-Agent: curl/7.21.0 (arm-unknown-linux-gnueabi) libcurl/7.21.0 OpenSSL/0.9.8o zlib/1.2.3.4 libidn/1.15 libssh2/1.2.6
 Host: www.spiegel.de
 Accept: */*
 Proxy-Connection: close
 Connection: close
-</code></pre></div><p>So everything is ok, for now. But that&rsquo;s not the purpose of this post. Let&rsquo;s have a look at another text-based protocol we&rsquo;d like to sniff using <strong>burp</strong>.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>So everything is ok, for now. But that&rsquo;s not the purpose of this post. Let&rsquo;s have a look at another text-based protocol we&rsquo;d like to sniff using <strong>burp</strong>.</p>
 <h3 id="ssdp">SSDP</h3>
 <p>Using <strong>SSDP</strong> I&rsquo;d like to find any <em>UPnp</em> devices available on the LAN. All you need to do is to send an UDP message to the multicast address <code>239.255.255.250</code> on port <code>1900</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">M-SEARCH * HTTP/1.1
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">M-SEARCH * HTTP/1.1
 HOST: 239.255.255.250:1900
 MX: 5
 Man: “ssdp:discover”
 ST: urn:schemas-upnp-org:device:MediaRenderer:1
-</code></pre></div><p>Usually you can use <code>netcat</code> to send the request. In that case you should use:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# cat m-search.txt
+</code></pre></td></tr></table>
+</div>
+</div><p>Usually you can use <code>netcat</code> to send the request. In that case you should use:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# cat m-search.txt
 M-SEARCH * HTTP/1.1
 HOST: 239.255.255.250:1900
 MX: 5
@@ -354,8 +475,25 @@ ST: urn:schemas-upnp-org:device:MediaRenderer:1
 
 android-client# netcat 239.255.255.250 1900 &lt; m-search.txt
 (UNKNOWN) [239.255.255.250] 1900 (?) : Network is unreachable 
-</code></pre></div><p>Hmm&hellip;That&rsquo;s bad! Let&rsquo;s use another <a href="https://gist.github.com/provegard/1435555">SSDP client</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# python ssdp-test.py client 192.168.1.3
+</code></pre></td></tr></table>
+</div>
+</div><p>Hmm&hellip;That&rsquo;s bad! Let&rsquo;s use another <a href="https://gist.github.com/provegard/1435555">SSDP client</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# python ssdp-test.py client 192.168.1.3
 Received M-SEARCH * HTTP/1.1 from (&#39;192.168.1.49&#39;, 62861)
 Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
 Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
@@ -366,7 +504,9 @@ Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
 Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
 Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
 Received M-SEARCH * HTTP/1.1 from (&#39;192.168.1.49&#39;, 62861)
-</code></pre></div><p>Obviously we have found some devices. And because the requests were sent on <code>destination-port = 1900</code> you won&rsquo;t see them on <strong>burp</strong>. This is where <em>ProxyDroid</em> shows its first weakness. In general you&rsquo;re going to run into troubles if your requests are sent to a port different from <code>80</code> or <code>443</code>. So we need a more <em>generic</em> solution.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Obviously we have found some devices. And because the requests were sent on <code>destination-port = 1900</code> you won&rsquo;t see them on <strong>burp</strong>. This is where <em>ProxyDroid</em> shows its first weakness. In general you&rsquo;re going to run into troubles if your requests are sent to a port different from <code>80</code> or <code>443</code>. So we need a more <em>generic</em> solution.</p>
 <h3 id="port-forwarding">Port forwarding</h3>
 <p>Using <em>iptables</em> I&rsquo;ll re-route the traffic destinated to some specific <em>port</em> directly to <em>burp</em>.Without any proxies the connection &ldquo;flows&rdquo; between the client and the server. Using a proxy between them you&rsquo;ll have sth like this:</p>
 <details>
@@ -461,16 +601,44 @@ node[shape=record];</p>
 </blockquote>
 <h3 id="port-forwarding-on-the-client">Port forwarding on the client</h3>
 <p>Now we&rsquo;re ready to implement port forwarding on the client. We&rsquo;ll try to intercept all text-based traffic (like SSDP / HTTP etc.) destinated to <strong>port 8000</strong>. First of all we&rsquo;ll add <em>DNAT</em>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -A OUTPUT -p tcp --dport 8000 -j DNAT --to-destination 192.168.1.2:8080
-</code></pre></div><p>This will &ldquo;forward&rdquo; all host generated traffic destinated at port 1900 to <code>192.168.1.2:8080</code> (Burp instance). Recall iptables packet traversal scheme: The rule is being added to the <em>OUTPUT</em> chain before the packet reaches the <em>POSTROUTING</em> chain.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -A OUTPUT -p tcp --dport 8000 -j DNAT --to-destination 192.168.1.2:8080
+</code></pre></td></tr></table>
+</div>
+</div><p>This will &ldquo;forward&rdquo; all host generated traffic destinated at port 1900 to <code>192.168.1.2:8080</code> (Burp instance). Recall iptables packet traversal scheme: The rule is being added to the <em>OUTPUT</em> chain before the packet reaches the <em>POSTROUTING</em> chain.</p>
 <h4 id="server-listening-">Server listening &hellip;</h4>
 <p>The Server (dornea.nu) will listen for incoming connections on port 8080:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">server$ python3 -m http.server
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">server$ python3 -m http.server
 Serving HTTP on 0.0.0.0 port 8000 ...
 
-</code></pre></div><h4 id="client---server">Client -&gt; Server</h4>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="client---server">Client -&gt; Server</h4>
 <p>On the Client we&rsquo;ll use curl to access the Server:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://dornea.nu:8000/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://dornea.nu:8000/
 HTTP/1.0 200 OK
 Server: SimpleHTTP/0.6 Python/3.1.3
 Date: Sat, 29 Nov 2014 12:56:37 GMT
@@ -478,33 +646,68 @@ Content-type: text/html; charset=ascii
 Content-Length: 2952
 
 
-</code></pre></div><p>So obviously the packet reached its destination.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>So obviously the packet reached its destination.</p>
 <h4 id="dude-wheres-my-packet">Dude, where&rsquo;s my packet?</h4>
 <p>Sniffing for packets destinated to port 8000 won&rsquo;t give you any results:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# tshark port 8000
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# tshark port 8000
 Capturing on wlan0
 
 
-</code></pre></div><p>While triggering the <code>curl</code> command you won&rsquo;t be able to see the outgoing packets destinated to <code>http://dornea.nu:8000</code>. While rewriting the IP packet destination, the packet is <strong>not</strong> passed to the interface the address belongs to. It is handled by the network stack directly (<a href="http://serverfault.com/questions/502003/tcpdump-not-picking-up-traffic-redirected-by-iptables">SE answer</a>).</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>While triggering the <code>curl</code> command you won&rsquo;t be able to see the outgoing packets destinated to <code>http://dornea.nu:8000</code>. While rewriting the IP packet destination, the packet is <strong>not</strong> passed to the interface the address belongs to. It is handled by the network stack directly (<a href="http://serverfault.com/questions/502003/tcpdump-not-picking-up-traffic-redirected-by-iptables">SE answer</a>).</p>
 <h4 id="what-about-burp">What about Burp?</h4>
 <p>On <em>burp</em> you won&rsquo;t see anything. How comes? And this is the point where we come the final conclusion and also the main reason I&rsquo;ve written this post (sorry for the long prologue :)). And the reason is actually pretty &ldquo;invisible&rdquo; and can be found in Burps proxy options:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/38a52fceb67b54c86e46548098cd31ecee8f456c.png" alt="Burp invisible option"></p>
 <p>It&rsquo;s all about Burps <a href="http://portswigger.net/burp/help/proxy_options_invisible.html">invisible proxying</a>. It basically enables proxy support for non-proxy-aware clients to be able to connect directly to the listener (Burp). Editing the proxy options (Request Handling) you&rsquo;ll find these options:</p>
 <p><img src="https://blog.dornea.nu/img/2014/6899841c0a375a2a5ad1f5108ac0d62efab8fd79.png" alt="Burp non-proxy-aware support"></p>
 <p>Make sure you activate &ldquo;Support invisible proxying&rdquo;. Afterwards you can trigger <code>curl</code> again to see if it works:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://dornea.nu:8000/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://dornea.nu:8000/
 HTTP/1.0 200 OK
 Server: SimpleHTTP/0.6 Python/3.1.3
 Date: Sat, 29 Nov 2014 13:43:56 GMT
 Content-type: text/html; charset=ascii
 Content-Length: 2952
 
-</code></pre></div><p>On <strong>burp</strong> I&rsquo;ve seen:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">HEAD / HTTP/1.1
+</code></pre></td></tr></table>
+</div>
+</div><p>On <strong>burp</strong> I&rsquo;ve seen:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">HEAD / HTTP/1.1
 User-Agent: curl/7.21.0 (arm-unknown-linux-gnueabi) libcurl/7.21.0 OpenSSL/0.9.8o zlib/1.2.3.4 libidn/1.15 libssh2/1.2.6
 Host: dornea.nu:8000
 Accept: */*
-</code></pre></div><p>Perfect!</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Perfect!</p>
 <h2 id="no-iptables">No iptables?!</h2>
 <p>Ok, using iptables you&rsquo;re ready to implement port forwarding. But what if your device does <strong>not</strong> have iptables or anything similar even installed? I usually root or jailbreak my test devices for better handling but in case you can&rsquo;t you won&rsquo;t be able to do NATing on the device itself. In that case maybe a <strong>VPN</strong> would help. Just install a <em>VPN server</em> on the host running the <strong>burp</strong> instance and connect your devices to it. This way you should be able to set a HTTP proxy for your devices. I honestly admit I don&rsquo;t really know if this is going to work for 100%. Test for yourself and let me know. But since this problem affects me as well there&rsquo;ll be probably another post regarding this issue :). Stay tuned.</p>
 </div>

@@ -41,6 +41,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,9 +86,18 @@ type="image/x-icon"/>
     <time>10 Aug 2013</time> 
      | 
     
+
+    
+     ~
+  
+
+3 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/misc' class="link silver">misc</a> <a href='https://blog.dornea.nu/tags/wtf' class="link silver">wtf</a> <a href='https://blog.dornea.nu/tags/gentoo' class="link silver">gentoo</a> <a href='https://blog.dornea.nu/tags/systemd' class="link silver">systemd</a> <a href='https://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='https://blog.dornea.nu/tags/update' class="link silver">update</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>OK, first some explanations:</p>
 <ul>
@@ -115,11 +125,51 @@ type="image/x-icon"/>
 <ul>
 <li>Remove all USE flags related to consolekit:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># euse -D consolekit policykit upower udisks
-</code></pre></div><ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># euse -D consolekit policykit upower udisks
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>Make sure you have a <code>clean</code> /etc/make.conf. Here is mine:</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># These settings were set by the catalyst build script that automatically
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># These settings were set by the catalyst build script that automatically
 # built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more
 # detailed example.
@@ -148,10 +198,32 @@ FEATURES=&#34;-userfetch&#34;
 #   euse - bug #474574
 #   euses and ufed - bug #478318
 PORTDIR=&#34;/usr/portage&#34;
-</code></pre></div><ul>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>Make sure you have selected the right profile</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># eselect profile list
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># eselect profile list
 Available profile symlink targets:
   [1]   default/linux/amd64/13.0
   [2]   default/linux/amd64/13.0/selinux
@@ -167,31 +239,74 @@ Available profile symlink targets:
   [12]  hardened/linux/amd64/no-multilib/selinux
   [13]  hardened/linux/amd64/x32
   [14]  hardened/linux/uclibc/amd64
-</code></pre></div><ul>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>Adjust profile settings</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># cd /etc/portage/profile
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># cd /etc/portage/profile
 # cat use.force
 -consolekit
 # cat use.mask
 consolekit
 -systemd
-</code></pre></div><ul>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>Remove udev, consolekit and polkit</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -aC udev consolekit polkit
-</code></pre></div><ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># emerge -aC udev consolekit polkit
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>Now you should be able to install systemd</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -pv systemd
-</code></pre></div><ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># emerge -pv systemd
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>Now update your system</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge --keep-going --jobs 4 --update --newuse --ask --deep --with-bdeps=y @world
-</code></pre></div><p>Additional steps to clean up your system:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># emerge -a --depclean
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># emerge --keep-going --jobs 4 --update --newuse --ask --deep --with-bdeps=y @world
+</code></pre></td></tr></table>
+</div>
+</div><p>Additional steps to clean up your system:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># emerge -a --depclean
 # revdep-rebuild -- -q --keep-going
-</code></pre></div></div>
+</code></pre></td></tr></table>
+</div>
+</div></div>
   <div id="comments">
       
 <div id="disqus_thread"></div>

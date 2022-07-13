@@ -42,6 +42,7 @@ Basically the tags works as follows:" />
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,21 +87,54 @@ type="image/x-icon"/>
     <time>13 Nov 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+4 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/pelican' class="link silver">pelican</a> <a href='https://blog.dornea.nu/tags/graphviz' class="link silver">graphviz</a> <a href='https://blog.dornea.nu/tags/viz' class="link silver">viz</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>I really like keeping things simple. And I also like generating figures from code using <code>Graphviz</code>. And since there was no Graphviz <strong>plugin</strong> for <strong>pelican</strong> I wrote my own one.</p>
 <p>Using <a href="https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags">liquid tags</a> I wanted to get my graphviz code rendered and automatically included as a <strong>base64 encoded</strong> image in my HTML code. I&rsquo;ve created a <a href="https://github.com/getpelican/pelican-plugins/pull/356">pull request</a> but you can find a fork at <a href="https://github.com/dorneanu/pelican-plugins">dorneanu-pelican</a>.</p>
 <p>Basically the tags works as follows:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">{% graphviz 
 	&lt;program&gt; {
 		&lt;DOT CODE&gt;
 	}
 %}
-</code></pre></div><p><code>program</code> could be <code>dot</code>, <code>neato</code>, <code>twopi</code>, <code>circo</code> etc. The <code>DOT CODE</code> is simply sent to the binary utility and the output (PNG data) is saved into the document.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>program</code> could be <code>dot</code>, <code>neato</code>, <code>twopi</code>, <code>circo</code> etc. The <code>DOT CODE</code> is simply sent to the binary utility and the output (PNG data) is saved into the document.</p>
 <p>This is some minimal example:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">{% graphviz 
 	dot { 
 			digraph graphname { 
 				a -&gt; b -&gt; c; 
@@ -109,7 +143,9 @@ type="image/x-icon"/>
 			} 
 		}
 %}
-</code></pre></div><p>which will be rendered to:</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>which will be rendered to:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
     Graphviz code
@@ -126,7 +162,20 @@ e -&gt; f;
 
 <p><img src="https://blog.dornea.nu/posts/img/2014/pelican-graphviz-liquid-tags/example1.dot.png" alt="example1"></p>
 <p>You could then use <code>neato</code> instead of <code>dot</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">{% graphviz 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">{% graphviz 
 neato { 
         digraph graphname { 
             a -&gt; b -&gt; c; 
@@ -135,7 +184,9 @@ neato {
         } 
     }
 %}
-</code></pre></div><p>&hellip;which will be rendered to:</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>&hellip;which will be rendered to:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
     Graphviz code

@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,14 +85,36 @@ type="image/x-icon"/>
     <time>03 Oct 2010</time> 
      | 
     
+
+    
+     ~
+  
+
+4 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='https://blog.dornea.nu/tags/icmp' class="link silver">icmp</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a> <a href='https://blog.dornea.nu/tags/icmpknock' class="link silver">icmpknock</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>This time I&rsquo;d like to give you a short usage description of <a href="http://github.com/dorneanu/icmpKNOCK">icmpKNOCK</a> that was recently released. The main reason I wrote it was lack of security measurements on my boxes. I didn&rsquo;t want any sophisticated IDS tools nor complicated monitoring services. I wanted to implement something which will run on (almost) any platform without any external toolsb. Since the ping utility is available on most modern systems using ICMP packets to communicate with the server was the most reasonable approach. There are plenty of other <strong>port knocking</strong> tools but these are mostly binaries. These have to be first compiled on the running system which is bad. So the second thought was to use a programming language powerful enough to fulfill my needs and be portable. It had to be Python.</p>
 <h2 id="getting-started">Getting started</h2>
 <p>First you&rsquo;ll have to get the latest version of icmpKNOCK. Please check the SVN download <a href="http://github.com/dorneanu/icmpKNOCK">link</a> for the newest packages. Then make sure to upload the package to your server and copy it to a secret place where nobody - besides you - has read permissions on the actions file. Why is that important? Because the actions file contains your <code>secret</code> hex sequences used to trigger certain actions. So you don&rsquo;t want anybody to know these ones. In that case potential attackers might manipulate the behaviour of your system without noticing it.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">~/icmpknock/v0.2.r9# ls -l
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">~/icmpknock/v0.2.r9# ls -l
 total 32
 -rw-r--r-- 1 root root   35 Sep  9 13:45 AUTHORS
 -rw-r--r-- 1 root root  340 Sep  9 14:19 CHANGELOG
@@ -100,9 +123,28 @@ drwxr-xr-x 2 root root 4096 Sep 30 16:33 conf
 -rwxr-xr-x 1 root root 4575 Sep  9 13:45 icmpKNOCK.py
 drwxr-xr-x 2 root root 4096 Sep 30 16:11 modules
 drwxr-xr-x 2 root root 4096 Sep 30 16:11 scripts
-</code></pre></div><h2 id="generate-hex-sequences">Generate hex sequences</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="generate-hex-sequences">Generate hex sequences</h2>
 <p>Now you&rsquo;ll have to generate your keys. You could use MD4, MD5, SHA-1 etc hashes. This is what I did:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ for i in `seq 1 10`; 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ for i in `seq 1 10`; 
 do pwgen 20 1 | md5; 
 done        
 bf6e1e0c0ce8fedb43146e50d1b281f9                                                
@@ -115,31 +157,66 @@ cfdff084e3442c5b8613ac75aa5147ad
 d047732f4c0b083f8f322437f0071bb9
 56bb53f69f701975db0977f316cd6402
 b124d903a6c510fbba2b1ccb23a11f2d
-</code></pre></div><p>That should do the work. Now you&rsquo;ll have to edit your actions file (conf/actions.conf) and copy these values to it. Please have a look at the descriptive text inside the file for further information.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>That should do the work. Now you&rsquo;ll have to edit your actions file (conf/actions.conf) and copy these values to it. Please have a look at the descriptive text inside the file for further information.</p>
 <h2 id="define-actions">Define actions</h2>
 <p>This is the most interesting part. In this HowTo I&rsquo;ll give you an example how to block/open SSH port 22 using icmpKNOCK. Therefor I&rsquo;ll be using iptables which should be available within every Linux distribution. So let&rsquo;s start&hellip;</p>
 <p>For this tutorial the SSH port should be always closed. Let&rsquo;s define the action describing that:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[stop_ssh]
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[stop_ssh]
 keys = &lt;your secret keys here&gt;
 payload = iptables -A INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
-</code></pre></div><p>Everytime the server receives the secret hex sequences it will close port 22 to block any external connections. What about opening it?</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[start_ssh]
+</code></pre></td></tr></table>
+</div>
+</div><p>Everytime the server receives the secret hex sequences it will close port 22 to block any external connections. What about opening it?</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[start_ssh]
 keys = &lt;your secret keys here&gt;
 payload = iptables -D INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
-</code></pre></div><p>In that case you simply delete the previously created rule. Afterwards port 22 should be open again.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>In that case you simply delete the previously created rule. Afterwards port 22 should be open again.</p>
 <p>Of course: There are lot of other possible configurations. Perhaps it is a better idea to define only 1 action which allows you to connect to port 22 within 20 seconds, close the port again after 20 seconds and keep the established connections. Feel free to use your brain.</p>
 <h2 id="prepare-your-scripts">Prepare your scripts</h2>
 <p>Your server - along with the Python application - will listen for incoming ICMP packets. Your client will be the ping utility as described above. In order to send your sequences to the server you&rsquo;ll need a small bash script which will do the rest for you:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd2828;font-weight:bold">#!/bin/sh
-</span><span style="color:#cd2828;font-weight:bold"></span>
-<span style="color:#40ffff">HOST</span>=&lt;your host here&gt;
-<span style="color:#40ffff">keys</span>=&lt;your keys here&gt;<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/sh
+</span><span class="cp"></span>
+<span class="nv">HOST</span><span class="o">=</span>&lt;your host here&gt;
+<span class="nv">keys</span><span class="o">=</span>&lt;your keys here&gt;<span class="err">&#39;</span>
 
-<span style="color:#6ab825;font-weight:bold">for</span> k in <span style="color:#40ffff">$keys</span>
-<span style="color:#6ab825;font-weight:bold">do</span>
-   ping -c <span style="color:#3677a9">1</span> -p <span style="color:#40ffff">$k</span> <span style="color:#40ffff">$HOST</span>
-<span style="color:#6ab825;font-weight:bold">done</span>
-</code></pre></div><p>That&rsquo;s all. Just name your script something like <code>start_ssh.sh</code> and run it every time you you&rsquo;ll connect to the server. The same applies to <code>cllosing the port</code>.</p>
+<span class="k">for</span> k in <span class="nv">$keys</span>
+<span class="k">do</span>
+   ping -c <span class="m">1</span> -p <span class="nv">$k</span> <span class="nv">$HOST</span>
+<span class="k">done</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>That&rsquo;s all. Just name your script something like <code>start_ssh.sh</code> and run it every time you you&rsquo;ll connect to the server. The same applies to <code>cllosing the port</code>.</p>
 <p>For any comments, new features or simply feedback, please use the comment functionality or drop me a mail.</p>
 </div>
   <div id="comments">

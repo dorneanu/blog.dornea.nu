@@ -11,7 +11,7 @@
 
 <meta property="og:description" content="I was recently playing around with D3Â and discovered its dashboard posibilities.dashboarddude.comÂ has a nice compilation of really fancy dashboards (I was mainly interested in D3 but voila&hellip; there are also other ways to do it).
 Meanwhile I was remembered of old good IPython Notebook and its plotting features. This is what came out (You can find the code also on Github Gist: https://gist.github.com/dorneanu/9407737):
-import datetime as dt import matplotlib.dates as mdates from mpl_toolkits." />
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83  import datetime as dt import matplotlib." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/03/07/unfancy-dashboard-using-matplotlib/" />
 
@@ -42,6 +42,7 @@ import datetime as dt import matplotlib.dates as mdates from mpl_toolkits." />
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,96 +87,194 @@ type="image/x-icon"/>
     <time>07 Mar 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/misc' class="link silver">misc</a> <a href='https://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='https://blog.dornea.nu/tags/viz' class="link silver">viz</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/matplotlib' class="link silver">matplotlib</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>I was recently playing around with <a href="http://d3js.org/">D3</a>Â and discovered its dashboard posibilities.<a href="http://dashboarddude.com/"> dashboarddude.com</a>Â has a nice compilation of really fancy dashboards (I was mainly interested in D3 but voila&hellip; there are also other ways to do it).</p>
 <p>Meanwhile I was remembered of old good <a href="http://ipython.org/notebook">IPython Notebook</a> and its plotting features. This is what came out (You can find the code also on <strong>Github Gist</strong>: <a href="https://gist.github.com/dorneanu/9407737">https://gist.github.com/dorneanu/9407737</a>):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">datetime</span> <span style="color:#6ab825;font-weight:bold">as</span> <span style="color:#447fcf;text-decoration:underline">dt</span>
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">matplotlib.dates</span> <span style="color:#6ab825;font-weight:bold">as</span> <span style="color:#447fcf;text-decoration:underline">mdates</span>
-<span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">mpl_toolkits.axes_grid.axislines</span> <span style="color:#6ab825;font-weight:bold">import</span> Subplot
-<span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">time</span> <span style="color:#6ab825;font-weight:bold">import</span> sleep
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.dates</span> <span class="k">as</span> <span class="nn">mdates</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid.axislines</span> <span class="kn">import</span> <span class="n">Subplot</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
 
-%matplotlib inline
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
 
-<span style="color:#6ab825;font-weight:bold">def</span> <span style="color:#447fcf">gen_dashboard</span>():
-    <span style="color:#999;font-style:italic"># Generate months</span>
-    months = []
-    <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">1</span>,<span style="color:#3677a9">13</span>):
-        months.append((i, datetime.date(<span style="color:#3677a9">2013</span>, i, <span style="color:#3677a9">1</span>).strftime(<span style="color:#ed9d13">&#39;%Y-%m&#39;</span>)))
+<span class="k">def</span> <span class="nf">gen_dashboard</span><span class="p">():</span>
+    <span class="c1"># Generate months</span>
+    <span class="n">months</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">13</span><span class="p">):</span>
+        <span class="n">months</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">)))</span>
 
-    <span style="color:#999;font-style:italic"># Generate data</span>
-    t_fixed = np.random.randint(<span style="color:#3677a9">50</span>, size=<span style="color:#24909d">len</span>(months))
-    t_closed = np.random.randint(<span style="color:#3677a9">100</span>, size=<span style="color:#24909d">len</span>(months))
-    t_open = np.random.randint(<span style="color:#3677a9">100</span>, size=<span style="color:#24909d">len</span>(months))
-    t_wip = np.random.randint(<span style="color:#3677a9">50</span>, size=<span style="color:#24909d">len</span>(months))
-    t_wfix = np.random.randint(<span style="color:#3677a9">50</span>, size=<span style="color:#24909d">len</span>(months))
+    <span class="c1"># Generate data</span>
+    <span class="n">t_fixed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">months</span><span class="p">))</span>
+    <span class="n">t_closed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">months</span><span class="p">))</span>
+    <span class="n">t_open</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">months</span><span class="p">))</span>
+    <span class="n">t_wip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">months</span><span class="p">))</span>
+    <span class="n">t_wfix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">months</span><span class="p">))</span>
 
-    <span style="color:#999;font-style:italic"># Set x axis</span>
-    x = np.array([i[<span style="color:#3677a9">1</span>] <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> months])
-    x = np.array([datetime.datetime(<span style="color:#3677a9">2013</span>, <span style="color:#3677a9">9</span>, <span style="color:#3677a9">28</span>, i, <span style="color:#3677a9">0</span>) <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> <span style="color:#24909d">range</span>(<span style="color:#3677a9">12</span>)])
-    x = [dt.datetime.strptime(i[<span style="color:#3677a9">1</span>],<span style="color:#ed9d13">&#39;%Y-%m&#39;</span>).date() <span style="color:#6ab825;font-weight:bold">for</span> i <span style="color:#6ab825;font-weight:bold">in</span> months]
+    <span class="c1"># Set x axis</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">months</span><span class="p">])</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">)])</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">months</span><span class="p">]</span>
 
-    <span style="color:#999;font-style:italic"># Create matplotlib figures</span>
-    my_dpi = <span style="color:#3677a9">80</span>
+    <span class="c1"># Create matplotlib figures</span>
+    <span class="n">my_dpi</span> <span class="o">=</span> <span class="mi">80</span>
 
-    <span style="color:#999;font-style:italic">### Fig 1 ##########################################################</span>
-    fig1 = plt.figure(<span style="color:#3677a9">0</span>,figsize=(<span style="color:#3677a9">2000</span>/my_dpi, <span style="color:#3677a9">900</span>/my_dpi), dpi=my_dpi)
-    fig1.add_subplot(<span style="color:#3677a9">221</span>)
-    plt.plot(x, t_fixed, marker=<span style="color:#ed9d13">&#39;*&#39;</span>, linestyle=<span style="color:#ed9d13">&#39;-&#39;</span>, color=<span style="color:#ed9d13">&#39;g&#39;</span>, label=<span style="color:#ed9d13">&#39;Fixed&#39;</span>)
-    plt.plot(x, t_closed, marker=<span style="color:#ed9d13">&#39;*&#39;</span>, linestyle=<span style="color:#ed9d13">&#39;--&#39;</span>, color=<span style="color:#ed9d13">&#39;b&#39;</span>, label=<span style="color:#ed9d13">&#39;Closed&#39;</span>)
-    plt.fill_between(x,t_closed,<span style="color:#3677a9">0</span>,color=<span style="color:#ed9d13">&#39;green&#39;</span>)
-    plt.fill_between(x,t_fixed,<span style="color:#3677a9">0</span>,color=<span style="color:#ed9d13">&#39;black&#39;</span>)
+    <span class="c1">### Fig 1 ##########################################################</span>
+    <span class="n">fig1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2000</span><span class="o">/</span><span class="n">my_dpi</span><span class="p">,</span> <span class="mi">900</span><span class="o">/</span><span class="n">my_dpi</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">my_dpi</span><span class="p">)</span>
+    <span class="n">fig1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_fixed</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Fixed&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_closed</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Closed&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t_closed</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t_fixed</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
 
-    <span style="color:#999;font-style:italic"># Some dates settings</span>
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter(<span style="color:#ed9d13">&#39;%Y-%m&#39;</span>))
-    plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
+    <span class="c1"># Some dates settings</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">())</span>
 
-    <span style="color:#999;font-style:italic"># Label axis</span>
-    plt.xlabel(<span style="color:#ed9d13">&#39;Datum&#39;</span>)
-    plt.ylabel(<span style="color:#ed9d13">&#39;# Issues&#39;</span>)
-    plt.legend(loc=<span style="color:#ed9d13">&#34;upper right&#34;</span>)
-    plt.grid(<span style="color:#6ab825;font-weight:bold">True</span>)
+    <span class="c1"># Label axis</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Datum&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;# Issues&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&#34;upper right&#34;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-    <span style="color:#999;font-style:italic">### Fig 2 ##########################################################</span>
-    fig2 = figure(<span style="color:#3677a9">0</span>, figsize=(<span style="color:#3677a9">2000</span>/my_dpi, <span style="color:#3677a9">2000</span>/my_dpi), dpi=my_dpi)
-    fig2.add_subplot(<span style="color:#3677a9">222</span>)
-    plt.plot(x, t_wip, linestyle=<span style="color:#ed9d13">&#39;--&#39;</span>, color=<span style="color:#ed9d13">&#39;b&#39;</span>, label=<span style="color:#ed9d13">&#39;Work in progress&#39;</span>)
-    plt.plot(x, t_closed, linestyle=<span style="color:#ed9d13">&#39;--&#39;</span>, color=<span style="color:#ed9d13">&#39;r&#39;</span>, label=<span style="color:#ed9d13">&#39;Open&#39;</span>)
-    plt.legend()
-
-
-    <span style="color:#999;font-style:italic">### Fig 3 ##########################################################</span>
-    fig3 = figure(<span style="color:#3677a9">1</span>, figsize=(<span style="color:#3677a9">2000</span>/my_dpi, <span style="color:#3677a9">1800</span>/my_dpi), dpi=my_dpi)
-    fig3.add_subplot(<span style="color:#3677a9">223</span>)
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter(<span style="color:#ed9d13">&#39;%Y-%m&#39;</span>))
-    plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
-
-    plt.plot(x, t_wip, linestyle=<span style="color:#ed9d13">&#39;--&#39;</span>, color=<span style="color:#ed9d13">&#39;b&#39;</span>, label=<span style="color:#ed9d13">&#39;Work in progress&#39;</span>)
-    plt.plot(x, t_open, linestyle=<span style="color:#ed9d13">&#39;--&#39;</span>, color=<span style="color:#ed9d13">&#39;r&#39;</span>, label=<span style="color:#ed9d13">&#39;Open&#39;</span>)
-    plt.fill_between(x,t_wip,<span style="color:#3677a9">0</span>,color=<span style="color:#ed9d13">&#39;orange&#39;</span>)
-    <span style="color:#999;font-style:italic">#plt.fill_between(x,t_open,0,color=&#39;black&#39;)</span>
-    plt.legend()
+    <span class="c1">### Fig 2 ##########################################################</span>
+    <span class="n">fig2</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2000</span><span class="o">/</span><span class="n">my_dpi</span><span class="p">,</span> <span class="mi">2000</span><span class="o">/</span><span class="n">my_dpi</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">my_dpi</span><span class="p">)</span>
+    <span class="n">fig2</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_wip</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Work in progress&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_closed</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Open&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
 
-    <span style="color:#999;font-style:italic">### Fig 4 #########################################################</span>
-    fig4 = figure(<span style="color:#3677a9">1</span>, figsize=(<span style="color:#3677a9">4</span>,<span style="color:#3677a9">4</span>))
-    ax = fig4.add_subplot(<span style="color:#3677a9">224</span>)
-    <span style="color:#999;font-style:italic">#ax = Subplot(fig4, 224</span>
-    <span style="color:#999;font-style:italic">#ax = plt.axes([0.5, 0.5, 0.4, 0.4])</span>
-    <span style="color:#999;font-style:italic"># plt.axes([0.5, 0.5, 0.8, 0.8])</span>
-    labels = <span style="color:#ed9d13">&#39;Closed&#39;</span>, <span style="color:#ed9d13">&#39;Fixed&#39;</span>, <span style="color:#ed9d13">&#39;Work in Progress&#39;</span>, <span style="color:#ed9d13">&#39;Won</span><span style="color:#ed9d13">\&#39;</span><span style="color:#ed9d13">t Fix&#39;</span>, <span style="color:#ed9d13">&#39;Open&#39;</span>
-    colors = (<span style="color:#ed9d13">&#39;orange&#39;</span>, <span style="color:#ed9d13">&#39;green&#39;</span>, <span style="color:#ed9d13">&#39;yellow&#39;</span>, <span style="color:#ed9d13">&#39;black&#39;</span>, <span style="color:#ed9d13">&#39;grey&#39;</span>)
-    fracs = np.random.randint(<span style="color:#3677a9">50</span>, size=<span style="color:#24909d">len</span>(labels))
-    plt.pie(fracs,labels=labels, colors=colors, autopct=<span style="color:#ed9d13">&#39;</span><span style="color:#ed9d13">%1.1f%%</span><span style="color:#ed9d13">&#39;</span>, shadow=<span style="color:#6ab825;font-weight:bold">True</span>, startangle=<span style="color:#3677a9">90</span>)
-    plt.title(<span style="color:#ed9d13">&#39;Issues overview&#39;</span>)
+    <span class="c1">### Fig 3 ##########################################################</span>
+    <span class="n">fig3</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2000</span><span class="o">/</span><span class="n">my_dpi</span><span class="p">,</span> <span class="mi">1800</span><span class="o">/</span><span class="n">my_dpi</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">my_dpi</span><span class="p">)</span>
+    <span class="n">fig3</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">())</span>
 
-    plt.show()
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_wip</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Work in progress&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_open</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Open&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t_wip</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+    <span class="c1">#plt.fill_between(x,t_open,0,color=&#39;black&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
 
-gen_dashboard()
-</code></pre></div><p>The code just generates 4 time series data and displays them in several plots. A pie chart is also included. I hope somebody will find it useful.</p>
+    <span class="c1">### Fig 4 #########################################################</span>
+    <span class="n">fig4</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig4</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">)</span>
+    <span class="c1">#ax = Subplot(fig4, 224</span>
+    <span class="c1">#ax = plt.axes([0.5, 0.5, 0.4, 0.4])</span>
+    <span class="c1"># plt.axes([0.5, 0.5, 0.8, 0.8])</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="s1">&#39;Closed&#39;</span><span class="p">,</span> <span class="s1">&#39;Fixed&#39;</span><span class="p">,</span> <span class="s1">&#39;Work in Progress&#39;</span><span class="p">,</span> <span class="s1">&#39;Won</span><span class="se">\&#39;</span><span class="s1">t Fix&#39;</span><span class="p">,</span> <span class="s1">&#39;Open&#39;</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+    <span class="n">fracs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">fracs</span><span class="p">,</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">autopct</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%1.1f%%</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">startangle</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Issues overview&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="n">gen_dashboard</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The code just generates 4 time series data and displays them in several plots. A pie chart is also included. I hope somebody will find it useful.</p>
 <p>And the result:</p>
 </div>
   <div id="comments">

@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="Introducing my TP-Link TL-WR1043ND:
-Summary  OS: Linux OpenWrt 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Linux CPU: system type : Atheros AR9132 rev 2 machine : TP-LINK TL-WR1043ND processor : 0 cpu model : MIPS 24Kc V7.4  Filesystems root@OpenWrt:~# df -Ph Filesystem Size Used Available Capacity Mounted on /dev/root 2.1M 2.1M 0 100% /rom tmpfs 14.4M 232.0K 14.2M 2% /tmp tmpfs 512.0K 0 512.0K 0% /dev /dev/sda1 1." />
+Summary  OS: Linux OpenWrt 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Linux CPU: system type : Atheros AR9132 rev 2 machine : TP-LINK TL-WR1043ND processor : 0 cpu model : MIPS 24Kc V7.4  Filesystems 1 2 3 4 5 6 7  root@OpenWrt:~# df -Ph Filesystem Size Used Available Capacity Mounted on /dev/root 2.1M 2.1M 0 100% /rom tmpfs 14.4M 232.0K 14.2M 2% /tmp tmpfs 512." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2011/03/19/my-own-cheap-nas-the-openwrt-way/" />
 
@@ -41,6 +41,7 @@ Summary  OS: Linux OpenWrt 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Li
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,9 +86,18 @@ type="image/x-icon"/>
     <time>19 Mar 2011</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/openwrt' class="link silver">openwrt</a> <a href='https://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='https://blog.dornea.nu/tags/iptables' class="link silver">iptables</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Introducing my <strong>TP-Link TL-WR1043ND</strong>:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2011/236/tp-link-TL-WR1043ND_2.jpg" alt="TP Link"></p>
@@ -100,18 +110,57 @@ processor               : 0
 cpu model               : MIPS 24Kc V7.4</pre></li>
 </ul>
 <h2 id="filesystems">Filesystems</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# df -Ph
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# df -Ph
 Filesystem                Size      Used Available Capacity Mounted on
 /dev/root                 2.1M      2.1M         0 100% /rom
 tmpfs                    14.4M    232.0K     14.2M   2% /tmp
 tmpfs                   512.0K         0    512.0K   0% /dev
 /dev/sda1                 1.8G     64.6M      1.8G   3% /overlay
 mini_fo:/overlay          2.1M      2.1M         0 100% /
-</code></pre></div><p>As you can see a USB-Hub is attached along with a 2GB USB-Stick. I used it to store my rootfs on external storage [1]. Additionally my 2TB external hard drived is attached to the device so I can access the data per NFS [2].</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>As you can see a USB-Hub is attached along with a 2GB USB-Stick. I used it to store my rootfs on external storage [1]. Additionally my 2TB external hard drived is attached to the device so I can access the data per NFS [2].</p>
 <p><img src="https://blog.dornea.nu/posts/img/2011/236/tp-link-TL-WR1043ND_1.jpg" alt="TP Link"></p>
 <h2 id="firewall">Firewall</h2>
 <p>These are my firewall [3] rules:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# cat /etc/firewall.user 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# cat /etc/firewall.user 
 # This file is interpreted as shell script.
 # Put your custom iptables rules here, they will
 # be executed with each firewall (re-)start.
@@ -133,7 +182,9 @@ $IPT -I INPUT -j ACCEPT -i eth0.1 -s $NET_LAN -p udp --dport 32777:32780
 # minidlna
 $IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p tcp --dport 8200
 $IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 8200
-</code></pre></div><h2 id="what-about-speed">What about speed?</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="what-about-speed">What about speed?</h2>
 <p><img src="https://blog.dornea.nu/posts/img/2011/236/tp-link_speed-test.png" alt="TP Link speed"></p>
 <p>In general you won&rsquo;t get more than <strong>5.60MB/s</strong>. It depends on your drives read/write speed and the connection. In my case I was using WLAN which was slower than normal LAN connectivity.  But that&rsquo;s fine with me.</p>
 <h2 id="conclusion">Conclusion</h2>

@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,9 +85,18 @@ type="image/x-icon"/>
     <time>19 Feb 2015</time> 
      | 
     
+
+    
+     ~
+  
+
+3 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/note' class="link silver">note</a> <a href='https://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='https://blog.dornea.nu/tags/mobile' class="link silver">mobile</a> <a href='https://blog.dornea.nu/tags/iptables' class="link silver">iptables</a> <a href='https://blog.dornea.nu/tags/network' class="link silver">network</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>If you want to redirect you Android devices traffic to your Burp instance, you&rsquo;ll just have to use <strong>DNAT</strong>
 and <strong>MASQUERADING</strong>. I was more detailed about this topic in <a href="http://blog.dornea.nu/2014/12/02/howto-proxy-non-proxy-aware-android-applications-through-burp/">this</a>
@@ -133,16 +143,64 @@ internet &ndash; router;</p>
 <p>%}</p>
 <p>Let&rsquo;s begin:</p>
 <h3 id="flush-iptables-nat-table">Flush iptables NAT table</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -F&#34;
-</code></pre></div><h3 id="redirect-http-traffic-to-burp">Redirect HTTP traffic to Burp</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 192.168.0.2:8080
-</code></pre></div><h3 id="redirect-https-traffic-to-burp">Redirect HTTPS traffic to Burp</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 192.168.0.2:8080
-</code></pre></div><h3 id="activate-masquerading">Activate Masquerading</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE&#34;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -F&#34;
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="redirect-http-traffic-to-burp">Redirect HTTP traffic to Burp</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 192.168.0.2:8080
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="redirect-https-traffic-to-burp">Redirect HTTPS traffic to Burp</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 192.168.0.2:8080
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="activate-masquerading">Activate Masquerading</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE&#34;
 $ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE&#34;
-</code></pre></div><p>That&rsquo;s it. You can test it by making a HTTPS connection to <code>paypal.com</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ curl -I https://www.paypal.com
+</code></pre></td></tr></table>
+</div>
+</div><p>That&rsquo;s it. You can test it by making a HTTPS connection to <code>paypal.com</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ curl -I https://www.paypal.com
 curl: (60) SSL certificate problem, verify that the CA cert is OK. Details:
 error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
 More details here: http://curl.haxx.se/docs/sslcerts.html
@@ -157,7 +215,9 @@ If this HTTPS server uses a certificate signed by a CA represented in
  not match the domain name in the URL).
 If you&#39;d like to turn off curl&#39;s verification of the certificate, use
  the -k (or --insecure) option.
-</code></pre></div><p>This happens because Burp is presenting the client (curl) it&rsquo;s own certificate. If you see that, then you&rsquo;re
+</code></pre></td></tr></table>
+</div>
+</div><p>This happens because Burp is presenting the client (curl) it&rsquo;s own certificate. If you see that, then you&rsquo;re
 successfully redirecting your HTTP(s) traffic to Burp.</p>
 <blockquote>
 <p>This should also work for other ports/protocols.</p>

@@ -10,9 +10,8 @@
 
 
 <meta property="og:description" content="Sometimes you need to know if a certain IP (or several ones) are within an IP range or belong to a certain ASN. Let&rsquo;s give it a try and generate all possible IP addresses for telekom.de.
-$ dig telekom.de ... telekom.de. 86346 IN A 46.29.100.76 ... Now let&rsquo;s find out the ASN:
-$ whois 46.29.100.76 | grep origin origin: AS34086 Now ask RIPE for the IP ranges:
-$ whois -h whois." />
+1 2 3 4  $ dig telekom.de ... telekom.de. 86346 IN A 46.29.100.76 ...   Now let&rsquo;s find out the ASN:
+1 2  $ whois 46.29.100.76 | grep origin origin: AS34086   Now ask RIPE for the IP ranges:" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/09/17/generate-all-ip-addresses-from-asn/" />
 
@@ -43,6 +42,7 @@ $ whois -h whois." />
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -87,20 +87,63 @@ type="image/x-icon"/>
     <time>17 Sep 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='https://blog.dornea.nu/tags/ipv4' class="link silver">ipv4</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Sometimes you need to know if a certain IP (or several ones) are within an IP range or belong to a certain <a href="http://en.wikipedia.org/wiki/Autonomous_System_%28Internet%29">ASN</a>. Let&rsquo;s give it a try and generate all possible IP addresses for <a href="http://telekom.de">telekom.de</a>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ dig telekom.de 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ dig telekom.de 
 ...
-telekom.de.     <span style="color:#3677a9">86346</span>   IN  A   46.29.100.76
+telekom.de.     <span class="m">86346</span>   IN  A   46.29.100.76
 ...
-</code></pre></div><p>Now let&rsquo;s find out the ASN:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ whois 46.29.100.76 | grep origin            
+</code></pre></td></tr></table>
+</div>
+</div><p>Now let&rsquo;s find out the ASN:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ whois 46.29.100.76 <span class="p">|</span> grep origin            
 origin:         AS34086
-</code></pre></div><p>Now ask <a href="http://ripe.net">RIPE</a> for the IP ranges:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ whois -h whois.ripe.net -T route AS34086 -i origin | egrep <span style="color:#ed9d13">&#34;route: &#34;</span> | awk <span style="color:#ed9d13">&#39;{print $NF}&#39;</span>   
+</code></pre></td></tr></table>
+</div>
+</div><p>Now ask <a href="http://ripe.net">RIPE</a> for the IP ranges:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ whois -h whois.ripe.net -T route AS34086 -i origin <span class="p">|</span> egrep <span class="s2">&#34;route: &#34;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $NF}&#39;</span>   
 145.225.1.0/24
 151.136.0.0/16
 185.9.216.0/22
@@ -112,26 +155,65 @@ origin:         AS34086
 46.29.96.0/21
 93.188.240.0/21
 94.100.240.0/20
-</code></pre></div><p>Now for every IP range let&rsquo;s generate all <em>possible</em> IP addresses. Therefore I&rsquo;ve wrote a simple python script.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now for every IP range let&rsquo;s generate all <em>possible</em> IP addresses. Therefore I&rsquo;ve wrote a simple python script.</p>
 <blockquote>
 <p>I know there is <a href="www.cpan.org/authors/id/R/RA/RAYNERLUC/cidr2range-0.9.pl">cidr2range</a> but that didn&rsquo;t work for certain blocks like <strong>145.225.1.0/24</strong>.</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cat cidr2list.py 
-<span style="color:#999;font-style:italic">#!/usr/bin/env python2</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ cat cidr2list.py 
+<span class="c1">#!/usr/bin/env python2</span>
 
 import sys
 from netaddr import IPNetwork
 
-<span style="color:#6ab825;font-weight:bold">if</span> <span style="color:#40ffff">__name__</span> == <span style="color:#ed9d13">&#34;__main__&#34;</span>:
-    <span style="color:#6ab825;font-weight:bold">if</span> len(sys.argv) != 2:
-        print <span style="color:#ed9d13">&#34;Usage: %s &lt;CIDR Block&gt;\n&#34;</span> % sys.argv[0]
-    <span style="color:#6ab825;font-weight:bold">else</span>:
-        <span style="color:#6ab825;font-weight:bold">for</span> ip in IPNetwork(sys.argv[1]):
-            print <span style="color:#ed9d13">&#39;%s&#39;</span> % ip
-</code></pre></div><p>Now let&rsquo;s generate the lists:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ whois -h whois.ripe.net -T route AS34086 -i origin | egrep <span style="color:#ed9d13">&#34;route: &#34;</span> | awk <span style="color:#ed9d13">&#39;{print $NF}&#39;</span>  &gt;&gt; /tmp/ip-ranges.txt
-$ cat /tmp/ip-ranges.txt | xargs -n1 ./cidr2list.py &gt; /tmp/ip-lists.txt
-$  head -n <span style="color:#3677a9">10</span> /tmp/ip-lists.txt 
+<span class="k">if</span> <span class="nv">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span>:
+    <span class="k">if</span> len<span class="o">(</span>sys.argv<span class="o">)</span> !<span class="o">=</span> 2:
+        print <span class="s2">&#34;Usage: %s &lt;CIDR Block&gt;\n&#34;</span> % sys.argv<span class="o">[</span>0<span class="o">]</span>
+    <span class="k">else</span>:
+        <span class="k">for</span> ip in IPNetwork<span class="o">(</span>sys.argv<span class="o">[</span>1<span class="o">])</span>:
+            print <span class="s1">&#39;%s&#39;</span> % ip
+</code></pre></td></tr></table>
+</div>
+</div><p>Now let&rsquo;s generate the lists:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ whois -h whois.ripe.net -T route AS34086 -i origin <span class="p">|</span> egrep <span class="s2">&#34;route: &#34;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $NF}&#39;</span>  &gt;&gt; /tmp/ip-ranges.txt
+$ cat /tmp/ip-ranges.txt <span class="p">|</span> xargs -n1 ./cidr2list.py &gt; /tmp/ip-lists.txt
+$  head -n <span class="m">10</span> /tmp/ip-lists.txt 
 145.225.1.0
 145.225.1.1
 145.225.1.2
@@ -143,8 +225,10 @@ $  head -n <span style="color:#3677a9">10</span> /tmp/ip-lists.txt
 145.225.1.8
 145.225.1.9
 $ wc -l /tmp/ip-lists.txt 
-<span style="color:#3677a9">81920</span> /tmp/ip-lists.txt
-</code></pre></div><p>Voila! :)</p>
+<span class="m">81920</span> /tmp/ip-lists.txt
+</code></pre></td></tr></table>
+</div>
+</div><p>Voila! :)</p>
 </div>
   <div id="comments">
       

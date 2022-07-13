@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,20 +85,80 @@ type="image/x-icon"/>
     <time>26 Jan 2012</time> 
      | 
     
+
+    
+     ~
+  
+
+9 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/nginx' class="link silver">nginx</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><h2 id="why-nginx">Why Nginx?</h2>
 <p>Since I wanted to improve my sites load speed I thought I should look around for some lighttpd-alternatives which I have used for so many years. The really annoying thing about <code>lighttpd</code> is its configuration syntax. I don&rsquo;t think it&rsquo;s comprehensive nor easy to learn. Besides that I wanted to have a configuration where <code>memcahed</code> plays a major role: Serve static content (html) from memcache. Lighttpd does have some modules/tutorials how to interact with <code>memcached</code> but I couldn&rsquo;t find any working configuration. Frustration but also curiosity brought me to <code>Nginx</code>.</p>
 <p>According to the author Nginx <code>is an HTTP and reverse proxy server, as well as a mail proxy server</code>. I thought I should give it a try and test its performance against Lighttpd. Meanwhile I&rsquo;m using Lighttpd <code>'AND</code>' Nginx on my server due to some regexp issue that have to be solved very soon. In that case Nginx acts a a proxy server (see below for configuration stuff).</p>
 <h2 id="get-it">Get it!</h2>
 <p>Before going further you should have the latest (stable) available Nginx version. If you use Debian make sure, you add following to your <code>/etc/apt/sources.list</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">deb-src http://nginx.org/packages/debian/ squeeze nginx
-</code></pre></div><p>On my system I have currently version <code>1.0.9-1</code> installed.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">deb-src http://nginx.org/packages/debian/ squeeze nginx
+</code></pre></td></tr></table>
+</div>
+</div><p>On my system I have currently version <code>1.0.9-1</code> installed.</p>
 <h2 id="basic-configuration">Basic configuration</h2>
 <p>The main file for this part is <code>/etc/nginx/nginx.conf</code>. This is my <code>nginx.conf</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">user www-data;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">user www-data;
 worker_processes  5;
 worker_rlimit_nofile 8192;
 
@@ -137,10 +198,122 @@ http {
 
     include /etc/nginx/conf.d/*.conf;
 }
-</code></pre></div><p>I won&rsquo;t explain every line since this is not what I&rsquo;m supposed to do. Please have a look at the links at the end of this article for additional links.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>I won&rsquo;t explain every line since this is not what I&rsquo;m supposed to do. Please have a look at the links at the end of this article for additional links.</p>
 <h2 id="vhost-configuration">vHost configuration</h2>
 <p>Well this is probably the most interesting part. You should have a configuration file per each vhost located at <code>/etc/nginx/conf.d/</code>. In my case the configuration was adapted to Drupals system and needs. Let&rsquo;s have a look:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">server {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">server {
         listen 80;
         server_name dornea.nu;
 
@@ -246,8 +419,36 @@ http {
                 log_not_found off;
         }
 }
-</code></pre></div><p>Having Drupals boost module enabled you should have static pages on your server which will be served by the memcache daemon. At the beginning of the configuration nginx checks if any static content should be served at all (ist the user logged in? etc.) If there is a html file which correlates with the URI then nginx will load the files content from memcache. If not: the PHP script will be executed. Speaking of PHP.. Lets have a look at <code>/etc/nginx/</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># cat /etc/nginx/fastcgi_params 
+</code></pre></td></tr></table>
+</div>
+</div><p>Having Drupals boost module enabled you should have static pages on your server which will be served by the memcache daemon. At the beginning of the configuration nginx checks if any static content should be served at all (ist the user logged in? etc.) If there is a html file which correlates with the URI then nginx will load the files content from memcache. If not: the PHP script will be executed. Speaking of PHP.. Lets have a look at <code>/etc/nginx/</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># cat /etc/nginx/fastcgi_params 
 fastcgi_pass   unix:/tmp/fcgi.sock;
 fastcgi_param  QUERY_STRING       $query_string;
 fastcgi_param  REQUEST_METHOD     $request_method;
@@ -269,55 +470,147 @@ fastcgi_param  SERVER_NAME        $server_name;
 fastcgi_index  index.php;
 
 fastcgi_param  REDIRECT_STATUS    200;
-</code></pre></div><p>I use a socket instead of child processes. The socket can be created using <code>/etc/init.d/fastcgi</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#999;font-style:italic"># cat /etc/init.d/fastcgi </span>
-<span style="color:#999;font-style:italic">#!/bin/sh</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>I use a socket instead of child processes. The socket can be created using <code>/etc/init.d/fastcgi</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># cat /etc/init.d/fastcgi </span>
+<span class="c1">#!/bin/sh</span>
 
-<span style="color:#999;font-style:italic">### BEGIN INIT INFO</span>
-<span style="color:#999;font-style:italic"># Provides:          fastcgi</span>
-<span style="color:#999;font-style:italic"># Required-Start:    $local_fs $remote_fs $network $syslog</span>
-<span style="color:#999;font-style:italic"># Required-Stop:     $local_fs $remote_fs $network $syslog</span>
-<span style="color:#999;font-style:italic"># Default-Start:     2 3 4 5</span>
-<span style="color:#999;font-style:italic"># Default-Stop:      0 1 6</span>
-<span style="color:#999;font-style:italic"># Short-Description: starts the FastCGI server</span>
-<span style="color:#999;font-style:italic"># Description:       starts spawn-fcgi using start-stop-daemon</span>
-<span style="color:#999;font-style:italic">### END INIT INFO</span>
+<span class="c1">### BEGIN INIT INFO</span>
+<span class="c1"># Provides:          fastcgi</span>
+<span class="c1"># Required-Start:    $local_fs $remote_fs $network $syslog</span>
+<span class="c1"># Required-Stop:     $local_fs $remote_fs $network $syslog</span>
+<span class="c1"># Default-Start:     2 3 4 5</span>
+<span class="c1"># Default-Stop:      0 1 6</span>
+<span class="c1"># Short-Description: starts the FastCGI server</span>
+<span class="c1"># Description:       starts spawn-fcgi using start-stop-daemon</span>
+<span class="c1">### END INIT INFO</span>
 
-<span style="color:#40ffff">PATH</span>=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-<span style="color:#40ffff">DAEMON</span>=/usr/local/bin/php-fastcgi
+<span class="nv">PATH</span><span class="o">=</span>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+<span class="nv">DAEMON</span><span class="o">=</span>/usr/local/bin/php-fastcgi
 
-<span style="color:#24909d">test</span> -x <span style="color:#40ffff">$DAEMON</span> || <span style="color:#24909d">exit</span> <span style="color:#3677a9">0</span>
+<span class="nb">test</span> -x <span class="nv">$DAEMON</span> <span class="o">||</span> <span class="nb">exit</span> <span class="m">0</span>
 
-<span style="color:#24909d">set</span> -e
+<span class="nb">set</span> -e
 
-<span style="color:#40ffff">RETVAL</span>=<span style="color:#3677a9">0</span>
-<span style="color:#6ab825;font-weight:bold">case</span> <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">$1</span><span style="color:#ed9d13">&#34;</span> in
-  start)
-    <span style="color:#40ffff">$DAEMON</span>
-    <span style="color:#40ffff">RETVAL</span>=<span style="color:#40ffff">$?</span>
-  ;;
-  stop)
+<span class="nv">RETVAL</span><span class="o">=</span><span class="m">0</span>
+<span class="k">case</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> in
+  start<span class="o">)</span>
+    <span class="nv">$DAEMON</span>
+    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
+  <span class="p">;;</span>
+  stop<span class="o">)</span>
     killall -9 php5-cgi
-    <span style="color:#40ffff">RETVAL</span>=<span style="color:#40ffff">$?</span>
-  ;;
-  restart)
+    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
+  <span class="p">;;</span>
+  restart<span class="o">)</span>
     killall -9 php5-cgi
-    <span style="color:#40ffff">$DAEMON</span>
-    <span style="color:#40ffff">RETVAL</span>=<span style="color:#40ffff">$?</span>
-  ;;
-  *)
-    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Usage: php-fastcgi {start|stop|restart}&#34;</span>
-    <span style="color:#24909d">exit</span> <span style="color:#3677a9">1</span>
-  ;;
-<span style="color:#6ab825;font-weight:bold">esac</span>
-<span style="color:#24909d">exit</span> <span style="color:#40ffff">$RETVAL</span>
-</code></pre></div><p><code>php-fastcgi</code> is located at /usr/local/bin/:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#999;font-style:italic"># cat /usr/local/bin/php-fastcgi </span>
-<span style="color:#999;font-style:italic">#!/bin/sh</span>
-/usr/bin/spawn-fcgi -F <span style="color:#3677a9">1</span> -C <span style="color:#3677a9">10</span> -a 127.0.0.1 -s /tmp/fcgi.sock -u www-data -g www-data -f <span style="color:#ed9d13">&#34;/usr/bin/php5-cgi -c /etc/php5/cgi/php.ini&#34;</span> -P /var/run/fastcgi-php.pid
-</code></pre></div><h2 id="nginx-as-proxy-server">Nginx as proxy server</h2>
+    <span class="nv">$DAEMON</span>
+    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
+  <span class="p">;;</span>
+  *<span class="o">)</span>
+    <span class="nb">echo</span> <span class="s2">&#34;Usage: php-fastcgi {start|stop|restart}&#34;</span>
+    <span class="nb">exit</span> <span class="m">1</span>
+  <span class="p">;;</span>
+<span class="k">esac</span>
+<span class="nb">exit</span> <span class="nv">$RETVAL</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>php-fastcgi</code> is located at /usr/local/bin/:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># cat /usr/local/bin/php-fastcgi </span>
+<span class="c1">#!/bin/sh</span>
+/usr/bin/spawn-fcgi -F <span class="m">1</span> -C <span class="m">10</span> -a 127.0.0.1 -s /tmp/fcgi.sock -u www-data -g www-data -f <span class="s2">&#34;/usr/bin/php5-cgi -c /etc/php5/cgi/php.ini&#34;</span> -P /var/run/fastcgi-php.pid
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="nginx-as-proxy-server">Nginx as proxy server</h2>
 <p>As already mentioned nginx can be used as a proxy server. In my case I need nginx to redirect requests on a certain subdomain to <code>lighttpd</code> listening to a local interface. The configuration:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">### dl.dornea.nu
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">### dl.dornea.nu
 server {
     listen 80;
     server_name dl.dornea.nu;
@@ -347,121 +640,244 @@ server {
         log_not_found off;
     }
 }
-</code></pre></div><p>All requests to <code>'dl.dornea.nu/*</code>' will be redirected to <code>'http://127.0.0.1:8080</code>'. Isn&rsquo;t that simple? Simple configuration, no need for magic!</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>All requests to <code>'dl.dornea.nu/*</code>' will be redirected to <code>'http://127.0.0.1:8080</code>'. Isn&rsquo;t that simple? Simple configuration, no need for magic!</p>
 <h2 id="benchmarks">Benchmarks</h2>
 <h3 id="ab-apache-suite-benchmark">ab (apache suite) benchmark</h3>
 <h4 id="lighttpd">lighttpd</h4>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ab -n <span style="color:#3677a9">1000</span> -c <span style="color:#3677a9">2</span> http://dornea.nu/
-This is ApacheBench, Version 2.3 &lt;<span style="color:#40ffff">$Revision</span>: <span style="color:#3677a9">655654</span> $&gt;
-Copyright <span style="color:#3677a9">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ ab -n <span class="m">1000</span> -c <span class="m">2</span> http://dornea.nu/
+This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">655654</span> $&gt;
+Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
-Benchmarking dornea.nu (be patient)
-Completed <span style="color:#3677a9">100</span> requests
-Completed <span style="color:#3677a9">200</span> requests
-Completed <span style="color:#3677a9">300</span> requests
-Completed <span style="color:#3677a9">400</span> requests
-Completed <span style="color:#3677a9">500</span> requests
-Completed <span style="color:#3677a9">600</span> requests
-Completed <span style="color:#3677a9">700</span> requests
-Completed <span style="color:#3677a9">800</span> requests
-Completed <span style="color:#3677a9">900</span> requests
-Completed <span style="color:#3677a9">1000</span> requests
-Finished <span style="color:#3677a9">1000</span> requests
+Benchmarking dornea.nu <span class="o">(</span>be patient<span class="o">)</span>
+Completed <span class="m">100</span> requests
+Completed <span class="m">200</span> requests
+Completed <span class="m">300</span> requests
+Completed <span class="m">400</span> requests
+Completed <span class="m">500</span> requests
+Completed <span class="m">600</span> requests
+Completed <span class="m">700</span> requests
+Completed <span class="m">800</span> requests
+Completed <span class="m">900</span> requests
+Completed <span class="m">1000</span> requests
+Finished <span class="m">1000</span> requests
 
 Server Software:        lighttpd/1.4.28
 Server Hostname:        dornea.nu
-Server Port:            <span style="color:#3677a9">80</span>
+Server Port:            <span class="m">80</span>
 
 Document Path:          /
-Document Length:        <span style="color:#3677a9">48134</span> bytes
+Document Length:        <span class="m">48134</span> bytes
 
-Concurrency Level:      <span style="color:#3677a9">2</span>
-Time taken <span style="color:#6ab825;font-weight:bold">for</span> tests:   1438.721 seconds
-Complete requests:      <span style="color:#3677a9">1000</span>
-Failed requests:        <span style="color:#3677a9">2</span>
-   (Connect: 0, Receive: 0, Length: 2, Exceptions: 0)
-Write errors:           <span style="color:#3677a9">0</span>
-Total transferred:      <span style="color:#3677a9">48619020</span> bytes
-HTML transferred:       <span style="color:#3677a9">48133998</span> bytes
-Requests per second:    0.70 [<span style="color:#999;font-style:italic">#/sec] (mean)</span>
-Time per request:       2877.441 [ms] (mean)
-Time per request:       1438.721 [ms] (mean, across all concurrent requests)
-Transfer rate:          33.00 [Kbytes/sec] received
+Concurrency Level:      <span class="m">2</span>
+Time taken <span class="k">for</span> tests:   1438.721 seconds
+Complete requests:      <span class="m">1000</span>
+Failed requests:        <span class="m">2</span>
+   <span class="o">(</span>Connect: 0, Receive: 0, Length: 2, Exceptions: 0<span class="o">)</span>
+Write errors:           <span class="m">0</span>
+Total transferred:      <span class="m">48619020</span> bytes
+HTML transferred:       <span class="m">48133998</span> bytes
+Requests per second:    0.70 <span class="o">[</span><span class="c1">#/sec] (mean)</span>
+Time per request:       2877.441 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>
+Time per request:       1438.721 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>
+Transfer rate:          33.00 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received
 
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:       <span style="color:#3677a9">36</span>   <span style="color:#3677a9">41</span>  18.8     <span style="color:#3677a9">39</span>     <span style="color:#3677a9">271</span>
-Processing:  <span style="color:#3677a9">1369</span> <span style="color:#3677a9">2836</span> 1314.7   <span style="color:#3677a9">2641</span>   <span style="color:#3677a9">15499</span>
-Waiting:     <span style="color:#3677a9">1215</span> <span style="color:#3677a9">2649</span> 1306.8   <span style="color:#3677a9">2467</span>   <span style="color:#3677a9">15346</span>
-Total:       <span style="color:#3677a9">1406</span> <span style="color:#3677a9">2877</span> 1314.6   <span style="color:#3677a9">2680</span>   <span style="color:#3677a9">15536</span>
+Connection Times <span class="o">(</span>ms<span class="o">)</span>
+              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
+Connect:       <span class="m">36</span>   <span class="m">41</span>  18.8     <span class="m">39</span>     <span class="m">271</span>
+Processing:  <span class="m">1369</span> <span class="m">2836</span> 1314.7   <span class="m">2641</span>   <span class="m">15499</span>
+Waiting:     <span class="m">1215</span> <span class="m">2649</span> 1306.8   <span class="m">2467</span>   <span class="m">15346</span>
+Total:       <span class="m">1406</span> <span class="m">2877</span> 1314.6   <span class="m">2680</span>   <span class="m">15536</span>
 
-Percentage of the requests served within a certain <span style="color:#24909d">time</span> (ms)
-  50%   <span style="color:#3677a9">2680</span>
-  66%   <span style="color:#3677a9">2903</span>
-  75%   <span style="color:#3677a9">3062</span>
-  80%   <span style="color:#3677a9">3208</span>
-  90%   <span style="color:#3677a9">3841</span>
-  95%   <span style="color:#3677a9">5057</span>
-  98%   <span style="color:#3677a9">6924</span>
-  99%   <span style="color:#3677a9">9111</span>
- 100%  <span style="color:#3677a9">15536</span> (longest request)
-</code></pre></div><h4 id="nginx">nginx</h4>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ab -n <span style="color:#3677a9">1000</span> -c <span style="color:#3677a9">2</span> http://dornea.nu/
-This is ApacheBench, Version 2.3 &lt;<span style="color:#40ffff">$Revision</span>: <span style="color:#3677a9">655654</span> $&gt;
-Copyright <span style="color:#3677a9">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
+  50%   <span class="m">2680</span>
+  66%   <span class="m">2903</span>
+  75%   <span class="m">3062</span>
+  80%   <span class="m">3208</span>
+  90%   <span class="m">3841</span>
+  95%   <span class="m">5057</span>
+  98%   <span class="m">6924</span>
+  99%   <span class="m">9111</span>
+ 100%  <span class="m">15536</span> <span class="o">(</span>longest request<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="nginx">nginx</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ ab -n <span class="m">1000</span> -c <span class="m">2</span> http://dornea.nu/
+This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">655654</span> $&gt;
+Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
-Benchmarking dornea.nu (be patient)
-Completed <span style="color:#3677a9">100</span> requests
-Completed <span style="color:#3677a9">200</span> requests
-Completed <span style="color:#3677a9">300</span> requests
-Completed <span style="color:#3677a9">400</span> requests
-Completed <span style="color:#3677a9">500</span> requests
-Completed <span style="color:#3677a9">600</span> requests
-Completed <span style="color:#3677a9">700</span> requests
-Completed <span style="color:#3677a9">800</span> requests
-Completed <span style="color:#3677a9">900</span> requests
-Completed <span style="color:#3677a9">1000</span> requests
-Finished <span style="color:#3677a9">1000</span> requests
+Benchmarking dornea.nu <span class="o">(</span>be patient<span class="o">)</span>
+Completed <span class="m">100</span> requests
+Completed <span class="m">200</span> requests
+Completed <span class="m">300</span> requests
+Completed <span class="m">400</span> requests
+Completed <span class="m">500</span> requests
+Completed <span class="m">600</span> requests
+Completed <span class="m">700</span> requests
+Completed <span class="m">800</span> requests
+Completed <span class="m">900</span> requests
+Completed <span class="m">1000</span> requests
+Finished <span class="m">1000</span> requests
 
 Server Software:        nginx/1.0.9
 Server Hostname:        dornea.nu
-Server Port:            <span style="color:#3677a9">80</span>
+Server Port:            <span class="m">80</span>
 
 Document Path:          /
-Document Length:        <span style="color:#3677a9">48216</span> bytes
+Document Length:        <span class="m">48216</span> bytes
 
-Concurrency Level:      <span style="color:#3677a9">2</span>
-Time taken <span style="color:#6ab825;font-weight:bold">for</span> tests:   133.533 seconds
-Complete requests:      <span style="color:#3677a9">1000</span>
-Failed requests:        <span style="color:#3677a9">0</span>
-Write errors:           <span style="color:#3677a9">0</span>
-Total transferred:      <span style="color:#3677a9">48451000</span> bytes
-HTML transferred:       <span style="color:#3677a9">48216000</span> bytes
-Requests per second:    7.49 [<span style="color:#999;font-style:italic">#/sec] (mean)</span>
-Time per request:       267.065 [ms] (mean)
-Time per request:       133.533 [ms] (mean, across all concurrent requests)
-Transfer rate:          354.34 [Kbytes/sec] received
+Concurrency Level:      <span class="m">2</span>
+Time taken <span class="k">for</span> tests:   133.533 seconds
+Complete requests:      <span class="m">1000</span>
+Failed requests:        <span class="m">0</span>
+Write errors:           <span class="m">0</span>
+Total transferred:      <span class="m">48451000</span> bytes
+HTML transferred:       <span class="m">48216000</span> bytes
+Requests per second:    7.49 <span class="o">[</span><span class="c1">#/sec] (mean)</span>
+Time per request:       267.065 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>
+Time per request:       133.533 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>
+Transfer rate:          354.34 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received
 
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:       <span style="color:#3677a9">36</span>   <span style="color:#3677a9">42</span>  18.5     <span style="color:#3677a9">39</span>     <span style="color:#3677a9">268</span>
-Processing:   <span style="color:#3677a9">190</span>  <span style="color:#3677a9">225</span>  43.3    <span style="color:#3677a9">212</span>     <span style="color:#3677a9">483</span>
-Waiting:       <span style="color:#3677a9">36</span>   <span style="color:#3677a9">43</span>  17.9     <span style="color:#3677a9">40</span>     <span style="color:#3677a9">270</span>
-Total:        <span style="color:#3677a9">227</span>  <span style="color:#3677a9">267</span>  52.1    <span style="color:#3677a9">252</span>     <span style="color:#3677a9">713</span>
+Connection Times <span class="o">(</span>ms<span class="o">)</span>
+              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
+Connect:       <span class="m">36</span>   <span class="m">42</span>  18.5     <span class="m">39</span>     <span class="m">268</span>
+Processing:   <span class="m">190</span>  <span class="m">225</span>  43.3    <span class="m">212</span>     <span class="m">483</span>
+Waiting:       <span class="m">36</span>   <span class="m">43</span>  17.9     <span class="m">40</span>     <span class="m">270</span>
+Total:        <span class="m">227</span>  <span class="m">267</span>  52.1    <span class="m">252</span>     <span class="m">713</span>
 
-Percentage of the requests served within a certain <span style="color:#24909d">time</span> (ms)
-  50%    <span style="color:#3677a9">252</span>
-  66%    <span style="color:#3677a9">259</span>
-  75%    <span style="color:#3677a9">262</span>
-  80%    <span style="color:#3677a9">269</span>
-  90%    <span style="color:#3677a9">299</span>
-  95%    <span style="color:#3677a9">371</span>
-  98%    <span style="color:#3677a9">471</span>
-  99%    <span style="color:#3677a9">481</span>
- 100%    <span style="color:#3677a9">713</span> (longest request)
-</code></pre></div><h3 id="toolspingdomcom-benchmark">tools.pingdom.com benchmark</h3>
+Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
+  50%    <span class="m">252</span>
+  66%    <span class="m">259</span>
+  75%    <span class="m">262</span>
+  80%    <span class="m">269</span>
+  90%    <span class="m">299</span>
+  95%    <span class="m">371</span>
+  98%    <span class="m">471</span>
+  99%    <span class="m">481</span>
+ 100%    <span class="m">713</span> <span class="o">(</span>longest request<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="toolspingdomcom-benchmark">tools.pingdom.com benchmark</h3>
 <h4 id="lighttpd-1">lighttpd</h4>
 <p><img src="https://blog.dornea.nu/posts/img/2012/pingdom_nl_dornea.nu_lighttpd.png" alt="lighttpd"></p>
 <h3 id="nginx-1">nginx</h3>

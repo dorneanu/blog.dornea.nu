@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,126 +85,356 @@ type="image/x-icon"/>
     <time>06 Dec 2010</time> 
      | 
     
+
+    
+     ~
+  
+
+8 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/c' class="link silver">c</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Suppose you were a Linux developer and you&rsquo;re about to implement the well known system calls:  <strong>malloc</strong> and <strong>free</strong>. How would you start? Which (already implemented) functions would you use? How would you <strong>organize</strong> your (free) <strong>memory</strong>? Which information would you like to have about certain memory regions? Those are the minimal problems you&rsquo;re about to face with. What about <strong>memory fragmentation</strong>? Speaking of memory: How would you implement this thing called <code>memory</code>? And so on..</p>
 <p>The same task caused me a few weeks ago a lot of head scratching. Although I had a framework I could work with, it was more sophisticated than I thought. But let&rsquo;s start with simple things and have a look at the memory I was supposed to use:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_char_memory.png" alt="Memory representation"></p>
 <p>So that&rsquo;s my memory: a simple char array of BUFFSIZE elements. My code is supposed to use this range of memory in an intelligent way. Therefore we&rsquo;ll have to split the memory into multiple <strong>fragments</strong>. Each fragment has a certain size (they don&rsquo;t have to be at the same size) and coresponds to memory that has been allocated to a variable.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> *a = (<span style="color:#6ab825;font-weight:bold">int</span>*)my_malloc(<span style="color:#6ab825;font-weight:bold">sizeof</span>(<span style="color:#6ab825;font-weight:bold">int</span>));
-*a = <span style="color:#3677a9">5</span>;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="kt">int</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">my_malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+<span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
 
-<span style="color:#6ab825;font-weight:bold">char</span>* b = (<span style="color:#6ab825;font-weight:bold">char</span>*)my_malloc(<span style="color:#3677a9">100</span>);
-status();
-b[<span style="color:#3677a9">0</span>] = <span style="color:#ed9d13">&#39;c&#39;</span>;
-b[<span style="color:#3677a9">1</span>] = <span style="color:#ed9d13">&#39;o&#39;</span>;
-b[<span style="color:#3677a9">2</span>] = <span style="color:#ed9d13">&#39;o&#39;</span>;
-b[<span style="color:#3677a9">3</span>] = <span style="color:#ed9d13">&#39;l&#39;</span>;
-b[<span style="color:#3677a9">4</span>] = <span style="color:#ed9d13">&#39;�&#39;</span>;
-</code></pre></div><p><strong>my_malloc(int size)</strong> returns the address of the fragment that has been assigned to variable a or b. When there is no more space left on the memory, NULL will be returned. The same applies when free fragments can&rsquo;t be merged together to a bigger one - in this case we&rsquo;ll have to remap the fragments in order to have enough space for later memory allocations.  Furthermore you can tell* my_malloc* how much space to allocate.</p>
+<span class="kt">char</span><span class="o">*</span> <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">my_malloc</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="n">status</span><span class="p">();</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;c&#39;</span><span class="p">;</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;o&#39;</span><span class="p">;</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;o&#39;</span><span class="p">;</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;l&#39;</span><span class="p">;</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;�&#39;</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>my_malloc(int size)</strong> returns the address of the fragment that has been assigned to variable a or b. When there is no more space left on the memory, NULL will be returned. The same applies when free fragments can&rsquo;t be merged together to a bigger one - in this case we&rsquo;ll have to remap the fragments in order to have enough space for later memory allocations.  Furthermore you can tell* my_malloc* how much space to allocate.</p>
 <p>So there must be a way how to organize our fragments inside the memory. By using only pointer to certain addresses within the memory space we have no information about its size, the data size it is storing or the next fragment. That&rsquo;s why a so called <strong>memoryBlock</strong> will be used to store this information. Given a <strong>head</strong> block a linked list should allow us to access all blocks in the memory.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">enum</span> memBlockState{not_allocated=<span style="color:#3677a9">0</span>, allocated=<span style="color:#3677a9">1</span>};
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">enum</span> <span class="n">memBlockState</span><span class="p">{</span><span class="n">not_allocated</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">allocated</span><span class="o">=</span><span class="mi">1</span><span class="p">};</span>
 
-<span style="color:#999;font-style:italic">// memory block
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">typedef</span> <span style="color:#6ab825;font-weight:bold">struct</span> _memoryblock {
-    <span style="color:#6ab825;font-weight:bold">void</span>* data;                                       <span style="color:#999;font-style:italic">// points to the data
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">int</span> dataLength;                     
-    <span style="color:#6ab825;font-weight:bold">enum</span> memBlockState state;             <span style="color:#999;font-style:italic">// Is this Block free?
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">struct</span> _memoryblock * nextBlock;    <span style="color:#999;font-style:italic">// points to the next entry
-</span><span style="color:#999;font-style:italic"></span>} memoryBlock;
+<span class="c1">// memory block
+</span><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_memoryblock</span> <span class="p">{</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">data</span><span class="p">;</span>                                       <span class="c1">// points to the data
+</span><span class="c1"></span>    <span class="kt">int</span> <span class="n">dataLength</span><span class="p">;</span>                     
+    <span class="k">enum</span> <span class="n">memBlockState</span> <span class="n">state</span><span class="p">;</span>             <span class="c1">// Is this Block free?
+</span><span class="c1"></span>    <span class="k">struct</span> <span class="n">_memoryblock</span> <span class="o">*</span> <span class="n">nextBlock</span><span class="p">;</span>    <span class="c1">// points to the next entry
+</span><span class="c1"></span><span class="p">}</span> <span class="n">memoryBlock</span><span class="p">;</span>
 
-<span style="color:#cd2828;font-weight:bold">#define memoryBlockHeaderSize sizeof(memoryBlock)
-</span><span style="color:#cd2828;font-weight:bold"></span>
-<span style="color:#999;font-style:italic">// First block in the list
-</span><span style="color:#999;font-style:italic"></span>memoryBlock* head;
-</code></pre></div><p>And this is the graphical representation:</p>
+<span class="cp">#define memoryBlockHeaderSize sizeof(memoryBlock)
+</span><span class="cp"></span>
+<span class="c1">// First block in the list
+</span><span class="c1"></span><span class="n">memoryBlock</span><span class="o">*</span> <span class="n">head</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>And this is the graphical representation:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_head.png" alt="Memory Block(s) inside memory"></p>
 <p>Now we&rsquo;ll have to inter-connect the memory blocks. Therefor we&rsquo;ll be using a <strong>pointer</strong> to next block. In that way we can iterate the blocks, (re)move them or find a suitable place where to place a new block.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_head_nextblock.png" alt="nextBlock pointer"></p>
 <p>So those are the most important programm structures. Let&rsquo;s have a look at the main function within the C-code (see appendix):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#999;font-style:italic">// my_alloc will try to allocate &lt;byteCount&gt; bytes within our char memory. 
-</span><span style="color:#999;font-style:italic">// The function will return the address of the allocated memory.
-</span><span style="color:#999;font-style:italic"></span><span style="color:#6ab825;font-weight:bold">void</span>* <span style="color:#447fcf">my_malloc</span>(<span style="color:#6ab825;font-weight:bold">int</span> byteCount)
-{
-    memoryBlock *searchBlock = head, *tmp;
-    <span style="color:#6ab825;font-weight:bold">if</span>(!b_initialized)
-        initialize();
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="c1">// my_alloc will try to allocate &lt;byteCount&gt; bytes within our char memory. 
+</span><span class="c1">// The function will return the address of the allocated memory.
+</span><span class="c1"></span><span class="kt">void</span><span class="o">*</span> <span class="nf">my_malloc</span><span class="p">(</span><span class="kt">int</span> <span class="n">byteCount</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">memoryBlock</span> <span class="o">*</span><span class="n">searchBlock</span> <span class="o">=</span> <span class="n">head</span><span class="p">,</span> <span class="o">*</span><span class="n">tmp</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">b_initialized</span><span class="p">)</span>
+        <span class="n">initialize</span><span class="p">();</span>
 
-    <span style="color:#999;font-style:italic">// If we don&#39;t have enough place to allocate then we give up and return NULL
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">if</span>(byteCount &gt; get_free_space())
-        <span style="color:#6ab825;font-weight:bold">return</span>(<span style="color:#24909d">NULL</span>);
+    <span class="c1">// If we don&#39;t have enough place to allocate then we give up and return NULL
+</span><span class="c1"></span>    <span class="k">if</span><span class="p">(</span><span class="n">byteCount</span> <span class="o">&gt;</span> <span class="n">get_free_space</span><span class="p">())</span>
+        <span class="k">return</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
 
-    <span style="color:#999;font-style:italic">// Search for the block whose dataLength &gt;= byteCount
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">while</span> (searchBlock-&gt;dataLength &lt; byteCount)
-        searchBlock = searchBlock-&gt;nextBlock;
+    <span class="c1">// Search for the block whose dataLength &gt;= byteCount
+</span><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="n">searchBlock</span><span class="o">-&gt;</span><span class="n">dataLength</span> <span class="o">&lt;</span> <span class="n">byteCount</span><span class="p">)</span>
+        <span class="n">searchBlock</span> <span class="o">=</span> <span class="n">searchBlock</span><span class="o">-&gt;</span><span class="n">nextBlock</span><span class="p">;</span>
 
-    <span style="color:#999;font-style:italic">// We have found an unused memory block. Now we split it. 
-</span><span style="color:#999;font-style:italic"></span>    tmp = splitBlock(searchBlock, byteCount);
+    <span class="c1">// We have found an unused memory block. Now we split it. 
+</span><span class="c1"></span>    <span class="n">tmp</span> <span class="o">=</span> <span class="n">splitBlock</span><span class="p">(</span><span class="n">searchBlock</span><span class="p">,</span> <span class="n">byteCount</span><span class="p">);</span>
 
-    <span style="color:#999;font-style:italic">// Return the address of data (see memoryBlock structure)
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">return</span> tmp-&gt;data;
-}
-</code></pre></div><p>Before beeing able to allocate some memory, the <strong>head</strong> block must be initialized.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">initialize</span>()
-{
-    <span style="color:#6ab825;font-weight:bold">if</span>(!b_initialized)
-    {
-        b_initialized = <span style="color:#3677a9">1</span>;
+    <span class="c1">// Return the address of data (see memoryBlock structure)
+</span><span class="c1"></span>    <span class="k">return</span> <span class="n">tmp</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Before beeing able to allocate some memory, the <strong>head</strong> block must be initialized.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="kt">void</span> <span class="nf">initialize</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">b_initialized</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">b_initialized</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 
-        <span style="color:#999;font-style:italic">// head will point to the address of memory
-</span><span style="color:#999;font-style:italic"></span>        head = (memoryBlock*)memory;
+        <span class="c1">// head will point to the address of memory
+</span><span class="c1"></span>        <span class="n">head</span> <span class="o">=</span> <span class="p">(</span><span class="n">memoryBlock</span><span class="o">*</span><span class="p">)</span><span class="n">memory</span><span class="p">;</span>
 
-        <span style="color:#999;font-style:italic">// The data offset is &gt;beginning of memoryBlock&gt; + memoryBlockHeaderSize
-</span><span style="color:#999;font-style:italic"></span>        head-&gt;data = head + memoryBlockHeaderSize;
-        head-&gt;dataLength = <span style="color:#6ab825;font-weight:bold">sizeof</span>(memory) - memoryBlockHeaderSize;
+        <span class="c1">// The data offset is &gt;beginning of memoryBlock&gt; + memoryBlockHeaderSize
+</span><span class="c1"></span>        <span class="n">head</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">head</span> <span class="o">+</span> <span class="n">memoryBlockHeaderSize</span><span class="p">;</span>
+        <span class="n">head</span><span class="o">-&gt;</span><span class="n">dataLength</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span> <span class="o">-</span> <span class="n">memoryBlockHeaderSize</span><span class="p">;</span>
 
-        <span style="color:#999;font-style:italic">// self-explanatory
-</span><span style="color:#999;font-style:italic"></span>        head-&gt;state = not_allocated;
-        head-&gt;nextBlock = <span style="color:#24909d">NULL</span>;
-    }
-}
-</code></pre></div><p>I think the most interesting part of the allocation process is the <strong>splitBlock</strong> function. It searches for the proper block that has to be splitted into 2 parts:</p>
+        <span class="c1">// self-explanatory
+</span><span class="c1"></span>        <span class="n">head</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">=</span> <span class="n">not_allocated</span><span class="p">;</span>
+        <span class="n">head</span><span class="o">-&gt;</span><span class="n">nextBlock</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>I think the most interesting part of the allocation process is the <strong>splitBlock</strong> function. It searches for the proper block that has to be splitted into 2 parts:</p>
 <ul>
 <li>a smaller unused/unallocated memory block (new size = old size - byteCount)</li>
 <li>an allocated memory block (size = byteCount)</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">memoryBlock *<span style="color:#447fcf">splitBlock</span>(memoryBlock* block, <span style="color:#6ab825;font-weight:bold">int</span> byteCount)
-{
-    memoryBlock *new_block;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="n">memoryBlock</span> <span class="o">*</span><span class="nf">splitBlock</span><span class="p">(</span><span class="n">memoryBlock</span><span class="o">*</span> <span class="n">block</span><span class="p">,</span> <span class="kt">int</span> <span class="n">byteCount</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">memoryBlock</span> <span class="o">*</span><span class="n">new_block</span><span class="p">;</span>
 
-    <span style="color:#999;font-style:italic">// When no enough space in the current block -&gt; return NULL
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">if</span> (byteCount &gt; block-&gt;dataLength)
-        <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#24909d">NULL</span>;
+    <span class="c1">// When no enough space in the current block -&gt; return NULL
+</span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">byteCount</span> <span class="o">&gt;</span> <span class="n">block</span><span class="o">-&gt;</span><span class="n">dataLength</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 
-    <span style="color:#999;font-style:italic">// Update blocks dataLength
-</span><span style="color:#999;font-style:italic"></span>    block-&gt;dataLength -= (memoryBlockHeaderSize + byteCount);
+    <span class="c1">// Update blocks dataLength
+</span><span class="c1"></span>    <span class="n">block</span><span class="o">-&gt;</span><span class="n">dataLength</span> <span class="o">-=</span> <span class="p">(</span><span class="n">memoryBlockHeaderSize</span> <span class="o">+</span> <span class="n">byteCount</span><span class="p">);</span>
 
-    <span style="color:#999;font-style:italic">// Create new block
-</span><span style="color:#999;font-style:italic"></span>    new_block = (memoryBlock*)((<span style="color:#6ab825;font-weight:bold">char</span> *)block + memoryBlockHeaderSize + block-&gt;dataLength);
+    <span class="c1">// Create new block
+</span><span class="c1"></span>    <span class="n">new_block</span> <span class="o">=</span> <span class="p">(</span><span class="n">memoryBlock</span><span class="o">*</span><span class="p">)((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">block</span> <span class="o">+</span> <span class="n">memoryBlockHeaderSize</span> <span class="o">+</span> <span class="n">block</span><span class="o">-&gt;</span><span class="n">dataLength</span><span class="p">);</span>
 
-    <span style="color:#999;font-style:italic">// ... set data pointer
-</span><span style="color:#999;font-style:italic"></span>    new_block-&gt;data = (<span style="color:#6ab825;font-weight:bold">void</span> *)((<span style="color:#6ab825;font-weight:bold">char</span> *)new_block + memoryBlockHeaderSize);
+    <span class="c1">// ... set data pointer
+</span><span class="c1"></span>    <span class="n">new_block</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">new_block</span> <span class="o">+</span> <span class="n">memoryBlockHeaderSize</span><span class="p">);</span>
 
-    new_block-&gt;dataLength = byteCount;
-    new_block-&gt;state = allocated;
+    <span class="n">new_block</span><span class="o">-&gt;</span><span class="n">dataLength</span> <span class="o">=</span> <span class="n">byteCount</span><span class="p">;</span>
+    <span class="n">new_block</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">=</span> <span class="n">allocated</span><span class="p">;</span>
 
-    <span style="color:#999;font-style:italic">// new_block.nextBlock will point to right neighbour of block
-</span><span style="color:#999;font-style:italic"></span>    new_block-&gt;nextBlock = block-&gt;nextBlock;
+    <span class="c1">// new_block.nextBlock will point to right neighbour of block
+</span><span class="c1"></span>    <span class="n">new_block</span><span class="o">-&gt;</span><span class="n">nextBlock</span> <span class="o">=</span> <span class="n">block</span><span class="o">-&gt;</span><span class="n">nextBlock</span><span class="p">;</span>
 
-    block-&gt;nextBlock = new_block;
+    <span class="n">block</span><span class="o">-&gt;</span><span class="n">nextBlock</span> <span class="o">=</span> <span class="n">new_block</span><span class="p">;</span>
 
-    <span style="color:#6ab825;font-weight:bold">return</span> new_block;
+    <span class="k">return</span> <span class="n">new_block</span><span class="p">;</span>
 
-}
-</code></pre></div><p>After some dry runs - allocating memory for some integer/string variables (check out <em>test_mm.c</em>) - the memory could end up like this:</p>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After some dry runs - allocating memory for some integer/string variables (check out <em>test_mm.c</em>) - the memory could end up like this:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_memory_fragmentation.png" alt="Memory fragmentation"></p>
 <p>As you see we could re-arrange the allocated regions in order to get more unused/free memory space. Since this wasn&rsquo;t part of the task - although you could have a look at my_free() too -   I&rsquo;ll leave it to you to google for some dynamic memory allocation algorithms.</p>
 <p>In the end I&rsquo;d like to show you some debugging stuff I&rsquo;ve made with <strong>ddd</strong>. As you see each (allocated) portion of memory has its memory header (consisting of the memoryBlock structure) plus a (void *) pointer  to an address inside the memory, where data is stored.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/222/mm_ddd_session.png" alt="Memory Block(s) inside memory"></p>
 <p>Finally some output generated by the programm:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Uebersicht des Speichers: 10216 / 10240 Speicher frei
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span><span class="lnt">95
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">Uebersicht des Speichers: 10216 / 10240 Speicher frei
 ------------------------------------------------
 #  at            allocated       space   data                   next block
 1  0x5024a0      FALSE           10216   [0x5026e0,0x504ec7]    0x0
@@ -298,7 +529,9 @@ Uebersicht des Speichers: 10216 / 10240 Speicher frei
 1  0x5024a0      FALSE           10216   [0x5026e0,0x504ec7]    0x0
 
 Press any key to continue...(Where&#39;s the &#39;any&#39; key btw?)
-</code></pre></div><p><strong>Download material:</strong></p>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Download material:</strong></p>
 <table style="width: 100%;" border="1" cellspacing="1" cellpadding="1">
   <tr>
     <td class="rtecenter" style="background-color: #9999ff;" colspan="2">

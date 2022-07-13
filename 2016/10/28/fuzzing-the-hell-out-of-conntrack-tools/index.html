@@ -41,6 +41,7 @@ When it comes to fuzzing there are a few tools to mention that have established 
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,9 +86,18 @@ type="image/x-icon"/>
     <time>28 Oct 2016</time> 
      | 
     
+
+    
+     ~
+  
+
+12 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/hacking' class="link silver">hacking</a> <a href='https://blog.dornea.nu/tags/fuzz' class="link silver">fuzz</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/afl' class="link silver">afl</a> <a href='https://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='https://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Fuzzing is nowadays <strong>the</strong> attack technique used by a lot of pentesters and security researchers. Whether you&rsquo;re
 looking for vulnerabilities in media files (pictures, videos, audio stuff) or just binary files,
@@ -148,7 +158,24 @@ In a nutshell <code>conntrackd</code>:</p>
 <li>has <strong>sync</strong> modes (notrack, ftfw)</li>
 </ul>
 <p>Let&rsquo;s have a look at some <strong>configuration</strong> file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">Sync {
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">Sync {
         Mode FTFW{
         }
     UDP Default {
@@ -161,7 +188,9 @@ In a nutshell <code>conntrackd</code>:</p>
         Checksum on
     }
 }
-</code></pre></div><p>This configuration says:</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>This configuration says:</p>
 <ul>
 <li><strong>FTFW</strong> sync mode is used</li>
 <li><strong>own</strong> IP address is <code>192.168.122.242</code></li>
@@ -171,28 +200,71 @@ In a nutshell <code>conntrackd</code>:</p>
 <p>Basically this how synchronization works. Of course some details have been ommitted for the sake of
 simplicity. For the detailed configuration please refer to the <a href="http://conntrack-tools.netfilter.org/manual.html">documentation</a>.
 In the end the daemons are started by specifying the config file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ ./src/conntrackd -C &lt;config file&gt;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ./src/conntrackd -C &lt;config file&gt;
 ...
-</code></pre></div><blockquote>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
 <p>If you experience some crazy error messages, make sure you have following kernel modules loaded: <code>af_netlink</code></p>
 </blockquote>
 <h2 id="network-traffic">Network traffic</h2>
 <p>If you then <strong>sniff</strong> for packets you&rsquo;ll see some magic packets:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ tshark -nr nat-traffic.pcap -E separator=&#34;,&#34; -T fields -e udp.srcport -e udp.dstport -e udp.length -e data  | head -n 5
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ tshark -nr nat-traffic.pcap -E separator=&#34;,&#34; -T fields -e udp.srcport -e udp.dstport -e udp.length -e data  | head -n 5
 53085,3780,76,110000445815c162000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb000500040400000000080006000000780008000c7e64b2c3
 53085,3780,76,110000445815c163000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb0005000406000000000800060000001e0008000c7e64b2c3
 53085,3780,76,100000445815c164000c00000a216801d83ad4a30008000500000198000500020600000000080003c29a0050000500040100000000080006000000780008000ceb64b2c3
 53085,3780,76,110000445815c1aa000c00000a171f0cca0c1b21000800050000019a00050002060000000008000386e600350005000402000000000800060000003c0008000c7e64b2c3
 53085,3780,76,110000445815c1ab000c00000a171f0cca0c1b21000800050000019e00050002060000000008000386e60035000500040300000000080006000038400008000c7e64b2c3
-</code></pre></div><p>As you have noticed the <code>UDP</code> payloads above are very similar to each other. However, <strong>bigger</strong> payloads were also transmitted:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">57252,3780,1444,1100004457e14ced000c00000a21680236ef249d000800050000019e000500020600000000080003d9ac01bb000500040300000000080006000038400008000ceb64b
+</code></pre></td></tr></table>
+</div>
+</div><p>As you have noticed the <code>UDP</code> payloads above are very similar to each other. However, <strong>bigger</strong> payloads were also transmitted:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">57252,3780,1444,1100004457e14ced000c00000a21680236ef249d000800050000019e000500020600000000080003d9ac01bb000500040300000000080006000038400008000ceb64b
 2c31100004457e14cee000c00000a17680236ef22ae000800050000019e000500020600000000080003c0a201bb000500040300000000080006000038400008000c7e64b2c31100004457
 e14cef000c00000a176801c3b265ac000800050000019e000500020600000000080003bc700050000500040300000000080006000038400008000c7e64b2c31100004457e14cf0000c000
 00a176802b0206cff000800050000019e000500020600000000080003c16401bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf1000c00000a21680136ef208d000800050000019e0005000206000000000800039dc201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf2000c00000a17680236ef249d000800050000019e000500020600000000080003d12c01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf3000c00000a21680236ef208d000800050000019e000500020600000000080003be7c01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf4000c00000a21680236ef37cb000800050000019e000500020600000000080003d4d201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf5000c00000a21680236ef208d000800050000019e000500020600000000080003de9001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf6000c00000a21680136ef208d000800050000019e000500020600000000080003bdae01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf7000c00000a17680336ef22af000800050000019e000500020600000000080003a37a01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf8000c00000a21680136ef208d000800050000019e0005000206000000000800039c8601bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf9000c00000a21680134314113000800050000019e00050002060000000008000382f401bb000500040300000000080006000038400008000ceb64b2c31100004c57e14cfa000c00000a21680236ef3698000800050000019e000500020600000000080003d27c01bb000500040300000000080006000038400008000ceb64b2c30006000eeb0600001100004457e14cfb000c00000a17680336ef249d000800050000019e000500020600000000080003de7601bb000500040300000000080006000038400008000c7e64b2c31100004457e14cfc000c00000a21680136ef208d000800050000019e0005000206000000000800039ce001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cfd000c00000a176803c01efd70000800050000019e000500020600000000080003b51001bb0005000403000000000800
-</code></pre></div><h2 id="analysis">Analysis</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="analysis">Analysis</h2>
 <p>Now what valuable information can we extract from the payloads? Using <a href="http://www.secdev.org/projects/scapy/">scapy</a> I&rsquo;ve did
 some basic traffic analysis:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">In [11]: p.payload.payload.show()
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">In [11]: p.payload.payload.show()
 
 ###[ UDP ]###
   sport     = 53085
@@ -201,16 +273,47 @@ some basic traffic analysis:</p>
   chksum    = 0x1aa6
 ###[ Raw ]###
      load      = &#39;\x11\x00\x00DX\x15\xc1c\x00\x0c\x00\x00\n\x17h\x026\xef6\x8f\x00\x08\x00\x05\x00\x00\x01\x9e\x00\x05\x00\x02\x06\x00\x00\x00\x00\x08\x00\x03\x91\xf2\x01\xbb\x00\x05\x00\x04\x06\x00\x00\x00\x00\x08\x00\x06\x00\x00\x00\x1e\x00\x08\x00\x0c~d\xb2\xc3&#39;
-</code></pre></div><p>Apparently this is no ASCII data (who would have expected that anyway? :) Using <code>gdb</code> I wanted to know what&rsquo;s inside the data
+</code></pre></td></tr></table>
+</div>
+</div><p>Apparently this is no ASCII data (who would have expected that anyway? :) Using <code>gdb</code> I wanted to know what&rsquo;s inside the data
 and did some <strong>dynamic analysis</strong>. This way I was able to learn more about the data being passed over the wire and how
 the source code is structured.</p>
 <p>But first I had to make the code debuggable:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ CCFLAGS=&#34;-g3 -gdwarf2&#34; ./configure
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ CCFLAGS=&#34;-g3 -gdwarf2&#34; ./configure
 [...]
-</code></pre></div><p>Afterwards you should be able to <strong>run</strong> it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sudo ./src/conntrackd -C conntrackd.conf
-</code></pre></div><p>Sniffing the traffic you should see sth like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ sudo tshark -i ens3 -Y udp -E separator=&#34;,&#34; -T fields -e ip.src -e udp.srcport -e udp.dstport -e udp.length -e data
+</code></pre></td></tr></table>
+</div>
+</div><p>Afterwards you should be able to <strong>run</strong> it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ sudo ./src/conntrackd -C conntrackd.conf
+</code></pre></td></tr></table>
+</div>
+</div><p>Sniffing the traffic you should see sth like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ sudo tshark -i ens3 -Y udp -E separator=&#34;,&#34; -T fields -e ip.src -e udp.srcport -e udp.dstport -e udp.length -e data
 192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109293
 192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109294
 192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109295
@@ -220,10 +323,31 @@ the source code is structured.</p>
 192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109299
 192.168.122.242,192.168.122.242,48786,3780,16,1a1000085810929a
 ^C8 packets captured
-</code></pre></div><p>The daemon will try to send out some &ldquo;keep-alive&rdquo; messages to its counterpart. Now we send those packets
+</code></pre></td></tr></table>
+</div>
+</div><p>The daemon will try to send out some &ldquo;keep-alive&rdquo; messages to its counterpart. Now we send those packets
 <strong>manually</strong> and debug the interesting part in the code. For packet generation I&rsquo;ll use <code>scapy</code> again (running as
 <strong>root</strong> since you&rsquo;ll need to create <strong>RAW sockets</strong>):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">In [1]: from scapy.all import *
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">In [1]: from scapy.all import *
 WARNING: No route found for IPv6 destination :: (no default route?)
 
 In [2]: import binascii
@@ -238,168 +362,366 @@ Out[5]: &lt;Ether  type=IPv4 |&lt;IP  frag=0 proto=udp dst=192.168.122.242 |&lt;
 In [7]: sendp(p/Raw(load=payload))
 .
 Sent 1 packets.
-</code></pre></div><h3 id="data-flow">Data flow</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="data-flow">Data flow</h3>
 <p>After heavy debugging sessions I was able to understand the data flow inside the code. Below I&rsquo;ll try to explain how <code>conntrackd</code> basically
 works:</p>
 <ol>
 <li>The <strong>configuration</strong> file gets parsed and several options are set</li>
 <li>In <code>src/sync-mode.c</code> you have <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n362">init_sync</a> where a lot of vodoo happens but the most important part is:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">	<span style="color:#6ab825;font-weight:bold">for</span> (i=<span style="color:#3677a9">0</span>; i&lt;STATE_SYNC(channel)-&gt;channel_num; i++) {
-		<span style="color:#6ab825;font-weight:bold">int</span> fd = channel_get_fd(STATE_SYNC(channel)-&gt;channel[i]);
-		fcntl(fd, F_SETFL, O_NONBLOCK);
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">channel_get_fd</span><span class="p">(</span><span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+		<span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">O_NONBLOCK</span><span class="p">);</span>
 
-		<span style="color:#6ab825;font-weight:bold">switch</span>(channel_type(STATE_SYNC(channel)-&gt;channel[i])) {
-		<span style="color:#6ab825;font-weight:bold">case</span> CHANNEL_T_STREAM:
-			register_fd(fd, channel_accept_cb,
-					STATE_SYNC(channel)-&gt;channel[i],
-					STATE(fds));
-			<span style="color:#6ab825;font-weight:bold">break</span>;
-		<span style="color:#6ab825;font-weight:bold">case</span> CHANNEL_T_DATAGRAM:
-			register_fd(fd, channel_handler,
-					STATE_SYNC(channel)-&gt;channel[i],
-					STATE(fds));
-			<span style="color:#6ab825;font-weight:bold">break</span>;
-		}
-	}
-</code></pre></div><p>Depending on the <strong>sync</strong> mode, then for every <strong>channel</strong> a channel <strong>handler</strong> is being registered. This
+		<span class="k">switch</span><span class="p">(</span><span class="n">channel_type</span><span class="p">(</span><span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="nl">CHANNEL_T_STREAM</span><span class="p">:</span>
+			<span class="n">register_fd</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">channel_accept_cb</span><span class="p">,</span>
+					<span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+					<span class="n">STATE</span><span class="p">(</span><span class="n">fds</span><span class="p">));</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="k">case</span> <span class="nl">CHANNEL_T_DATAGRAM</span><span class="p">:</span>
+			<span class="n">register_fd</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">channel_handler</span><span class="p">,</span>
+					<span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+					<span class="n">STATE</span><span class="p">(</span><span class="n">fds</span><span class="p">));</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Depending on the <strong>sync</strong> mode, then for every <strong>channel</strong> a channel <strong>handler</strong> is being registered. This
 will be called every time an &ldquo;event&rdquo; occurs, that means a packet arrives:</p>
 <ul>
 <li>for TCP packets (<code>CHANNEL_T_STREAM</code>) <code>channel_accept_cb</code> will be called</li>
 <li>for UDP datagrams (<code>CHANNEL_T_DATAGRAM</code>) <code>channel_handler</code> will be called</li>
 </ul>
 <p>Since I chose to test for <strong>UDP</strong> packets, let&rsquo;s have a look at <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n253">channel_handler</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">void</span> <span style="color:#447fcf">channel_handler</span>(<span style="color:#6ab825;font-weight:bold">void</span> *data)
-{
-	<span style="color:#6ab825;font-weight:bold">struct</span> channel *c = data;
-	<span style="color:#6ab825;font-weight:bold">int</span> k;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">channel_handler</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">k</span><span class="p">;</span>
 
-	<span style="color:#6ab825;font-weight:bold">for</span> (k=<span style="color:#3677a9">0</span>; k&lt;CONFIG(event_iterations_limit); k++) {
-		<span style="color:#6ab825;font-weight:bold">if</span> (channel_handler_routine(c) == -<span style="color:#3677a9">1</span>) {
-			<span style="color:#6ab825;font-weight:bold">break</span>;
-		}
-	}
-}
-</code></pre></div><p>This will then call <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n178">channel_handler_routine</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">channel_handler_routine</span>(<span style="color:#6ab825;font-weight:bold">struct</span> channel *m)
-{
-	ssize_t numbytes;
-	ssize_t remain, pending = cur - __net;
-	<span style="color:#6ab825;font-weight:bold">char</span> *ptr = __net;
+	<span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">CONFIG</span><span class="p">(</span><span class="n">event_iterations_limit</span><span class="p">);</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">channel_handler_routine</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This will then call <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n178">channel_handler_routine</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">channel_handler_routine</span><span class="p">(</span><span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">m</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">ssize_t</span> <span class="n">numbytes</span><span class="p">;</span>
+	<span class="n">ssize_t</span> <span class="n">remain</span><span class="p">,</span> <span class="n">pending</span> <span class="o">=</span> <span class="n">cur</span> <span class="o">-</span> <span class="n">__net</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">__net</span><span class="p">;</span>
 
-	numbytes = channel_recv(m, cur, <span style="color:#6ab825;font-weight:bold">sizeof</span>(__net) - pending);
-	<span style="color:#6ab825;font-weight:bold">if</span> (numbytes &lt;= <span style="color:#3677a9">0</span>)
-		<span style="color:#6ab825;font-weight:bold">return</span> -<span style="color:#3677a9">1</span>;
+	<span class="n">numbytes</span> <span class="o">=</span> <span class="n">channel_recv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">cur</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">__net</span><span class="p">)</span> <span class="o">-</span> <span class="n">pending</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">numbytes</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
 
-	remain = numbytes;
-	<span style="color:#6ab825;font-weight:bold">if</span> (pending) {
-		remain += pending;
-		cur = __net;
-	}
+	<span class="n">remain</span> <span class="o">=</span> <span class="n">numbytes</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">pending</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">remain</span> <span class="o">+=</span> <span class="n">pending</span><span class="p">;</span>
+		<span class="n">cur</span> <span class="o">=</span> <span class="n">__net</span><span class="p">;</span>
+	<span class="p">}</span>
 
-	<span style="color:#6ab825;font-weight:bold">while</span> (remain &gt; <span style="color:#3677a9">0</span>) {
-		<span style="color:#6ab825;font-weight:bold">struct</span> nethdr *net = (<span style="color:#6ab825;font-weight:bold">struct</span> nethdr *) ptr;
-		<span style="color:#6ab825;font-weight:bold">int</span> len;
+	<span class="k">while</span> <span class="p">(</span><span class="n">remain</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">struct</span> <span class="n">nethdr</span> <span class="o">*</span><span class="n">net</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">nethdr</span> <span class="o">*</span><span class="p">)</span> <span class="n">ptr</span><span class="p">;</span>
+		<span class="kt">int</span> <span class="n">len</span><span class="p">;</span>
 
-		<span style="color:#999;font-style:italic">// HERE THE PACKET ITSELF IS ANALYZED
-</span><span style="color:#999;font-style:italic"></span>		[...]
-	}
+		<span class="c1">// HERE THE PACKET ITSELF IS ANALYZED
+</span><span class="c1"></span>		<span class="p">[...]</span>
+	<span class="p">}</span>
 
-	<span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">0</span>;
-}
-</code></pre></div><p>Obvisouly <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel.c#n279">channel_recv</a> is called:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">channel_recv</span>(<span style="color:#6ab825;font-weight:bold">struct</span> channel *c, <span style="color:#6ab825;font-weight:bold">char</span> *buf, <span style="color:#6ab825;font-weight:bold">int</span> size)
-{
-	<span style="color:#6ab825;font-weight:bold">return</span> c-&gt;ops-&gt;recv(c-&gt;data, buf, size);
-}
-</code></pre></div><p>Depending on which channel (variable <code>c</code>) is currently active <code>channel_recv</code> will then call the channel&rsquo;s
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Obvisouly <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel.c#n279">channel_recv</a> is called:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="kt">int</span> <span class="nf">channel_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">return</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">recv</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Depending on which channel (variable <code>c</code>) is currently active <code>channel_recv</code> will then call the channel&rsquo;s
 <code>recv</code> function. The channel for UDP is stored in a structure called <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n128">channel_udp</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">struct</span> channel_ops channel_udp = {
-	.headersiz	= <span style="color:#3677a9">28</span>, <span style="color:#999;font-style:italic">/* IP header (20 bytes) + UDP header 8 (bytes) */</span>
-	.open		= channel_udp_open,
-	.close		= channel_udp_close,
-	.send		= channel_udp_send,
-	.recv		= channel_udp_recv,
-	.get_fd		= channel_udp_get_fd,
-	.isset		= channel_udp_isset,
-	.accept_isset	= channel_udp_accept_isset,
-	.stats		= channel_udp_stats,
-	.stats_extended = channel_udp_stats_extended,
-};
-</code></pre></div><p>As you can notice <code>channel_udp.recv</code> is a function pointer to <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n49">channel_udp_recv</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">int</span>
-<span style="color:#447fcf">channel_udp_recv</span>(<span style="color:#6ab825;font-weight:bold">void</span> *channel, <span style="color:#6ab825;font-weight:bold">char</span> *buf, <span style="color:#6ab825;font-weight:bold">int</span> size)
-{
-	<span style="color:#6ab825;font-weight:bold">struct</span> udp_channel *m = channel;
-	<span style="color:#6ab825;font-weight:bold">return</span> udp_recv(m-&gt;server, buf, size);
-}
-</code></pre></div><p>So now we&rsquo;re getting closer to the function that is actually responsible for reading data from the wire. In <a href="http://git.netfilter.org/conntrack-tools/tree/src/udp.c#n193">udp_recv</a> all the magic happens:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c">ssize_t <span style="color:#447fcf">udp_recv</span>(<span style="color:#6ab825;font-weight:bold">struct</span> udp_sock *m, <span style="color:#6ab825;font-weight:bold">void</span> *data, <span style="color:#6ab825;font-weight:bold">int</span> size)
-{
-	ssize_t ret;
-	socklen_t sin_size = <span style="color:#6ab825;font-weight:bold">sizeof</span>(<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in);
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">struct</span> <span class="n">channel_ops</span> <span class="n">channel_udp</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="p">.</span><span class="n">headersiz</span>	<span class="o">=</span> <span class="mi">28</span><span class="p">,</span> <span class="cm">/* IP header (20 bytes) + UDP header 8 (bytes) */</span>
+	<span class="p">.</span><span class="n">open</span>		<span class="o">=</span> <span class="n">channel_udp_open</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">close</span>		<span class="o">=</span> <span class="n">channel_udp_close</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">send</span>		<span class="o">=</span> <span class="n">channel_udp_send</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">recv</span>		<span class="o">=</span> <span class="n">channel_udp_recv</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">get_fd</span>		<span class="o">=</span> <span class="n">channel_udp_get_fd</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">isset</span>		<span class="o">=</span> <span class="n">channel_udp_isset</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">accept_isset</span>	<span class="o">=</span> <span class="n">channel_udp_accept_isset</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">stats</span>		<span class="o">=</span> <span class="n">channel_udp_stats</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">stats_extended</span> <span class="o">=</span> <span class="n">channel_udp_stats_extended</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>As you can notice <code>channel_udp.recv</code> is a function pointer to <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n49">channel_udp_recv</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">static</span> <span class="kt">int</span>
+<span class="nf">channel_udp_recv</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">channel</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">struct</span> <span class="n">udp_channel</span> <span class="o">*</span><span class="n">m</span> <span class="o">=</span> <span class="n">channel</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">udp_recv</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">server</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>So now we&rsquo;re getting closer to the function that is actually responsible for reading data from the wire. In <a href="http://git.netfilter.org/conntrack-tools/tree/src/udp.c#n193">udp_recv</a> all the magic happens:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="n">ssize_t</span> <span class="nf">udp_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">udp_sock</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">ssize_t</span> <span class="n">ret</span><span class="p">;</span>
+	<span class="n">socklen_t</span> <span class="n">sin_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="p">);</span>
 
-        ret = recvfrom(m-&gt;fd,
-		       data, 
-		       size,
-		       <span style="color:#3677a9">0</span>,
-		       (<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr *)&amp;m-&gt;addr,
-		       &amp;sin_size);
-	<span style="color:#6ab825;font-weight:bold">if</span> (ret == -<span style="color:#3677a9">1</span>) {
-		<span style="color:#6ab825;font-weight:bold">if</span> (errno != EAGAIN)
-			m-&gt;stats.error++;
-		<span style="color:#6ab825;font-weight:bold">return</span> ret;
-	}
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">recvfrom</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span>
+		       <span class="n">data</span><span class="p">,</span> 
+		       <span class="n">size</span><span class="p">,</span>
+		       <span class="mi">0</span><span class="p">,</span>
+		       <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">addr</span><span class="p">,</span>
+		       <span class="o">&amp;</span><span class="n">sin_size</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span>
+			<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">error</span><span class="o">++</span><span class="p">;</span>
+		<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+	<span class="p">}</span>
 
-	m-&gt;stats.bytes += ret;
-	m-&gt;stats.messages++;
+	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">bytes</span> <span class="o">+=</span> <span class="n">ret</span><span class="p">;</span>
+	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">messages</span><span class="o">++</span><span class="p">;</span>
 
-	<span style="color:#6ab825;font-weight:bold">return</span> ret;
-}
-</code></pre></div><p>Nothing special about: Just call <code>recvfrom</code>, read the data into <code>data</code> and update some statistics.</p>
+	<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Nothing special about: Just call <code>recvfrom</code>, read the data into <code>data</code> and update some statistics.</p>
 <h3 id="the-plan">The plan</h3>
 <p>If we want to do some fuzzing we&rsquo;ll have to modify <code>udp_recv</code> to read from some file instead of sockets. Re-writing
 the function was actually a quite easy task:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#ifdef FUZZ
-</span><span style="color:#cd2828;font-weight:bold"></span>ssize_t <span style="color:#447fcf">my_udp_recv</span>(<span style="color:#6ab825;font-weight:bold">struct</span> udp_sock *m, <span style="color:#6ab825;font-weight:bold">void</span> *data, <span style="color:#6ab825;font-weight:bold">int</span> size, <span style="color:#6ab825;font-weight:bold">char</span> *filename) {
-    ssize_t ret;
-    <span style="color:#6ab825;font-weight:bold">long</span> f_size;
-    FILE *f;
-	socklen_t sin_size = <span style="color:#6ab825;font-weight:bold">sizeof</span>(<span style="color:#6ab825;font-weight:bold">struct</span> sockaddr_in);
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="cp">#ifdef FUZZ
+</span><span class="cp"></span><span class="n">ssize_t</span> <span class="nf">my_udp_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">udp_sock</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ssize_t</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="n">f_size</span><span class="p">;</span>
+    <span class="n">FILE</span> <span class="o">*</span><span class="n">f</span><span class="p">;</span>
+	<span class="n">socklen_t</span> <span class="n">sin_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="p">);</span>
 
-    <span style="color:#999;font-style:italic">// Read file
-</span><span style="color:#999;font-style:italic"></span>    <span style="color:#6ab825;font-weight:bold">if</span> (!(f = fopen(CONFIG(fuzz_file), <span style="color:#ed9d13">&#34;rb&#34;</span>))) {
-        fprintf(stderr, <span style="color:#ed9d13">&#34;[FUZZ] Couldn&#39;t open file</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>);
-        exit(<span style="color:#3677a9">1</span>);
-    }
+    <span class="c1">// Read file
+</span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">f</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">CONFIG</span><span class="p">(</span><span class="n">fuzz_file</span><span class="p">),</span> <span class="s">&#34;rb&#34;</span><span class="p">)))</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;[FUZZ] Couldn&#39;t open file</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
   
-    <span style="color:#999;font-style:italic">// Get file length
-</span><span style="color:#999;font-style:italic"></span>    fseek(f, <span style="color:#3677a9">0L</span>, SEEK_END);
-    f_size = ftell(f);
-    rewind(f);
+    <span class="c1">// Get file length
+</span><span class="c1"></span>    <span class="n">fseek</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0L</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">);</span>
+    <span class="n">f_size</span> <span class="o">=</span> <span class="n">ftell</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+    <span class="n">rewind</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
 
-    ret = fread(data, f_size, <span style="color:#3677a9">1</span>, f);
-    fclose(f);
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">fread</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+    <span class="n">fclose</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
 	
-    <span style="color:#6ab825;font-weight:bold">if</span> (ret == -<span style="color:#3677a9">1</span>) {
-		<span style="color:#6ab825;font-weight:bold">if</span> (errno != EAGAIN)
-			m-&gt;stats.error++;
-		<span style="color:#6ab825;font-weight:bold">return</span> ret;
-    }
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span>
+			<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">error</span><span class="o">++</span><span class="p">;</span>
+		<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="p">}</span>
 	
-    m-&gt;stats.bytes += f_size;
-	m-&gt;stats.messages++;
+    <span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">bytes</span> <span class="o">+=</span> <span class="n">f_size</span><span class="p">;</span>
+	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">messages</span><span class="o">++</span><span class="p">;</span>
 
-	<span style="color:#6ab825;font-weight:bold">return</span> f_size;
-}
-<span style="color:#cd2828;font-weight:bold">#endif
-</span></code></pre></div><p>Easy, right? Now <code>my_udp_recv</code> will read the file specified by <code>filename</code> and store the contents inside <code>data</code>. However,
+	<span class="k">return</span> <span class="n">f_size</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cp">#endif
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Easy, right? Now <code>my_udp_recv</code> will read the file specified by <code>filename</code> and store the contents inside <code>data</code>. However,
 this simple modification implied several changes across the whole base.</p>
 <blockquote>
 <p>You can see the whole changes <a href="https://github.com/dorneanu/conntrack-fuzzing/search?utf8=%E2%9C%93&amp;q=udp_recv">here</a>.</p>
 </blockquote>
 <p>Afterwards I was able to compile the code with this new feature:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ git clone https://github.com/dorneanu/conntrack-fuzzing
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git clone https://github.com/dorneanu/conntrack-fuzzing
 $ cd conntrack-fuzzing
 $ CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
 [...]
@@ -412,13 +734,34 @@ Daemon mode commands:
   -d [options]          Run in daemon mode
 
 [...]
-</code></pre></div><p>Now you can specify a file (<code>-X</code>) which will be used as parameter for <code>my_udp_recv</code>. The &ldquo;daemon&rdquo; will now just read
+</code></pre></td></tr></table>
+</div>
+</div><p>Now you can specify a file (<code>-X</code>) which will be used as parameter for <code>my_udp_recv</code>. The &ldquo;daemon&rdquo; will now just read
 the contents of the file, analyze the input and then simply exit.</p>
 <h2 id="generating-input-values">Generating input values</h2>
 <p>Now that I was able to specify files as data input, I had to generate some input examples for the screening process of <code>AFL</code>.
 By sniffing enought traffic between 2 productive hosts running <code>conntrackd</code> I got a <strong>lots</strong> of payloads I could then use
 for <code>AFL</code>. All I had to do was to store those values as binary files:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">In [1]: payload = &#34;1000003c5815c1c9000c00000a171f0cc3b265fa000800050000019800050002110000000008000305be0035000800060000001e0008000c7e64b2c3&#34;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">In [1]: payload = &#34;1000003c5815c1c9000c00000a171f0cc3b265fa000800050000019800050002110000000008000305be0035000800060000001e0008000c7e64b2c3&#34;
 
 In [2]: import binascii
 
@@ -433,19 +776,76 @@ In [4]: !hexdump -C /tmp/input1
 00000020  11 00 00 00 00 08 00 03  05 be 00 35 00 08 00 06  |...........5....|
 00000030  00 00 00 1e 00 08 00 0c  7e 64 b2 c3              |........~d..|
 0000003c
-</code></pre></div><p>For my test cases I&rsquo;ve chosen ca. 4-5 different payloads and stored them as binary files. Now I was ready to run <code>AFL</code>.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>For my test cases I&rsquo;ve chosen ca. 4-5 different payloads and stored them as binary files. Now I was ready to run <code>AFL</code>.</p>
 <h2 id="prepare-for-afl">Prepare for AFL</h2>
 <p>Inside the project I&rsquo;ve then created the directory structure for <code>AFL</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mkdir -p fuzzing/{ftfw,notrack}/input
-</code></pre></div><p>For every sync mode (ftwfw and notrack) I&rsquo;ve then copied the input values into <code>input</code>. As a next step I had to compile the source using
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ mkdir -p fuzzing/{ftfw,notrack}/input
+</code></pre></td></tr></table>
+</div>
+</div><p>For every sync mode (ftwfw and notrack) I&rsquo;ve then copied the input values into <code>input</code>. As a next step I had to compile the source using
 <code>afl-gcc</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ CC=afl-gcc AFL_USE_ASAN=1 CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ CC=afl-gcc AFL_USE_ASAN=1 CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
 [...]
 $ make -j 4
 [...]
-</code></pre></div><h2 id="running-afl">Running AFL</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="running-afl">Running AFL</h2>
 <p><code>AFL</code> itself had to be ran as <code>root</code> since <code>conntrackd</code> requires privileged permissions:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ echo core &gt;/proc/sys/kernel/core_pattern
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ echo core &gt;/proc/sys/kernel/core_pattern
 $ afl-fuzz -i fuzzing/ftfw/input/ -o fuzzing/ftfw/output ./src/conntrackd -C conntrackd.conf -X @@
 [+] You have 2 CPU cores and 1 runnable tasks (utilization: 50%).
 [+] Try parallel jobs - see /usr/local/share/doc/afl/parallel_fuzzing.txt.
@@ -479,9 +879,18 @@ $ afl-fuzz -i fuzzing/ftfw/input/ -o fuzzing/ftfw/output ./src/conntrackd -C con
 [+] All set and ready to roll!
 
 [...]
-</code></pre></div><p>You can also monitor the current input using:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ watch -n1 &#39;cat fuzzing/ftfw/output/.cur_input | hexdump -C&#39;
-</code></pre></div><h2 id="results">Results</h2>
+</code></pre></td></tr></table>
+</div>
+</div><p>You can also monitor the current input using:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ watch -n1 &#39;cat fuzzing/ftfw/output/.cur_input | hexdump -C&#39;
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="results">Results</h2>
 <p>While the <strong>preparation</strong> steps were indeed time-consuming I think I have definitely improved my <code>gdb</code>
 skills looking at the code and trying to understand how things work. Additionally I was able to trace
 the data flow within the code - from the sockets till to the functions where data got analyzed. The

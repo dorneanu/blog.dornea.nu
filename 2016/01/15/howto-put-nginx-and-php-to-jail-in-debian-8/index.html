@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,9 +85,18 @@ type="image/x-icon"/>
     <time>15 Jan 2016</time> 
      | 
     
+
+    
+     ~
+  
+
+12 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/nginx' class="link silver">nginx</a> <a href='https://blog.dornea.nu/tags/php' class="link silver">php</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a> <a href='https://blog.dornea.nu/tags/debian' class="link silver">debian</a> <a href='https://blog.dornea.nu/tags/chroot' class="link silver">chroot</a> <a href='https://blog.dornea.nu/tags/security' class="link silver">security</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Although I thought this would be an easy task, it turned out that <strong>chrooting</strong> daemons takes more than copying config files and libraries. There are donzens of tutorials out there how to do it, but the devil lies in detail - as always. Setting up a chroot environment is easy. But securing it properly is prone to faults which in worst case could let an attacker escape the chroot. And this is your worst nightmare, right? So let&rsquo;s have a look at some more technical details.</p>
 <p>For those unfamiliar with <code>chroot</code> make sure you have a look at least the <a href="https://en.wikipedia.org/wiki/Chroot">Wikipedia entry</a>.  There are also soms <a href="http://www.unixwiz.net/techtips/chroot-practices.html">chroot best practices</a> you could have a look at. Although there are better alternatives solving this job (e.g. docker) and being unable to load <strong>LSM</strong> (<a href="https://en.wikipedia.org/wiki/Linux_Security_Modules">Linux Security Modules</a>) on a vServer, putting a daemon to <em>jails</em> seems to be a pretty good approach. But there are several things one should keep in mind since <code>chroot</code> isn&rsquo;t a security feature per se (make sure you read <a href="https://securityblog.redhat.com/2013/03/27/is-chroot-a-security-feature/">&ldquo;Is chroot a security feature?&quot;</a> and <a href="https://lwn.net/Articles/252794/">&ldquo;What chroot() is really for&rdquo;</a>).</p>
@@ -107,80 +117,199 @@ type="image/x-icon"/>
 <li>data base (<code>mysqld</code>) for storing information</li>
 </ul>
 <p>The <code>mysqld</code> will usually listen on <em>localhost:3306</em> and can be thus accessed by the processes inside the chroot as well. The <code>nginx</code> and the <code>PHP</code> daemons have some dependencies to be installed inside the chroot otherwise you won&rsquo;t be able to run them. For the sake of example let&rsquo;s have a look at <code>nginx</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ldd /usr/sbin/nginx
-    linux-vdso.so.1 (0x00007fffe734d000)
-    libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f47b5548000)
-    libcrypt.so.1 =&gt; /lib/x86_64-linux-gnu/libcrypt.so.1 (0x00007f47b5311000)
-    libpam.so.0 =&gt; /lib/x86_64-linux-gnu/libpam.so.0 (0x00007f47b5101000)
-    libexpat.so.1 =&gt; /lib/x86_64-linux-gnu/libexpat.so.1 (0x00007f47b4ed8000)
-    libpcre.so.3 =&gt; /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f47b4c6a000)
-    libssl.so.1.0.0 =&gt; /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0 (0x00007f47b4a09000)
-    libcrypto.so.1.0.0 =&gt; /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0 (0x00007f47b460e000)
-[...]
-</code></pre></div><p>So there are a lot of libraries which have to be copied into the chroot in order for the <code>nginx</code> binary to execute properly. But first, let&rsquo;s setup the basic directory structure.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ ldd /usr/sbin/nginx
+    linux-vdso.so.1 <span class="o">(</span>0x00007fffe734d000<span class="o">)</span>
+    libpthread.so.0 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libpthread.so.0 <span class="o">(</span>0x00007f47b5548000<span class="o">)</span>
+    libcrypt.so.1 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libcrypt.so.1 <span class="o">(</span>0x00007f47b5311000<span class="o">)</span>
+    libpam.so.0 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libpam.so.0 <span class="o">(</span>0x00007f47b5101000<span class="o">)</span>
+    libexpat.so.1 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libexpat.so.1 <span class="o">(</span>0x00007f47b4ed8000<span class="o">)</span>
+    libpcre.so.3 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libpcre.so.3 <span class="o">(</span>0x00007f47b4c6a000<span class="o">)</span>
+    libssl.so.1.0.0 <span class="o">=</span>&gt; /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0 <span class="o">(</span>0x00007f47b4a09000<span class="o">)</span>
+    libcrypto.so.1.0.0 <span class="o">=</span>&gt; /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0 <span class="o">(</span>0x00007f47b460e000<span class="o">)</span>
+<span class="o">[</span>...<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>So there are a lot of libraries which have to be copied into the chroot in order for the <code>nginx</code> binary to execute properly. But first, let&rsquo;s setup the basic directory structure.</p>
 <h2 id="chroot-environment">chroot() environment</h2>
 <p>First we&rsquo;ll create the basic directory structure and copy some basic stuff to it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Create devices</span>
-$ mkdir <span style="color:#40ffff">$JAIL</span>/dev
-$ mknod -m <span style="color:#3677a9">0666</span> <span style="color:#40ffff">$JAIL</span>/dev/null c <span style="color:#3677a9">1</span> <span style="color:#3677a9">3</span>
-$ mknod -m <span style="color:#3677a9">0666</span> <span style="color:#40ffff">$JAIL</span>/dev/random c <span style="color:#3677a9">1</span> <span style="color:#3677a9">8</span>
-$ mknod -m <span style="color:#3677a9">0444</span> <span style="color:#40ffff">$JAIL</span>/dev/urandom c <span style="color:#3677a9">1</span> <span style="color:#3677a9">9</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="c1"># Create devices</span>
+$ mkdir <span class="nv">$JAIL</span>/dev
+$ mknod -m <span class="m">0666</span> <span class="nv">$JAIL</span>/dev/null c <span class="m">1</span> <span class="m">3</span>
+$ mknod -m <span class="m">0666</span> <span class="nv">$JAIL</span>/dev/random c <span class="m">1</span> <span class="m">8</span>
+$ mknod -m <span class="m">0444</span> <span class="nv">$JAIL</span>/dev/urandom c <span class="m">1</span> <span class="m">9</span>
 
-<span style="color:#999;font-style:italic"># Create directories</span>
-$ mkdir -p <span style="color:#40ffff">$JAIL</span>/{etc,bin,usr,var}
-$ mkdir -p <span style="color:#40ffff">$JAIL</span>/usr/{lib,sbin,bin}
-$ mkdir -p <span style="color:#40ffff">$JAIL</span>/{run,tmp}
-$ mkdir -p <span style="color:#40ffff">$JAIL</span>/var/run
+<span class="c1"># Create directories</span>
+$ mkdir -p <span class="nv">$JAIL</span>/<span class="o">{</span>etc,bin,usr,var<span class="o">}</span>
+$ mkdir -p <span class="nv">$JAIL</span>/usr/<span class="o">{</span>lib,sbin,bin<span class="o">}</span>
+$ mkdir -p <span class="nv">$JAIL</span>/<span class="o">{</span>run,tmp<span class="o">}</span>
+$ mkdir -p <span class="nv">$JAIL</span>/var/run
 
-<span style="color:#999;font-style:italic"># Check if 64-bit system</span>
-$ <span style="color:#6ab825;font-weight:bold">if</span> [ <span style="color:#6ab825;font-weight:bold">$(</span>uname -m<span style="color:#6ab825;font-weight:bold">)</span> = <span style="color:#ed9d13">&#34;x86_64&#34;</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
-    <span style="color:#24909d">cd</span> <span style="color:#40ffff">$JAIL</span>; ln -s usr/lib lib64
-    <span style="color:#24909d">cd</span> <span style="color:#40ffff">$JAIL</span>/usr; ln -s lib lib64
-<span style="color:#6ab825;font-weight:bold">else</span>
-    <span style="color:#24909d">cd</span> <span style="color:#40ffff">$JAIL</span>; ln -s usr/lib lib
-<span style="color:#6ab825;font-weight:bold">fi</span>
+<span class="c1"># Check if 64-bit system</span>
+$ <span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>uname -m<span class="k">)</span> <span class="o">=</span> <span class="s2">&#34;x86_64&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">cd</span> <span class="nv">$JAIL</span><span class="p">;</span> ln -s usr/lib lib64
+    <span class="nb">cd</span> <span class="nv">$JAIL</span>/usr<span class="p">;</span> ln -s lib lib64
+<span class="k">else</span>
+    <span class="nb">cd</span> <span class="nv">$JAIL</span><span class="p">;</span> ln -s usr/lib lib
+<span class="k">fi</span>
 
-<span style="color:#999;font-style:italic"># Copy important stuff</span>
-$ cp -rfvL /etc/{services,localtime,nsswitch.conf,nscd.conf,protocols,hosts,ld.so.cache,ld.so.conf,resolv.conf,host.conf} <span style="color:#40ffff">$JAIL</span>/etc
+<span class="c1"># Copy important stuff</span>
+$ cp -rfvL /etc/<span class="o">{</span>services,localtime,nsswitch.conf,nscd.conf,protocols,hosts,ld.so.cache,ld.so.conf,resolv.conf,host.conf<span class="o">}</span> <span class="nv">$JAIL</span>/etc
 
-</code></pre></div><h2 id="nginx">nginx</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="nginx">nginx</h2>
 <p>Next we&rsquo;ll setup <code>nginx</code> and copy necessary config files and libraries:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Create directories</span>
-$ mkdir -p <span style="color:#40ffff">$JAIL</span>/usr/share/nginx
-$ mkdir -p <span style="color:#40ffff">$JAIL</span>/var/{log,lib}/nginx
-$ mkdir -p <span style="color:#40ffff">$JAIL</span>/www/cgi-bin
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="c1"># Create directories</span>
+$ mkdir -p <span class="nv">$JAIL</span>/usr/share/nginx
+$ mkdir -p <span class="nv">$JAIL</span>/var/<span class="o">{</span>log,lib<span class="o">}</span>/nginx
+$ mkdir -p <span class="nv">$JAIL</span>/www/cgi-bin
 
-<span style="color:#999;font-style:italic"># Copy files</span>
-$ cp -r /usr/share/nginx/* <span style="color:#40ffff">$JAIL</span>/usr/share/nginx
-$ cp /usr/sbin/nginx <span style="color:#40ffff">$JAIL</span>/usr/sbin/
-$ cp -r /var/lib/nginx <span style="color:#40ffff">$JAIL</span>/var/lib/nginx
+<span class="c1"># Copy files</span>
+$ cp -r /usr/share/nginx/* <span class="nv">$JAIL</span>/usr/share/nginx
+$ cp /usr/sbin/nginx <span class="nv">$JAIL</span>/usr/sbin/
+$ cp -r /var/lib/nginx <span class="nv">$JAIL</span>/var/lib/nginx
 
-<span style="color:#999;font-style:italic"># Copy libraries</span>
-$ <span style="color:#ed9d13">${</span><span style="color:#40ffff">N2CHROOT</span><span style="color:#ed9d13">}</span> /usr/sbin/nginx
+<span class="c1"># Copy libraries</span>
+$ <span class="si">${</span><span class="nv">N2CHROOT</span><span class="si">}</span> /usr/sbin/nginx
 
-<span style="color:#999;font-style:italic"># Copy config files and other important stuff</span>
-$ cp -rfvL /etc/nginx <span style="color:#40ffff">$JAIL</span>/etc
+<span class="c1"># Copy config files and other important stuff</span>
+$ cp -rfvL /etc/nginx <span class="nv">$JAIL</span>/etc
 
-<span style="color:#999;font-style:italic"># Create PID file</span>
-$ touch <span style="color:#40ffff">$JAIL</span>/run/nginx.pid
+<span class="c1"># Create PID file</span>
+$ touch <span class="nv">$JAIL</span>/run/nginx.pid
 
-<span style="color:#999;font-style:italic"># Copy the nginx binary</span>
-$ cp /usr/sbin/nginx <span style="color:#40ffff">$JAIL</span>/usr/sbin/
-</code></pre></div><h3 id="troubleshooting">Troubleshooting</h3>
+<span class="c1"># Copy the nginx binary</span>
+$ cp /usr/sbin/nginx <span class="nv">$JAIL</span>/usr/sbin/
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="troubleshooting">Troubleshooting</h3>
 <p>First let&rsquo;s see if we can run the daemon at all:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx -t                
-nginx: [emerg] getpwnam(<span style="color:#ed9d13">&#34;www-data&#34;</span>) failed in /etc/nginx/nginx.conf:1
-nginx: configuration file /etc/nginx/nginx.conf <span style="color:#24909d">test</span> failed
-</code></pre></div><p>OK. Let&rsquo;s have a look at <code>strace</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">mmap(NULL, 39842, PROT_READ, MAP_PRIVATE, 5, 0) = 0x7f1d0c620000
-close(5)                                = <span style="color:#3677a9">0</span>
-access(<span style="color:#ed9d13">&#34;/etc/ld.so.nohwcap&#34;</span>, F_OK)      = -1 ENOENT (No such file or directory)
-open(<span style="color:#ed9d13">&#34;/lib/x86_64-linux-gnu/libnss_compat.so.2&#34;</span>, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span class="nv">$JAIL</span> /usr/sbin/nginx -t                
+nginx: <span class="o">[</span>emerg<span class="o">]</span> getpwnam<span class="o">(</span><span class="s2">&#34;www-data&#34;</span><span class="o">)</span> failed in /etc/nginx/nginx.conf:1
+nginx: configuration file /etc/nginx/nginx.conf <span class="nb">test</span> failed
+</code></pre></td></tr></table>
+</div>
+</div><p>OK. Let&rsquo;s have a look at <code>strace</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">mmap<span class="o">(</span>NULL, 39842, PROT_READ, MAP_PRIVATE, 5, 0<span class="o">)</span> <span class="o">=</span> 0x7f1d0c620000
+close<span class="o">(</span>5<span class="o">)</span>                                <span class="o">=</span> <span class="m">0</span>
+access<span class="o">(</span><span class="s2">&#34;/etc/ld.so.nohwcap&#34;</span>, F_OK<span class="o">)</span>      <span class="o">=</span> -1 ENOENT <span class="o">(</span>No such file or directory<span class="o">)</span>
+open<span class="o">(</span><span class="s2">&#34;/lib/x86_64-linux-gnu/libnss_compat.so.2&#34;</span>, O_RDONLY<span class="p">|</span>O_CLOEXEC<span class="o">)</span> <span class="o">=</span> -1 ENOENT <span class="o">(</span>No such file or directory<span class="o">)</span>
 ...
-exit_group(1)                           = ?
-+++ exited with <span style="color:#3677a9">1</span> +++
-</code></pre></div><p>Apparently <code>libnss</code> can&rsquo;t be found. Let&rsquo;s fix that:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ find / -name <span style="color:#ed9d13">&#34;libnss*&#34;</span>
+exit_group<span class="o">(</span>1<span class="o">)</span>                           <span class="o">=</span> ?
++++ exited with <span class="m">1</span> +++
+</code></pre></td></tr></table>
+</div>
+</div><p>Apparently <code>libnss</code> can&rsquo;t be found. Let&rsquo;s fix that:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ find / -name <span class="s2">&#34;libnss*&#34;</span>
 /lib/x86_64-linux-gnu/libnss_nis-2.19.so
 /lib/x86_64-linux-gnu/libnss_compat-2.19.so
 /lib/x86_64-linux-gnu/libnss_compat.so.2
@@ -200,80 +329,199 @@ exit_group(1)                           = ?
 /usr/lib/x86_64-linux-gnu/libnss_dns.so
 /usr/lib/x86_64-linux-gnu/libnss_nis.so
 
-<span style="color:#999;font-style:italic"># cp /lib/x86_64-linux-gnu/libnss_* $JAIL/lib/x86_64-linux-gnu/</span>
-</code></pre></div><p>Let&rsquo;s give it a 2nd try:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx -t
+<span class="c1"># cp /lib/x86_64-linux-gnu/libnss_* $JAIL/lib/x86_64-linux-gnu/</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s give it a 2nd try:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span class="nv">$JAIL</span> /usr/sbin/nginx -t
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf <span style="color:#24909d">test</span> is successful
-</code></pre></div><h2 id="php5-fpm">php5-fpm</h2>
+nginx: configuration file /etc/nginx/nginx.conf <span class="nb">test</span> is successful
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="php5-fpm">php5-fpm</h2>
 <p>The PHP FastCGI Process Manager (<code>php5-fpm</code>) also requires some libraries and config files that have to be available in the new <code>chroot</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Copy config files</span>
-$ cp -rfvl /etc/php5 <span style="color:#40ffff">$JAIL</span>/etc/
-$ cp -rfvl /usr/share/zoneinfo <span style="color:#40ffff">$JAIL</span>/usr/share/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="c1"># Copy config files</span>
+$ cp -rfvl /etc/php5 <span class="nv">$JAIL</span>/etc/
+$ cp -rfvl /usr/share/zoneinfo <span class="nv">$JAIL</span>/usr/share/
 
-<span style="color:#999;font-style:italic"># Copy libraries</span>
-$ <span style="color:#ed9d13">${</span><span style="color:#40ffff">N2CHROOT</span><span style="color:#ed9d13">}</span> /usr/sbin/php5-fpm
+<span class="c1"># Copy libraries</span>
+$ <span class="si">${</span><span class="nv">N2CHROOT</span><span class="si">}</span> /usr/sbin/php5-fpm
 
-<span style="color:#999;font-style:italic"># Copy the php5-fpm binary</span>
-$ cp /usr/sbin/php5-fpm <span style="color:#40ffff">$JAIL</span>/usr/sbin/
-</code></pre></div><p>Let&rsquo;s check if everything is ok:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/php5-fpm --help
+<span class="c1"># Copy the php5-fpm binary</span>
+$ cp /usr/sbin/php5-fpm <span class="nv">$JAIL</span>/usr/sbin/
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s check if everything is ok:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ /usr/sbin/chroot <span class="nv">$JAIL</span> /usr/sbin/php5-fpm --help
 Failed loading /usr/lib/php5/20131226/opcache.so:  /usr/lib/php5/20131226/opcache.so: cannot open shared object file: No such file or directory
-[11-Jan-2016 19:46:19] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span style="color:#ed9d13">&#39;/usr/lib/php5/20131226/mysqlnd.so&#39;</span> - /usr/lib/php5/20131226/mysqlnd.so: cannot open shared object file: No such file or directory in Unknown on line <span style="color:#3677a9">0</span>
-[11-Jan-2016 19:46:19] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span style="color:#ed9d13">&#39;/usr/lib/php5/20131226/pdo.so&#39;</span> - /usr/lib/php5/20131226/pdo.so: cannot open shared object file: No such file or directory in Unknown on line <span style="color:#3677a9">0</span>
-[11-Jan-2016 19:46:19] NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span style="color:#ed9d13">&#39;/usr/lib/php5/20131226/curl.so&#39;</span> - /usr/lib/php5/20131226/curl.so: cannot open shared object file: No such file or directory in ...
-</code></pre></div><p>Obviously some libraries are still missing. Let&rsquo;s fix that:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cp -rvfl /usr/lib/php5 <span style="color:#40ffff">$JAIL</span>/usr/lib
-$ <span style="color:#6ab825;font-weight:bold">for</span> f in /usr/lib/php5/20131226/*.so; <span style="color:#6ab825;font-weight:bold">do</span>
-&gt;    n2chroot <span style="color:#40ffff">$f</span>
-&gt; <span style="color:#6ab825;font-weight:bold">done</span>
-</code></pre></div><p>The <code>for</code>-loop will look at every php-module and copy its dependant libraries to the chroot.</p>
+<span class="o">[</span>11-Jan-2016 19:46:19<span class="o">]</span> NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span class="s1">&#39;/usr/lib/php5/20131226/mysqlnd.so&#39;</span> - /usr/lib/php5/20131226/mysqlnd.so: cannot open shared object file: No such file or directory in Unknown on line <span class="m">0</span>
+<span class="o">[</span>11-Jan-2016 19:46:19<span class="o">]</span> NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span class="s1">&#39;/usr/lib/php5/20131226/pdo.so&#39;</span> - /usr/lib/php5/20131226/pdo.so: cannot open shared object file: No such file or directory in Unknown on line <span class="m">0</span>
+<span class="o">[</span>11-Jan-2016 19:46:19<span class="o">]</span> NOTICE: PHP message: PHP Warning:  PHP Startup: Unable to load dynamic library <span class="s1">&#39;/usr/lib/php5/20131226/curl.so&#39;</span> - /usr/lib/php5/20131226/curl.so: cannot open shared object file: No such file or directory in ...
+</code></pre></td></tr></table>
+</div>
+</div><p>Obviously some libraries are still missing. Let&rsquo;s fix that:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ cp -rvfl /usr/lib/php5 <span class="nv">$JAIL</span>/usr/lib
+$ <span class="k">for</span> f in /usr/lib/php5/20131226/*.so<span class="p">;</span> <span class="k">do</span>
+&gt;    n2chroot <span class="nv">$f</span>
+&gt; <span class="k">done</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The <code>for</code>-loop will look at every php-module and copy its dependant libraries to the chroot.</p>
 <h3 id="cant-execute-exec-shell_exec-or-system">Can&rsquo;t execute exec(), shell_exec() or system()</h3>
 <p>If you experience some sort of problems like <a href="http://stackoverflow.com/questions/17006136/exec-with-php-fpm-on-nginx-under-chroot-returns-nothing">this</a> you probably have no <code>/bin/sh</code> inside your chroot (which is great after all, since we want to strip down the environment to a minimal setup). However <strong>PHP</strong>&rsquo;s functions like <code>exec()</code>, <code>shell_exec()</code> or <code>system()</code>will internally call <code>/bin/sh -c</code> to run the commands. So if your PHP application is using something like <code>sendmail</code> and you don&rsquo;t want to install any shell into your chroot, I&rsquo;ve found this <a href="https://knzl.de/setting-up-a-chroot-for-php/">solution</a> from <em>Sebastian Kienzl</em> which basically consists in providing a &ldquo;shell&rdquo; which will in turn use <code>execvp()</code> to run commands.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.c" data-lang=".c"><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdio.h&gt;</span><span style="color:#cd2828;font-weight:bold">
-</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;stdlib.h&gt;</span><span style="color:#cd2828;font-weight:bold">
-</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;string.h&gt;</span><span style="color:#cd2828;font-weight:bold">
-</span><span style="color:#cd2828;font-weight:bold">#include</span> <span style="color:#cd2828;font-weight:bold">&lt;unistd.h&gt;</span><span style="color:#cd2828;font-weight:bold">
-</span><span style="color:#cd2828;font-weight:bold"></span> 
-<span style="color:#cd2828;font-weight:bold">#define MAXARG 64
-</span><span style="color:#cd2828;font-weight:bold"></span> 
-<span style="color:#6ab825;font-weight:bold">int</span> <span style="color:#447fcf">main</span>( <span style="color:#6ab825;font-weight:bold">int</span> argc, <span style="color:#6ab825;font-weight:bold">char</span>* <span style="color:#6ab825;font-weight:bold">const</span> argv[] ) {
-    <span style="color:#6ab825;font-weight:bold">char</span>* args[ MAXARG ] = {};
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp"></span> 
+<span class="cp">#define MAXARG 64
+</span><span class="cp"></span> 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="k">const</span> <span class="n">argv</span><span class="p">[]</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span><span class="o">*</span> <span class="n">args</span><span class="p">[</span> <span class="n">MAXARG</span> <span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
  
-    <span style="color:#6ab825;font-weight:bold">if</span>( argc &lt; <span style="color:#3677a9">3</span> || strcmp( argv[<span style="color:#3677a9">1</span>], <span style="color:#ed9d13">&#34;-c&#34;</span> ) != <span style="color:#3677a9">0</span> ) {
-        fprintf( stderr, <span style="color:#ed9d13">&#34;Usage: %s -c &lt;cmd&gt;</span><span style="color:#ed9d13">\n</span><span style="color:#ed9d13">&#34;</span>, argv[<span style="color:#3677a9">0</span>] );  
-        <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">1</span>;
-    }
+    <span class="k">if</span><span class="p">(</span> <span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="o">||</span> <span class="n">strcmp</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#34;-c&#34;</span> <span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span> <span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Usage: %s -c &lt;cmd&gt;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">);</span>  
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
  
-    {
-        <span style="color:#6ab825;font-weight:bold">char</span>* token;
-        <span style="color:#6ab825;font-weight:bold">int</span> i = <span style="color:#3677a9">0</span>;  
-        <span style="color:#6ab825;font-weight:bold">char</span>* argStr = strdup( argv[<span style="color:#3677a9">2</span>] );
-        <span style="color:#6ab825;font-weight:bold">while</span>( ( token = strsep( &amp;argStr, <span style="color:#ed9d13">&#34; &#34;</span> ) ) != <span style="color:#24909d">NULL</span> ) {
-            <span style="color:#6ab825;font-weight:bold">if</span>( token &amp;&amp; strlen( token ) )
-                args[ i++ ] = token;
-            <span style="color:#6ab825;font-weight:bold">if</span>( i &gt;= MAXARG )
-                <span style="color:#6ab825;font-weight:bold">return</span> <span style="color:#3677a9">2</span>;
-        }
-    }  
+    <span class="p">{</span>
+        <span class="kt">char</span><span class="o">*</span> <span class="n">token</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  
+        <span class="kt">char</span><span class="o">*</span> <span class="n">argStr</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">);</span>
+        <span class="k">while</span><span class="p">(</span> <span class="p">(</span> <span class="n">token</span> <span class="o">=</span> <span class="n">strsep</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">argStr</span><span class="p">,</span> <span class="s">&#34; &#34;</span> <span class="p">)</span> <span class="p">)</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">token</span> <span class="o">&amp;&amp;</span> <span class="n">strlen</span><span class="p">(</span> <span class="n">token</span> <span class="p">)</span> <span class="p">)</span>
+                <span class="n">args</span><span class="p">[</span> <span class="n">i</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">token</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">MAXARG</span> <span class="p">)</span>
+                <span class="k">return</span> <span class="mi">2</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>  
  
-    <span style="color:#6ab825;font-weight:bold">return</span> execvp( args[<span style="color:#3677a9">0</span>], args );
-}
-</code></pre></div><p>Compile this using (I use <code>clang</code>):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ clang -O2 -fpie -pie -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=<span style="color:#3677a9">2</span> <span style="color:#ed9d13">\
-</span><span style="color:#ed9d13"></span>  sh.c -o sh
-</code></pre></div><p>Now remove the sources and strip the binary:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ rm sh.c
+    <span class="k">return</span> <span class="n">execvp</span><span class="p">(</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span> <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Compile this using (I use <code>clang</code>):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ clang -O2 -fpie -pie -Wformat -Wformat-security -Werror<span class="o">=</span>format-security -D_FORTIFY_SOURCE<span class="o">=</span><span class="m">2</span> <span class="se">\
+</span><span class="se"></span>  sh.c -o sh
+</code></pre></td></tr></table>
+</div>
+</div><p>Now remove the sources and strip the binary:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ rm sh.c
 $ strip sh
-</code></pre></div><p>However this approach seemed to introduce more problems than it was a decent solution. Depending on the applications and the scope you can decide whether to use a wrapper or provide <code>/bin/sh</code> inside your chroot. Nevertheless there should be no <code>setuid</code> binaries. More on that later.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>However this approach seemed to introduce more problems than it was a decent solution. Depending on the applications and the scope you can decide whether to use a wrapper or provide <code>/bin/sh</code> inside your chroot. Nevertheless there should be no <code>setuid</code> binaries. More on that later.</p>
 <h3 id="timezone-is-corrupt">Timezone is corrupt</h3>
 <p>If you have issues like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">PHP message: PHP Fatal error:  date(): Timezone database is corrupt - this should *never* happen!
-</code></pre></div><p>or</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">PHP message: PHP Notice:  date_default_timezone_set(): Timezone ID <span style="color:#ed9d13">&#39;UTC&#39;</span> is invalid
-</code></pre></div><p>make sure you copy <code>/usr/share/zoneinfo</code> into the chroot:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cp -Rv /usr/share/zoneinfo <span style="color:#40ffff">$JAIL</span>/usr/share/
-</code></pre></div><h2 id="adjust-chroot-security">Adjust chroot() security</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">PHP message: PHP Fatal error:  date<span class="o">()</span>: Timezone database is corrupt - this should *never* happen!
+</code></pre></td></tr></table>
+</div>
+</div><p>or</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">PHP message: PHP Notice:  date_default_timezone_set<span class="o">()</span>: Timezone ID <span class="s1">&#39;UTC&#39;</span> is invalid
+</code></pre></td></tr></table>
+</div>
+</div><p>make sure you copy <code>/usr/share/zoneinfo</code> into the chroot:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ cp -Rv /usr/share/zoneinfo <span class="nv">$JAIL</span>/usr/share/
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="adjust-chroot-security">Adjust chroot() security</h2>
 <p>In fact the actual hardening of the environment has not taken place already. Many people have pointed out that <strong>chroot != security</strong> and additional steps are vital for not being able to <strong>unchroot</strong> inside it. A few years ago <a href="https://filippo.io/escaping-a-chroot-jail-slash-1/">Filippo</a> also showed how easy an attacker could achieve that if specific conditions were satisfied. Since <code>chroot()</code> in my opinion it not <strong>THE</strong> security feature I&rsquo;d say it&rsquo;s sort of <strong>security in depth</strong>. Although there are enough cases where  leaving the chroot is possible - if securing it hasn&rsquo;t been done correctly, some recommendations from <a href="http://talby.rcs.manchester.ac.uk/~isd/_unix_security/unix_security_intro_securing_network_services.Breaking_Out_of_and_Securing_Chroot_Jails.html">here</a> should be taken into consideration:</p>
 <ul>
 <li><strong>not</strong> run daemons as <strong>root</strong></li>
@@ -282,180 +530,403 @@ $ strip sh
 <li>avoid unnecessary bullshit and only install the minimum inside the jail</li>
 </ul>
 <p>Let&rsquo;s translate those into commands:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash"><span style="color:#999;font-style:italic"># Add users</span>
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;www-data:x:1337:1337:www-data:/:/bin/false&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/passwd
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;nobody:x:99:99:nobody:/:/bin/false&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/passwd
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="c1"># Add users</span>
+$ <span class="nb">echo</span> <span class="s2">&#34;www-data:x:1337:1337:www-data:/:/bin/false&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/passwd
+$ <span class="nb">echo</span> <span class="s2">&#34;nobody:x:99:99:nobody:/:/bin/false&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/passwd
 
-<span style="color:#999;font-style:italic"># Add groups</span>
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;www-data:x:1337:&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/group
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;nobody:x:99:&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/group
+<span class="c1"># Add groups</span>
+$ <span class="nb">echo</span> <span class="s2">&#34;www-data:x:1337:&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/group
+$ <span class="nb">echo</span> <span class="s2">&#34;nobody:x:99:&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/group
 
-<span style="color:#999;font-style:italic"># Add shadow</span>
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;www-data:x:14871::::::&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/shadow
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;nobody:x:14871::::::&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/shadow
+<span class="c1"># Add shadow</span>
+$ <span class="nb">echo</span> <span class="s2">&#34;www-data:x:14871::::::&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/shadow
+$ <span class="nb">echo</span> <span class="s2">&#34;nobody:x:14871::::::&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/shadow
 
-<span style="color:#999;font-style:italic"># Add gshadow</span>
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;www-data:::&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/gshadow
-$ <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;nobody:::&#34;</span> &gt;&gt; <span style="color:#40ffff">$JAIL</span>/etc/gshadow
+<span class="c1"># Add gshadow</span>
+$ <span class="nb">echo</span> <span class="s2">&#34;www-data:::&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/gshadow
+$ <span class="nb">echo</span> <span class="s2">&#34;nobody:::&#34;</span> &gt;&gt; <span class="nv">$JAIL</span>/etc/gshadow
 
-<span style="color:#999;font-style:italic"># Set ownerships</span>
-$ chown -R root:root <span style="color:#40ffff">$JAIL</span>/
-$ chown -R www-data:www-data <span style="color:#40ffff">$JAIL</span>/www
-$ chown -R www-data:www-data <span style="color:#40ffff">$JAIL</span>/etc/{nginx,php5}
-$ chown -R www-data:www-data <span style="color:#40ffff">$JAIL</span>/var/{log,lib}/nginx
-$ chown www-data:www-data <span style="color:#40ffff">$JAIL</span>/run/nginx.pid
+<span class="c1"># Set ownerships</span>
+$ chown -R root:root <span class="nv">$JAIL</span>/
+$ chown -R www-data:www-data <span class="nv">$JAIL</span>/www
+$ chown -R www-data:www-data <span class="nv">$JAIL</span>/etc/<span class="o">{</span>nginx,php5<span class="o">}</span>
+$ chown -R www-data:www-data <span class="nv">$JAIL</span>/var/<span class="o">{</span>log,lib<span class="o">}</span>/nginx
+$ chown www-data:www-data <span class="nv">$JAIL</span>/run/nginx.pid
 
-<span style="color:#999;font-style:italic"># Restrict permissions</span>
-$ find <span style="color:#40ffff">$JAIL</span>/ -gid <span style="color:#3677a9">0</span> -uid <span style="color:#3677a9">0</span> -type d -print | xargs chmod -rw
-$ find <span style="color:#40ffff">$JAIL</span>/ -gid <span style="color:#3677a9">0</span> -uid <span style="color:#3677a9">0</span> -type d -print | xargs chmod +x
-$ find <span style="color:#40ffff">$JAIL</span>/etc -gid <span style="color:#3677a9">0</span> -uid <span style="color:#3677a9">0</span> -type f -print | xargs chmod -x
-$ find <span style="color:#40ffff">$JAIL</span>/usr/sbin -type f -print | xargs chmod ug+rx
-$ find <span style="color:#40ffff">$JAIL</span>/ -group www-data -user www-data -print | xargs chmod o-rwx
-$ chmod +rw <span style="color:#40ffff">$JAIL</span>/tmp
-$ chmod +rw <span style="color:#40ffff">$JAIL</span>/run
-</code></pre></div><h2 id="systemd">systemd</h2>
+<span class="c1"># Restrict permissions</span>
+$ find <span class="nv">$JAIL</span>/ -gid <span class="m">0</span> -uid <span class="m">0</span> -type d -print <span class="p">|</span> xargs chmod -rw
+$ find <span class="nv">$JAIL</span>/ -gid <span class="m">0</span> -uid <span class="m">0</span> -type d -print <span class="p">|</span> xargs chmod +x
+$ find <span class="nv">$JAIL</span>/etc -gid <span class="m">0</span> -uid <span class="m">0</span> -type f -print <span class="p">|</span> xargs chmod -x
+$ find <span class="nv">$JAIL</span>/usr/sbin -type f -print <span class="p">|</span> xargs chmod ug+rx
+$ find <span class="nv">$JAIL</span>/ -group www-data -user www-data -print <span class="p">|</span> xargs chmod o-rwx
+$ chmod +rw <span class="nv">$JAIL</span>/tmp
+$ chmod +rw <span class="nv">$JAIL</span>/run
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="systemd">systemd</h2>
 <p>Since <code>systemd</code>is now everywhere you can define your own <strong>service</strong> to start the daemons.</p>
 <h3 id="nginx-1">nginx</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo cat /etc/systemd/system/multi-user.target.wants/nginx.service 
-<span style="color:#999;font-style:italic"># Stop dance for nginx</span>
-<span style="color:#999;font-style:italic"># =======================</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic"># ExecStop sends SIGSTOP (graceful stop) to the nginx process.</span>
-<span style="color:#999;font-style:italic"># If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control</span>
-<span style="color:#999;font-style:italic"># and sends SIGTERM (fast shutdown) to the main process.</span>
-<span style="color:#999;font-style:italic"># After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends</span>
-<span style="color:#999;font-style:italic"># SIGKILL to all the remaining processes in the process group (KillMode=mixed).</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic"># nginx signals reference doc:</span>
-<span style="color:#999;font-style:italic"># http://nginx.org/en/docs/control.html</span>
-<span style="color:#999;font-style:italic">#</span>
-[Unit]
-<span style="color:#40ffff">Description</span>=nginx (Chroot)
-<span style="color:#40ffff">After</span>=network.target
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ sudo cat /etc/systemd/system/multi-user.target.wants/nginx.service 
+<span class="c1"># Stop dance for nginx</span>
+<span class="c1"># =======================</span>
+<span class="c1">#</span>
+<span class="c1"># ExecStop sends SIGSTOP (graceful stop) to the nginx process.</span>
+<span class="c1"># If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control</span>
+<span class="c1"># and sends SIGTERM (fast shutdown) to the main process.</span>
+<span class="c1"># After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends</span>
+<span class="c1"># SIGKILL to all the remaining processes in the process group (KillMode=mixed).</span>
+<span class="c1">#</span>
+<span class="c1"># nginx signals reference doc:</span>
+<span class="c1"># http://nginx.org/en/docs/control.html</span>
+<span class="c1">#</span>
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>nginx <span class="o">(</span>Chroot<span class="o">)</span>
+<span class="nv">After</span><span class="o">=</span>network.target
 
-[Service]
-<span style="color:#40ffff">Type</span>=forking
-<span style="color:#40ffff">PIDFile</span>=/var/www/chroot/run/nginx.pid
-<span style="color:#40ffff">RootDirectory</span>=/var/www/chroot
-<span style="color:#40ffff">ExecStartPre</span>=/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
-<span style="color:#40ffff">ExecStart</span>=/usr/sbin/nginx -c /etc/nginx/nginx.conf
-<span style="color:#40ffff">ExecReload</span>=/usr/sbin/nginx -c /etc/nginx/nginx.conf -s reload
-<span style="color:#40ffff">ExecStop</span>=/usr/sbin/nginx -c /etc/nginx/nginx.conf -s stop
-<span style="color:#40ffff">TimeoutStopSec</span>=<span style="color:#3677a9">5</span>
-<span style="color:#40ffff">KillMode</span>=mixed
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>forking
+<span class="nv">PIDFile</span><span class="o">=</span>/var/www/chroot/run/nginx.pid
+<span class="nv">RootDirectory</span><span class="o">=</span>/var/www/chroot
+<span class="nv">ExecStartPre</span><span class="o">=</span>/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/sbin/nginx -c /etc/nginx/nginx.conf
+<span class="nv">ExecReload</span><span class="o">=</span>/usr/sbin/nginx -c /etc/nginx/nginx.conf -s reload
+<span class="nv">ExecStop</span><span class="o">=</span>/usr/sbin/nginx -c /etc/nginx/nginx.conf -s stop
+<span class="nv">TimeoutStopSec</span><span class="o">=</span><span class="m">5</span>
+<span class="nv">KillMode</span><span class="o">=</span>mixed
 
-[Install]
-<span style="color:#40ffff">WantedBy</span>=multi-user.target
-</code></pre></div><p>Now run it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ sudo service nginx start
-$ ps -ax | grep nginx
-<span style="color:#3677a9">28530</span> ?        Ss     0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
-<span style="color:#3677a9">28531</span> ?        S      0:00 nginx: worker process
-<span style="color:#3677a9">28613</span> pts/0    S+     0:00 grep nginx
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></td></tr></table>
+</div>
+</div><p>Now run it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ sudo service nginx start
+$ ps -ax <span class="p">|</span> grep nginx
+<span class="m">28530</span> ?        Ss     0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf
+<span class="m">28531</span> ?        S      0:00 nginx: worker process
+<span class="m">28613</span> pts/0    S+     0:00 grep nginx
 $ ls -l /proc/28530/root
 sudo ls -l /proc/28530/root
-lrwxrwxrwx <span style="color:#3677a9">1</span> root root <span style="color:#3677a9">0</span> Jan <span style="color:#3677a9">12</span> 21:31 /proc/28530/root -&gt; /var/www/chroot
-</code></pre></div><p>If you don&rsquo;t want to use <code>systemd</code> you can use following to start/stop <code>nginx</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/nginx
-$ pgrep nginx | xargs <span style="color:#24909d">kill</span> -9
-</code></pre></div><h3 id="php5-fpm-1">php5-fpm</h3>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan <span class="m">12</span> 21:31 /proc/28530/root -&gt; /var/www/chroot
+</code></pre></td></tr></table>
+</div>
+</div><p>If you don&rsquo;t want to use <code>systemd</code> you can use following to start/stop <code>nginx</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ chroot <span class="nv">$JAIL</span> /usr/sbin/nginx
+$ pgrep nginx <span class="p">|</span> xargs <span class="nb">kill</span> -9
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="php5-fpm-1">php5-fpm</h3>
 <p>The same applies to <code>php5-fpm</code> too:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/systemd/system/multi-user.target.wants/php5-fpm.service
-[Unit]
-<span style="color:#40ffff">Description</span>=The PHP FastCGI Process Manager
-<span style="color:#40ffff">After</span>=network.target
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ cat /etc/systemd/system/multi-user.target.wants/php5-fpm.service
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>The PHP FastCGI Process Manager
+<span class="nv">After</span><span class="o">=</span>network.target
 
-[Service] 
-<span style="color:#40ffff">Type</span>=notify
-<span style="color:#40ffff">PIDFile</span>=/var/run/php5-fpm.pid
-<span style="color:#40ffff">ExecStartPre</span>=/usr/xbin/php5 -t
-<span style="color:#40ffff">ExecStart</span>=/usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
-<span style="color:#40ffff">ExecReload</span>=/bin/kill -USR2 <span style="color:#40ffff">$MAINPID</span>
+<span class="o">[</span>Service<span class="o">]</span> 
+<span class="nv">Type</span><span class="o">=</span>notify
+<span class="nv">PIDFile</span><span class="o">=</span>/var/run/php5-fpm.pid
+<span class="nv">ExecStartPre</span><span class="o">=</span>/usr/xbin/php5 -t
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
+<span class="nv">ExecReload</span><span class="o">=</span>/bin/kill -USR2 <span class="nv">$MAINPID</span>
 
-[Install]
-<span style="color:#40ffff">WantedBy</span>=multi-user.target
-</code></pre></div><p>or start it manually:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ chroot <span style="color:#40ffff">$JAIL</span> /usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
-$ pgrep php | xargs <span style="color:#24909d">kill</span> -9
-</code></pre></div><p>Check if it&rsquo;s indeed running in the chroot:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ ps -ax |grep fpm
- <span style="color:#3677a9">9468</span> ?        Ss     0:00 php-fpm: master process (/etc/php5/fpm/php-fpm.conf)
- <span style="color:#3677a9">9469</span> ?        S      0:00 php-fpm: pool www
- <span style="color:#3677a9">9470</span> ?        S      0:00 php-fpm: pool www
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></td></tr></table>
+</div>
+</div><p>or start it manually:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ chroot <span class="nv">$JAIL</span> /usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
+$ pgrep php <span class="p">|</span> xargs <span class="nb">kill</span> -9
+</code></pre></td></tr></table>
+</div>
+</div><p>Check if it&rsquo;s indeed running in the chroot:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ ps -ax <span class="p">|</span>grep fpm
+ <span class="m">9468</span> ?        Ss     0:00 php-fpm: master process <span class="o">(</span>/etc/php5/fpm/php-fpm.conf<span class="o">)</span>
+ <span class="m">9469</span> ?        S      0:00 php-fpm: pool www
+ <span class="m">9470</span> ?        S      0:00 php-fpm: pool www
  
 $ ls -l /proc/9468/root
-lrwxrwxrwx <span style="color:#3677a9">1</span> root root <span style="color:#3677a9">0</span> Jan <span style="color:#3677a9">13</span> 18:04 /proc/9468/root -&gt; /var/www/chroot
-</code></pre></div><h2 id="system-v">System V</h2>
+lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan <span class="m">13</span> 18:04 /proc/9468/root -&gt; /var/www/chroot
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="system-v">System V</h2>
 <p>If you don&rsquo;t like <code>systemd</code> you can still do it the old way and have your scripts at <code>/etc/init.d/*</code>.</p>
 <h3 id="nginx-2">nginx</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/nginx-chroot 
-<span style="color:#999;font-style:italic">#!/bin/sh</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/nginx-chroot 
+<span class="c1">#!/bin/sh</span>
  
-<span style="color:#999;font-style:italic">### BEGIN INIT INFO</span>
-<span style="color:#999;font-style:italic"># Provides:          nginx-chroot</span>
-<span style="color:#999;font-style:italic"># Required-Start:    </span>
-<span style="color:#999;font-style:italic"># Required-Stop:</span>
-<span style="color:#999;font-style:italic"># Default-Start:     2 3 4 5</span>
-<span style="color:#999;font-style:italic"># Default-Stop:      0 1 6</span>
-<span style="color:#999;font-style:italic"># Short-Description: Start nginx in a chroot</span>
-<span style="color:#999;font-style:italic">### END INIT INFO</span>
+<span class="c1">### BEGIN INIT INFO</span>
+<span class="c1"># Provides:          nginx-chroot</span>
+<span class="c1"># Required-Start:    </span>
+<span class="c1"># Required-Stop:</span>
+<span class="c1"># Default-Start:     2 3 4 5</span>
+<span class="c1"># Default-Stop:      0 1 6</span>
+<span class="c1"># Short-Description: Start nginx in a chroot</span>
+<span class="c1">### END INIT INFO</span>
  
-<span style="color:#40ffff">CHROOT</span>=/var/www/chroot
+<span class="nv">CHROOT</span><span class="o">=</span>/var/www/chroot
  
-<span style="color:#6ab825;font-weight:bold">case</span> <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">$1</span><span style="color:#ed9d13">&#34;</span> in
-  start)
-        /usr/sbin/chroot <span style="color:#40ffff">$CHROOT</span> /usr/sbin/nginx -q -g <span style="color:#ed9d13">&#39;daemon on; master_process on;&#39;</span>
-        ;;  
-  reload)
-        /usr/sbin/chroot <span style="color:#40ffff">$CHROOT</span> /usr/sbin/nginx -g <span style="color:#ed9d13">&#39;daemon on; master_process on;&#39;</span> -s reload
-        ;;
-  stop) 
-        pgrep nginx | xargs <span style="color:#24909d">kill</span> -9  
-        ;; 
-  *)
-        <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Usage: </span><span style="color:#40ffff">$N</span><span style="color:#ed9d13"> {start|reload|stop}&#34;</span> &gt;&amp;<span style="color:#3677a9">2</span>
-        <span style="color:#24909d">exit</span> <span style="color:#3677a9">1</span>
-        ;;
-<span style="color:#6ab825;font-weight:bold">esac</span>
+<span class="k">case</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> in
+  start<span class="o">)</span>
+        /usr/sbin/chroot <span class="nv">$CHROOT</span> /usr/sbin/nginx -q -g <span class="s1">&#39;daemon on; master_process on;&#39;</span>
+        <span class="p">;;</span>  
+  reload<span class="o">)</span>
+        /usr/sbin/chroot <span class="nv">$CHROOT</span> /usr/sbin/nginx -g <span class="s1">&#39;daemon on; master_process on;&#39;</span> -s reload
+        <span class="p">;;</span>
+  stop<span class="o">)</span> 
+        pgrep nginx <span class="p">|</span> xargs <span class="nb">kill</span> -9  
+        <span class="p">;;</span> 
+  *<span class="o">)</span>
+        <span class="nb">echo</span> <span class="s2">&#34;Usage: </span><span class="nv">$N</span><span class="s2"> {start|reload|stop}&#34;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+        <span class="nb">exit</span> <span class="m">1</span>
+        <span class="p">;;</span>
+<span class="k">esac</span>
  
-<span style="color:#24909d">exit</span> <span style="color:#3677a9">0</span>
-</code></pre></div><h3 id="php5-fpm-2">php5-fpm</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/php5-fpm-chroot 
-<span style="color:#999;font-style:italic">#!/bin/sh</span>
+<span class="nb">exit</span> <span class="m">0</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="php5-fpm-2">php5-fpm</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ cat /etc/init.d/php5-fpm-chroot 
+<span class="c1">#!/bin/sh</span>
  
-<span style="color:#999;font-style:italic">### BEGIN INIT INFO</span>
-<span style="color:#999;font-style:italic"># Provides:          php5-fpm-chroot</span>
-<span style="color:#999;font-style:italic"># Required-Start:    </span>
-<span style="color:#999;font-style:italic"># Required-Stop:</span>
-<span style="color:#999;font-style:italic"># Default-Start:     2 3 4 5</span>
-<span style="color:#999;font-style:italic"># Default-Stop:      0 1 6</span>
-<span style="color:#999;font-style:italic"># Short-Description: Start php5-fpm in a chroot</span>
-<span style="color:#999;font-style:italic">### END INIT INFO</span>
+<span class="c1">### BEGIN INIT INFO</span>
+<span class="c1"># Provides:          php5-fpm-chroot</span>
+<span class="c1"># Required-Start:    </span>
+<span class="c1"># Required-Stop:</span>
+<span class="c1"># Default-Start:     2 3 4 5</span>
+<span class="c1"># Default-Stop:      0 1 6</span>
+<span class="c1"># Short-Description: Start php5-fpm in a chroot</span>
+<span class="c1">### END INIT INFO</span>
  
-<span style="color:#40ffff">CHROOT</span>=/var/www/chroot
+<span class="nv">CHROOT</span><span class="o">=</span>/var/www/chroot
  
-<span style="color:#6ab825;font-weight:bold">case</span> <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">$1</span><span style="color:#ed9d13">&#34;</span> in
-  start)
-        /usr/sbin/chroot <span style="color:#40ffff">$CHROOT</span> /usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
-        ;;  
-  stop) 
-        pgrep php | xargs <span style="color:#24909d">kill</span> -9  
-        ;; 
-  *)
-        <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Usage: </span><span style="color:#40ffff">$N</span><span style="color:#ed9d13"> {start|stop}&#34;</span> &gt;&amp;<span style="color:#3677a9">2</span>
-        <span style="color:#24909d">exit</span> <span style="color:#3677a9">1</span>
-        ;;
-<span style="color:#6ab825;font-weight:bold">esac</span>
+<span class="k">case</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> in
+  start<span class="o">)</span>
+        /usr/sbin/chroot <span class="nv">$CHROOT</span> /usr/sbin/php5-fpm --daemonize --fpm-config /etc/php5/fpm/php-fpm.conf
+        <span class="p">;;</span>  
+  stop<span class="o">)</span> 
+        pgrep php <span class="p">|</span> xargs <span class="nb">kill</span> -9  
+        <span class="p">;;</span> 
+  *<span class="o">)</span>
+        <span class="nb">echo</span> <span class="s2">&#34;Usage: </span><span class="nv">$N</span><span class="s2"> {start|stop}&#34;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+        <span class="nb">exit</span> <span class="m">1</span>
+        <span class="p">;;</span>
+<span class="k">esac</span>
  
-<span style="color:#24909d">exit</span> <span style="color:#3677a9">0</span>
-</code></pre></div><h3 id="install-new-services">Install new services</h3>
+<span class="nb">exit</span> <span class="m">0</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="install-new-services">Install new services</h3>
 <p>First of all make sure you <strong>remove</strong> the old ones:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx remove
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx remove
 $ update-rc.d php5-fpm remove
-</code></pre></div><p>Now <strong>add</strong> the <strong>new</strong> ones:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx-chroot defaults
+</code></pre></td></tr></table>
+</div>
+</div><p>Now <strong>add</strong> the <strong>new</strong> ones:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ update-rc.d nginx-chroot defaults
 $ update-rc.d php5-fpm-chroot defaults
-</code></pre></div><h2 id="conclusion">Conclusion</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="conclusion">Conclusion</h2>
 <p>Now you have a basic structure to work with. You might want to add more <strong>binaries</strong> to the chroot but keep in mind the implied security concerns. And also try <strong>not</strong> to use symlinks/hardlinks to directories outside the chroot. You can always always override config files in the chroot with backuped one. And to make sure that everything works well, think about using <a href="http://linux.die.net/man/8/auditd">auditd</a> for monitoring file changes inside the chroot.</p>
 <h2 id="references">References</h2>
 <ul>

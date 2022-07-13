@@ -41,6 +41,7 @@ A MAC address consists of six groups of hexadecimal digits. Each group is separa
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,90 +86,202 @@ type="image/x-icon"/>
     <time>14 Oct 2009</time> 
      | 
     
+
+    
+     ~
+  
+
+3 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/tools' class="link silver">tools</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Any time you do some <strong>security researches</strong> you should better spoof/hide your identity. The best way to do that is to spoof/manipulate the MAC address of your interface. I normally do that when doing WiFi stuff: WEP cracking and such stuff. I usually assign some random MAC address to my interfaces to fully hide my identity.</p>
 <p>A MAC address consists of six groups of hexadecimal digits. Each group is separated by hyphens or colons. Each group consists of 256 possible permutations, e.g. A1, 1F, C3 etc. Since we have 6 groups, you’ll get 256^6 = 2^48 = 281,474,976,710,656 possible MAC addresses.</p>
 <p>I wrote a simple sh (not bash) script which generates MAC addresses using shuffle (you may want to use another randomizing command available on your system). If no arguments are given the script will print out the generated MAC. You can call the script with an additional parameter which should be an existant network interface. In that case the script (you&rsquo;ll need r00t rights) will assign that MAC to the interface.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd2828;font-weight:bold">#!/bin/sh
-</span><span style="color:#cd2828;font-weight:bold"></span><span style="color:#999;font-style:italic">#    MACgen - simple MAC address generator</span>
-<span style="color:#999;font-style:italic">#    Copyright (C) 2009 by Victor Dorneanu</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic">#    This program is free software: you can redistribute it and/or modify</span>
-<span style="color:#999;font-style:italic">#    it under the terms of the GNU General Public License as published by</span>
-<span style="color:#999;font-style:italic">#    the Free Software Foundation, either version 3 of the License, or</span>
-<span style="color:#999;font-style:italic">#    (at your option) any later version.</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic">#    This program is distributed in the hope that it will be useful,</span>
-<span style="color:#999;font-style:italic">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span style="color:#999;font-style:italic">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span style="color:#999;font-style:italic">#    GNU General Public License for more details.</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic">#    You should have received a copy of the GNU General Public License</span>
-<span style="color:#999;font-style:italic">#    along with this program.  If not, see .</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic">#    Mail: victor[__at__]dornea.nu</span>
-<span style="color:#999;font-style:italic">#    Site: http://dornea.nu</span>
-<span style="color:#999;font-style:italic">#    ----------------------</span>
-<span style="color:#999;font-style:italic"># </span>
-<span style="color:#999;font-style:italic">#    USAGE: MACgen.sh [interface]</span>
-<span style="color:#999;font-style:italic">#           If &#34;interface&#34; exists, then the newly generated MAC address will</span>
-<span style="color:#999;font-style:italic">#           be assigned to the given interface. Otherwise the script will just</span>
-<span style="color:#999;font-style:italic">#           print out the MAC address.</span>
-<span style="color:#999;font-style:italic">#</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/sh
+</span><span class="cp"></span><span class="c1">#    MACgen - simple MAC address generator</span>
+<span class="c1">#    Copyright (C) 2009 by Victor Dorneanu</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU General Public License</span>
+<span class="c1">#    along with this program.  If not, see .</span>
+<span class="c1">#</span>
+<span class="c1">#    Mail: victor[__at__]dornea.nu</span>
+<span class="c1">#    Site: http://dornea.nu</span>
+<span class="c1">#    ----------------------</span>
+<span class="c1"># </span>
+<span class="c1">#    USAGE: MACgen.sh [interface]</span>
+<span class="c1">#           If &#34;interface&#34; exists, then the newly generated MAC address will</span>
+<span class="c1">#           be assigned to the given interface. Otherwise the script will just</span>
+<span class="c1">#           print out the MAC address.</span>
+<span class="c1">#</span>
 
-<span style="color:#999;font-style:italic"># Define here randomizing shell command</span>
-<span style="color:#40ffff">SHUFFLE</span>=<span style="color:#ed9d13">`</span>which shuffle<span style="color:#ed9d13">`</span>
-<span style="color:#40ffff">SHUFFLE_OPTS</span>=<span style="color:#ed9d13">&#39;-p 1&#39;</span>
+<span class="c1"># Define here randomizing shell command</span>
+<span class="nv">SHUFFLE</span><span class="o">=</span><span class="sb">`</span>which shuffle<span class="sb">`</span>
+<span class="nv">SHUFFLE_OPTS</span><span class="o">=</span><span class="s1">&#39;-p 1&#39;</span>
 
-<span style="color:#999;font-style:italic"># List of available characters</span>
-<span style="color:#40ffff">list</span>=<span style="color:#ed9d13">&#34;0 1 2 3 4 5 6 7 8 9 A B C D E F&#34;</span>
+<span class="c1"># List of available characters</span>
+<span class="nv">list</span><span class="o">=</span><span class="s2">&#34;0 1 2 3 4 5 6 7 8 9 A B C D E F&#34;</span>
 
-<span style="color:#999;font-style:italic"># How many characters does a MAC address consist of?</span>
-<span style="color:#40ffff">mac_size</span>=<span style="color:#3677a9">12</span>
+<span class="c1"># How many characters does a MAC address consist of?</span>
+<span class="nv">mac_size</span><span class="o">=</span><span class="m">12</span>
 
-<span style="color:#999;font-style:italic"># Our random MAC address</span>
-<span style="color:#40ffff">generated_mac</span>=<span style="color:#ed9d13">&#34;&#34;</span>
+<span class="c1"># Our random MAC address</span>
+<span class="nv">generated_mac</span><span class="o">=</span><span class="s2">&#34;&#34;</span>
 
-generate_mac()
-{
-   <span style="color:#999;font-style:italic"># Some internal variable (used for the dots &#34;:&#34;)</span>
-   <span style="color:#40ffff">c</span>=<span style="color:#3677a9">2</span>
+generate_mac<span class="o">()</span>
+<span class="o">{</span>
+   <span class="c1"># Some internal variable (used for the dots &#34;:&#34;)</span>
+   <span class="nv">c</span><span class="o">=</span><span class="m">2</span>
 
-   <span style="color:#999;font-style:italic"># Permutate list of available characters</span>
-   <span style="color:#6ab825;font-weight:bold">while</span> <span style="color:#24909d">true</span> 
-   <span style="color:#6ab825;font-weight:bold">do</span>
-      <span style="color:#999;font-style:italic"># Loop break condition</span>
-      <span style="color:#6ab825;font-weight:bold">if</span> [ <span style="color:#40ffff">$mac_size</span> = <span style="color:#3677a9">0</span> ]; <span style="color:#6ab825;font-weight:bold">then</span> <span style="color:#24909d">break</span> 
-      <span style="color:#6ab825;font-weight:bold">fi</span>
+   <span class="c1"># Permutate list of available characters</span>
+   <span class="k">while</span> <span class="nb">true</span> 
+   <span class="k">do</span>
+      <span class="c1"># Loop break condition</span>
+      <span class="k">if</span> <span class="o">[</span> <span class="nv">$mac_size</span> <span class="o">=</span> <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="nb">break</span> 
+      <span class="k">fi</span>
 
-      <span style="color:#6ab825;font-weight:bold">if</span> [ <span style="color:#40ffff">$c</span> = <span style="color:#3677a9">0</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
-         <span style="color:#40ffff">generated_mac</span>=<span style="color:#40ffff">$generated_mac</span>:<span style="color:#ed9d13">`</span><span style="color:#40ffff">$SHUFFLE</span> <span style="color:#40ffff">$SHUFFLE_OPTS</span> <span style="color:#40ffff">$list</span><span style="color:#ed9d13">`</span>
-         <span style="color:#40ffff">c</span>=<span style="color:#3677a9">2</span>
-      <span style="color:#6ab825;font-weight:bold">else</span>
-         <span style="color:#40ffff">generated_mac</span>=<span style="color:#40ffff">$generated_mac</span><span style="color:#ed9d13">`</span><span style="color:#40ffff">$SHUFFLE</span> <span style="color:#40ffff">$SHUFFLE_OPTS</span> <span style="color:#40ffff">$list</span><span style="color:#ed9d13">`</span>
-      <span style="color:#6ab825;font-weight:bold">fi</span>
+      <span class="k">if</span> <span class="o">[</span> <span class="nv">$c</span> <span class="o">=</span> <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+         <span class="nv">generated_mac</span><span class="o">=</span><span class="nv">$generated_mac</span>:<span class="sb">`</span><span class="nv">$SHUFFLE</span> <span class="nv">$SHUFFLE_OPTS</span> <span class="nv">$list</span><span class="sb">`</span>
+         <span class="nv">c</span><span class="o">=</span><span class="m">2</span>
+      <span class="k">else</span>
+         <span class="nv">generated_mac</span><span class="o">=</span><span class="nv">$generated_mac</span><span class="sb">`</span><span class="nv">$SHUFFLE</span> <span class="nv">$SHUFFLE_OPTS</span> <span class="nv">$list</span><span class="sb">`</span>
+      <span class="k">fi</span>
 
-      <span style="color:#40ffff">mac_size</span>=<span style="color:#6ab825;font-weight:bold">$((</span>mac_size-1<span style="color:#6ab825;font-weight:bold">))</span>
-      <span style="color:#40ffff">c</span>=<span style="color:#6ab825;font-weight:bold">$((</span>c-1<span style="color:#6ab825;font-weight:bold">))</span>
-   <span style="color:#6ab825;font-weight:bold">done</span>
-}
+      <span class="nv">mac_size</span><span class="o">=</span><span class="k">$((</span>mac_size-1<span class="k">))</span>
+      <span class="nv">c</span><span class="o">=</span><span class="k">$((</span>c-1<span class="k">))</span>
+   <span class="k">done</span>
+<span class="o">}</span>
 
-<span style="color:#999;font-style:italic"># Check if interface argument was supplied</span>
-<span style="color:#6ab825;font-weight:bold">if</span> [ -z <span style="color:#40ffff">$1</span> ]; <span style="color:#6ab825;font-weight:bold">then</span>
+<span class="c1"># Check if interface argument was supplied</span>
+<span class="k">if</span> <span class="o">[</span> -z <span class="nv">$1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
    generate_mac
-   <span style="color:#24909d">echo</span> <span style="color:#40ffff">$generated_mac</span>
+   <span class="nb">echo</span> <span class="nv">$generated_mac</span>
 
-<span style="color:#999;font-style:italic"># Assign MAC to interface</span>
-<span style="color:#6ab825;font-weight:bold">else</span>
+<span class="c1"># Assign MAC to interface</span>
+<span class="k">else</span>
     generate_mac
-   <span style="color:#ed9d13">`</span>which ifconfig<span style="color:#ed9d13">`</span> <span style="color:#40ffff">$1</span> link <span style="color:#40ffff">$generated_mac</span> active
-    <span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;New MAC address for </span><span style="color:#40ffff">$1</span><span style="color:#ed9d13">: </span><span style="color:#40ffff">$generated_mac</span><span style="color:#ed9d13">&#34;</span>
-<span style="color:#6ab825;font-weight:bold">fi</span>
-</code></pre></div><p>Feel free to change the script and adapt it to your needs. Some examples:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">root@BlackTiny:~]$ MACgen.sh 
+   <span class="sb">`</span>which ifconfig<span class="sb">`</span> <span class="nv">$1</span> link <span class="nv">$generated_mac</span> active
+    <span class="nb">echo</span> <span class="s2">&#34;New MAC address for </span><span class="nv">$1</span><span class="s2">: </span><span class="nv">$generated_mac</span><span class="s2">&#34;</span>
+<span class="k">fi</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Feel free to change the script and adapt it to your needs. Some examples:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">root@BlackTiny:~]$ MACgen.sh 
 60:17:E8:1C:FF:7C
 [root@BlackTiny:~]$ MACgen.sh
 AE:7C:B6:CE:8B:7A
@@ -186,7 +299,9 @@ ath0: flags=8802 mtu 1500
         media: IEEE802.11 autoselect
         status: no network&lt;/pre&gt;
 
-</code></pre></div></div>
+</code></pre></td></tr></table>
+</div>
+</div></div>
   <div id="comments">
       
 <div id="disqus_thread"></div>

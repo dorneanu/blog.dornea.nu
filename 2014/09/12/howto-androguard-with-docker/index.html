@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="Meanwhile I think I&rsquo;ve felt in love with Androguard. I love its Pythonic way handling things and its visualizations features. As many of you have noticed, you can run Androguard inside a Docker container. I&rsquo;ve never used Docker before so it was about time. You can find some general information about the installation process on Arch Linux at this address.
-Extensions # Install extensions # &lt;!-- collapse=True --&gt; %install_ext https://raw.githubusercontent.com/dorneanu/ipython/master/extensions/diagmagic.py # Then load extensions %load_ext diagmagic Installed diagmagic." />
+Extensions 1 2 3 4 5 6  # Install extensions # &lt;!" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/09/12/howto-androguard-with-docker/" />
 
@@ -41,6 +41,7 @@ Extensions # Install extensions # &lt;!-- collapse=True --&gt; %install_ext http
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,26 +86,54 @@ type="image/x-icon"/>
     <time>12 Sep 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+9 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/androguard' class="link silver">androguard</a> <a href='https://blog.dornea.nu/tags/android' class="link silver">android</a> <a href='https://blog.dornea.nu/tags/docker' class="link silver">docker</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/mobile' class="link silver">mobile</a> <a href='https://blog.dornea.nu/tags/appsec' class="link silver">appsec</a> <a href='https://blog.dornea.nu/tags/iptables' class="link silver">iptables</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Meanwhile I think I&rsquo;ve felt in love with <em>Androguard</em>. I love its Pythonic way handling things and its visualizations features. As many of you have noticed, you can run Androguard inside a <em>Docker</em> container. I&rsquo;ve never used Docker before so it was about time. You can find some general information about the installation process on Arch Linux at <a href="https://docs.docker.com/installation/archlinux/">this</a> address.</p>
 <h3 id="extensions">Extensions</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Install extensions
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Install extensions
 # &lt;!-- collapse=True --&gt;
 %install_ext https://raw.githubusercontent.com/dorneanu/ipython/master/extensions/diagmagic.py
     
 # Then load extensions
 %load_ext diagmagic
-</code></pre></div><pre><code>Installed diagmagic.py. To use it, type:
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Installed diagmagic.py. To use it, type:
   %load_ext diagmagic
 The diagmagic extension is already loaded. To reload it, use:
   %reload_ext diagmagic
 </code></pre>
 <p>On my main pentest machine (kudoz to @blackarch) I&rsquo;ve installed docker and followed these instructions. Here is my service file:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!cat /etc/systemd/system/docker.service
-</code></pre></div><pre><code>.include /usr/lib/systemd/system/docker.service
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!cat /etc/systemd/system/docker.service
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>.include /usr/lib/systemd/system/docker.service
 [Service]
 # assume 192.168.1.1 is your proxy server, don't use 127.0.0.1
 #Environment=&quot;http_proxy=192.168.1.1:3128&quot;
@@ -112,18 +141,49 @@ ExecStart=
 ExecStart=/usr/bin/docker -d -g /home/cyneox/work/docker
 </code></pre>
 <p>I&rsquo;ve added myself to the <em>docker</em> group in order to be able to start docker as a regular user:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># sudo gpasswd -a cyneox docker</span>
-</code></pre></div><p>Afterwards make sure you enable the service:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># sudo systemctl enable docker</span>
-</code></pre></div><p>Now make sure you do a reboot (Windows style :D).</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#999;font-style:italic"># Check if docker is running</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># sudo gpasswd -a cyneox docker</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Afterwards make sure you enable the service:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># sudo systemctl enable docker</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now make sure you do a reboot (Windows style :D).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="c1"># Check if docker is running</span>
 sudo systemctl start docker
-ps -ax | grep docker
-</code></pre></div><pre><code>  836 ?        Ssl    0:00 /usr/bin/docker -d -g /home/cyneox/work/docker
+ps -ax <span class="p">|</span> grep docker
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>  836 ?        Ssl    0:00 /usr/bin/docker -d -g /home/cyneox/work/docker
 </code></pre>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!docker info
-</code></pre></div><pre><code>Containers: 0
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!docker info
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Containers: 0
 Images: 0
 Storage Driver: devicemapper
  Pool Name: docker-8:1-385640-pool
@@ -147,8 +207,15 @@ WARNING: No swap limit support
 <li><a href="https://github.com/aikinci/androguard">https://github.com/aikinci/androguard</a></li>
 </ol>
 <p>The <a href="https://github.com/dweinstein/dockerfile-androguard">2nd</a> one started automatically <em>androguard</em> so you couldn&rsquo;t tweak the underlying system. So I&rsquo;ve decided to look at <a href="https://github.com/aikinci">@aikinci</a>&rsquo;s androguard docker container.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!docker run -it -v ~/samples/:/root/samples/ honeynet/androguard 
-</code></pre></div><pre><code>Unable to find image 'honeynet/androguard' locally
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!docker run -it -v ~/samples/:/root/samples/ honeynet/androguard 
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Unable to find image 'honeynet/androguard' locally
 Pulling repository honeynet/androguard
 
 [1B
@@ -191,28 +258,81 @@ Pulling repository honeynet/androguard
 ]0;root@de3fbe90bdde: ~root@de3fbe90bdde:~# 
 </code></pre>
 <p>It must say that was pretty <strong>fast</strong>. And <strong>easy</strong> to do! In the end you&rsquo;ll get a root bash prompt. Since the image does not provide all the tools I need, you&rsquo;ll have to install them manually. After you have <code>exit</code>ed from the container you can attach it again. But first lets see which container are currently active:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!docker ps -a
-</code></pre></div><pre><code>CONTAINER ID        IMAGE                        COMMAND             CREATED             STATUS              PORTS               NAMES
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!docker ps -a
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>CONTAINER ID        IMAGE                        COMMAND             CREATED             STATUS              PORTS               NAMES
 de3fbe90bdde        honeynet/androguard:latest   &quot;/bin/bash&quot;         5 minutes ago       Up 5 minutes                            sleepy_lalande      
 </code></pre>
 <p>Now you can re-attach to a specific container by using <code>docker attach</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># docker attach de3fbe90bdde</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># docker attach de3fbe90bdde</span>
 root@de3fbe90bdde:~# 
-</code></pre></div><p>Now I&rsquo;ve installed some additional packages:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# apt-get install openssh-server ipython ipython-notebook vim
+</code></pre></td></tr></table>
+</div>
+</div><p>Now I&rsquo;ve installed some additional packages:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# apt-get install openssh-server ipython ipython-notebook vim
 ...
-</code></pre></div><p>Now change the <code>root</code> password:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# passwd
+</code></pre></td></tr></table>
+</div>
+</div><p>Now change the <code>root</code> password:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# passwd
 ...
-</code></pre></div><p>Start SSH server:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# /etc/init.d/sshd start
+</code></pre></td></tr></table>
+</div>
+</div><p>Start SSH server:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# /etc/init.d/sshd start
 ...
-</code></pre></div><p>Now <strong>most important</strong>: You&rsquo;ll have to <strong>commit</strong> your change to the image otherwise all changes will be lost on next start. On the maching running docker run:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># docker commit de3fbe90bdde</span>
-</code></pre></div><h2 id="network-with-docker">Network with docker</h2>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now <strong>most important</strong>: You&rsquo;ll have to <strong>commit</strong> your change to the image otherwise all changes will be lost on next start. On the maching running docker run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># docker commit de3fbe90bdde</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="network-with-docker">Network with docker</h2>
 <p>When started docker creates a new virtual interface on the <strong>host</strong> machine called <code>docker0</code> (<a href="https://docs.docker.com/articles/networking/">more</a>):</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!ifconfig docker0
-</code></pre></div><pre><code>docker0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!ifconfig docker0
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>docker0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500
         inet 172.17.42.1  netmask 255.255.0.0  broadcast 0.0.0.0
         inet6 fe80::bd01:3011:3b12:b866  prefixlen 64  scopeid 0x20&lt;link&gt;
         ether 56:84:7a:fe:97:99  txqueuelen 0  (Ethernet)
@@ -222,7 +342,20 @@ root@de3fbe90bdde:~#
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 </code></pre>
 <p>As you can see docker choosed a subnet and assigned an IP address to that interface. What about the <strong>guest</strong> machine?</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# ifconfig -a
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">root@de3fbe90bdde:~# ifconfig -a
 eth0      Link encap:Ethernet  HWaddr 02:5b:c7:1e:a8:26  
           inet addr:172.17.0.2  Bcast:0.0.0.0  Mask:255.255.0.0
           inet6 addr: fe80::5b:c7ff:fe1e:a826/64 Scope:Link
@@ -230,10 +363,19 @@ eth0      Link encap:Ethernet  HWaddr 02:5b:c7:1e:a8:26
           RX packets:2225 errors:0 dropped:0 overruns:0 frame:0
           TX packets:1949 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:17216525 (17.2 MB)  TX bytes:134553 (134.5 KB)
-</code></pre></div><p>Can I reach the container within the host machine?</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!ping -c 4 172.17.0.2
-</code></pre></div><pre><code>PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.
+          RX bytes:17216525 <span class="o">(</span>17.2 MB<span class="o">)</span>  TX bytes:134553 <span class="o">(</span>134.5 KB<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Can I reach the container within the host machine?</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!ping -c 4 172.17.0.2
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.
 64 bytes from 172.17.0.2: icmp_seq=1 ttl=64 time=0.086 ms
 64 bytes from 172.17.0.2: icmp_seq=2 ttl=64 time=0.118 ms
 64 bytes from 172.17.0.2: icmp_seq=3 ttl=64 time=0.131 ms
@@ -245,7 +387,65 @@ rtt min/avg/max/mdev = 0.086/0.108/0.131/0.020 ms
 </code></pre>
 <p>Looks good! Well before I go to the next steps let me show my current pentest setup.</p>
 <h2 id="pentest-setup">Pentest setup</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%%blockdiag
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">%%blockdiag
 // &lt;!-- collapse=True --&gt;
 blockdiag admin {
     // A and B belong to first group.
@@ -299,7 +499,9 @@ blockdiag admin {
    BlackArch -&gt; Docker;
     
 }
-</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2014/howto-androguard-with-docker/output_23_0.png" alt="png"></p>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blog.dornea.nu/posts/img/2014/howto-androguard-with-docker/output_23_0.png" alt="png"></p>
 <p>On my physical machine (<code>Arch Linux Host</code>) I run several <code>QEMU</code> instances:</p>
 <ul>
 <li>Kali Linux (Pentest)</li>
@@ -314,16 +516,30 @@ blockdiag admin {
 <li>Be able to access the <em>Internet</em> from <code>Androguard</code></li>
 </ol>
 <p>The first one is the most important to me, since I want to access the Androguard container <strong>directly</strong> - preferably through SSH. Since the Àndroguard machine gets a private IP address, it&rsquo;s obvious I can&rsquo;t access it - yet. The packets must be routed though <code>BlackArch Host</code>. Let&rsquo;s check IPv4 forwarding:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!sysctl net.ipv4.conf.all.forwarding
-</code></pre></div><pre><code>net.ipv4.conf.all.forwarding = 1
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!sysctl net.ipv4.conf.all.forwarding
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>net.ipv4.conf.all.forwarding = 1
 </code></pre>
 <p>Ok for now. The Docker <a href="https://docs.docker.com/articles/networking/">documentation</a> states:</p>
 <blockquote>
 <p>By default Docker containers can make connections to the outside world, but the outside world cannot connect to containers. Each outgoing connection will appear to originate from one of the host machine&rsquo;s own IP addresses thanks to an iptables masquerading rule on the host machine that the Docker server creates when it starts</p>
 </blockquote>
 <p>After starting the Androguard container, let&rsquo;s check the firewall rules:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!sudo iptables -t nat -L
-</code></pre></div><pre><code>Chain PREROUTING (policy ACCEPT)
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!sudo iptables -t nat -L
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Chain PREROUTING (policy ACCEPT)
 target     prot opt source               destination         
 DOCKER     all  --  anywhere             anywhere             ADDRTYPE match dst-type LOCAL
 
@@ -346,27 +562,64 @@ target     prot opt source               destination
 <p>More convenient is the -p SPEC or &ndash;publish=SPEC option which lets you be explicit about exactly which external port on the Docker server — which can be any port at all, not just those in the 49000–49900 block — you want mapped to which port in the container.</p>
 </blockquote>
 <p>Now, let&rsquo;s stop the container and restart it again with the <code>-p</code> paramater:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!docker ps -a
-</code></pre></div><pre><code>CONTAINER ID        IMAGE                        COMMAND             CREATED             STATUS                     PORTS               NAMES
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!docker ps -a
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>CONTAINER ID        IMAGE                        COMMAND             CREATED             STATUS                     PORTS               NAMES
 534dc09cc451        honeynet/androguard:latest   &quot;/bin/bash&quot;         14 seconds ago      Exited (0) 8 seconds ago                       sleepy_mcclintock   
 </code></pre>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
 docker stop 534dc09cc451
 docker rm 534dc09cc451
-</code></pre></div><pre><code>534dc09cc451
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>534dc09cc451
 534dc09cc451
 </code></pre>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!docker ps -a
-</code></pre></div><pre><code>CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!docker ps -a
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 </code></pre>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!docker run -t -i -p 22 honeynet/androguard 
-</code></pre></div><pre><code>]0;root@469eced649c1: ~root@469eced649c1:~# ^C
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!docker run -t -i -p 22 honeynet/androguard 
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>]0;root@469eced649c1: ~root@469eced649c1:~# ^C
 ]0;root@469eced649c1: ~root@469eced649c1:~# 
 ]0;root@469eced649c1: ~root@469eced649c1:~# 
 </code></pre>
 <p>Now let&rsquo;s check iptables again:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">!sudo iptables -t nat -L
-</code></pre></div><pre><code>Chain PREROUTING (policy ACCEPT)
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">!sudo iptables -t nat -L
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Chain PREROUTING (policy ACCEPT)
 target     prot opt source               destination         
 DOCKER     all  --  anywhere             anywhere             ADDRTYPE match dst-type LOCAL
 
@@ -386,39 +639,85 @@ target     prot opt source               destination
 DNAT       tcp  --  anywhere             anywhere             tcp dpt:49154 to:172.17.0.4:22
 </code></pre>
 <p>As you can see in the last line all packets sent to <strong>localhost:49154</strong> (which is <code>BlackArch Host</code>) will be forwarded to <strong>172.17.0.4:22</strong>. Bingo! On <code>Arch Linux Host</code> I try to reach <code>Androguard</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># telnet blackarch.local 49154</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># telnet blackarch.local 49154</span>
 Trying 10.0.1.92...
 Connected to blackarch.local.
-Escape character is <span style="color:#ed9d13">&#39;^]&#39;</span>.
+Escape character is <span class="s1">&#39;^]&#39;</span>.
 SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2
 ^C^C
 Connection closed by foreign host.
-</code></pre></div><p>Perfect!</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Perfect!</p>
 <h2 id="accessing-ipython-on-androguard">Accessing IPython on Androguard</h2>
 <p>Now you could use port forwarding to access services on <code>Androguard</code> through the SSH tunnel. On the <code>Androguard</code> machine I usually start <code>ipython-notebook</code> to take notes etc. I usually run it as:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">root@469eced649c1:~/ipython# ipython notebook --no-browser --port <span style="color:#3677a9">7000</span>
-2014-09-11 16:48:11.330 [NotebookApp] Created profile dir: u<span style="color:#ed9d13">&#39;/root/.ipython/profile_default&#39;</span>
-2014-09-11 16:48:11.336 [NotebookApp] Using system MathJax
-2014-09-11 16:48:11.350 [NotebookApp] Serving notebooks from <span style="color:#24909d">local</span> directory: /root/ipython
-2014-09-11 16:48:11.350 [NotebookApp] The IPython Notebook is running at: http://127.0.0.1:7000/
-2014-09-11 16:48:11.350 [NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">root@469eced649c1:~/ipython# ipython notebook --no-browser --port <span class="m">7000</span>
+2014-09-11 16:48:11.330 <span class="o">[</span>NotebookApp<span class="o">]</span> Created profile dir: u<span class="s1">&#39;/root/.ipython/profile_default&#39;</span>
+2014-09-11 16:48:11.336 <span class="o">[</span>NotebookApp<span class="o">]</span> Using system MathJax
+2014-09-11 16:48:11.350 <span class="o">[</span>NotebookApp<span class="o">]</span> Serving notebooks from <span class="nb">local</span> directory: /root/ipython
+2014-09-11 16:48:11.350 <span class="o">[</span>NotebookApp<span class="o">]</span> The IPython Notebook is running at: http://127.0.0.1:7000/
+2014-09-11 16:48:11.350 <span class="o">[</span>NotebookApp<span class="o">]</span> Use Control-C to stop this server and shut down all kernels <span class="o">(</span>twice to skip confirmation<span class="o">)</span>.
 ...
-</code></pre></div><p>On <code>ArchLinux Host</code> I run:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#999;font-style:italic"># ssh -L localhost:7777:localhost:7000 root@blackarch.local -p 49154</span>
-root@blackarch.local<span style="color:#a61717;background-color:#e3d2d2">&#39;</span>s password: 
-Welcome to Ubuntu 14.04 LTS (GNU/Linux 3.2.0-37-generic x86_64)
+</code></pre></td></tr></table>
+</div>
+</div><p>On <code>ArchLinux Host</code> I run:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># ssh -L localhost:7777:localhost:7000 root@blackarch.local -p 49154</span>
+root@blackarch.local<span class="err">&#39;</span>s password: 
+Welcome to Ubuntu 14.04 LTS <span class="o">(</span>GNU/Linux 3.2.0-37-generic x86_64<span class="o">)</span>
 
  * Documentation:  https://help.ubuntu.com/
 
-The programs included with the Ubuntu system are free software;
-the exact distribution terms <span style="color:#6ab825;font-weight:bold">for</span> each program are described in the
+The programs included with the Ubuntu system are free software<span class="p">;</span>
+the exact distribution terms <span class="k">for</span> each program are described in the
 individual files in /usr/share/doc/*/copyright.
 
 Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
 applicable law.
 
 root@469eced649c1:~# 
-</code></pre></div><p>As you can see I&rsquo;ve successfully logged in into the <code>Androguard</code> machine through <code>BlackArch Host</code> using <a href="http://en.wikipedia.org/wiki/Network_address_translation#DNAT">DNAT</a>. On <code>ArchLinux Host</code> I can open the browser and point to <code>http://localhost:7777</code> which connects to <code>IPython</code> on the <code>Androguard</code> machine.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>As you can see I&rsquo;ve successfully logged in into the <code>Androguard</code> machine through <code>BlackArch Host</code> using <a href="http://en.wikipedia.org/wiki/Network_address_translation#DNAT">DNAT</a>. On <code>ArchLinux Host</code> I can open the browser and point to <code>http://localhost:7777</code> which connects to <code>IPython</code> on the <code>Androguard</code> machine.</p>
 </div>
   <div id="comments">
       

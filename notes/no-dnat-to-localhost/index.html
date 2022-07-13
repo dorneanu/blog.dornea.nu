@@ -10,8 +10,8 @@
 
 
 <meta property="og:description" content="Doing a simple port forwarding is actually a simple task:
-$ iptables -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080 This would redirect all traffic from 80 to 8080. But if you have some firewall activated, you&rsquo;ll have to allow both ports:
-$ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW Otherwise the port forwarding won&rsquo;t work. But this is not the use case you want to achieve." />
+1  $ iptables -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080   This would redirect all traffic from 80 to 8080. But if you have some firewall activated, you&rsquo;ll have to allow both ports:
+1 2  $ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW   Otherwise the port forwarding won&rsquo;t work." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/notes/no-dnat-to-localhost/" />
 
@@ -42,6 +42,7 @@ $ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dpor
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,30 +87,74 @@ type="image/x-icon"/>
     <time>20 Jan 2016</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/note' class="link silver">note</a> <a href='https://blog.dornea.nu/tags/iptables' class="link silver">iptables</a> <a href='https://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>Doing a simple <strong>port forwarding</strong> is actually a simple task:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ iptables -A PREROUTING -p tcp --dport <span style="color:#3677a9">80</span> -j REDIRECT --to-ports <span style="color:#3677a9">8080</span>
-</code></pre></div><p>This would redirect all traffic from <code>80</code> to <code>8080</code>. But if you have some <strong>firewall</strong> activated, you&rsquo;ll have to <strong>allow</strong> both ports:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ iptables -A INPUT -p tcp --dport <span style="color:#3677a9">80</span> -j ALLOW
-$ iptables -A INPUT -p tcp --dport <span style="color:#3677a9">8080</span> -j ALLOW
-</code></pre></div><p>Otherwise the port forwarding won&rsquo;t work. But this is not the use case you want to achieve. In most cases you want to <strong>redirect</strong>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ iptables -A PREROUTING -p tcp --dport <span class="m">80</span> -j REDIRECT --to-ports <span class="m">8080</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This would redirect all traffic from <code>80</code> to <code>8080</code>. But if you have some <strong>firewall</strong> activated, you&rsquo;ll have to <strong>allow</strong> both ports:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ iptables -A INPUT -p tcp --dport <span class="m">80</span> -j ALLOW
+$ iptables -A INPUT -p tcp --dport <span class="m">8080</span> -j ALLOW
+</code></pre></td></tr></table>
+</div>
+</div><p>Otherwise the port forwarding won&rsquo;t work. But this is not the use case you want to achieve. In most cases you want to <strong>redirect</strong>
 traffic from one port (let&rsquo;s say <code>80</code>) from an external interface to another IP address (let&rsquo;s say <code>10.0.0.1:8080</code>). Using <strong>DNAT</strong> this
 actually pretty easy to implement:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ iptables -t nat -A PREROUTING -p tcp --dport <span style="color:#3677a9">80</span> -j DNAT --to-destination 10.0.0.1:8080
-</code></pre></div><p>For a full example have a look at <a href="http://stackoverflow.com/questions/14212807/iptables-forward-request-on-different-interfaces-and-port?answertab=votes#tab-top">this stackoverflow</a>.
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ iptables -t nat -A PREROUTING -p tcp --dport <span class="m">80</span> -j DNAT --to-destination 10.0.0.1:8080
+</code></pre></td></tr></table>
+</div>
+</div><p>For a full example have a look at <a href="http://stackoverflow.com/questions/14212807/iptables-forward-request-on-different-interfaces-and-port?answertab=votes#tab-top">this stackoverflow</a>.
 However in my case I wanted to do DNAT to the <strong>loopback</strong> interface which didn&rsquo;t work (<a href="http://lists.netfilter.org/pipermail/netfilter/2004-August/055074.html">this answer</a> confirms this). Using <strong>REDIRECT</strong> is also a pretty bad idea since I had to allow access to both ports (which is kind of stupid).</p>
 <p>So&hellip; How to solve the problem? Using <a href="https://en.wikipedia.org/wiki/Inetdhttps://en.wikipedia.org/wiki/Inetd">inetd</a>. I&rsquo;ve installed <a href="http://www.boutell.com/rinetd/">rinetd</a> and configured the port forwarding:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.bash" data-lang=".bash">$ apt-get install rinetd
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ apt-get install rinetd
 $ cat /etc/rinetd.conf
-[...]
-<span style="color:#999;font-style:italic"># bindadress    bindport  connectaddress  connectport</span>
-&lt;external ip&gt;   <span style="color:#3677a9">80</span>          127.0.0.1       <span style="color:#3677a9">8080</span>
-[...]
+<span class="o">[</span>...<span class="o">]</span>
+<span class="c1"># bindadress    bindport  connectaddress  connectport</span>
+&lt;external ip&gt;   <span class="m">80</span>          127.0.0.1       <span class="m">8080</span>
+<span class="o">[</span>...<span class="o">]</span>
 $ service rinetd restart
-</code></pre></div><p>I hope this would prevent others from spending their whole day on doing DNAT to localhost.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>I hope this would prevent others from spending their whole day on doing DNAT to localhost.</p>
 </div>
   <div id="comments">
       

@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="If you need some technical background, have a look here. The preload cache script I&rsquo;ve been using for a couple a months:
-#!/bin/bash # # Preload a web site&#39;s cache # site=&#34;dornea.nu&#34; tmp=&#34;downloads&#34; log=&#34;log.txt&#34; echo &#34;Crawling $site.&#34; # Remove any prior downloaded files. rm -rf $tmp # Clear the page cache first. wget --quiet --delete-after http://$site/[insert reset cache script here].php # Crawl the site # # Crawl arguments: # --recursive Crawl the site # --domains=example." />
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52  #!" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2010/09/04/speed-up-drupal-by-preloading-the-page-cache/" />
 
@@ -41,6 +41,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,73 +86,154 @@ type="image/x-icon"/>
     <time>04 Sep 2010</time> 
      | 
     
+
+    
+     ~
+  
+
+2 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/web' class="link silver">web</a> <a href='https://blog.dornea.nu/tags/drupal' class="link silver">drupal</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>If you need some technical background, have a look <a href="http://nadeausoftware.com/node/98">here</a>. The preload cache script I&rsquo;ve been using for a couple a months:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd2828;font-weight:bold">#!/bin/bash
-</span><span style="color:#cd2828;font-weight:bold"></span><span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic"># Preload a web site&#39;s cache</span>
-<span style="color:#999;font-style:italic">#</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
+</span><span class="cp"></span><span class="c1">#</span>
+<span class="c1"># Preload a web site&#39;s cache</span>
+<span class="c1">#</span>
 
-<span style="color:#40ffff">site</span>=<span style="color:#ed9d13">&#34;dornea.nu&#34;</span>
-<span style="color:#40ffff">tmp</span>=<span style="color:#ed9d13">&#34;downloads&#34;</span>
-<span style="color:#40ffff">log</span>=<span style="color:#ed9d13">&#34;log.txt&#34;</span>
+<span class="nv">site</span><span class="o">=</span><span class="s2">&#34;dornea.nu&#34;</span>
+<span class="nv">tmp</span><span class="o">=</span><span class="s2">&#34;downloads&#34;</span>
+<span class="nv">log</span><span class="o">=</span><span class="s2">&#34;log.txt&#34;</span>
 
-<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Crawling </span><span style="color:#40ffff">$site</span><span style="color:#ed9d13">.&#34;</span>
+<span class="nb">echo</span> <span class="s2">&#34;Crawling </span><span class="nv">$site</span><span class="s2">.&#34;</span>
 
-<span style="color:#999;font-style:italic"># Remove any prior downloaded files.</span>
-rm -rf <span style="color:#40ffff">$tmp</span>
+<span class="c1"># Remove any prior downloaded files.</span>
+rm -rf <span class="nv">$tmp</span>
 
-<span style="color:#999;font-style:italic"># Clear the page cache first.</span>
-wget --quiet --delete-after http://<span style="color:#40ffff">$site</span>/[insert reset cache script here].php
+<span class="c1"># Clear the page cache first.</span>
+wget --quiet --delete-after http://<span class="nv">$site</span>/<span class="o">[</span>insert reset cache script here<span class="o">]</span>.php
 
-<span style="color:#999;font-style:italic"># Crawl the site</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic"># Crawl arguments:</span>
-<span style="color:#999;font-style:italic"># --recursive Crawl the site</span>
-<span style="color:#999;font-style:italic"># --domains=example.com Only crawl pages from the site</span>
-<span style="color:#999;font-style:italic"># --level=inf Continue to infinite depth</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic"># Temp file arguments:</span>
-<span style="color:#999;font-style:italic"># --directory-prefix=downloads Save tmp files to the &#39;downloads&#39; directory</span>
-<span style="color:#999;font-style:italic"># --force-directories Create directories for downloaded pages</span>
-<span style="color:#999;font-style:italic"># --delete-after Delete downloaded files afterwards</span>
-<span style="color:#999;font-style:italic">#</span>
-<span style="color:#999;font-style:italic"># Verbosity arguments:</span>
-<span style="color:#999;font-style:italic"># --output-file=log.txt Write a log to &#39;log.txt&#39;</span>
-<span style="color:#999;font-style:italic"># --no-verbose Minimize log file output</span>
-<span style="color:#999;font-style:italic">#</span>
+<span class="c1"># Crawl the site</span>
+<span class="c1">#</span>
+<span class="c1"># Crawl arguments:</span>
+<span class="c1"># --recursive Crawl the site</span>
+<span class="c1"># --domains=example.com Only crawl pages from the site</span>
+<span class="c1"># --level=inf Continue to infinite depth</span>
+<span class="c1">#</span>
+<span class="c1"># Temp file arguments:</span>
+<span class="c1"># --directory-prefix=downloads Save tmp files to the &#39;downloads&#39; directory</span>
+<span class="c1"># --force-directories Create directories for downloaded pages</span>
+<span class="c1"># --delete-after Delete downloaded files afterwards</span>
+<span class="c1">#</span>
+<span class="c1"># Verbosity arguments:</span>
+<span class="c1"># --output-file=log.txt Write a log to &#39;log.txt&#39;</span>
+<span class="c1"># --no-verbose Minimize log file output</span>
+<span class="c1">#</span>
 
 wget
 --recursive
---level=inf
+--level<span class="o">=</span>inf
 --delete-after
---output-file=<span style="color:#40ffff">$log</span>
---domains=<span style="color:#40ffff">$site</span>
+--output-file<span class="o">=</span><span class="nv">$log</span>
+--domains<span class="o">=</span><span class="nv">$site</span>
 --force-directories
---directory-prefix=<span style="color:#40ffff">$tmp</span>
+--directory-prefix<span class="o">=</span><span class="nv">$tmp</span>
 --no-verbose
 
-http://<span style="color:#40ffff">$site</span>/
+http://<span class="nv">$site</span>/
 
-<span style="color:#999;font-style:italic"># When the crawl is done, the download files are removed.</span>
-<span style="color:#999;font-style:italic"># Now remove the leftover directories too</span>
-rm -rf <span style="color:#40ffff">$tmp</span>
+<span class="c1"># When the crawl is done, the download files are removed.</span>
+<span class="c1"># Now remove the leftover directories too</span>
+rm -rf <span class="nv">$tmp</span>
 
-<span style="color:#24909d">echo</span>
-<span style="color:#24909d">echo</span> <span style="color:#ed9d13">&#34;Done. A log of the crawl is in &#39;</span><span style="color:#40ffff">$log</span><span style="color:#ed9d13">&#39;.&#34;</span>
-</code></pre></div><p>The php script:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.php" data-lang=".php"><span style="color:#cd2828;font-weight:bold">&lt;?php</span>
-<span style="color:#ed9d13">/**
-</span><span style="color:#ed9d13">* Clears the page cache.
-</span><span style="color:#ed9d13">*/</span>
-<span style="color:#6ab825;font-weight:bold">include_once</span> <span style="color:#ed9d13">&#39;./includes/bootstrap.inc&#39;</span>;
-drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
-cache_clear_all( <span style="color:#ed9d13">&#39;*&#39;</span>, <span style="color:#ed9d13">&#39;cache_page&#39;</span>, <span style="color:#6ab825;font-weight:bold">TRUE</span> );
-<span style="color:#cd2828;font-weight:bold">?&gt;</span>
-</code></pre></div><p>It really improves your sites speed! Feel free to adapt the script(s) to your needs.</p>
+<span class="nb">echo</span>
+<span class="nb">echo</span> <span class="s2">&#34;Done. A log of the crawl is in &#39;</span><span class="nv">$log</span><span class="s2">&#39;.&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The php script:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.php" data-lang=".php"><span class="cp">&lt;?php</span>
+<span class="sd">/**
+</span><span class="sd">* Clears the page cache.
+</span><span class="sd">*/</span>
+<span class="k">include_once</span> <span class="s1">&#39;./includes/bootstrap.inc&#39;</span><span class="p">;</span>
+<span class="nx">drupal_bootstrap</span><span class="p">(</span><span class="nx">DRUPAL_BOOTSTRAP_FULL</span><span class="p">);</span>
+<span class="nx">cache_clear_all</span><span class="p">(</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;cache_page&#39;</span><span class="p">,</span> <span class="k">TRUE</span> <span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>It really improves your sites speed! Feel free to adapt the script(s) to your needs.</p>
 </div>
   <div id="comments">
       

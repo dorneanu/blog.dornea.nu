@@ -11,7 +11,7 @@
 
 <meta property="og:description" content="A few weeks ago I&rsquo;be migrated my whole blog from Wordpress to Octopress. Meanwhile I&rsquo;ve discovered Pelican which is the Pythonic alternative to Octopress. To be honest: The main reason I&rsquo;m using Pelican instead of Octopress is the ability to import/include IPython notebooks.
 After I&rsquo;ve set up my blog using Octopress I only had a bunge of Markdown files. So let&rsquo;s get started.
-Generate metadata for content %%bash cp ~/work/blog/octopress/source/_posts/*.markdown ~/work/blog/pelican/content/markdown/ %%bash ls -c ~/work/blog/pelican/content/markdown/ | head -n 10 2014-05-27-berlinsides-0x05." />
+Generate metadata for content 1 2  %%bash cp ~/work/blog/octopress/source/_posts/*." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/06/18/migrate-this-blog-from-octopress-to-pelican/" />
 
@@ -42,6 +42,7 @@ Generate metadata for content %%bash cp ~/work/blog/octopress/source/_posts/*.ma
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,18 +87,43 @@ type="image/x-icon"/>
     <time>18 Jun 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+5 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/blog' class="link silver">blog</a> <a href='https://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/pelican' class="link silver">pelican</a> <a href='https://blog.dornea.nu/tags/octopress' class="link silver">octopress</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>A few weeks ago I&rsquo;be migrated my whole blog from Wordpress to Octopress. Meanwhile I&rsquo;ve discovered <code>Pelican</code> which is the Pythonic alternative to Octopress. To be honest: The main reason I&rsquo;m using Pelican instead of Octopress is the ability to import/include <code>IPython notebooks</code>.</p>
 <p>After I&rsquo;ve set up my blog using Octopress I only had a bunge of <code>Markdown</code> files. So let&rsquo;s get started.</p>
 <h2 id="generate-metadata-for-content">Generate metadata for content</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
 cp ~/work/blog/octopress/source/_posts/*.markdown ~/work/blog/pelican/content/markdown/
-</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-ls -c ~/work/blog/pelican/content/markdown/ | head -n <span style="color:#3677a9">10</span>
-</code></pre></div><pre><code>2014-05-27-berlinsides-0x05.markdown
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+ls -c ~/work/blog/pelican/content/markdown/ <span class="p">|</span> head -n <span class="m">10</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>2014-05-27-berlinsides-0x05.markdown
 2014-06-02-googles-xss-game-solutions.markdown
 2014-05-20-howto-write-pentest-reports-the-easy-way.markdown
 2014-05-15-test2.markdown
@@ -109,7 +135,73 @@ ls -c ~/work/blog/pelican/content/markdown/ | head -n <span style="color:#3677a9
 2014-01-23-24h-android-sniffing-using-tcpdump.markdown
 </code></pre>
 <h2 id="awk-script-for-doing-the-main-job">AWK script for doing the main job</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">%%writefile ~/work/blog/pelican/content/transform.awk
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">%%writefile ~/work/blog/pelican/content/transform.awk
 {
     # Date
     if ( $0 ~ /^date(.*)$/ ) {
@@ -171,17 +263,32 @@ ls -c ~/work/blog/pelican/content/markdown/ | head -n <span style="color:#3677a9
     }
 }
 
-</code></pre></div><pre><code>Overwriting /home/victor/work/blog/pelican/content/transform.awk
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Overwriting /home/victor/work/blog/pelican/content/transform.awk
 </code></pre>
 <h2 id="extract-the-metdata-and-generate-the-meta-files">Extract the metdata and generate the meta files</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#24909d">cd</span> ~/work/blog/pelican/
-<span style="color:#6ab825;font-weight:bold">for</span> i in content/markdown/*.markdown; <span style="color:#6ab825;font-weight:bold">do</span> 
-    cat <span style="color:#40ffff">$i</span> | gawk -f content/transform.awk &gt; <span style="color:#40ffff">$i</span>-meta
-<span style="color:#6ab825;font-weight:bold">done</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="nb">cd</span> ~/work/blog/pelican/
+<span class="k">for</span> i in content/markdown/*.markdown<span class="p">;</span> <span class="k">do</span> 
+    cat <span class="nv">$i</span> <span class="p">|</span> gawk -f content/transform.awk &gt; <span class="nv">$i</span>-meta
+<span class="k">done</span>
 
-ls -c content/markdown/*-meta | head -n <span style="color:#3677a9">10</span>
-</code></pre></div><pre><code>content/markdown/blogging-with-the-ipython-notebook-example.markdown-meta
+ls -c content/markdown/*-meta <span class="p">|</span> head -n <span class="m">10</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>content/markdown/blogging-with-the-ipython-notebook-example.markdown-meta
 content/markdown/2014-06-02-googles-xss-game-solutions.markdown-meta
 content/markdown/2014-05-27-berlinsides-0x05.markdown-meta
 content/markdown/2014-05-20-howto-write-pentest-reports-the-easy-way.markdown-meta
@@ -193,10 +300,19 @@ content/markdown/2014-02-07-links-of-the-week-26.markdown-meta
 content/markdown/2014-01-31-links-of-the-week-25-2.markdown-meta
 </code></pre>
 <h2 id="sample-meta-data-output">Sample meta data output</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
 
-find ~/work/blog/pelican/content/markdown/*-meta -name <span style="color:#ed9d13">&#34;2014-05-*&#34;</span> -exec cat {} <span style="color:#ed9d13">\;</span>
-</code></pre></div><pre><code>Title: HowTo: Create docs with sphinx
+find ~/work/blog/pelican/content/markdown/*-meta -name <span class="s2">&#34;2014-05-*&#34;</span> -exec cat <span class="o">{}</span> <span class="se">\;</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Title: HowTo: Create docs with sphinx
 Author: Victor
 Date: 2014-05-04
 Tags: coding, howto
@@ -218,22 +334,53 @@ Tags: events, hacking, security
 Category: blog
 </code></pre>
 <h2 id="delete-old-metadata">Delete old metadata</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#24909d">cd</span> ~/work/blog/pelican/content/markdown
-<span style="color:#6ab825;font-weight:bold">for</span> i in *.markdown; <span style="color:#6ab825;font-weight:bold">do</span>
-    cat <span style="color:#40ffff">$i</span> | sed <span style="color:#ed9d13">&#39;/^---$/,/^---$/d&#39;</span> &gt; <span style="color:#40ffff">$i</span>-sed
-<span style="color:#6ab825;font-weight:bold">done</span>
-</code></pre></div><h2 id="insert-new-metadata-info-file">Insert new metadata info file</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#24909d">cd</span> ~/work/blog/pelican/content/markdown
-<span style="color:#6ab825;font-weight:bold">for</span> i in *.markdown; <span style="color:#6ab825;font-weight:bold">do</span>
-    cat <span style="color:#40ffff">$i</span>-meta &gt; <span style="color:#40ffff">$i</span>-final; cat <span style="color:#40ffff">$i</span>-sed &gt;&gt; <span style="color:#40ffff">$i</span>-final;
-<span style="color:#6ab825;font-weight:bold">done</span>
-</code></pre></div><h2 id="sample-final-output">Sample final output</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#24909d">cd</span> ~/work/blog/pelican/content/markdown
-find . -name <span style="color:#ed9d13">&#34;2014-05*.markdown-final&#34;</span> -exec head -n <span style="color:#3677a9">10</span> {} <span style="color:#ed9d13">\;</span>
-</code></pre></div><pre><code>Title: Test2
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="nb">cd</span> ~/work/blog/pelican/content/markdown
+<span class="k">for</span> i in *.markdown<span class="p">;</span> <span class="k">do</span>
+    cat <span class="nv">$i</span> <span class="p">|</span> sed <span class="s1">&#39;/^---$/,/^---$/d&#39;</span> &gt; <span class="nv">$i</span>-sed
+<span class="k">done</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="insert-new-metadata-info-file">Insert new metadata info file</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="nb">cd</span> ~/work/blog/pelican/content/markdown
+<span class="k">for</span> i in *.markdown<span class="p">;</span> <span class="k">do</span>
+    cat <span class="nv">$i</span>-meta &gt; <span class="nv">$i</span>-final<span class="p">;</span> cat <span class="nv">$i</span>-sed &gt;&gt; <span class="nv">$i</span>-final<span class="p">;</span>
+<span class="k">done</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="sample-final-output">Sample final output</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="nb">cd</span> ~/work/blog/pelican/content/markdown
+find . -name <span class="s2">&#34;2014-05*.markdown-final&#34;</span> -exec head -n <span class="m">10</span> <span class="o">{}</span> <span class="se">\;</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Title: Test2
 Date: 2014-05-15
 Tags: 
 Category: blog
@@ -275,32 +422,72 @@ All my greetings go to:
 * [nullsecurity.net](http://nullsecurity.net)
 </code></pre>
 <h2 id="replace-some-strings">Replace some strings</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#24909d">cd</span> ~/work/blog/pelican/content/markdown
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="nb">cd</span> ~/work/blog/pelican/content/markdown
 
-<span style="color:#999;font-style:italic"># Insert some dummy text for missing attributes in img tags</span>
-<span style="color:#6ab825;font-weight:bold">for</span> i in *.markdown-final; <span style="color:#6ab825;font-weight:bold">do</span>
-    sed -i <span style="color:#ed9d13">&#39;s/alt=\&#34;\&#34;/alt=\&#34;image description\&#34;/g&#39;</span> <span style="color:#40ffff">$i</span>
-<span style="color:#6ab825;font-weight:bold">done</span>
-</code></pre></div><h2 id="rename-files-and-delete-bullshit">Rename files and delete bullshit</h2>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#24909d">cd</span> ~/work/blog/pelican/content/markdown
+<span class="c1"># Insert some dummy text for missing attributes in img tags</span>
+<span class="k">for</span> i in *.markdown-final<span class="p">;</span> <span class="k">do</span>
+    sed -i <span class="s1">&#39;s/alt=\&#34;\&#34;/alt=\&#34;image description\&#34;/g&#39;</span> <span class="nv">$i</span>
+<span class="k">done</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="rename-files-and-delete-bullshit">Rename files and delete bullshit</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="nb">cd</span> ~/work/blog/pelican/content/markdown
 rm *.markdown-sed
 rm *.markdown-meta
 rm *.markdown
 
-<span style="color:#6ab825;font-weight:bold">for</span> i in *.markdown-final; <span style="color:#6ab825;font-weight:bold">do</span>
-    mv <span style="color:#40ffff">$i</span> <span style="color:#ed9d13">`</span>basename <span style="color:#40ffff">$i</span> <span style="color:#ed9d13">&#34;.markdown-final&#34;</span><span style="color:#ed9d13">`</span>.markdown
-<span style="color:#6ab825;font-weight:bold">done</span>
+<span class="k">for</span> i in *.markdown-final<span class="p">;</span> <span class="k">do</span>
+    mv <span class="nv">$i</span> <span class="sb">`</span>basename <span class="nv">$i</span> <span class="s2">&#34;.markdown-final&#34;</span><span class="sb">`</span>.markdown
+<span class="k">done</span>
 
-</code></pre></div><h2 id="generate-new-content">Generate new content</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="generate-new-content">Generate new content</h2>
 <p>Supposing you have already setup your pelican blog now you can run:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#24909d">cd</span> ~/work/blog/pelican/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="nb">cd</span> ~/work/blog/pelican/
 
-<span style="color:#24909d">source</span> env/bin/activate
+<span class="nb">source</span> env/bin/activate
 make html
-</code></pre></div><pre><code>pelican /home/victor/work/blog/pelican/content -o /home/victor/work/blog/pelican/output -s /home/victor/work/blog/pelican/pelicanconf.py 
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>pelican /home/victor/work/blog/pelican/content -o /home/victor/work/blog/pelican/output -s /home/victor/work/blog/pelican/pelicanconf.py 
 
  ** Writing styles to _nb_header.html: this should be included in the theme. **
 

@@ -42,6 +42,7 @@ What&rsquo;s an iOS app? In a nutshell here are the main characteristics:
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -86,9 +87,18 @@ type="image/x-icon"/>
     <time>29 Oct 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+10 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/security' class="link silver">security</a> <a href='https://blog.dornea.nu/tags/ios' class="link silver">ios</a> <a href='https://blog.dornea.nu/tags/appsec' class="link silver">appsec</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/mobile' class="link silver">mobile</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>In this short article I&rsquo;ll try to explain what are the main steps to analyze an iOS app. Since I&rsquo;ve writen similar posts related to <a href="https://blog.dornea.nu/tag/android/">Android</a> I thought I could devote some of spare time writing about the steps required to analyze iOS apps/binaries. But first of all let&rsquo;s start with:</p>
 <h2 id="whats-an-ios-app">What&rsquo;s an iOS app?</h2>
@@ -121,22 +131,54 @@ type="image/x-icon"/>
 <p>The <strong>App binary</strong> is the target to be analyzed. It&rsquo;s compiled for ARM and used the <strong>Mach-O</strong>(mach object) file format. Check out next section for more detailed information.</p>
 <h4 id="installing-the-app">Installing the App</h4>
 <p>Usually you can manually install apps by using <strong>ipainstaller</strong>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># ipainstaller &lt;ipa file&gt;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># ipainstaller &lt;ipa file&gt;
 ...
-</code></pre></div><p>This will install your app under <code>/var/mobile/Applications</code>. Just do a <code>grep</code> to find out to which folder your app was copied to.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>This will install your app under <code>/var/mobile/Applications</code>. Just do a <code>grep</code> to find out to which folder your app was copied to.</p>
 <h2 id="mach-o">Mach-O</h2>
 <p>The Mach-O binary consists of 3 components:</p>
 <p>{% img <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachORuntime/art/mach_o_segments.gif">https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachORuntime/art/mach_o_segments.gif</a> 600 200 Mach-O Mach-O %}</p>
 <h4 id="header">Header</h4>
 <p>The <strong>header</strong> contains basic file type information like architecture and several flags. Using <strong>otool</strong> you can have a look a the headers:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -h BINARY
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -h BINARY
 BINARY:
 Mach header
       magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
  0xfeedfacf 16777228          0  0x00          2    29       3832 0x00200085
-</code></pre></div><p>Sometimes you&rsquo;ll get an application that is built for multiple architectures. These applications then consist of multiple Mach-O files and are called <strong>fat</strong> or <strong>universal</strong> binaries. Mach-O fat binaries not only group completely different CPU architectures (PowerPC, Intel) but also 32- or 64-bit versions of an architecture. Besides that you&rsquo;ll also get different CPU subtypes bundled in one binary. The device running the binary will choose the &ldquo;part&rdquo; of the binary it can best support. Also have a look at this great <a href="http://wanderingcoder.net/2010/07/19/ought-arm/">article</a>.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Sometimes you&rsquo;ll get an application that is built for multiple architectures. These applications then consist of multiple Mach-O files and are called <strong>fat</strong> or <strong>universal</strong> binaries. Mach-O fat binaries not only group completely different CPU architectures (PowerPC, Intel) but also 32- or 64-bit versions of an architecture. Besides that you&rsquo;ll also get different CPU subtypes bundled in one binary. The device running the binary will choose the &ldquo;part&rdquo; of the binary it can best support. Also have a look at this great <a href="http://wanderingcoder.net/2010/07/19/ought-arm/">article</a>.</p>
 <p>Here is an example of a fat binary:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -arch all -h PewPew 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -arch all -h PewPew 
 PewPew (architecture cputype (12) cpusubtype (9)):
 Mach header
       magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
@@ -145,7 +187,9 @@ PewPew (architecture cputype (12) cpusubtype (11)):
 Mach header
       magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
  0xfeedface      12         11  0x00          2    29       3544 0x00210085
-</code></pre></div><h4 id="load-commands">Load commands</h4>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="load-commands">Load commands</h4>
 <p>The <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachORuntime/index.html#//apple_ref/doc/uid/20001298-89026">load commands</a> are located directly after the header and specify the logical structure of the binary (as a file) and it&rsquo;s representation in the virtual memory (using offsets). Besides that you&rsquo;ll be able to get:</p>
 <ul>
 <li>the symbol table</li>
@@ -154,9 +198,17 @@ Mach header
 <p>For my understanding it&rsquo;s pretty much the same as ELFs segments and sections:</p>
 <p>{% img <a href="http://oi59.tinypic.com/3478ltk.jpg">http://oi59.tinypic.com/3478ltk.jpg</a> 600 200 ELF ELF %}</p>
 <p>Load commands also define whether an application is encrypted or not. To have a look at the those run:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -Vl BINARY
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -Vl BINARY
 ...
-</code></pre></div><h4 id="raw-segment-data">Raw segment data</h4>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="raw-segment-data">Raw segment data</h4>
 <p>In the Mach-O file you&rsquo;ll also have <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachOTopics/0-Introduction/introduction.html">raw data</a> for the segments specified in the load commands. One segment can consist of multiple sections.</p>
 <h2 id="runtime-protection-features">Runtime protection features</h2>
 <p>iOS has several mechanisms which prevent application from being compromised at runtime. In order to understand the security issues that affect iOS applications, it is important to understand and to known the security features of the platform. The main security features of iOS <a href="http://www.apple.com/ipad/business/docs/iOS_Security_Feb14.pdf">are</a>:</p>
@@ -202,7 +254,29 @@ Mach header
 <p>Comparing Android to iOS I must admit you&rsquo;ll have to overcome more (technical) challenges for a successful analysis. iOS uses <strong>binary</strong> files (instead of <em>bytecode</em>). Having that said I&rsquo;ll be using <strong>otool</strong> (which seems to be the equivalent to <strong>readelf</strong>) to inspect the binary.</p>
 <h4 id="architecture">Architecture</h4>
 <p>Let&rsquo;s first determine the <em>architecture</em> the binary was compiled for:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -f BINARY                                                                                              
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -f BINARY                                                                                              
 Fat headers
 fat_magic 0xcafebabe
 nfat_arch 2
@@ -220,21 +294,50 @@ architecture 1
     offset 2736128
     size 3213664
     align 2^14 (16384)
-</code></pre></div><p>Or using old-school <code>file</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># file BINARY
+</code></pre></td></tr></table>
+</div>
+</div><p>Or using old-school <code>file</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># file BINARY
 PM: Mach-O fat file with 2 architectures
-</code></pre></div><p>Also have a look at this cool <a href="http://blakespot.com/ios_device_specifications_grid.html">list</a>.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Also have a look at this cool <a href="http://blakespot.com/ios_device_specifications_grid.html">list</a>.</p>
 <h4 id="encryption">Encryption</h4>
 <p>Usually the <code>ipa</code> file will be decrypted at runtime by the kernel&rsquo;s mach loader. If the binary is encrypted or not is easily found out using:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -l BINARY | grep -A 4 LC_ENCRYPTION_INFO
-</code></pre></div><p>In this case the binary file is <strong>not</strong> encrypted. Let me show an example where the binary <strong>is</strong> encrypted:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -l OTHER_BINARY | grep -A 4 LC_ENCRYPTION_INFO                            
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -l BINARY | grep -A 4 LC_ENCRYPTION_INFO
+</code></pre></td></tr></table>
+</div>
+</div><p>In this case the binary file is <strong>not</strong> encrypted. Let me show an example where the binary <strong>is</strong> encrypted:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -l OTHER_BINARY | grep -A 4 LC_ENCRYPTION_INFO                            
           cmd LC_ENCRYPTION_INFO
       cmdsize 20
  cryptoff  16384
  cryptsize 10502144
  cryptid   1
-</code></pre></div><h3 id="runtime-protections-mechanisms">Runtime protections mechanisms</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="runtime-protections-mechanisms">Runtime protections mechanisms</h3>
 <p>This time I&rsquo;ll show you how to extract some valuable information from the binary itself regarding some runtime protection mechanisms:</p>
 <ul>
 <li><strong>ASLR</strong>
@@ -243,12 +346,23 @@ PM: Mach-O fat file with 2 architectures
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -Vh BINARY 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -Vh BINARY 
 WH Quest:
 Mach header
       magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
    MH_MAGIC     ARM          9  0x00     EXECUTE    45       4684   NOUNDEFS DYLDLINK TWOLEVEL BINDS_TO_WEAK PIE
-</code></pre></div><p>Have you noticed the <code>PIE</code> flag at the end of the list?</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Have you noticed the <code>PIE</code> flag at the end of the list?</p>
 <ul>
 <li><strong>Stack Smashing Protection</strong>
 <ul>
@@ -257,9 +371,17 @@ Mach header
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -v -l BINARY | grep stack
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -v -l BINARY | grep stack
 ...
-</code></pre></div><ul>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li><strong>Automatic Reference Couting</strong>
 <ul>
 <li>this option can be enabled by activating the compiler option &ldquo;Objective-C Automatic Reference Counting&rdquo;</li>
@@ -267,7 +389,35 @@ Mach header
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -v -I BINARY  | grep release
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -v -I BINARY  | grep release
 0x008b8ce4 241789 _objc_autorelease
 0x008b8cf4 241790 _objc_autoreleasePoolPop
 0x008b8d04 241791 _objc_autoreleasePoolPush
@@ -291,9 +441,24 @@ Mach header
 0x00a13094 241439 ___cxa_guard_release
 0x00a130f0 241341 __Block_release
 0x00a13200 241551 _dispatch_release
-</code></pre></div><h4 id="dangerous-functions">Dangerous functions</h4>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="dangerous-functions">Dangerous functions</h4>
 <p>Beside the previosly mentioned symbols we can also seek for symbols aimed at (classical) memory management mechanisms like <code>malloc</code> and <code>free</code>. Their presence indicate that the application has its own memory management which is the opposite to <strong>ARC</strong>. While this is not always a bad thing it could easily lead to some memory related vulnerabilities if not handled properly.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># otool -v -I BINARY  | grep malloc
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -v -I BINARY  | grep malloc
 0x008b9f64 241776 _malloc
 0x00a1332c 241776 _malloc
 
@@ -302,13 +467,42 @@ Mach header
 0x008b9cc4 241584 _freeifaddrs
 0x00a13280 241583 _free
 0x00a13284 241584 _freeifaddrs
-</code></pre></div><blockquote>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
 <p>Sometimes you&rsquo;ll find goodies like <code>strcpy</code> :)</p>
 </blockquote>
 <h2 id="understand-the-app">Understand the App</h2>
 <p>Now that we have examined the binary we should proceed and try to &ldquo;understand&rdquo; the application. This means we have to look at it from a <em>logical perspective</em> and identify its main components. Afterwards one can go into detail and analyze only certain parts of the application which might be of interest.</p>
 <p>Using <code>class-dump-z</code> we&rsquo;ll dump the class information:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># class-dump-z BINARY | head -20
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># class-dump-z BINARY | head -20
 Warning: Part of this binary is encrypted. Usually, the result will be not meaningful. Try to provide an unencrypted version instead.
 /**
  * This header is generated by class-dump-z 0.2-0.
@@ -331,10 +525,43 @@ Warning: Part of this binary is encrypted. Usually, the result will be not meani
 -(?)XXEncryptedMethod_93c784;
 -(?)XXEncryptedMethod_93c697;
 
-</code></pre></div><p>Every class name seems to be encrypted. That&rsquo;s a good hint you should decrypt the binary in case you haven&rsquo;t done so yet.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Every class name seems to be encrypted. That&rsquo;s a good hint you should decrypt the binary in case you haven&rsquo;t done so yet.</p>
 <h3 id="decrypt-binary">Decrypt binary</h3>
 <p>Since every application downloaded from the AppStore is encrypted using Apple&rsquo;s FairPlay DRM you&rsquo;ll have to decrypt them before starting your analysis. For this step I&rsquo;ll be using <code>clutch</code> to dump the relevant data from memory to disk.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Clutch MyAPP
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Clutch MyAPP
 Cracking MyAPP...
 Creating working directory...
 Performing initial analysis...
@@ -361,11 +588,47 @@ warning: iTunesMetadata.plist item named &#39;bundleDisplayName&#39; is unrecogn
 Packaging IPA file...
 Compressing second stage payload (2/2)...
     /var/root/Documents/Cracked/MyAPP.ipa
-</code></pre></div><p>Now that you have decrypted to binary and got a fresh new IPA file, you&rsquo;re ready to unpack it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># unzip -d MyAPP MyAPP.ipa
+</code></pre></td></tr></table>
+</div>
+</div><p>Now that you have decrypted to binary and got a fresh new IPA file, you&rsquo;re ready to unpack it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># unzip -d MyAPP MyAPP.ipa
 ...
-</code></pre></div><p>Afterwards you can have a look at the new binary using <code>class-dump-z</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># class-dump-z BINARY  | head -n 20
+</code></pre></td></tr></table>
+</div>
+</div><p>Afterwards you can have a look at the new binary using <code>class-dump-z</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># class-dump-z BINARY  | head -n 20
 /**
  * This header is generated by class-dump-z 0.2-0.
  * class-dump-z is Copyright (C) 2009 by KennyTM~, licensed under GPLv3.
@@ -387,7 +650,9 @@ typedef struct CGSize {
 
 typedef struct CGRect {
 
-</code></pre></div><p>Much better, isn&rsquo;t it? :)</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Much better, isn&rsquo;t it? :)</p>
 <h3 id="disassemble-binary">Disassemble binary</h3>
 <p>I don&rsquo;t want to be too specific and go into too much detail. A good <em>disassembler</em> could save you a <strong>lot</strong> of time. I really like <a href="http://www.hopperapp.com/">Hopper</a> because it&rsquo;s <em>free</em> and <em>easy</em> to use. For the geeks out there feel free to throw your binary into <a href="https://www.hex-rays.com/products/ida/">IDA</a> and let the bin rock. Particularly noteworthy is also <a href="http://www.radare.org/y/">radare2</a> which is unix-like reverse engineering framework.</p>
 <h2 id="conclusion">Conclusion</h2>

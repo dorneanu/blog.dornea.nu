@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,35 +85,73 @@ type="image/x-icon"/>
     <time>24 May 2015</time> 
      | 
     
+
+    
+     ~
+  
+
+12 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a> <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/ipython' class="link silver">ipython</a> <a href='https://blog.dornea.nu/tags/ssl' class="link silver">ssl</a> <a href='https://blog.dornea.nu/tags/x.509' class="link silver">x.509</a> <a href='https://blog.dornea.nu/tags/tls' class="link silver">tls</a> <a href='https://blog.dornea.nu/tags/crypto' class="link silver">crypto</a> <a href='https://blog.dornea.nu/tags/openssl' class="link silver">openssl</a> <a href='https://blog.dornea.nu/tags/appsec' class="link silver">appsec</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>In times of NSA, surveillance and data privacy, protecting your data has become an essential part of your every day life. A good understanding of basic principles is half the battle. In this post I just wanted to have look at SSL/TLS from a developer point of view but also from an users one. On the one hand I wanted to use <code>openssl</code> as a CLI utility to <em>inspect</em> and <em>validate</em> <a href="http://en.wikipedia.org/wiki/X.509">X.509 certificates</a>. On the other hand I wanted to have code I could use in my own projects. I&rsquo;ve found <a href="https://github.com/pyca/pyopenssl">pyOpenSSL</a> to be a quite useful library to use on a regular daily basis. Regardless the programming language you&rsquo;ll find pretty generic ways of <em>validating</em> the certificates and <em>pinning</em> the presented data. For the sake of simplicity I&rsquo;ve chosen to analyze <a href="https://www.google.com">Googles</a> SSL certificate. But first let&rsquo;s start with <strong>certificate pinning</strong>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># &lt;!-- collapse=True --&gt;</span>
-<span style="color:#999;font-style:italic"># Init ipython notebook stuff</span>
-<span style="color:#999;font-style:italic"># Import crypto modules</span>
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">ssl</span>
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">OpenSSL</span>
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">socket</span>
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">json</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># &lt;!-- collapse=True --&gt;</span>
+<span class="c1"># Init ipython notebook stuff</span>
+<span class="c1"># Import crypto modules</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+<span class="kn">import</span> <span class="nn">OpenSSL</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
-<span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.Util</span> <span style="color:#6ab825;font-weight:bold">import</span> asn1
-<span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">pprint</span> <span style="color:#6ab825;font-weight:bold">import</span> pprint
+<span class="kn">from</span> <span class="nn">Crypto.Util</span> <span class="kn">import</span> <span class="n">asn1</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 
-<span style="color:#999;font-style:italic"># Import ipython specific modules</span>
-<span style="color:#6ab825;font-weight:bold">import</span> <span style="color:#447fcf;text-decoration:underline">pandas</span> <span style="color:#6ab825;font-weight:bold">as</span> <span style="color:#447fcf;text-decoration:underline">pd</span>
-pd.set_option(<span style="color:#ed9d13">&#39;display.height&#39;</span>, <span style="color:#3677a9">1000</span>)
-pd.set_option(<span style="color:#ed9d13">&#39;display.max_rows&#39;</span>, <span style="color:#3677a9">500</span>)
-pd.set_option(<span style="color:#ed9d13">&#39;display.max_columns&#39;</span>, <span style="color:#3677a9">500</span>)
-pd.set_option(<span style="color:#ed9d13">&#39;display.width&#39;</span>, <span style="color:#3677a9">1000</span>)
+<span class="c1"># Import ipython specific modules</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.height&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.width&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
-%install_ext https://raw.githubusercontent.com/dorneanu/ipython/master/extensions/diagmagic.py
-%load_ext diagmagic
+<span class="o">%</span><span class="n">install_ext</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">githubusercontent</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dorneanu</span><span class="o">/</span><span class="n">ipython</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">extensions</span><span class="o">/</span><span class="n">diagmagic</span><span class="o">.</span><span class="n">py</span>
+<span class="o">%</span><span class="n">load_ext</span> <span class="n">diagmagic</span>
 
-%install_ext https://raw.github.com/cjdrake/ipython-magic/master/gvmagic.py
-%load_ext gvmagic
-</code></pre></div><pre><code>height has been deprecated.
+<span class="o">%</span><span class="n">install_ext</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cjdrake</span><span class="o">/</span><span class="n">ipython</span><span class="o">-</span><span class="n">magic</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">gvmagic</span><span class="o">.</span><span class="n">py</span>
+<span class="o">%</span><span class="n">load_ext</span> <span class="n">gvmagic</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>height has been deprecated.
 
 Installed diagmagic.py. To use it, type:
   %load_ext diagmagic
@@ -121,43 +160,85 @@ Installed gvmagic.py. To use it, type:
 </code></pre>
 <h2 id="what-is-it">What is it?</h2>
 <p>Having to implement <em>certificate pinning</em> most developers have a poor knowledge about it and the impact it <em>could</em> have on an end-user if not done properly. I think MITM attacks are nowadays widely understood (generally speaking) and developers seem to accept the importance of security measurements against this specific type of attacks. Certificate pinning referrs to the <strong>authenticity</strong> of data and the process of comparing some <em>presented</em> to <em>expected</em> data. Take a look at the <a href="https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning">OWASP site</a> for a more detailed introduction. But first let&rsquo;s have a look how client communicates to a server using a secure (SSL/TLS) channel:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%seqdiag 
-// &lt;<span style="color:#a61717;background-color:#e3d2d2">!</span>-- collapse=<span style="color:#6ab825;font-weight:bold">True</span> --&gt;
-{
-  Client -&gt; Server [label=<span style="color:#ed9d13">&#34;Connect to port 443 ... &#34;</span>];
-  Server -&gt; Client [label=<span style="color:#ed9d13">&#34;Send X.509 certificate&#34;</span>];
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">seqdiag</span> 
+<span class="o">//</span> <span class="o">&lt;</span><span class="err">!</span><span class="o">--</span> <span class="n">collapse</span><span class="o">=</span><span class="kc">True</span> <span class="o">--&gt;</span>
+<span class="p">{</span>
+  <span class="n">Client</span> <span class="o">-&gt;</span> <span class="n">Server</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Connect to port 443 ... &#34;</span><span class="p">];</span>
+  <span class="n">Server</span> <span class="o">-&gt;</span> <span class="n">Client</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Send X.509 certificate&#34;</span><span class="p">];</span>
 
-  // Separator
-  === Secure Connection ===
+  <span class="o">//</span> <span class="n">Separator</span>
+  <span class="o">===</span> <span class="n">Secure</span> <span class="n">Connection</span> <span class="o">===</span>
 
-  Client -&gt; Server [label=<span style="color:#ed9d13">&#34;GET /index.html&#34;</span>];
-  Server -&gt; Client [label=<span style="color:#ed9d13">&#34;200 OK Success&#34;</span>];
-}
-</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_3_0.png" alt="png"></p>
+  <span class="n">Client</span> <span class="o">-&gt;</span> <span class="n">Server</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;GET /index.html&#34;</span><span class="p">];</span>
+  <span class="n">Server</span> <span class="o">-&gt;</span> <span class="n">Client</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;200 OK Success&#34;</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_3_0.png" alt="png"></p>
 <p>Before establishing the secure connection the client must <strong>validate</strong> the <em>presented</em> certificate.</p>
 <blockquote>
 <p>Regarding the validation: Here I won&rsquo;t go into much details because this is a quite complicated story from a technical point of view.</p>
 </blockquote>
 <p>After the successfull validation the <strong>authenticity</strong> of the server is guaranteed - at least that&rsquo;s what the client is assuming. Now let&rsquo;s have a look what happens during a <strong>MITM attack</strong>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%seqdiag 
-// &lt;<span style="color:#a61717;background-color:#e3d2d2">!</span>-- collapse=<span style="color:#6ab825;font-weight:bold">True</span> --&gt;
-{
-  Client -&gt; Eve [label=<span style="color:#ed9d13">&#34;Connect to port 443 ... &#34;</span>];
-  Eve -&gt; Server [label=<span style="color:#ed9d13">&#34;Connect to port 443 ...&#34;</span>];
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">seqdiag</span> 
+<span class="o">//</span> <span class="o">&lt;</span><span class="err">!</span><span class="o">--</span> <span class="n">collapse</span><span class="o">=</span><span class="kc">True</span> <span class="o">--&gt;</span>
+<span class="p">{</span>
+  <span class="n">Client</span> <span class="o">-&gt;</span> <span class="n">Eve</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Connect to port 443 ... &#34;</span><span class="p">];</span>
+  <span class="n">Eve</span> <span class="o">-&gt;</span> <span class="n">Server</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Connect to port 443 ...&#34;</span><span class="p">];</span>
 
-  Server -&gt; Eve [label=<span style="color:#ed9d13">&#34;Send Servers certificate&#34;</span>];
-  Eve -&gt; Client [label=<span style="color:#ed9d13">&#34;Send Eves certificate&#34;</span>, color=red];
+  <span class="n">Server</span> <span class="o">-&gt;</span> <span class="n">Eve</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Send Servers certificate&#34;</span><span class="p">];</span>
+  <span class="n">Eve</span> <span class="o">-&gt;</span> <span class="n">Client</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;Send Eves certificate&#34;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">red</span><span class="p">];</span>
 
-  // Separator
-  === <span style="color:#ed9d13">&#34;Secure&#34;</span> Connection ===
+  <span class="o">//</span> <span class="n">Separator</span>
+  <span class="o">===</span> <span class="s2">&#34;Secure&#34;</span> <span class="n">Connection</span> <span class="o">===</span>
 
-  Client -&gt; Eve [label=<span style="color:#ed9d13">&#34;GET /index.html&#34;</span>];
-  Eve -&gt; Server [label=<span style="color:#ed9d13">&#34;GET /index.html&#34;</span>];
+  <span class="n">Client</span> <span class="o">-&gt;</span> <span class="n">Eve</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;GET /index.html&#34;</span><span class="p">];</span>
+  <span class="n">Eve</span> <span class="o">-&gt;</span> <span class="n">Server</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;GET /index.html&#34;</span><span class="p">];</span>
   
-  Server -&gt; Eve [label=<span style="color:#ed9d13">&#34;200 OK Success&#34;</span>];
-  Eve -&gt; Client [label=<span style="color:#ed9d13">&#34;200 OK Success&#34;</span>];
-}
-</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_5_0.png" alt="png"></p>
+  <span class="n">Server</span> <span class="o">-&gt;</span> <span class="n">Eve</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;200 OK Success&#34;</span><span class="p">];</span>
+  <span class="n">Eve</span> <span class="o">-&gt;</span> <span class="n">Client</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;200 OK Success&#34;</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_5_0.png" alt="png"></p>
 <p>As you see the client is presented <strong>Eves</strong> certificate which is the <em>evil</em> one. Now the client has 2 options:</p>
 <ul>
 <li>trust the presented certificate and hope it&rsquo;s from the <strong>Server</strong></li>
@@ -173,51 +254,111 @@ Installed gvmagic.py. To use it, type:
 </ol>
 <p>For the rest of post I&rsquo;ll be analyzing the SSL certificate of <a href="https://www.google.com">www.google.com</a>. Now let&rsquo;s get back to work:</p>
 <h4 id="connection-settings">Connection settings</h4>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># Create new SSL context with several security tunings</span>
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># Create new SSL context with several security tunings</span>
+<span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_TLSv1</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Allow NO SSLv2</span>
-ssl_context.options |= ssl.OP_NO_SSLv2
+<span class="c1"># Allow NO SSLv2</span>
+<span class="n">ssl_context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_SSLv2</span>
 
-<span style="color:#999;font-style:italic"># Prevent CRIME attacks (OpenSSL 1.0+)</span>
-ssl_context.options |= <span style="color:#24909d">getattr</span>(ssl._ssl, <span style="color:#ed9d13">&#34;OP_NO_COMPRESSION&#34;</span>, <span style="color:#3677a9">0</span>)
+<span class="c1"># Prevent CRIME attacks (OpenSSL 1.0+)</span>
+<span class="n">ssl_context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">_ssl</span><span class="p">,</span> <span class="s2">&#34;OP_NO_COMPRESSION&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Allow only good ciphers</span>
-ssl_context.set_ciphers(<span style="color:#ed9d13">&#39;HIGH:!aNULL:!RC4:!DSS&#39;</span>)
+<span class="c1"># Allow only good ciphers</span>
+<span class="n">ssl_context</span><span class="o">.</span><span class="n">set_ciphers</span><span class="p">(</span><span class="s1">&#39;HIGH:!aNULL:!RC4:!DSS&#39;</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Validate the server certificate</span>
-ssl_context.verify_mode = ssl.CERT_REQUIRED
+<span class="c1"># Validate the server certificate</span>
+<span class="n">ssl_context</span><span class="o">.</span><span class="n">verify_mode</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CERT_REQUIRED</span>
 
-<span style="color:#999;font-style:italic"># Check host name</span>
-ssl_context.check_hostname = <span style="color:#6ab825;font-weight:bold">True</span>
+<span class="c1"># Check host name</span>
+<span class="n">ssl_context</span><span class="o">.</span><span class="n">check_hostname</span> <span class="o">=</span> <span class="kc">True</span>
 
-<span style="color:#999;font-style:italic"># Load CA bundle</span>
-<span style="color:#999;font-style:italic"># HINT: This path may differ on your system</span>
-ssl_context.load_verify_locations(<span style="color:#ed9d13">&#34;/etc/ssl/certs/ca-certificates.crt&#34;</span>)
-</code></pre></div><h4 id="make-connection">Make connection</h4>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># Define target information</span>
-target_host = <span style="color:#ed9d13">&#34;www.google.com&#34;</span>
-target_port = <span style="color:#3677a9">443</span>
+<span class="c1"># Load CA bundle</span>
+<span class="c1"># HINT: This path may differ on your system</span>
+<span class="n">ssl_context</span><span class="o">.</span><span class="n">load_verify_locations</span><span class="p">(</span><span class="s2">&#34;/etc/ssl/certs/ca-certificates.crt&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="make-connection">Make connection</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># Define target information</span>
+<span class="n">target_host</span> <span class="o">=</span> <span class="s2">&#34;www.google.com&#34;</span>
+<span class="n">target_port</span> <span class="o">=</span> <span class="mi">443</span>
 
-<span style="color:#999;font-style:italic"># Create SSL socket</span>
-ssl_socket = ssl_context.wrap_socket(\
-                socket.socket(socket.AF_INET, socket.SOCK_STREAM),\
-                server_hostname=target_host)
-ssl_socket.connect((target_host, target_port))
-</code></pre></div><p>Now that we&rsquo;ve established the socket connection, we can fetch the certificate and do the analysis.</p>
+<span class="c1"># Create SSL socket</span>
+<span class="n">ssl_socket</span> <span class="o">=</span> <span class="n">ssl_context</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span>\
+                <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">),</span>\
+                <span class="n">server_hostname</span><span class="o">=</span><span class="n">target_host</span><span class="p">)</span>
+<span class="n">ssl_socket</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">target_host</span><span class="p">,</span> <span class="n">target_port</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now that we&rsquo;ve established the socket connection, we can fetch the certificate and do the analysis.</p>
 <h4 id="fetch-the-certificate">Fetch the certificate</h4>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># Fetch human readable certificate</span>
-cert_string = ssl_socket.getpeercert()
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># Fetch human readable certificate</span>
+<span class="n">cert_string</span> <span class="o">=</span> <span class="n">ssl_socket</span><span class="o">.</span><span class="n">getpeercert</span><span class="p">()</span>
 
-<span style="color:#999;font-style:italic"># Fetch certificate in PEM format</span>
-cert = ssl.get_server_certificate((target_host, target_port))
-</code></pre></div><blockquote>
+<span class="c1"># Fetch certificate in PEM format</span>
+<span class="n">cert</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">get_server_certificate</span><span class="p">((</span><span class="n">target_host</span><span class="p">,</span> <span class="n">target_port</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
 <p>You don&rsquo;t know nothing about <strong>ASN.1</strong>, <strong>DER</strong> or <strong>PEM</strong>? No problem! Just have a look at this <a href="https://tls.mbed.org/kb/cryptography/asn1-key-structures-in-der-and-pem">great article</a>. But to summarize it:
 <em>DER</em> is binary format, its structure is called <em>ASN.1</em>. <em>PEM</em> format is Base64 encoded representation of <em>DER</em>.</p>
 </blockquote>
 <h5 id="pem-format">PEM format</h5>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#24909d">print</span>(cert)
-</code></pre></div><pre><code>-----BEGIN CERTIFICATE-----
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nb">print</span><span class="p">(</span><span class="n">cert</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>-----BEGIN CERTIFICATE-----
 MIIEdjCCA16gAwIBAgIIX7v8fExu/5IwDQYJKoZIhvcNAQEFBQAwSTELMAkGA1UE
 BhMCVVMxEzARBgNVBAoTCkdvb2dsZSBJbmMxJTAjBgNVBAMTHEdvb2dsZSBJbnRl
 cm5ldCBBdXRob3JpdHkgRzIwHhcNMTUwNTA2MTAyOTI1WhcNMTUwODA0MDAwMDAw
@@ -245,8 +386,15 @@ aUYdqnU+Mgkfro7CDpEjOucBzZbsSevm9vPQMhExdju6pKf+nC0bz+7T
 -----END CERTIFICATE-----
 </code></pre>
 <h5 id="text-format">TEXT format</h5>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">pprint(cert_string)
-</code></pre></div><pre><code>{'OCSP': ('http://clients1.google.com/ocsp',),
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">pprint</span><span class="p">(</span><span class="n">cert_string</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>{'OCSP': ('http://clients1.google.com/ocsp',),
  'caIssuers': ('http://pki.google.com/GIAG2.crt',),
  'crlDistributionPoints': ('http://pki.google.com/GIAG2.crl',),
  'issuer': ((('countryName', 'US'),),
@@ -269,44 +417,97 @@ aUYdqnU+Mgkfro7CDpEjOucBzZbsSevm9vPQMhExdju6pKf+nC0bz+7T
 <p>From an attackers perspective generating certificates that contain the same data is easy peasy. So while doing the certificate pinning you shouldn&rsquo;t rely on these values. Furthermore rely on data that can not be manipulated or data that has been generated randomly. Of course there is still a risk with &ldquo;pseudo-random&rdquo; data in case of insecure <a href="http://en.wikipedia.org/wiki/Pseudorandom_number_generator">PRNGs</a>. Or don&rsquo;t you remember this <a href="http://article.gmane.org/gmane.linux.debian.security.announce/1614">one</a> anymore? :)</p>
 <h2 id="certificate-pinning">Certificate pinning</h2>
 <p>When it comes to pinning you&rsquo;ll have different options what to &ldquo;pin&rdquo; for. Let&rsquo;s have a look how this is done using <em>Python</em>, but the procedure should apply to other programming languages as well. First let&rsquo;s do some conversions and extract data we&rsquo;re interested in.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.PublicKey</span> <span style="color:#6ab825;font-weight:bold">import</span> RSA
-<span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">base64</span> <span style="color:#6ab825;font-weight:bold">import</span> b64decode
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">Crypto.PublicKey</span> <span class="kn">import</span> <span class="n">RSA</span>
+<span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">b64decode</span>
 
-<span style="color:#999;font-style:italic"># Convert PEM format to x509 Object</span>
-x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
+<span class="c1"># Convert PEM format to x509 Object</span>
+<span class="n">x509</span> <span class="o">=</span> <span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">load_certificate</span><span class="p">(</span><span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_PEM</span><span class="p">,</span> <span class="n">cert</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Convert x509 object to ASN1</span>
-x509_asn1 = OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_ASN1, x509)
+<span class="c1"># Convert x509 object to ASN1</span>
+<span class="n">x509_asn1</span> <span class="o">=</span> <span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">dump_certificate</span><span class="p">(</span><span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_ASN1</span><span class="p">,</span> <span class="n">x509</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Convert x509 object to PEM</span>
-x509_pem = OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, x509)
+<span class="c1"># Convert x509 object to PEM</span>
+<span class="n">x509_pem</span> <span class="o">=</span> <span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">dump_certificate</span><span class="p">(</span><span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_PEM</span><span class="p">,</span> <span class="n">x509</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Decode the certificate</span>
-der = asn1.DerSequence()
-der.decode(x509_asn1)
+<span class="c1"># Decode the certificate</span>
+<span class="n">der</span> <span class="o">=</span> <span class="n">asn1</span><span class="o">.</span><span class="n">DerSequence</span><span class="p">()</span>
+<span class="n">der</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">x509_asn1</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Store the components</span>
-der_cert = der[<span style="color:#3677a9">0</span>]     <span style="color:#999;font-style:italic"># certificate</span>
-der_algo = der[<span style="color:#3677a9">1</span>]     <span style="color:#999;font-style:italic"># signing algorithm</span>
-der_sign = der[<span style="color:#3677a9">2</span>]     <span style="color:#999;font-style:italic"># certificate signature</span>
+<span class="c1"># Store the components</span>
+<span class="n">der_cert</span> <span class="o">=</span> <span class="n">der</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>     <span class="c1"># certificate</span>
+<span class="n">der_algo</span> <span class="o">=</span> <span class="n">der</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>     <span class="c1"># signing algorithm</span>
+<span class="n">der_sign</span> <span class="o">=</span> <span class="n">der</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>     <span class="c1"># certificate signature</span>
 
-der_sign_in=asn1.DerObject()
-der_sign_in.decode(der_sign)
-der_sign_payload = der_sign_in.payload
-cert_sign = der_sign_payload[<span style="color:#3677a9">1</span>:]
+<span class="n">der_sign_in</span><span class="o">=</span><span class="n">asn1</span><span class="o">.</span><span class="n">DerObject</span><span class="p">()</span>
+<span class="n">der_sign_in</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">der_sign</span><span class="p">)</span>
+<span class="n">der_sign_payload</span> <span class="o">=</span> <span class="n">der_sign_in</span><span class="o">.</span><span class="n">payload</span>
+<span class="n">cert_sign</span> <span class="o">=</span> <span class="n">der_sign_payload</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 
-<span style="color:#999;font-style:italic"># Extract the signing certificate algorithm</span>
-sign_algo = x509.get_signature_algorithm() 
-</code></pre></div><h3 id="pin-the-certificate">Pin the certificate</h3>
+<span class="c1"># Extract the signing certificate algorithm</span>
+<span class="n">sign_algo</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">get_signature_algorithm</span><span class="p">()</span> 
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="pin-the-certificate">Pin the certificate</h3>
 <p>You can of course check of the X.509 properties you&rsquo;ve seen before, but you should not rely on these values. Instead use a digest (e.g. SHA-1, SHA-256 etc.) to <strong>fingerprint</strong> the certificate. If the generated fingerprint is exactly the one you have <em>expected</em> then you can trust the certificate. However certificates may change at regular time intervals, so you&rsquo;ll have to adapt your <em>expected</em> fingerprint value every time this happens. Pinning the <em>public key</em> is a much better solution.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#999;font-style:italic"># Write x509 (PEM format) to file</span>
-f = <span style="color:#24909d">open</span>(<span style="color:#ed9d13">&#39;/tmp/pyopenssl/www.google.com.cert.pem&#39;</span>,<span style="color:#ed9d13">&#39;w&#39;</span>)
-f.write(x509_pem.decode(<span style="color:#ed9d13">&#34;utf-8&#34;</span>))
-f.close()
-</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#999;font-style:italic"># Show certificate fingerprint using openssl</span>
-openssl x509 -fingerprint -inform PEM -in  /tmp/pyopenssl/www.google.com.cert.pem -sha256  | grep Fingerprint
-</code></pre></div><pre><code>SHA256 Fingerprint=16:3D:A3:9A:7C:8F:4E:C4:79:59:5E:30:A8:82:2C:A7:58:CD:0A:6B:87:EF:7B:43:10:5A:97:C3:93:90:98:D8
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># Write x509 (PEM format) to file</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/pyopenssl/www.google.com.cert.pem&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">x509_pem</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="c1"># Show certificate fingerprint using openssl</span>
+openssl x509 -fingerprint -inform PEM -in  /tmp/pyopenssl/www.google.com.cert.pem -sha256  <span class="p">|</span> grep Fingerprint
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>SHA256 Fingerprint=16:3D:A3:9A:7C:8F:4E:C4:79:59:5E:30:A8:82:2C:A7:58:CD:0A:6B:87:EF:7B:43:10:5A:97:C3:93:90:98:D8
 </code></pre>
 <p>Using this <em>fingerprint</em> you could now verify the authencity of the <em>presented</em> certificate. Besides checking the fingerprint you should check if:</p>
 <ul>
@@ -316,28 +517,55 @@ openssl x509 -fingerprint -inform PEM -in  /tmp/pyopenssl/www.google.com.cert.pe
 </ul>
 <h3 id="pin-the-public-key">Pin the public key</h3>
 <p>I&rsquo;ll first extract the <strong>public key</strong> from the certificate and print it in a human readable way.</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6ab825;font-weight:bold">from</span> <span style="color:#447fcf;text-decoration:underline">Crypto.PublicKey</span> <span style="color:#6ab825;font-weight:bold">import</span> RSA
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">Crypto.PublicKey</span> <span class="kn">import</span> <span class="n">RSA</span>
 
-<span style="color:#999;font-style:italic"># Extract the public key</span>
-pub_key = x509.get_pubkey()
+<span class="c1"># Extract the public key</span>
+<span class="n">pub_key</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">get_pubkey</span><span class="p">()</span>
 
-<span style="color:#999;font-style:italic"># Print the public key in TEXT formatboru</span>
-pub_key_text = OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_TEXT, pub_key)
+<span class="c1"># Print the public key in TEXT formatboru</span>
+<span class="n">pub_key_text</span> <span class="o">=</span> <span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">dump_privatekey</span><span class="p">(</span><span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_TEXT</span><span class="p">,</span> <span class="n">pub_key</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Convert to ASN1</span>
-pub_key_asn1 = OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_ASN1, pub_key)
+<span class="c1"># Convert to ASN1</span>
+<span class="n">pub_key_asn1</span> <span class="o">=</span> <span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">dump_privatekey</span><span class="p">(</span><span class="n">OpenSSL</span><span class="o">.</span><span class="n">crypto</span><span class="o">.</span><span class="n">FILETYPE_ASN1</span><span class="p">,</span> <span class="n">pub_key</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Convert key to DER format</span>
-pub_der = asn1.DerSequence()
-pub_der.decode(pub_key_asn1)
+<span class="c1"># Convert key to DER format</span>
+<span class="n">pub_der</span> <span class="o">=</span> <span class="n">asn1</span><span class="o">.</span><span class="n">DerSequence</span><span class="p">()</span>
+<span class="n">pub_der</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">pub_key_asn1</span><span class="p">)</span>
 
-<span style="color:#999;font-style:italic"># Construct RSA key</span>
-<span style="color:#999;font-style:italic"># In Python 3 you no longer use &#34;long&#34; -&gt; Use &#34;int&#34; instead</span>
-b = RSA.construct((<span style="color:#24909d">int</span>(pub_der._seq[<span style="color:#3677a9">1</span>]), <span style="color:#24909d">int</span>(pub_der._seq[<span style="color:#3677a9">2</span>])))
+<span class="c1"># Construct RSA key</span>
+<span class="c1"># In Python 3 you no longer use &#34;long&#34; -&gt; Use &#34;int&#34; instead</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">RSA</span><span class="o">.</span><span class="n">construct</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">pub_der</span><span class="o">.</span><span class="n">_seq</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">pub_der</span><span class="o">.</span><span class="n">_seq</span><span class="p">[</span><span class="mi">2</span><span class="p">])))</span>
 
-<span style="color:#999;font-style:italic"># Print public key information</span>
-<span style="color:#24909d">print</span>(pub_key_text.decode(<span style="color:#ed9d13">&#34;utf-8&#34;</span>))
-</code></pre></div><pre><code>Public-Key: (2048 bit)
+<span class="c1"># Print public key information</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pub_key_text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Public-Key: (2048 bit)
 Modulus:
     00:db:41:80:aa:b8:c5:e3:68:d1:55:99:a8:24:36:
     44:e8:56:c4:e5:36:93:f5:ec:7c:e9:b3:b9:c9:55:
@@ -360,15 +588,33 @@ Modulus:
 Exponent: 65537 (0x10001)
 </code></pre>
 <p>Let&rsquo;s check that with <code>openssl</code> output:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
 openssl x509 -inform PEM -in /tmp/pyopenssl/www.google.com.cert.pem -pubkey -noout &gt; /tmp/pyopenssl/pubkey.pem
-openssl rsa -inform PEM -pubin -in /tmp/pyopenssl/pubkey.pem -modulus 2&gt;1 | grep Modulus
-</code></pre></div><pre><code>Modulus=DB4180AAB8C5E368D15599A8243644E856C4E53693F5EC7CE9B3B9C9553F9C35CBBF6D5E26444106F284595352844473F36B781DE0F9B322767170CCE2F74C14A19210872302742B4B0DCD9C4AC849DD369933DBA78EB3338134F95610E7A136FBDABF16CAA758BD8E30A7672F75F91A2E9522AD855890AC30F1B31E9A35C73330581E201D0D32D8EAC05E9CCD3EB7BCDF2D14E5B7E253644C7F6CAFDAEE51241CD16F0A7D885BE318B7EEBAF31558C364E70615C8265A3466B3F95696B8DEA211A3291DE2F515524DEC707C92ED78670C453F0FB2235BA042588078FC6AE008C7B34534913D85EE7D4D9A401F62C0096DA3BC831C95BBD66DC14D4C436B1067
+openssl rsa -inform PEM -pubin -in /tmp/pyopenssl/pubkey.pem -modulus 2&gt;1 <span class="p">|</span> grep Modulus
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>Modulus=DB4180AAB8C5E368D15599A8243644E856C4E53693F5EC7CE9B3B9C9553F9C35CBBF6D5E26444106F284595352844473F36B781DE0F9B322767170CCE2F74C14A19210872302742B4B0DCD9C4AC849DD369933DBA78EB3338134F95610E7A136FBDABF16CAA758BD8E30A7672F75F91A2E9522AD855890AC30F1B31E9A35C73330581E201D0D32D8EAC05E9CCD3EB7BCDF2D14E5B7E253644C7F6CAFDAEE51241CD16F0A7D885BE318B7EEBAF31558C364E70615C8265A3466B3F95696B8DEA211A3291DE2F515524DEC707C92ED78670C453F0FB2235BA042588078FC6AE008C7B34534913D85EE7D4D9A401F62C0096DA3BC831C95BBD66DC14D4C436B1067
 </code></pre>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-<span style="color:#999;font-style:italic"># Dump the public key</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+<span class="c1"># Dump the public key</span>
 openssl asn1parse -dump -in /tmp/pyopenssl/pubkey.pem
-</code></pre></div><pre><code>    0:d=0  hl=4 l= 290 cons: SEQUENCE          
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>    0:d=0  hl=4 l= 290 cons: SEQUENCE          
     4:d=1  hl=2 l=  13 cons: SEQUENCE          
     6:d=2  hl=2 l=   9 prim: OBJECT            :rsaEncryption
    17:d=2  hl=2 l=   0 prim: NULL              
@@ -392,15 +638,31 @@ openssl asn1parse -dump -in /tmp/pyopenssl/pubkey.pem
       0100 - bb d6 6d c1 4d 4c 43 6b-10 67 02 03 01 00 01      ..m.MLCk.g.....
 </code></pre>
 <p>So one could also check the RSA <strong>modulus</strong> against an <em>expected</em> value. Furthermore you could <strong>hash</strong> the whole public key and then check values:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
 sha256sum /tmp/pyopenssl/pubkey.pem
-</code></pre></div><pre><code>618a8d05fce8d0f8f790e0a2fbaaf739ff7049e7da087520e81a31d0af81513a  /tmp/pyopenssl/pubkey.pem
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>618a8d05fce8d0f8f790e0a2fbaaf739ff7049e7da087520e81a31d0af81513a  /tmp/pyopenssl/pubkey.pem
 </code></pre>
 <h2 id="validate-certificate">Validate certificate</h2>
 <p>Get the <em>trust chain</em>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-openssl s_client -showcerts -connect www.google.com:443  | grep -e <span style="color:#ed9d13">&#34;s:&#34;</span> -e <span style="color:#ed9d13">&#34;i:&#34;</span>
-</code></pre></div><pre><code> 0 s:/C=US/ST=California/L=Mountain View/O=Google Inc/CN=www.google.com
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+openssl s_client -showcerts -connect www.google.com:443  <span class="p">|</span> grep -e <span class="s2">&#34;s:&#34;</span> -e <span class="s2">&#34;i:&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code> 0 s:/C=US/ST=California/L=Mountain View/O=Google Inc/CN=www.google.com
    i:/C=US/O=Google Inc/CN=Google Internet Authority G2
  1 s:/C=US/O=Google Inc/CN=Google Internet Authority G2
    i:/C=US/O=GeoTrust Inc./CN=GeoTrust Global CA
@@ -412,60 +674,129 @@ depth=2 C = US, O = GeoTrust Inc., CN = GeoTrust Global CA
 verify error:num=20:unable to get local issuer certificate
 DONE
 </code></pre>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">%%dot
-// &lt;<span style="color:#a61717;background-color:#e3d2d2">!</span>-- collapse=<span style="color:#6ab825;font-weight:bold">True</span> --&gt;
-digraph trie {
-    rankdir=<span style="color:#ed9d13">&#34;TR&#34;</span>;
-    graph [label=<span style="color:#ed9d13">&#34;</span><span style="color:#ed9d13">\n\n</span><span style="color:#ed9d13">Chain of trust for www.google.com&#34;</span>];
-    node [shape = <span style="color:#ed9d13">&#34;Mrecord&#34;</span>, width=<span style="color:#3677a9">6</span>];
-    equifax [label=<span style="color:#ed9d13">&#34;{Subject:  GeoTrust Global CA \l | Issuer: Equifax Secure Certificate Authority \l }&#34;</span>, color=<span style="color:#ed9d13">&#34;grey&#34;</span>];
-    geotrust [label=<span style="color:#ed9d13">&#34;{Subject:  Google Internet Authority G2 \l | Issuer: GeoTrust Global CA \l }&#34;</span>, color=<span style="color:#ed9d13">&#34;grey&#34;</span>];
-    g2 [label=<span style="color:#ed9d13">&#34;{Subject: google.com \l | Issuer: Google Internet Authority G2 \l }&#34;</span>, color=<span style="color:#ed9d13">&#34;grey&#34;</span>];
-    google_site [label=<span style="color:#ed9d13">&#34;www.google.com \l&#34;</span>, color=<span style="color:#ed9d13">&#34;red&#34;</span>];
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="o">%%</span><span class="n">dot</span>
+<span class="o">//</span> <span class="o">&lt;</span><span class="err">!</span><span class="o">--</span> <span class="n">collapse</span><span class="o">=</span><span class="kc">True</span> <span class="o">--&gt;</span>
+<span class="n">digraph</span> <span class="n">trie</span> <span class="p">{</span>
+    <span class="n">rankdir</span><span class="o">=</span><span class="s2">&#34;TR&#34;</span><span class="p">;</span>
+    <span class="n">graph</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;</span><span class="se">\n\n</span><span class="s2">Chain of trust for www.google.com&#34;</span><span class="p">];</span>
+    <span class="n">node</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="s2">&#34;Mrecord&#34;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">6</span><span class="p">];</span>
+    <span class="n">equifax</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;{Subject:  GeoTrust Global CA \l | Issuer: Equifax Secure Certificate Authority \l }&#34;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;grey&#34;</span><span class="p">];</span>
+    <span class="n">geotrust</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;{Subject:  Google Internet Authority G2 \l | Issuer: GeoTrust Global CA \l }&#34;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;grey&#34;</span><span class="p">];</span>
+    <span class="n">g2</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;{Subject: google.com \l | Issuer: Google Internet Authority G2 \l }&#34;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;grey&#34;</span><span class="p">];</span>
+    <span class="n">google_site</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s2">&#34;www.google.com \l&#34;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;red&#34;</span><span class="p">];</span>
     
-    root [width=<span style="color:#3677a9">2</span>, shape=<span style="color:#ed9d13">&#34;none&#34;</span>];
-    leaf [width=<span style="color:#3677a9">2</span>, shape=<span style="color:#ed9d13">&#34;none&#34;</span>];
+    <span class="n">root</span> <span class="p">[</span><span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s2">&#34;none&#34;</span><span class="p">];</span>
+    <span class="n">leaf</span> <span class="p">[</span><span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s2">&#34;none&#34;</span><span class="p">];</span>
     
-    equifax -&gt; geotrust;
-    root -&gt; equifax [arrowsize=<span style="color:#3677a9">.5</span>, weight=<span style="color:#3677a9">2.</span>];
-    geotrust -&gt; g2;
-    g2 -&gt; google_site;
-    leaf -&gt; google_site [arrowsize=<span style="color:#3677a9">.5</span>, weight=<span style="color:#3677a9">2.</span>];
+    <span class="n">equifax</span> <span class="o">-&gt;</span> <span class="n">geotrust</span><span class="p">;</span>
+    <span class="n">root</span> <span class="o">-&gt;</span> <span class="n">equifax</span> <span class="p">[</span><span class="n">arrowsize</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">2.</span><span class="p">];</span>
+    <span class="n">geotrust</span> <span class="o">-&gt;</span> <span class="n">g2</span><span class="p">;</span>
+    <span class="n">g2</span> <span class="o">-&gt;</span> <span class="n">google_site</span><span class="p">;</span>
+    <span class="n">leaf</span> <span class="o">-&gt;</span> <span class="n">google_site</span> <span class="p">[</span><span class="n">arrowsize</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">2.</span><span class="p">];</span>
     
-    <span style="color:#3677a9">0</span> [shape=<span style="color:#ed9d13">&#34;none&#34;</span>, width=<span style="color:#3677a9">1</span>];
-    <span style="color:#3677a9">1</span> [shape=<span style="color:#ed9d13">&#34;none&#34;</span>, width=<span style="color:#3677a9">1</span>];
-    <span style="color:#3677a9">2</span> [shape=<span style="color:#ed9d13">&#34;none&#34;</span>, width=<span style="color:#3677a9">1</span>];
+    <span class="mi">0</span> <span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s2">&#34;none&#34;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">];</span>
+    <span class="mi">1</span> <span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s2">&#34;none&#34;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">];</span>
+    <span class="mi">2</span> <span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s2">&#34;none&#34;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">];</span>
     
-    {rank = same; root; equifax}
-    {rank = same; g2, <span style="color:#3677a9">0</span>}
-    {rank = same; geotrust, <span style="color:#3677a9">1</span>}
-    {rank = same; leaf; google_site}
+    <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">root</span><span class="p">;</span> <span class="n">equifax</span><span class="p">}</span>
+    <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">geotrust</span><span class="p">,</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="p">{</span><span class="n">rank</span> <span class="o">=</span> <span class="n">same</span><span class="p">;</span> <span class="n">leaf</span><span class="p">;</span> <span class="n">google_site</span><span class="p">}</span>
     
-}
-</code></pre></div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_41_0.svg" alt="svg"></p>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blog.dornea.nu/posts/img/2015/validating-and-pinning-x509-certificates/output_41_0.svg" alt="svg"></p>
 <p>First of all you&rsquo;ll notice that there has been some problem regarding the validation:</p>
 <pre><code>verify error:num=20:unable to get local issuer certificate
 </code></pre>
 <p>This has to do with the fact that <code>openssl</code> doesn&rsquo;t provide a list of trusted certs by default. You&rsquo;ll have to specify it manually:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash 
-openssl s_client -showcerts -connect www.google.com:443 -CApath /etc/ssl/certs 2&gt; /dev/null | grep <span style="color:#ed9d13">&#34;Verify&#34;</span>
-</code></pre></div><pre><code>    Verify return code: 0 (ok)
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash 
+openssl s_client -showcerts -connect www.google.com:443 -CApath /etc/ssl/certs 2&gt; /dev/null <span class="p">|</span> grep <span class="s2">&#34;Verify&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>    Verify return code: 0 (ok)
 </code></pre>
 <p>Ok, so that looks much better. Now let&rsquo;s <strong>verify</strong> the chain:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash 
-openssl verify -CApath /etc/ssl/certs /tmp/pyopenssl/www.google.com.pem | grep <span style="color:#ed9d13">&#34;error&#34;</span>
-</code></pre></div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash 
+openssl verify -CApath /etc/ssl/certs /tmp/pyopenssl/www.google.com.pem <span class="p">|</span> grep <span class="s2">&#34;error&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
 </code></pre>
 <p>Hmm&hellip;Strange error message, even though I&rsquo;ve specified the path where to lookup the certs. Another try:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt /tmp/pyopenssl/www.google.com.pem | grep <span style="color:#ed9d13">&#34;error&#34;</span>
-</code></pre></div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt /tmp/pyopenssl/www.google.com.pem <span class="p">|</span> grep <span class="s2">&#34;error&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
 </code></pre>
 <p>Strange! After some Googling, I&rsquo;ve found <a href="http://goobbe.com/questions/4022708/how-to-verify-certificate-chain-with-openssl">this</a>. So let&rsquo;s give it another try:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%%bash
-openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt <span style="color:#ed9d13">\
-</span><span style="color:#ed9d13"></span>       -untrusted /tmp/pyopenssl/www.google.com.pem /tmp/pyopenssl/www.google.com.pem | grep <span style="color:#ed9d13">&#34;error&#34;</span>
-</code></pre></div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
+openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt <span class="se">\
+</span><span class="se"></span>       -untrusted /tmp/pyopenssl/www.google.com.pem /tmp/pyopenssl/www.google.com.pem <span class="p">|</span> grep <span class="s2">&#34;error&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><pre><code>error 20 at 0 depth lookup:unable to get local issuer certificate
 </code></pre>
 <blockquote>
 <p>If you have any ideas how to solve this, just drop me a line!</p>

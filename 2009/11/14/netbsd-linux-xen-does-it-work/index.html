@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,24 +85,66 @@ type="image/x-icon"/>
     <time>14 Nov 2009</time> 
      | 
     
+
+    
+     ~
+  
+
+5 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/networking' class="link silver">networking</a> <a href='https://blog.dornea.nu/tags/virtualization' class="link silver">virtualization</a> <a href='https://blog.dornea.nu/tags/linux' class="link silver">linux</a> <a href='https://blog.dornea.nu/tags/netbsd' class="link silver">netbsd</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/xen' class="link silver">xen</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>In this article I&rsquo;d like to share my impressions I made with Xen during the last weeks. I met Xen a few months ago but due to general lack of interest I didn&rsquo;t have the chance to give it a try.Para-virtualization - why bother at all? There were actually no significant reasons why I should use virtualization. But then it started with this <a href="http://mail-index.netbsd.org/tech-net/2009/07/21/msg001509.html">thread,</a> followed by this <a href="http://mail-index.netbsd.org/netbsd-users/2009/10/13/msg004692.html">one</a>. The really fascinating - and tough quite useful - aspect of virtualization consists of the hardware access policy which is implemented by the virtualization host. Guests (virtualized operating systems) may access specific devices like hard disks, PCI cards etc. The host system - in our case Xen&rsquo;s domain-0 - can grant <code>guests</code> access to physical hardware. Xen comes up with a great feature which allows you to pass a PCI device trough to an unprivileged domain. Once you pass the PCI device (as boot parameter) to Xen&rsquo;s hypervisor you won&rsquo;t be able to use it within your domain-0 (dom0). A dummy driver stops the dom0 from accessing the device. If everything went well, you should be able to see the device on your domU (unprivileged). That&rsquo;s the idea so far&hellip;</p>
 <p>I have tried many scenarios: NetBSD-CURRENT / {Xen3 ,Xen3.3}, NetBSD 5.0.1 / {Xen3, Xen3.3} and finally NetBSD 5.0_STABLE / {Xen3, Xen3.3}. The last combination worked devianatfine for me. NetBSD 5.0.1 had some problems during boot process so I decided to use a stable version which finally worked. If you tend to use Xen 3 (not Xen 3.3) be aware to use the vmlinux and NOT the compressed vmlinuz image. Otherwise you&rsquo;ll get something like this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ xm create -c linux
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ xm create -c linux
 Using config file &#34;/usr/pkg/etc/xen/linux&#34;.
 Error: (2, &#39;Invalid kernel&#39;, &#39;xc_dom_find_loader: no loader found
 &#39;)
-</code></pre></div><p>Whatever kernel you may specify be sure its an ELF binary (ELF 64-bit LSB executable, x86-64, version 1 (SYSV) in my case). You should find a <code>vmlinux</code> file in the kernel source directory (usually /usr/src). Be sure you use this file as your domU kernel and don&rsquo;t forget to create a ramdisk image as this is required by Xen. I won&rsquo;t waste my time helping you how to configure your domU and how to setup Xen + Xen tools. There are a lot of tutorials and (good) papers related to this issue. Feel free to invest some time in understanding Xen and the virtualization system. Perhaps I should mention that Xen 3.3 has a better kernel image support than Xen 3. You should be able to specify a compressed kernel image (bzImage) in your domU configuration without any problems. You should however - therefor I&rsquo;d like to thank #xen on Freenode for their great support - use a kernel image &gt;= 2.6.26 (correct me if I&rsquo;m wrong ?!). Debian Lenny provides vmlinuz-2.6.30 so you should be fine with that. At the moment there is no pciback support for Xen 3.3. As told <a href="http://mail-index.netbsd.org/port-xen/2009/10/26/msg005500.html">here</a> someone with python knowledge has to port pkgsrc/sysutils/xentools3/patches/{patch-dm,patch-dn} to xentools33. Although I had some good intensions and took a look at the files that have to be modified, I quickly gave it up due to its complexity. Maybe someone else - with more spare time - could commit some changes. Xen 3.3 needs pciback and I need pciback support on NetBSD. Back to Xen 3 &hellip; So I was able to pass some PCI device to my domU. Well not really, at least not using my own kernel. I had this configuration:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kernel = &#34;/vmlinuz-2.6.18-xen&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p>Whatever kernel you may specify be sure its an ELF binary (ELF 64-bit LSB executable, x86-64, version 1 (SYSV) in my case). You should find a <code>vmlinux</code> file in the kernel source directory (usually /usr/src). Be sure you use this file as your domU kernel and don&rsquo;t forget to create a ramdisk image as this is required by Xen. I won&rsquo;t waste my time helping you how to configure your domU and how to setup Xen + Xen tools. There are a lot of tutorials and (good) papers related to this issue. Feel free to invest some time in understanding Xen and the virtualization system. Perhaps I should mention that Xen 3.3 has a better kernel image support than Xen 3. You should be able to specify a compressed kernel image (bzImage) in your domU configuration without any problems. You should however - therefor I&rsquo;d like to thank #xen on Freenode for their great support - use a kernel image &gt;= 2.6.26 (correct me if I&rsquo;m wrong ?!). Debian Lenny provides vmlinuz-2.6.30 so you should be fine with that. At the moment there is no pciback support for Xen 3.3. As told <a href="http://mail-index.netbsd.org/port-xen/2009/10/26/msg005500.html">here</a> someone with python knowledge has to port pkgsrc/sysutils/xentools3/patches/{patch-dm,patch-dn} to xentools33. Although I had some good intensions and took a look at the files that have to be modified, I quickly gave it up due to its complexity. Maybe someone else - with more spare time - could commit some changes. Xen 3.3 needs pciback and I need pciback support on NetBSD. Back to Xen 3 &hellip; So I was able to pass some PCI device to my domU. Well not really, at least not using my own kernel. I had this configuration:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kernel = &#34;/vmlinuz-2.6.18-xen&#34;
 ramdisk = &#34;/initrd.img-2.6.30&#34;
 memory = 156
 name = &#34;debian&#34;
 disk = [ &#39;phy:/dev/wd0g,xvda,w&#39; ]
-</code></pre></div><p>And got this:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ dmesg | grep -e pci -e PCI
+</code></pre></td></tr></table>
+</div>
+</div><p>And got this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ dmesg | grep -e pci -e PCI
 PCI: setting up Xen PCI frontend stub
 PCI: System does not support PCI
 PCI: System does not support PCI
@@ -109,8 +152,24 @@ pcifront pci-0: Installing PCI frontend
 pcifront pci-0: Creating PCI Frontend Bus 0000:03
 $ lspci
 03:00.0 Network controller: Intel Corporation PRO/Wireless 4965 AG or AGN [Kedron] Network Connection (rev 61)
-</code></pre></div><p>Since wmlinuz-2.6.18-xen doesn&rsquo;t have built-in driver support for my WLAN card, I had to use some different kernel (2.6.30). Then I sould theoretically be able to use my PCI device. Well things turned up to be a little be different as expected:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kernel = &#34;/vmlinux-2.6.30&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p>Since wmlinuz-2.6.18-xen doesn&rsquo;t have built-in driver support for my WLAN card, I had to use some different kernel (2.6.30). Then I sould theoretically be able to use my PCI device. Well things turned up to be a little be different as expected:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kernel = &#34;/vmlinux-2.6.30&#34;
 ramdisk = &#34;/initrd.img-2.6.30&#34;
 memory = 156
 name = &#34;debian&#34;
@@ -120,8 +179,27 @@ root = &#34;/dev/xvda&#34;
 pci = [ &#39;0000:03:00.0&#39;]
 #extra = &#34;xencons=tty1&#34;
 extra = &#34;1&#34;
-</code></pre></div><p><code>dmesg</code> told me:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ dmesg | grep -e &#34;PCI&#34; -e &#34;pci&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p><code>dmesg</code> told me:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ dmesg | grep -e &#34;PCI&#34; -e &#34;pci&#34;
 [    0.000000] Allocating PCI resources starting at 10000000 (gap:9c00000:f6400000)
 [    0.005111] PCI: Fatal: No config space access function found
 [    0.012608] PCI: System does not support PCI
@@ -134,10 +212,20 @@ extra = &#34;1&#34;
 [    0.052709] cpcihp_generic: not configured, disabling.
 [    0.052761] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
 [    0.164017] XENBUS: Device with no driver: device/pci/0
-</code></pre></div><p>&hellip; and <code>lspci</code> told me nothing:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ lspci
+</code></pre></td></tr></table>
+</div>
+</div><p>&hellip; and <code>lspci</code> told me nothing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ lspci
 $
-</code></pre></div><p>What went wrong? Did I miss something in the kernel configuration file? As you see there is a lot of work to do. I suppose there are no such problems under Linux (as dom0). Again: Correct me if I&rsquo;m wrong! I really appreciate NetBSDs Xen support on this <a href="http://www.netbsd.org/mailinglists/#port-xen">mailing list</a> as it provides precious information you might find helpful - like I did. Nevertheless we sholuld push up the whole porting process so we can have a 100% functionable Xen integration in NetBSD. If you got some ideas that might solve my problem (in particular) don&rsquo;t esitate to contact me. Or even better: Write a mail to the mailing list. The whole discussion can be followed on NetBSD&rsquo;s mailing list <a href="http://mail-index.netbsd.org/port-xen/2009/10/23/msg005478.html">port-xen</a>.</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>What went wrong? Did I miss something in the kernel configuration file? As you see there is a lot of work to do. I suppose there are no such problems under Linux (as dom0). Again: Correct me if I&rsquo;m wrong! I really appreciate NetBSDs Xen support on this <a href="http://www.netbsd.org/mailinglists/#port-xen">mailing list</a> as it provides precious information you might find helpful - like I did. Nevertheless we sholuld push up the whole porting process so we can have a 100% functionable Xen integration in NetBSD. If you got some ideas that might solve my problem (in particular) don&rsquo;t esitate to contact me. Or even better: Write a mail to the mailing list. The whole discussion can be followed on NetBSD&rsquo;s mailing list <a href="http://mail-index.netbsd.org/port-xen/2009/10/23/msg005478.html">port-xen</a>.</p>
 </div>
   <div id="comments">
       

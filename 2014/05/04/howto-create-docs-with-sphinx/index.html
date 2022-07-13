@@ -41,6 +41,7 @@ Meet sphinx It is a tool that you&rsquo;ll love! Being more technical:" />
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -85,9 +86,18 @@ type="image/x-icon"/>
     <time>04 May 2014</time> 
      | 
     
+
+    
+     ~
+  
+
+11 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/python' class="link silver">python</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>In this post I&rsquo;d like to show some handy way to improve your process of documentating your project.
 Since we all know documentation is a <strong>must</strong> you might have wondered how to handle that
@@ -112,173 +122,369 @@ needs:</p>
 <h2 id="quickstart">Quickstart</h2>
 <h3 id="install-tools">Install tools</h3>
 <p>First of create a new <a href="http://www.virtualenv.org/en/latest/">virtualenv</a> environment:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir doku
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ mkdir doku
 $ virtualenv doku
-Using base prefix &amp;<span style="color:#999;font-style:italic">#039;/usr&amp;#039;</span>
+Using base prefix <span class="p">&amp;</span><span class="c1">#039;/usr&amp;#039;</span>
 New python executable in doku/bin/python3
 Also creating executable in doku/bin/python
 Installing setuptools, pip...done.
-</code></pre></div><p>Then activate it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#24909d">source</span> doku/bin/activate
-â  tmp  <span style="color:#24909d">source</span> doku/bin/activate
-(doku)â  tmp  <span style="color:#24909d">cd</span> doku
-(doku)â  doku  ls -l
-total <span style="color:#3677a9">12</span>
-drwxr-xr-x <span style="color:#3677a9">2</span> victor users <span style="color:#3677a9">4096</span> May  <span style="color:#3677a9">4</span> 13:37 bin
-drwxr-xr-x <span style="color:#3677a9">2</span> victor users <span style="color:#3677a9">4096</span> May  <span style="color:#3677a9">4</span> 13:37 include
-drwxr-xr-x <span style="color:#3677a9">3</span> victor users <span style="color:#3677a9">4096</span> May  <span style="color:#3677a9">4</span> 13:37 lib
-</code></pre></div><p>Now you&rsquo;ll have to install <strong>sphinx</strong> using <strong>pip</strong>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku) pip install sphinx
+</code></pre></td></tr></table>
+</div>
+</div><p>Then activate it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">source</span> doku/bin/activate
+â  tmp  <span class="nb">source</span> doku/bin/activate
+<span class="o">(</span>doku<span class="o">)</span>â  tmp  <span class="nb">cd</span> doku
+<span class="o">(</span>doku<span class="o">)</span>â  doku  ls -l
+total <span class="m">12</span>
+drwxr-xr-x <span class="m">2</span> victor users <span class="m">4096</span> May  <span class="m">4</span> 13:37 bin
+drwxr-xr-x <span class="m">2</span> victor users <span class="m">4096</span> May  <span class="m">4</span> 13:37 include
+drwxr-xr-x <span class="m">3</span> victor users <span class="m">4096</span> May  <span class="m">4</span> 13:37 lib
+</code></pre></td></tr></table>
+</div>
+</div><p>Now you&rsquo;ll have to install <strong>sphinx</strong> using <strong>pip</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>doku<span class="o">)</span> pip install sphinx
 Downloading/unpacking sphinx
-  Downloading Sphinx-1.2.2-py33-none-any.whl (1.1MB): 1.1MB downloaded
-Downloading/unpacking docutils&gt;=0.10 (from sphinx)
-  Downloading docutils-0.11.tar.gz (1.6MB): 1.6MB downloaded
-  Running setup.py (path:/home/victor/tmp/doku/build/docutils/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package docutils
+  Downloading Sphinx-1.2.2-py33-none-any.whl <span class="o">(</span>1.1MB<span class="o">)</span>: 1.1MB downloaded
+Downloading/unpacking docutils&gt;<span class="o">=</span>0.10 <span class="o">(</span>from sphinx<span class="o">)</span>
+  Downloading docutils-0.11.tar.gz <span class="o">(</span>1.6MB<span class="o">)</span>: 1.6MB downloaded
+  Running setup.py <span class="o">(</span>path:/home/victor/tmp/doku/build/docutils/setup.py<span class="o">)</span> egg_info <span class="k">for</span> package docutils
 
-warning: no files found matching <span style="color:#ed9d13">&#39;MANIFEST&#39;</span>
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;extras&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.cvsignore&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*~&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.DS_Store&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-Downloading/unpacking Jinja2&gt;=2.3 (from sphinx)
-  Downloading Jinja2-2.7.2.tar.gz (378kB): 378kB downloaded
-  Running setup.py (path:/home/victor/tmp/doku/build/Jinja2/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package Jinja2
+warning: no files found matching <span class="s1">&#39;MANIFEST&#39;</span>
+warning: no files found matching <span class="s1">&#39;*&#39;</span> under directory <span class="s1">&#39;extras&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;.cvsignore&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyc&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*~&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;.DS_Store&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+Downloading/unpacking Jinja2&gt;<span class="o">=</span>2.3 <span class="o">(</span>from sphinx<span class="o">)</span>
+  Downloading Jinja2-2.7.2.tar.gz <span class="o">(</span>378kB<span class="o">)</span>: 378kB downloaded
+  Running setup.py <span class="o">(</span>path:/home/victor/tmp/doku/build/Jinja2/setup.py<span class="o">)</span> egg_info <span class="k">for</span> package Jinja2
 
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;custom_fixers&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs/_build&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
-Downloading/unpacking Pygments&gt;=1.2 (from sphinx)
-  Downloading Pygments-1.6.tar.gz (1.4MB): 1.4MB downloaded
-  Running setup.py (path:/home/victor/tmp/doku/build/Pygments/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package Pygments
+warning: no files found matching <span class="s1">&#39;*&#39;</span> under directory <span class="s1">&#39;custom_fixers&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*&#39;</span> found under directory <span class="s1">&#39;docs/_build&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyc&#39;</span> found under directory <span class="s1">&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyc&#39;</span> found under directory <span class="s1">&#39;docs&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyo&#39;</span> found under directory <span class="s1">&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyo&#39;</span> found under directory <span class="s1">&#39;docs&#39;</span>
+Downloading/unpacking Pygments&gt;<span class="o">=</span>1.2 <span class="o">(</span>from sphinx<span class="o">)</span>
+  Downloading Pygments-1.6.tar.gz <span class="o">(</span>1.4MB<span class="o">)</span>: 1.4MB downloaded
+  Running setup.py <span class="o">(</span>path:/home/victor/tmp/doku/build/Pygments/setup.py<span class="o">)</span> egg_info <span class="k">for</span> package Pygments
 
-Downloading/unpacking markupsafe (from Jinja2&gt;=2.3-&gt;sphinx)
+Downloading/unpacking markupsafe <span class="o">(</span>from Jinja2&gt;<span class="o">=</span>2.3-&gt;sphinx<span class="o">)</span>
   Downloading MarkupSafe-0.21.tar.gz
-  Running setup.py (path:/home/victor/tmp/doku/build/markupsafe/setup.py) egg_info <span style="color:#6ab825;font-weight:bold">for</span> package markupsafe
+  Running setup.py <span class="o">(</span>path:/home/victor/tmp/doku/build/markupsafe/setup.py<span class="o">)</span> egg_info <span class="k">for</span> package markupsafe
 
 Installing collected packages: sphinx, docutils, Jinja2, Pygments, markupsafe
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> docutils
+  Running setup.py install <span class="k">for</span> docutils
 Skipping implicit fixer: buffer
 Skipping implicit fixer: idioms
 Skipping implicit fixer: set_literal
 Skipping implicit fixer: ws_comma
-copy/convert <span style="color:#24909d">test</span> suite
-changing mode of build/scripts-3.4/rst2html.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2s5.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2latex.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2xetex.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2man.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2xml.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2pseudoxml.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rstpep2html.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2odt.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
-changing mode of build/scripts-3.4/rst2odt_prepstyles.py from <span style="color:#3677a9">644</span> to <span style="color:#3677a9">755</span>
+copy/convert <span class="nb">test</span> suite
+changing mode of build/scripts-3.4/rst2html.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2s5.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2latex.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2xetex.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2man.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2xml.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2pseudoxml.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rstpep2html.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2odt.py from <span class="m">644</span> to <span class="m">755</span>
+changing mode of build/scripts-3.4/rst2odt_prepstyles.py from <span class="m">644</span> to <span class="m">755</span>
 
-warning: no files found matching <span style="color:#ed9d13">&#39;MANIFEST&#39;</span>
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;extras&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.cvsignore&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*~&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;.DS_Store&#39;</span> found under directory <span style="color:#ed9d13">&#39;*&#39;</span>
-changing mode of /home/victor/tmp/doku/bin/rstpep2html.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2xml.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2pseudoxml.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2html.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2odt_prepstyles.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2latex.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2man.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2odt.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2xetex.py to <span style="color:#3677a9">755</span>
-changing mode of /home/victor/tmp/doku/bin/rst2s5.py to <span style="color:#3677a9">755</span>
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> Jinja2
+warning: no files found matching <span class="s1">&#39;MANIFEST&#39;</span>
+warning: no files found matching <span class="s1">&#39;*&#39;</span> under directory <span class="s1">&#39;extras&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;.cvsignore&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyc&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*~&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;.DS_Store&#39;</span> found under directory <span class="s1">&#39;*&#39;</span>
+changing mode of /home/victor/tmp/doku/bin/rstpep2html.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2xml.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2pseudoxml.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2html.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2odt_prepstyles.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2latex.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2man.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2odt.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2xetex.py to <span class="m">755</span>
+changing mode of /home/victor/tmp/doku/bin/rst2s5.py to <span class="m">755</span>
+  Running setup.py install <span class="k">for</span> Jinja2
 
-warning: no files found matching <span style="color:#ed9d13">&#39;*&#39;</span> under directory <span style="color:#ed9d13">&#39;custom_fixers&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs/_build&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyc&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;jinja2&#39;</span>
-warning: no previously-included files matching <span style="color:#ed9d13">&#39;*.pyo&#39;</span> found under directory <span style="color:#ed9d13">&#39;docs&#39;</span>
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> Pygments
+warning: no files found matching <span class="s1">&#39;*&#39;</span> under directory <span class="s1">&#39;custom_fixers&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*&#39;</span> found under directory <span class="s1">&#39;docs/_build&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyc&#39;</span> found under directory <span class="s1">&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyc&#39;</span> found under directory <span class="s1">&#39;docs&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyo&#39;</span> found under directory <span class="s1">&#39;jinja2&#39;</span>
+warning: no previously-included files matching <span class="s1">&#39;*.pyo&#39;</span> found under directory <span class="s1">&#39;docs&#39;</span>
+  Running setup.py install <span class="k">for</span> Pygments
 Skipping implicit fixer: buffer
 Skipping implicit fixer: idioms
 Skipping implicit fixer: set_literal
 Skipping implicit fixer: ws_comma
 
 Installing pygmentize script to /home/victor/tmp/doku/bin
-  Running setup.py install <span style="color:#6ab825;font-weight:bold">for</span> markupsafe
+  Running setup.py install <span class="k">for</span> markupsafe
 
-building <span style="color:#ed9d13">&#39;markupsafe._speedups&#39;</span> extension
-gcc -pthread -Wno-unused-result -Werror=declaration-after-statement -DDYNAMIC_ANNOTATIONS_ENABLED=<span style="color:#3677a9">1</span> -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -march=x86-64 -mtune=generic -O2 -pipe -fstack-protector --param=ssp-buffer-size=<span style="color:#3677a9">4</span> -fPIC -I/usr/include/python3.4m -c markupsafe/_speedups.c -o build/temp.linux-x86_64-3.4/markupsafe/_speedups.o
+building <span class="s1">&#39;markupsafe._speedups&#39;</span> extension
+gcc -pthread -Wno-unused-result -Werror<span class="o">=</span>declaration-after-statement -DDYNAMIC_ANNOTATIONS_ENABLED<span class="o">=</span><span class="m">1</span> -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -march<span class="o">=</span>x86-64 -mtune<span class="o">=</span>generic -O2 -pipe -fstack-protector --param<span class="o">=</span>ssp-buffer-size<span class="o">=</span><span class="m">4</span> -fPIC -I/usr/include/python3.4m -c markupsafe/_speedups.c -o build/temp.linux-x86_64-3.4/markupsafe/_speedups.o
 gcc -pthread -shared -Wl,-O1,--sort-common,--as-needed,-z,relro build/temp.linux-x86_64-3.4/markupsafe/_speedups.o -L/usr/lib -lpython3.4m -o build/lib.linux-x86_64-3.4/markupsafe/_speedups.cpython-34m.so
 Successfully installed sphinx docutils Jinja2 Pygments markupsafe
 Cleaning up...
-(doku) doku
-</code></pre></div><p>Now you should be ready to go.</p>
+<span class="o">(</span>doku<span class="o">)</span> doku
+</code></pre></td></tr></table>
+</div>
+</div><p>Now you should be ready to go.</p>
 <h3 id="create-new-documentation-dir-structure">Create new documentation dir structure</h3>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  doku  mkdir my_documentation
-(doku)â  doku  sphinx-quickstart
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>doku<span class="o">)</span>â  doku  mkdir my_documentation
+<span class="o">(</span>doku<span class="o">)</span>â  doku  sphinx-quickstart
 Welcome to the Sphinx 1.2.2 quickstart utility.
 
-Please enter values <span style="color:#6ab825;font-weight:bold">for</span> the following settings (just press Enter to
-accept a default value, <span style="color:#6ab825;font-weight:bold">if</span> one is given in brackets).
+Please enter values <span class="k">for</span> the following settings <span class="o">(</span>just press Enter to
+accept a default value, <span class="k">if</span> one is given in brackets<span class="o">)</span>.
 
-Enter the root path <span style="color:#6ab825;font-weight:bold">for</span> documentation.
-&gt; Root path <span style="color:#6ab825;font-weight:bold">for</span> the documentation [.]: my_documentation
+Enter the root path <span class="k">for</span> documentation.
+&gt; Root path <span class="k">for</span> the documentation <span class="o">[</span>.<span class="o">]</span>: my_documentation
 
-You have two options <span style="color:#6ab825;font-weight:bold">for</span> placing the build directory <span style="color:#6ab825;font-weight:bold">for</span> Sphinx output.
-Either, you use a directory <span style="color:#ed9d13">&#34;_build&#34;</span> within the root path, or you separate
-<span style="color:#ed9d13">&#34;source&#34;</span> and <span style="color:#ed9d13">&#34;build&#34;</span> directories within the root path.
-&gt; Separate <span style="color:#24909d">source</span> and build directories (y/n) [n]: n
+You have two options <span class="k">for</span> placing the build directory <span class="k">for</span> Sphinx output.
+Either, you use a directory <span class="s2">&#34;_build&#34;</span> within the root path, or you separate
+<span class="s2">&#34;source&#34;</span> and <span class="s2">&#34;build&#34;</span> directories within the root path.
+&gt; Separate <span class="nb">source</span> and build directories <span class="o">(</span>y/n<span class="o">)</span> <span class="o">[</span>n<span class="o">]</span>: n
 
-Inside the root directory, two more directories will be created; <span style="color:#ed9d13">&#34;_templates&#34;</span>
-<span style="color:#6ab825;font-weight:bold">for</span> custom HTML templates and <span style="color:#ed9d13">&#34;_static&#34;</span> <span style="color:#6ab825;font-weight:bold">for</span> custom stylesheets and other static
-files. You can enter another prefix (such as <span style="color:#ed9d13">&#34;.&#34;</span>) to replace the underscore.
-&gt; Name prefix <span style="color:#6ab825;font-weight:bold">for</span> templates and static dir [_]:
+Inside the root directory, two more directories will be created<span class="p">;</span> <span class="s2">&#34;_templates&#34;</span>
+<span class="k">for</span> custom HTML templates and <span class="s2">&#34;_static&#34;</span> <span class="k">for</span> custom stylesheets and other static
+files. You can enter another prefix <span class="o">(</span>such as <span class="s2">&#34;.&#34;</span><span class="o">)</span> to replace the underscore.
+&gt; Name prefix <span class="k">for</span> templates and static dir <span class="o">[</span>_<span class="o">]</span>:
 
 The project name will occur in several places in the built documentation.
 &gt; Project name: My Documentation
-&gt; Author name(s): Victor
+&gt; Author name<span class="o">(</span>s<span class="o">)</span>: Victor
 
-Sphinx has the notion of a <span style="color:#ed9d13">&#34;version&#34;</span> and a <span style="color:#ed9d13">&#34;release&#34;</span> <span style="color:#6ab825;font-weight:bold">for</span> the
-software. Each version can have multiple releases. For example, <span style="color:#6ab825;font-weight:bold">for</span>
-Python the version is something like 2.5 or 3.0, <span style="color:#6ab825;font-weight:bold">while</span> the release is
-something like 2.5.1 or 3.0a1.  If you don<span style="color:#ed9d13">&#39;t need this dual structure,
-</span><span style="color:#ed9d13">just set both to the same value.
-</span><span style="color:#ed9d13">&gt; Project version: 0.1
-</span><span style="color:#ed9d13">&gt; Project release [0.1]: 0.1.0
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">The file name suffix for source files. Commonly, this is either &#34;.txt&#34;
-</span><span style="color:#ed9d13">or &#34;.rst&#34;.  Only files with this suffix are considered documents.
-</span><span style="color:#ed9d13">&gt; Source file suffix [.rst]:
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">One document is special in that it is considered the top node of the
-</span><span style="color:#ed9d13">&#34;contents tree&#34;, that is, it is the root of the hierarchical structure
-</span><span style="color:#ed9d13">of the documents. Normally, this is &#34;index&#34;, but if your &#34;index&#34;
-</span><span style="color:#ed9d13">document is a custom template, you can also set this to another filename.
-</span><span style="color:#ed9d13">&gt; Name of your master document (without suffix) [index]:
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">Sphinx can also add configuration for epub output:
-</span><span style="color:#ed9d13">&gt; Do you want to use the epub builder (y/n) [n]: n
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">Please indicate if you want to use one of the following Sphinx extensions:
-</span><span style="color:#ed9d13">&gt; autodoc: automatically insert docstrings from modules (y/n) [n]: y
-</span><span style="color:#ed9d13">&gt; doctest: automatically test code snippets in doctest blocks (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; intersphinx: link between Sphinx documentation of different projects (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; todo: write &#34;todo&#34; entries that can be shown or hidden on build (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; coverage: checks for documentation coverage (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; pngmath: include math, rendered as PNG images (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; mathjax: include math, rendered in the browser by MathJax (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; ifconfig: conditional inclusion of content based on config values (y/n) [n]: n
-</span><span style="color:#ed9d13">&gt; viewcode: include links to the source code of documented Python objects (y/n) [n]: n
-</span><span style="color:#ed9d13">
-</span><span style="color:#ed9d13">A Makefile and a Windows command file can be generated for you so that you
-</span><span style="color:#ed9d13">only have to run e.g. `make html&#39;</span> instead of invoking sphinx-build
+Sphinx has the notion of a <span class="s2">&#34;version&#34;</span> and a <span class="s2">&#34;release&#34;</span> <span class="k">for</span> the
+software. Each version can have multiple releases. For example, <span class="k">for</span>
+Python the version is something like 2.5 or 3.0, <span class="k">while</span> the release is
+something like 2.5.1 or 3.0a1.  If you don<span class="s1">&#39;t need this dual structure,
+</span><span class="s1">just set both to the same value.
+</span><span class="s1">&gt; Project version: 0.1
+</span><span class="s1">&gt; Project release [0.1]: 0.1.0
+</span><span class="s1">
+</span><span class="s1">The file name suffix for source files. Commonly, this is either &#34;.txt&#34;
+</span><span class="s1">or &#34;.rst&#34;.  Only files with this suffix are considered documents.
+</span><span class="s1">&gt; Source file suffix [.rst]:
+</span><span class="s1">
+</span><span class="s1">One document is special in that it is considered the top node of the
+</span><span class="s1">&#34;contents tree&#34;, that is, it is the root of the hierarchical structure
+</span><span class="s1">of the documents. Normally, this is &#34;index&#34;, but if your &#34;index&#34;
+</span><span class="s1">document is a custom template, you can also set this to another filename.
+</span><span class="s1">&gt; Name of your master document (without suffix) [index]:
+</span><span class="s1">
+</span><span class="s1">Sphinx can also add configuration for epub output:
+</span><span class="s1">&gt; Do you want to use the epub builder (y/n) [n]: n
+</span><span class="s1">
+</span><span class="s1">Please indicate if you want to use one of the following Sphinx extensions:
+</span><span class="s1">&gt; autodoc: automatically insert docstrings from modules (y/n) [n]: y
+</span><span class="s1">&gt; doctest: automatically test code snippets in doctest blocks (y/n) [n]: n
+</span><span class="s1">&gt; intersphinx: link between Sphinx documentation of different projects (y/n) [n]: n
+</span><span class="s1">&gt; todo: write &#34;todo&#34; entries that can be shown or hidden on build (y/n) [n]: n
+</span><span class="s1">&gt; coverage: checks for documentation coverage (y/n) [n]: n
+</span><span class="s1">&gt; pngmath: include math, rendered as PNG images (y/n) [n]: n
+</span><span class="s1">&gt; mathjax: include math, rendered in the browser by MathJax (y/n) [n]: n
+</span><span class="s1">&gt; ifconfig: conditional inclusion of content based on config values (y/n) [n]: n
+</span><span class="s1">&gt; viewcode: include links to the source code of documented Python objects (y/n) [n]: n
+</span><span class="s1">
+</span><span class="s1">A Makefile and a Windows command file can be generated for you so that you
+</span><span class="s1">only have to run e.g. `make html&#39;</span> instead of invoking sphinx-build
 directly.
-&gt; Create Makefile? (y/n) [y]:
-&gt; Create Windows <span style="color:#24909d">command</span> file? (y/n) [y]: n
+&gt; Create Makefile? <span class="o">(</span>y/n<span class="o">)</span> <span class="o">[</span>y<span class="o">]</span>:
+&gt; Create Windows <span class="nb">command</span> file? <span class="o">(</span>y/n<span class="o">)</span> <span class="o">[</span>y<span class="o">]</span>: n
 
 Creating file my_documentation/conf.py.
 Creating file my_documentation/index.rst.
@@ -287,23 +493,53 @@ Creating file my_documentation/Makefile.
 Finished: An initial directory structure has been created.
 
 You should now populate your master file my_documentation/index.rst and create other documentation
-<span style="color:#24909d">source</span> files. Use the Makefile to build the docs, like so:
+<span class="nb">source</span> files. Use the Makefile to build the docs, like so:
    make builder
-where <span style="color:#ed9d13">&#34;builder&#34;</span> is one of the supported builders, e.g. html, latex or linkcheck.
-</code></pre></div><h3 id="create-some-builds">Create some builds</h3>
+where <span class="s2">&#34;builder&#34;</span> is one of the supported builders, e.g. html, latex or linkcheck.
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="create-some-builds">Create some builds</h3>
 <p>Now you can call <strong>make</strong> to build your desired documentation format:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  make
-Please use <span style="color:#ed9d13">`</span>make &lt;target&gt;<span style="color:#a61717;background-color:#e3d2d2">&#39;</span> where &lt;target&gt; is one of
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>doku<span class="o">)</span>â  my_documentation  make
+Please use <span class="sb">`</span>make &lt;target&gt;<span class="err">&#39;</span> where &lt;target&gt; is one of
   html       to make standalone HTML files
   dirhtml    to make HTML files named index.html in directories
   singlehtml to make a single large HTML file
   pickle     to make pickle files
   json       to make JSON files
-  htmlhelp   to make HTML files and a HTML <span style="color:#24909d">help</span> project
+  htmlhelp   to make HTML files and a HTML <span class="nb">help</span> project
   qthelp     to make HTML files and a qthelp project
   devhelp    to make HTML files and a Devhelp project
   epub       to make an epub
-  latex      to make LaTeX files, you can <span style="color:#24909d">set</span> <span style="color:#40ffff">PAPER</span>=a4 or <span style="color:#40ffff">PAPER</span>=letter
+  latex      to make LaTeX files, you can <span class="nb">set</span> <span class="nv">PAPER</span><span class="o">=</span>a4 or <span class="nv">PAPER</span><span class="o">=</span>letter
   latexpdf   to make LaTeX files and run them through pdflatex
   latexpdfja to make LaTeX files and run them through platex/dvipdfmx
   text       to make text files
@@ -313,55 +549,166 @@ Please use <span style="color:#ed9d13">`</span>make &lt;target&gt;<span style="c
   gettext    to make PO message catalogs
   changes    to make an overview of all changed/added/deprecated items
   xml        to make Docutils-native XML files
-  pseudoxml  to make pseudoxml-XML files <span style="color:#6ab825;font-weight:bold">for</span> display purposes
-  linkcheck  to check all external links <span style="color:#6ab825;font-weight:bold">for</span> integrity
-  doctest    to run all doctests embedded in the documentation (<span style="color:#6ab825;font-weight:bold">if</span> enabled)
-</code></pre></div><p>Let&rsquo;s try with <strong>html</strong>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  make html
+  pseudoxml  to make pseudoxml-XML files <span class="k">for</span> display purposes
+  linkcheck  to check all external links <span class="k">for</span> integrity
+  doctest    to run all doctests embedded in the documentation <span class="o">(</span><span class="k">if</span> enabled<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s try with <strong>html</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>doku<span class="o">)</span>â  my_documentation  make html
 sphinx-build -b html -d _build/doctrees   . _build/html
 Making output directory...
 Running Sphinx v1.2.2
-loading pickled environment... failed: [Errno 2] No such file or directory: <span style="color:#ed9d13">&#39;/home/victor/tmp/doku/my_documentation/_build/doctrees/environment.pickle&#39;</span>
-building [html]: targets <span style="color:#6ab825;font-weight:bold">for</span> <span style="color:#3677a9">1</span> <span style="color:#24909d">source</span> files that are out of date
-updating environment: <span style="color:#3677a9">1</span> added, <span style="color:#3677a9">0</span> changed, <span style="color:#3677a9">0</span> removed
-reading sources... [100%] index
-looking <span style="color:#6ab825;font-weight:bold">for</span> now-outdated files... none found
-pickling environment... <span style="color:#6ab825;font-weight:bold">done</span>
-checking consistency... <span style="color:#6ab825;font-weight:bold">done</span>
-preparing documents... <span style="color:#6ab825;font-weight:bold">done</span>
-writing output... [100%] index
+loading pickled environment... failed: <span class="o">[</span>Errno 2<span class="o">]</span> No such file or directory: <span class="s1">&#39;/home/victor/tmp/doku/my_documentation/_build/doctrees/environment.pickle&#39;</span>
+building <span class="o">[</span>html<span class="o">]</span>: targets <span class="k">for</span> <span class="m">1</span> <span class="nb">source</span> files that are out of date
+updating environment: <span class="m">1</span> added, <span class="m">0</span> changed, <span class="m">0</span> removed
+reading sources... <span class="o">[</span>100%<span class="o">]</span> index
+looking <span class="k">for</span> now-outdated files... none found
+pickling environment... <span class="k">done</span>
+checking consistency... <span class="k">done</span>
+preparing documents... <span class="k">done</span>
+writing output... <span class="o">[</span>100%<span class="o">]</span> index
 writing additional files... genindex search
-copying static files... <span style="color:#6ab825;font-weight:bold">done</span>
-copying extra files... <span style="color:#6ab825;font-weight:bold">done</span>
-dumping search index... <span style="color:#6ab825;font-weight:bold">done</span>
-dumping object inventory... <span style="color:#6ab825;font-weight:bold">done</span>
+copying static files... <span class="k">done</span>
+copying extra files... <span class="k">done</span>
+dumping search index... <span class="k">done</span>
+dumping object inventory... <span class="k">done</span>
 build succeeded.
 
 Build finished. The HTML pages are in _build/html.
-</code></pre></div><p>How about <strong>PDF</strong>?</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  make latexpdf
+</code></pre></td></tr></table>
+</div>
+</div><p>How about <strong>PDF</strong>?</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>doku<span class="o">)</span>â  my_documentation  make latexpdf
 sphinx-build -b latex -d _build/doctrees   . _build/latex
 Making output directory...
 Running Sphinx v1.2.2
-loading pickled environment... <span style="color:#6ab825;font-weight:bold">done</span>
-building [latex]: all documents
-updating environment: <span style="color:#3677a9">0</span> added, <span style="color:#3677a9">0</span> changed, <span style="color:#3677a9">0</span> removed
-looking <span style="color:#6ab825;font-weight:bold">for</span> now-outdated files... none found
+loading pickled environment... <span class="k">done</span>
+building <span class="o">[</span>latex<span class="o">]</span>: all documents
+updating environment: <span class="m">0</span> added, <span class="m">0</span> changed, <span class="m">0</span> removed
+looking <span class="k">for</span> now-outdated files... none found
 processing MyDocumentation.tex... index
 resolving references...
-writing... <span style="color:#6ab825;font-weight:bold">done</span>
+writing... <span class="k">done</span>
 copying TeX support files...
-<span style="color:#6ab825;font-weight:bold">done</span>
+<span class="k">done</span>
 build succeeded.
 Running LaTeX files through pdflatex...
 make -C _build/latex all-pdf
-make[1]: Entering directory <span style="color:#ed9d13">&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
+make<span class="o">[</span>1<span class="o">]</span>: Entering directory <span class="s1">&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
 ...
 Transcript written on MyDocumentation.log.
-make[1]: Leaving directory <span style="color:#ed9d13">&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
-pdflatex finished; the PDF files are in _build/latex.
-</code></pre></div><p>You can find you <strong>builds</strong> inside the <strong>_build</strong> folder:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">(doku)â  my_documentation  tree _build
+make<span class="o">[</span>1<span class="o">]</span>: Leaving directory <span class="s1">&#39;/home/victor/tmp/doku/my_documentation/_build/latex&#39;</span>
+pdflatex finished<span class="p">;</span> the PDF files are in _build/latex.
+</code></pre></td></tr></table>
+</div>
+</div><p>You can find you <strong>builds</strong> inside the <strong>_build</strong> folder:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>doku<span class="o">)</span>â  my_documentation  tree _build
 _build
 âââ doctrees
 â   âââ environment.pickle
@@ -412,7 +759,9 @@ _build
     âââ sphinxmanual.cls
     âââ sphinx.sty
     âââ tabulary.sty
-</code></pre></div><p>You can easily customize the output of your PDF (when dealing with LaTeX). Just have a look at Pedros <a href="http://pedrokroger.net/using-sphinx-write-technical-books/">tips</a>
+</code></pre></td></tr></table>
+</div>
+</div><p>You can easily customize the output of your PDF (when dealing with LaTeX). Just have a look at Pedros <a href="http://pedrokroger.net/using-sphinx-write-technical-books/">tips</a>
 how to do that. However if you don&rsquo;t want to use LaTeX to generate your PDF, you could also have a look at <a href="https://code.google.com/p/rst2pdf/">rst2pdf</a>
 which will convert your RST file into some PDF. <strong>Attention</strong>: <strong>rst2pdf</strong> is <strong>not</strong> available for Python <strong>3</strong>.x!</p>
 <h2 id="themes">Themes</h2>

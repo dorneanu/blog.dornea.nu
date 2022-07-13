@@ -40,6 +40,7 @@
 <link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
 <link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
 <link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
 
 
 
@@ -84,150 +85,337 @@ type="image/x-icon"/>
     <time>30 Mar 2009</time> 
      | 
     
+
+    
+     ~
+  
+
+4 mins
+|
+
     
     tags: [ <a href='https://blog.dornea.nu/tags/coding' class="link silver">coding</a> <a href='https://blog.dornea.nu/tags/howto' class="link silver">howto</a> <a href='https://blog.dornea.nu/tags/sql' class="link silver">sql</a> <a href='https://blog.dornea.nu/tags/admin' class="link silver">admin</a> <a href='https://blog.dornea.nu/tags/postgresql' class="link silver">postgresql</a>  ]
     
+
   </p>
   <div class="lh-copy post-content"><p>The use of so called &ldquo;procedural languages&rdquo; in PostgreSQL allows the user to write user-defined functions in other languages than SQL or C. Since every query is sent to the server, the database server has to know how to interpret and handle function statements. As the PostgreSQL documentation describes, the function handler itself is a C language function compiled into a shared object and loaded on demand. All you have to do is to install the <em>language</em> into your database. Besides that you&rsquo;ll have to install the pre-compiled shared objects on your system. On my system (Debian 5.0) I had to install the <code>postgresql-plperl</code> package. Afterwars I connected to the database and typed:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span>FUNCTION<span style="color:#666"> </span><span style="color:#447fcf">plpgsql_call_handler</span><span style="color:#666"> </span>()<span style="color:#666">
-</span><span style="color:#666">   </span>RETURNS<span style="color:#666"> </span>OPAQUE<span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">AS</span><span style="color:#666"> </span><span style="color:#ed9d13">&#39;/usr/lib/postgresql/8.3/lib/plpgsql.so&#39;</span><span style="color:#666">
-</span><span style="color:#666"></span>LANGUAGE<span style="color:#666"> </span><span style="color:#ed9d13">&#39;C&#39;</span>;<span style="color:#666">
-</span></code></pre></div><p>Of course you&rsquo;ll have to look up for the right file path in order to work. Finally I was able to use the language <code>plpgsql</code> in my functions. If you need help installing languages just check out the PostgreSQL <a href="http://www.postgresql.org/docs/8.3/static/plpgsql.html">documentation</a> (it helped me too).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">CREATE</span><span class="w"> </span><span class="n">FUNCTION</span><span class="w"> </span><span class="nf">plpgsql_call_handler</span><span class="w"> </span><span class="p">()</span><span class="w">
+</span><span class="w">   </span><span class="n">RETURNS</span><span class="w"> </span><span class="n">OPAQUE</span><span class="w">
+</span><span class="w">   </span><span class="k">AS</span><span class="w"> </span><span class="s1">&#39;/usr/lib/postgresql/8.3/lib/plpgsql.so&#39;</span><span class="w">
+</span><span class="w"></span><span class="n">LANGUAGE</span><span class="w"> </span><span class="s1">&#39;C&#39;</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Of course you&rsquo;ll have to look up for the right file path in order to work. Finally I was able to use the language <code>plpgsql</code> in my functions. If you need help installing languages just check out the PostgreSQL <a href="http://www.postgresql.org/docs/8.3/static/plpgsql.html">documentation</a> (it helped me too).</p>
 <h2 id="polymorphic-types">Polymorphic types</h2>
 <p>When speaking of polymorphism in PostgreSQL, we actually refer to the polymorphic functions. So what’s the difference between a polymorphic type and a polymorphic function? They&rsquo;re related to each other. In fact every function declared to use polymorphic types is called as a polymorphic function. These types (pseudo-types) are <code>anyelement</code> and <code>anyarray</code>. So when arguments of these types are passed to a function, it can handle with different data types. Imagine a function called <code>equal</code> that compares two arguments and returns a boolean:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">or</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">REPLACE</span><span style="color:#666"> </span>FUNCTION<span style="color:#666"> </span><span style="color:#447fcf">equal</span><span style="color:#666"> </span>(anyelement,anyelement)<span style="color:#666">
-</span><span style="color:#666">  </span>RETURNS<span style="color:#666"> </span>boolean<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">AS</span><span style="color:#666">
-</span><span style="color:#666">  </span><span style="color:#a61717;background-color:#e3d2d2">$$</span><span style="color:#666">
-</span><span style="color:#666">      </span>...<span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">IF</span><span style="color:#666"> </span><span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span><span style="color:#666"> </span>==<span style="color:#666"> </span><span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">2</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">THEN</span><span style="color:#666">
-</span><span style="color:#666">          </span><span style="color:#6ab825;font-weight:bold">return</span><span style="color:#666"> </span><span style="color:#40ffff">TRUE</span>;<span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">ELSE</span><span style="color:#666">
-</span><span style="color:#666">          </span><span style="color:#6ab825;font-weight:bold">return</span><span style="color:#666"> </span><span style="color:#40ffff">FALSE</span>;<span style="color:#666">
-</span><span style="color:#666">      </span>END<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">IF</span>;<span style="color:#666">
-</span><span style="color:#666">  </span><span style="color:#a61717;background-color:#e3d2d2">$$</span><span style="color:#666">
-</span><span style="color:#666"></span>LANGUAGE<span style="color:#666"> </span><span style="color:#ed9d13">&#39;sql&#39;</span>;<span style="color:#666">
-</span></code></pre></div><p><code>equal</code> will take 2 input values of the SAME data type. Otherwise how could you e.g. compare a string to an integer? Read <a href="http://www.postgresql.org/docs/current/static/extend-type-system.html">more</a>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="n">FUNCTION</span><span class="w"> </span><span class="nf">equal</span><span class="w"> </span><span class="p">(</span><span class="n">anyelement</span><span class="p">,</span><span class="n">anyelement</span><span class="p">)</span><span class="w">
+</span><span class="w">  </span><span class="n">RETURNS</span><span class="w"> </span><span class="n">boolean</span><span class="w"> </span><span class="k">AS</span><span class="w">
+</span><span class="w">  </span><span class="err">$$</span><span class="w">
+</span><span class="w">      </span><span class="p">...</span><span class="w">
+</span><span class="w">      </span><span class="k">IF</span><span class="w"> </span><span class="err">$</span><span class="mi">1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="err">$</span><span class="mi">2</span><span class="w"> </span><span class="k">THEN</span><span class="w">
+</span><span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="no">TRUE</span><span class="p">;</span><span class="w">
+</span><span class="w">      </span><span class="k">ELSE</span><span class="w">
+</span><span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="no">FALSE</span><span class="p">;</span><span class="w">
+</span><span class="w">      </span><span class="n">END</span><span class="w"> </span><span class="k">IF</span><span class="p">;</span><span class="w">
+</span><span class="w">  </span><span class="err">$$</span><span class="w">
+</span><span class="w"></span><span class="n">LANGUAGE</span><span class="w"> </span><span class="s1">&#39;sql&#39;</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>equal</code> will take 2 input values of the SAME data type. Otherwise how could you e.g. compare a string to an integer? Read <a href="http://www.postgresql.org/docs/current/static/extend-type-system.html">more</a>.</p>
 <h2 id="getting-started">Getting started</h2>
 <p>I&rsquo;ll use following employees table:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">create</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">table</span><span style="color:#666"> </span><span style="color:#447fcf">t_employee</span><span style="color:#666">
-</span><span style="color:#666"></span>(<span style="color:#666">
-</span><span style="color:#666">        </span>ID<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">integer</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">NOT</span><span style="color:#666"> </span><span style="color:#40ffff">NULL</span>,<span style="color:#666">
-</span><span style="color:#666">        </span>name<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">text</span>,<span style="color:#666">
-</span><span style="color:#666">        </span>salary<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">real</span>,<span style="color:#666"> 
-</span><span style="color:#666">        </span>start_date<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">date</span>,<span style="color:#666">
-</span><span style="color:#666">        </span>city<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">text</span>,<span style="color:#666">
-</span><span style="color:#666">        </span><span style="color:#6ab825;font-weight:bold">CONSTRAINT</span><span style="color:#666"> </span>primkey_ID<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">PRIMARY</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">KEY</span><span style="color:#666"> </span>(ID)<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span>)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">WITH</span><span style="color:#666"> </span>(OIDS=<span style="color:#40ffff">FALSE</span>);<span style="color:#666">
-</span></code></pre></div><p>Then we insert some new data into the table:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">INSERT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTO</span><span style="color:#666"> </span><span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city)<span style="color:#666"> 
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">VALUES</span><span style="color:#666"> </span>(<span style="color:#3677a9">1</span>,<span style="color:#ed9d13">&#39;Peter&#39;</span>,<span style="color:#ed9d13">&#39;2100&#39;</span>,<span style="color:#ed9d13">&#39;2003-06-19&#39;</span>,<span style="color:#ed9d13">&#39;Stuttgart&#39;</span>);<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">INSERT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTO</span><span style="color:#666"> </span><span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city)<span style="color:#666"> 
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">VALUES</span><span style="color:#666"> </span>(<span style="color:#3677a9">2</span>,<span style="color:#ed9d13">&#39;Peter&#39;</span>,<span style="color:#ed9d13">&#39;2100&#39;</span>,<span style="color:#ed9d13">&#39;2003-06-19&#39;</span>,<span style="color:#ed9d13">&#39;Stuttgart&#39;</span>);<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">INSERT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTO</span><span style="color:#666"> </span><span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city)<span style="color:#666"> 
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">VALUES</span><span style="color:#666"> </span>(<span style="color:#3677a9">3</span>,<span style="color:#ed9d13">&#39;Marc&#39;</span>,<span style="color:#ed9d13">&#39;1560&#39;</span>,<span style="color:#ed9d13">&#39;2001-02-25&#39;</span>,<span style="color:#ed9d13">&#39;Mannheim&#39;</span>);<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">INSERT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTO</span><span style="color:#666"> </span><span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city)<span style="color:#666"> 
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">VALUES</span><span style="color:#666"> </span>(<span style="color:#3677a9">4</span>,<span style="color:#ed9d13">&#39;Stefan&#39;</span>,<span style="color:#ed9d13">&#39;1100&#39;</span>,<span style="color:#ed9d13">&#39;2008-03-14&#39;</span>,<span style="color:#ed9d13">&#39;Hamburg&#39;</span>);<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">INSERT</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTO</span><span style="color:#666"> </span><span style="color:#447fcf">t_employee</span>(ID,name,salary,start_date,city)<span style="color:#666"> 
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">VALUES</span><span style="color:#666"> </span>(<span style="color:#3677a9">5</span>,<span style="color:#ed9d13">&#39;Gerd&#39;</span>,<span style="color:#ed9d13">&#39;900&#39;</span>,<span style="color:#ed9d13">&#39;2004-06-24&#39;</span>,<span style="color:#ed9d13">&#39;Hannover&#39;</span>);<span style="color:#666">
-</span></code></pre></div><p><code>t_employee</code> will now contain:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">select</span><span style="color:#666"> </span>*<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">from</span><span style="color:#666"> </span>t_employee;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"> </span>id<span style="color:#666"> </span>|<span style="color:#666">  </span>name<span style="color:#666">  </span>|<span style="color:#666"> </span>salary<span style="color:#666"> </span>|<span style="color:#666"> </span>start_date<span style="color:#666"> </span>|<span style="color:#666">   </span>city<span style="color:#666">    
-</span><span style="color:#666"></span>----+--------+--------+------------+---------<span style="color:#999;font-style:italic">--
-</span><span style="color:#999;font-style:italic">  1 | John   |   1100 | 2002-05-01 | Berlin
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">  </span><span style="color:#3677a9">2</span><span style="color:#666"> </span>|<span style="color:#666"> </span>Peter<span style="color:#666">  </span>|<span style="color:#666">   </span><span style="color:#3677a9">2100</span><span style="color:#666"> </span>|<span style="color:#666"> </span><span style="color:#3677a9">2003</span>-<span style="color:#3677a9">06</span>-<span style="color:#3677a9">19</span><span style="color:#666"> </span>|<span style="color:#666"> </span>Stuttgart<span style="color:#666">
-</span><span style="color:#666">  </span><span style="color:#3677a9">3</span><span style="color:#666"> </span>|<span style="color:#666"> </span>Marc<span style="color:#666">   </span>|<span style="color:#666">   </span><span style="color:#3677a9">1560</span><span style="color:#666"> </span>|<span style="color:#666"> </span><span style="color:#3677a9">2001</span>-<span style="color:#3677a9">02</span>-<span style="color:#3677a9">25</span><span style="color:#666"> </span>|<span style="color:#666"> </span>Mannheim<span style="color:#666">
-</span><span style="color:#666">  </span><span style="color:#3677a9">4</span><span style="color:#666"> </span>|<span style="color:#666"> </span>Stefan<span style="color:#666"> </span>|<span style="color:#666">   </span><span style="color:#3677a9">1100</span><span style="color:#666"> </span>|<span style="color:#666"> </span><span style="color:#3677a9">2008</span>-<span style="color:#3677a9">03</span>-<span style="color:#3677a9">14</span><span style="color:#666"> </span>|<span style="color:#666"> </span>Hamburg<span style="color:#666">
-</span><span style="color:#666">  </span><span style="color:#3677a9">5</span><span style="color:#666"> </span>|<span style="color:#666"> </span>Gerd<span style="color:#666">   </span>|<span style="color:#666">    </span><span style="color:#3677a9">900</span><span style="color:#666"> </span>|<span style="color:#666"> </span><span style="color:#3677a9">2004</span>-<span style="color:#3677a9">06</span>-<span style="color:#3677a9">24</span><span style="color:#666"> </span>|<span style="color:#666"> </span><span style="color:#447fcf">Hannover</span><span style="color:#666">
-</span><span style="color:#666"></span>(<span style="color:#3677a9">5</span><span style="color:#666"> </span>rows)<span style="color:#666">
-</span></code></pre></div><p>In the next step we&rsquo;ll try to write a function which returns a SETOF containing our data.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="nf">t_employee</span><span class="w">
+</span><span class="w"></span><span class="p">(</span><span class="w">
+</span><span class="w">        </span><span class="n">ID</span><span class="w"> </span><span class="kt">integer</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="no">NULL</span><span class="p">,</span><span class="w">
+</span><span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="kt">text</span><span class="p">,</span><span class="w">
+</span><span class="w">        </span><span class="n">salary</span><span class="w"> </span><span class="kt">real</span><span class="p">,</span><span class="w"> 
+</span><span class="w">        </span><span class="n">start_date</span><span class="w"> </span><span class="kt">date</span><span class="p">,</span><span class="w">
+</span><span class="w">        </span><span class="n">city</span><span class="w"> </span><span class="kt">text</span><span class="p">,</span><span class="w">
+</span><span class="w">        </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">primkey_ID</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">ID</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="p">(</span><span class="n">OIDS</span><span class="o">=</span><span class="no">FALSE</span><span class="p">);</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Then we insert some new data into the table:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t_employee</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">salary</span><span class="p">,</span><span class="n">start_date</span><span class="p">,</span><span class="n">city</span><span class="p">)</span><span class="w"> 
+</span><span class="w">   </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;Peter&#39;</span><span class="p">,</span><span class="s1">&#39;2100&#39;</span><span class="p">,</span><span class="s1">&#39;2003-06-19&#39;</span><span class="p">,</span><span class="s1">&#39;Stuttgart&#39;</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t_employee</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">salary</span><span class="p">,</span><span class="n">start_date</span><span class="p">,</span><span class="n">city</span><span class="p">)</span><span class="w"> 
+</span><span class="w">   </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;Peter&#39;</span><span class="p">,</span><span class="s1">&#39;2100&#39;</span><span class="p">,</span><span class="s1">&#39;2003-06-19&#39;</span><span class="p">,</span><span class="s1">&#39;Stuttgart&#39;</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t_employee</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">salary</span><span class="p">,</span><span class="n">start_date</span><span class="p">,</span><span class="n">city</span><span class="p">)</span><span class="w"> 
+</span><span class="w">   </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;Marc&#39;</span><span class="p">,</span><span class="s1">&#39;1560&#39;</span><span class="p">,</span><span class="s1">&#39;2001-02-25&#39;</span><span class="p">,</span><span class="s1">&#39;Mannheim&#39;</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t_employee</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">salary</span><span class="p">,</span><span class="n">start_date</span><span class="p">,</span><span class="n">city</span><span class="p">)</span><span class="w"> 
+</span><span class="w">   </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;Stefan&#39;</span><span class="p">,</span><span class="s1">&#39;1100&#39;</span><span class="p">,</span><span class="s1">&#39;2008-03-14&#39;</span><span class="p">,</span><span class="s1">&#39;Hamburg&#39;</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t_employee</span><span class="p">(</span><span class="n">ID</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">salary</span><span class="p">,</span><span class="n">start_date</span><span class="p">,</span><span class="n">city</span><span class="p">)</span><span class="w"> 
+</span><span class="w">   </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="s1">&#39;Gerd&#39;</span><span class="p">,</span><span class="s1">&#39;900&#39;</span><span class="p">,</span><span class="s1">&#39;2004-06-24&#39;</span><span class="p">,</span><span class="s1">&#39;Hannover&#39;</span><span class="p">);</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>t_employee</code> will now contain:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">t_employee</span><span class="p">;</span><span class="w">
+</span><span class="w">
+</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="n">name</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">salary</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">start_date</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="n">city</span><span class="w">    
+</span><span class="w"></span><span class="o">----+--------+--------+------------+---------</span><span class="c1">--
+</span><span class="c1">  1 | John   |   1100 | 2002-05-01 | Berlin
+</span><span class="c1"></span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Peter</span><span class="w">  </span><span class="o">|</span><span class="w">   </span><span class="mi">2100</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2003</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">19</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Stuttgart</span><span class="w">
+</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Marc</span><span class="w">   </span><span class="o">|</span><span class="w">   </span><span class="mi">1560</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2001</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Mannheim</span><span class="w">
+</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Stefan</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">1100</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2008</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">14</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Hamburg</span><span class="w">
+</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Gerd</span><span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="mi">900</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2004</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">24</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nf">Hannover</span><span class="w">
+</span><span class="w"></span><span class="p">(</span><span class="mi">5</span><span class="w"> </span><span class="n">rows</span><span class="p">)</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>In the next step we&rsquo;ll try to write a function which returns a SETOF containing our data.</p>
 <h2 id="setof-vs-array">SETOF vs. Array</h2>
 <p>Now we need a function which returns our data as a SETOF. In my function I can declare <code>l_row</code> of type <code>t_employee</code>(see below). In this variable data is structured as in the table <code>t_employee</code>. So far, no big deal. Just let us have a look at the function:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">or</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">REPLACE</span><span style="color:#666"> </span>FUNCTION<span style="color:#666"> </span><span style="color:#447fcf">get_employee</span>()<span style="color:#666">
-</span><span style="color:#666">   </span>RETURNS<span style="color:#666"> </span>SETOF<span style="color:#666"> </span>t_employees<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">AS</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">DECLARE</span><span style="color:#666">
-</span><span style="color:#666">   </span>l_row<span style="color:#666"> </span>t_employee;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span>BEGIN<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#999;font-style:italic">-- Loop through rows
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">FOR</span><span style="color:#666"> </span>l_row<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">IN</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">SELECT</span><span style="color:#666"> </span>*<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">FROM</span><span style="color:#666"> </span>t_employee<span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">LOOP</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#999;font-style:italic">-- Return data
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">RETURN</span><span style="color:#666"> </span>NEXT<span style="color:#666"> </span>l_row;<span style="color:#666">
-</span><span style="color:#666">   </span>END<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">LOOP</span>;<span style="color:#666">
-</span><span style="color:#666"></span>END;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#666">
-</span><span style="color:#666">   </span>LANGUAGE<span style="color:#666"> </span><span style="color:#ed9d13">&#39;plpgsql&#39;</span>;<span style="color:#666">
-</span></code></pre></div><p>Okay. But as you might have noticed, the purpose of this howto ist to show you how to get a SETOF from an array. Therefor we need some array. We&rsquo;ll modify <code>get_employees</code> in this way:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">or</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">REPLACE</span><span style="color:#666"> </span>FUNCTION<span style="color:#666"> </span><span style="color:#447fcf">get_employee</span>()<span style="color:#666">
-</span><span style="color:#666">   </span>RETURNS<span style="color:#666"> </span>SETOF<span style="color:#666"> </span>t_employee<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">AS</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">DECLARE</span><span style="color:#666">
-</span><span style="color:#666">   </span>l_row<span style="color:#666"> </span>t_employee;<span style="color:#666">
-</span><span style="color:#666">   </span>l_array<span style="color:#666"> </span>t_employee[];<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span>BEGIN<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#999;font-style:italic">-- Loop throught rows
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">FOR</span><span style="color:#666"> </span>l_row<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">IN</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">SELECT</span><span style="color:#666"> </span>*<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">FROM</span><span style="color:#666"> </span>t_employee<span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">LOOP</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#999;font-style:italic">-- Put all data into array
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">SELECT</span><span style="color:#666"> </span><span style="color:#447fcf">array_append</span>(l_array,l_row)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTO</span><span style="color:#666"> </span>l_array;<span style="color:#666">
-</span><span style="color:#666">   </span>END<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">LOOP</span>;<span style="color:#666">
-</span><span style="color:#666">   </span>...<span style="color:#666">
-</span><span style="color:#666"></span>END;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#666">
-</span><span style="color:#666">   </span>LANGUAGE<span style="color:#666"> </span><span style="color:#ed9d13">&#39;plpgsql&#39;</span>;<span style="color:#666">
-</span></code></pre></div><p>IN the next step we&rsquo;ll have to extract SETOF data from the array. Since you can&rsquo;t do that with built-in Postgres functions, we&rsquo;ll need some auxiliary function:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#999;font-style:italic">/*
-</span><span style="color:#999;font-style:italic">   Polymorphic function &#39;unnest&#39;: ANYARRAY -&amp;gt; SETOF
-</span><span style="color:#999;font-style:italic">   Return SETOF from ANYARRAY
-</span><span style="color:#999;font-style:italic">*/</span><span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">or</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">REPLACE</span><span style="color:#666"> </span>FUNCTION<span style="color:#666"> </span><span style="color:#447fcf">unnest</span>(ANYARRAY)<span style="color:#666">
-</span><span style="color:#666"></span>RETURNS<span style="color:#666"> </span>SETOF<span style="color:#666"> </span>ANYELEMENT<span style="color:#666">
-</span><span style="color:#666"></span>LANGUAGE<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">SQL</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">AS</span><span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$$</span><span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">SELECT</span><span style="color:#666"> </span><span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span>[i]<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">FROM</span><span style="color:#666"> </span><span style="color:#447fcf">generate_series</span>(<span style="color:#447fcf">array_lower</span>(<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span>,<span style="color:#3677a9">1</span>),<span style="color:#447fcf">array_upper</span>(<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#3677a9">1</span>,<span style="color:#3677a9">1</span>))<span style="color:#666"> </span>i;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$$</span>;<span style="color:#666">
-</span></code></pre></div><p>I hope you have noticed the <code>anyarray</code> which is given as a parameter to the function. So you can use <code>unnest</code> for every type of array. That&rsquo;s the great point when using polymorphic functions: You have some kind of generic function and you can use it for all arrays. Well having this function implemented, we can now modify <code>get_employees</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-.sql" data-lang=".sql"><span style="color:#6ab825;font-weight:bold">CREATE</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">or</span><span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">REPLACE</span><span style="color:#666"> </span>FUNCTION<span style="color:#666"> </span><span style="color:#447fcf">get_employee</span>()<span style="color:#666">
-</span><span style="color:#666">   </span>RETURNS<span style="color:#666"> </span>SETOF<span style="color:#666"> </span>t_employee<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">AS</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#6ab825;font-weight:bold">DECLARE</span><span style="color:#666">
-</span><span style="color:#666">   </span>l_row<span style="color:#666"> </span>t_employee;<span style="color:#666">
-</span><span style="color:#666">   </span>l_array<span style="color:#666"> </span>t_employee[];<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666"></span>BEGIN<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#999;font-style:italic">-- Loop throught rows
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">FOR</span><span style="color:#666"> </span>l_row<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">IN</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">SELECT</span><span style="color:#666"> </span>*<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">FROM</span><span style="color:#666"> </span>t_employee<span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">LOOP</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#999;font-style:italic">-- Put all data into array
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">SELECT</span><span style="color:#666"> </span><span style="color:#447fcf">array_append</span>(l_array,l_row)<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">INTO</span><span style="color:#666"> </span>l_array;<span style="color:#666">
-</span><span style="color:#666">   </span>END<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">LOOP</span>;<span style="color:#666">
-</span><span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#999;font-style:italic">-- ARRAY -&amp;gt; SETOF
-</span><span style="color:#999;font-style:italic"></span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">FOR</span><span style="color:#666"> </span>l_row<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">IN</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">SELECT</span><span style="color:#666"> </span>*<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">FROM</span><span style="color:#666"> </span><span style="color:#447fcf">unnest</span>(l_array)<span style="color:#666">
-</span><span style="color:#666">   </span><span style="color:#6ab825;font-weight:bold">LOOP</span><span style="color:#666">
-</span><span style="color:#666">      </span><span style="color:#6ab825;font-weight:bold">return</span><span style="color:#666"> </span>next<span style="color:#666"> </span>l_row;<span style="color:#666">
-</span><span style="color:#666">   </span>END<span style="color:#666"> </span><span style="color:#6ab825;font-weight:bold">LOOP</span>;<span style="color:#666"> 
-</span><span style="color:#666"></span>END;<span style="color:#666">
-</span><span style="color:#666"></span><span style="color:#a61717;background-color:#e3d2d2">$</span>BODY<span style="color:#a61717;background-color:#e3d2d2">$</span><span style="color:#666">
-</span><span style="color:#666">   </span>LANGUAGE<span style="color:#666"> </span><span style="color:#ed9d13">&#39;plpgsql&#39;</span>;<span style="color:#666">
-</span></code></pre></div></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="n">FUNCTION</span><span class="w"> </span><span class="nf">get_employee</span><span class="p">()</span><span class="w">
+</span><span class="w">   </span><span class="n">RETURNS</span><span class="w"> </span><span class="n">SETOF</span><span class="w"> </span><span class="n">t_employees</span><span class="w"> </span><span class="k">AS</span><span class="w">
+</span><span class="w"></span><span class="err">$</span><span class="n">BODY</span><span class="err">$</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">DECLARE</span><span class="w">
+</span><span class="w">   </span><span class="n">l_row</span><span class="w"> </span><span class="n">t_employee</span><span class="p">;</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="n">BEGIN</span><span class="w">
+</span><span class="w">
+</span><span class="w">   </span><span class="c1">-- Loop through rows
+</span><span class="c1"></span><span class="w">   </span><span class="k">FOR</span><span class="w"> </span><span class="n">l_row</span><span class="w"> </span><span class="k">IN</span><span class="w">
+</span><span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t_employee</span><span class="w">
+</span><span class="w">   </span><span class="k">LOOP</span><span class="w">
+</span><span class="w">      </span><span class="c1">-- Return data
+</span><span class="c1"></span><span class="w">      </span><span class="k">RETURN</span><span class="w"> </span><span class="n">NEXT</span><span class="w"> </span><span class="n">l_row</span><span class="p">;</span><span class="w">
+</span><span class="w">   </span><span class="n">END</span><span class="w"> </span><span class="k">LOOP</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="n">END</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="err">$</span><span class="n">BODY</span><span class="err">$</span><span class="w">
+</span><span class="w">   </span><span class="n">LANGUAGE</span><span class="w"> </span><span class="s1">&#39;plpgsql&#39;</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Okay. But as you might have noticed, the purpose of this howto ist to show you how to get a SETOF from an array. Therefor we need some array. We&rsquo;ll modify <code>get_employees</code> in this way:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="n">FUNCTION</span><span class="w"> </span><span class="nf">get_employee</span><span class="p">()</span><span class="w">
+</span><span class="w">   </span><span class="n">RETURNS</span><span class="w"> </span><span class="n">SETOF</span><span class="w"> </span><span class="n">t_employee</span><span class="w"> </span><span class="k">AS</span><span class="w">
+</span><span class="w"></span><span class="err">$</span><span class="n">BODY</span><span class="err">$</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">DECLARE</span><span class="w">
+</span><span class="w">   </span><span class="n">l_row</span><span class="w"> </span><span class="n">t_employee</span><span class="p">;</span><span class="w">
+</span><span class="w">   </span><span class="n">l_array</span><span class="w"> </span><span class="n">t_employee</span><span class="p">[];</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="n">BEGIN</span><span class="w">
+</span><span class="w">
+</span><span class="w">   </span><span class="c1">-- Loop throught rows
+</span><span class="c1"></span><span class="w">   </span><span class="k">FOR</span><span class="w"> </span><span class="n">l_row</span><span class="w"> </span><span class="k">IN</span><span class="w">
+</span><span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t_employee</span><span class="w">
+</span><span class="w">   </span><span class="k">LOOP</span><span class="w">
+</span><span class="w">      </span><span class="c1">-- Put all data into array
+</span><span class="c1"></span><span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="nf">array_append</span><span class="p">(</span><span class="n">l_array</span><span class="p">,</span><span class="n">l_row</span><span class="p">)</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">l_array</span><span class="p">;</span><span class="w">
+</span><span class="w">   </span><span class="n">END</span><span class="w"> </span><span class="k">LOOP</span><span class="p">;</span><span class="w">
+</span><span class="w">   </span><span class="p">...</span><span class="w">
+</span><span class="w"></span><span class="n">END</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="err">$</span><span class="n">BODY</span><span class="err">$</span><span class="w">
+</span><span class="w">   </span><span class="n">LANGUAGE</span><span class="w"> </span><span class="s1">&#39;plpgsql&#39;</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>IN the next step we&rsquo;ll have to extract SETOF data from the array. Since you can&rsquo;t do that with built-in Postgres functions, we&rsquo;ll need some auxiliary function:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="cm">/*
+</span><span class="cm">   Polymorphic function &#39;unnest&#39;: ANYARRAY -&amp;gt; SETOF
+</span><span class="cm">   Return SETOF from ANYARRAY
+</span><span class="cm">*/</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="n">FUNCTION</span><span class="w"> </span><span class="nf">unnest</span><span class="p">(</span><span class="n">ANYARRAY</span><span class="p">)</span><span class="w">
+</span><span class="w"></span><span class="n">RETURNS</span><span class="w"> </span><span class="n">SETOF</span><span class="w"> </span><span class="n">ANYELEMENT</span><span class="w">
+</span><span class="w"></span><span class="n">LANGUAGE</span><span class="w"> </span><span class="k">SQL</span><span class="w"> </span><span class="k">AS</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="err">$$</span><span class="w">
+</span><span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="err">$</span><span class="mi">1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="nf">generate_series</span><span class="p">(</span><span class="nf">array_lower</span><span class="p">(</span><span class="err">$</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="nf">array_upper</span><span class="p">(</span><span class="err">$</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="err">$$</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>I hope you have noticed the <code>anyarray</code> which is given as a parameter to the function. So you can use <code>unnest</code> for every type of array. That&rsquo;s the great point when using polymorphic functions: You have some kind of generic function and you can use it for all arrays. Well having this function implemented, we can now modify <code>get_employees</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">REPLACE</span><span class="w"> </span><span class="n">FUNCTION</span><span class="w"> </span><span class="nf">get_employee</span><span class="p">()</span><span class="w">
+</span><span class="w">   </span><span class="n">RETURNS</span><span class="w"> </span><span class="n">SETOF</span><span class="w"> </span><span class="n">t_employee</span><span class="w"> </span><span class="k">AS</span><span class="w">
+</span><span class="w"></span><span class="err">$</span><span class="n">BODY</span><span class="err">$</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">DECLARE</span><span class="w">
+</span><span class="w">   </span><span class="n">l_row</span><span class="w"> </span><span class="n">t_employee</span><span class="p">;</span><span class="w">
+</span><span class="w">   </span><span class="n">l_array</span><span class="w"> </span><span class="n">t_employee</span><span class="p">[];</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="n">BEGIN</span><span class="w">
+</span><span class="w">
+</span><span class="w">   </span><span class="c1">-- Loop throught rows
+</span><span class="c1"></span><span class="w">   </span><span class="k">FOR</span><span class="w"> </span><span class="n">l_row</span><span class="w"> </span><span class="k">IN</span><span class="w">
+</span><span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t_employee</span><span class="w">
+</span><span class="w">   </span><span class="k">LOOP</span><span class="w">
+</span><span class="w">      </span><span class="c1">-- Put all data into array
+</span><span class="c1"></span><span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="nf">array_append</span><span class="p">(</span><span class="n">l_array</span><span class="p">,</span><span class="n">l_row</span><span class="p">)</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">l_array</span><span class="p">;</span><span class="w">
+</span><span class="w">   </span><span class="n">END</span><span class="w"> </span><span class="k">LOOP</span><span class="p">;</span><span class="w">
+</span><span class="w">
+</span><span class="w">   </span><span class="c1">-- ARRAY -&amp;gt; SETOF
+</span><span class="c1"></span><span class="w">   </span><span class="k">FOR</span><span class="w"> </span><span class="n">l_row</span><span class="w"> </span><span class="k">IN</span><span class="w">
+</span><span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="nf">unnest</span><span class="p">(</span><span class="n">l_array</span><span class="p">)</span><span class="w">
+</span><span class="w">   </span><span class="k">LOOP</span><span class="w">
+</span><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="n">l_row</span><span class="p">;</span><span class="w">
+</span><span class="w">   </span><span class="n">END</span><span class="w"> </span><span class="k">LOOP</span><span class="p">;</span><span class="w"> 
+</span><span class="w"></span><span class="n">END</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="err">$</span><span class="n">BODY</span><span class="err">$</span><span class="w">
+</span><span class="w">   </span><span class="n">LANGUAGE</span><span class="w"> </span><span class="s1">&#39;plpgsql&#39;</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div></div>
   <div id="comments">
       
 <div id="disqus_thread"></div>
