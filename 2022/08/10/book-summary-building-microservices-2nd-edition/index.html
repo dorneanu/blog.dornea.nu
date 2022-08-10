@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Book summary: Building Microservices (2nd Edition) - blog.dornea.nu</title>
+  <meta content='Book summary: Building Microservices (2nd Edition) - blog.dornea.nu' property='title' />
+  <meta content='Book summary: Building Microservices (2nd Edition) - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Summary  Figure 1: &ldquo;Building Microservices (2nd edition)&rdquo; along my notes
+  During my overall IT carreer I came across different architectural design patterns where oppinions differ on the question if they&rsquo;re the right ones for the problems/challanges teams are dealing with. Before reading this book I was familiar with some of the microservices concepts but it was some article (on modern architectures) that rouse my attention and introduced me to Sam Newman." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2022/08/10/book-summary-building-microservices-2nd-edition/" />
+
+
+<meta property="article:published_time" content="2022-08-10T21:47:00&#43;02:00"/>
+
+<meta property="article:modified_time" content="2022-08-10T21:47:36&#43;02:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.89.4" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Book summary: Building Microservices (2nd Edition)</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>10 Aug 2022</time> 
+     | 
+    
+
+    
+     ~
+  
+
+12 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/books' class="link silver">books</a> <a href='https://blog.dornea.nu/tags/microservices' class="link silver">microservices</a> <a href='https://blog.dornea.nu/tags/architecture' class="link silver">architecture</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content"><h2 id="summary">Summary</h2>
+<figure><img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices-book-cover.jpg"
+         alt="Figure 1: &amp;ldquo;Building Microservices (2nd edition)&amp;rdquo; along my notes"/><figcaption>
+            <p><span class="figure-number">Figure 1: </span>&ldquo;Building Microservices (2nd edition)&rdquo; along my notes</p>
+        </figcaption>
+</figure>
+
+<p>During my overall IT carreer I came across different architectural design
+patterns where oppinions differ on the question if they&rsquo;re the right ones for
+the problems/challanges teams are dealing with. Before reading this book I was
+familiar with <em>some</em> of the microservices concepts but it was some article (on
+modern architectures) that rouse my attention and introduced me to Sam Newman.
+<span class="sidenote-number"><small class="sidenote">
+I was reading the (German) <a href="https://www.heise.de/ix/">iX Magazin</a> about <a href="https://www.heise.de/news/Neues-iX-Developer-Sonderheft-Moderne-Softwarearchitektur-am-Kiosk-erhaeltlich-4874200.html">modern architectures</a>.
+</small></span>
+At the same time I was surprised to read about the similarities between
+<a href="https://brainfck.org/#Hexagonal%20Architecture">Hexagonal Architecture</a> and <em>microservices</em>. But
+also topics like <a href="https://brainfck.org/#DDD">DDD</a>, <a href="https://brainfck.org/#Continuous%20Delivery%20(CD)">CD</a>,
+<a href="https://brainfck.org/#Continuous%20Integration%20(CI)">CI</a> are bound together in way that you need
+to take a hollistic approach to (building) microservices.</p>
+<p>I recommend this book
+<span class="sidenote-number"><small class="sidenote">
+Along with Martin Fowlers extensive arcticles on <a href="https://martinfowler.com/microservices/">microservices</a>.
+</small></span>
+to anyone willing to spend some time (book has ca. 500 pages) learning about
+<a href="https://brainfck.org/#Information%20hiding">Information hiding</a>, <a href="#ch-dot-4-communication-styles">communication between microservices</a>, <a href="#stream-aligned-teams">proper teams setup</a>, role of (IT) <a href="#ch-dot-16-the-evolutionary-architect">architects</a> and much more. Fair enough the author
+emphasizes multiple time the <em>complexity</em> of decoupling existing services (monoliths) into
+smaller, independent ones (microservices). The book recommendations in each chapter also
+give a great hint where you can enlarge upon a specific topic.</p>
+<p>What follows next is an <a href="https://orgmode.org/">ORG mode</a> / outline style collection of notes, thoughts and quotes
+from the book.</p>
+<h2 id="ch-dot-1-what-are-microservices">Ch. 1: What are Microservices?</h2>
+<h3 id="definition">Definition</h3>
+<blockquote>
+<p><a href="https://brainfck.org/#Microservices">Microservices</a> are independently releasable services that are modeled around a business
+domain. A service encapsulates functionality and makes it accessible to other services via
+networks.</p>
+</blockquote>
+<ul>
+<li><a href="https://brainfck.org/#Microservices">Microservices</a> are a type of <a href="https://brainfck.org/#SOA">SOA</a> architecture
+<ul>
+<li>service boundaries are important</li>
+<li>independent deployability is key</li>
+</ul>
+</li>
+<li><a href="https://brainfck.org/#Microservices">Microservices</a> embrace the concept of <a href="https://brainfck.org/#Information%20hiding">Information hiding</a>
+<span class="sidenote-number"><small class="sidenote">
+Introduced by David Parnas in <em>Information Distribution Aspects of Design Methodology</em>
+</small></span></li>
+</ul>
+<h3 id="key-concepts">Key Concepts</h3>
+<ul>
+<li>
+<p><strong>Independent deployability</strong></p>
+<ul>
+<li>criteria for this: make sure microservices are <a href="#coupling">loosely coupled</a>
+<ul>
+<li>be able to change one service without having to change anything else</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Modeled around a business domain</strong></p>
+<ul>
+<li>definition of service boundaries (see <a href="#ddd">DDD</a>)</li>
+</ul>
+</li>
+<li>
+<p><strong>Owning their own state</strong></p>
+<ul>
+<li>hide internal state (same as encapsulation in <a href="https://brainfck.org/#OOP">OOP</a>)</li>
+<li>clean delineation between internal implementation details and external contract
+<ul>
+<li>be backward-compatible</li>
+</ul>
+</li>
+<li>hide database that backs the service
+<ul>
+<li>avoid DB showing</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Size</strong></p>
+<blockquote>
+<p>&ldquo;A microservice should be as big as my head&rdquo; - James Lewis</p>
+</blockquote>
+<ul>
+<li>keep it to the size at which it can be easily understood</li>
+</ul>
+</li>
+<li>
+<p><strong>Flexibility</strong></p>
+<blockquote>
+<p>&ldquo;Microservices buy you options&rdquo; - James Lewis</p>
+</blockquote>
+<ul>
+<li>they have a cost and you must decide whether the cost is worth the options you want
+to take up</li>
+</ul>
+</li>
+<li>
+<p><strong>Alignment of architecture and organization</strong></p>
+<blockquote>
+<p>&ldquo;Organizations which design systems are constrained to produce designs which are copies
+of the communication structures of the organization&rdquo; - Melvin Conway</p>
+</blockquote>
+<ul>
+<li>have team vertically organized
+<ul>
+<li>same team owns front-end, business logic, data, back-end, security
+<ul>
+<li>a so called stream-aligned team</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="advantages">Advantages</h3>
+<ul>
+<li><strong>Technology Heterogeneity</strong></li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_4.jpg" class="glightbox" data-glightbox="title:Technology heterogenity; description: You can use different technologies/programming languages for building multiple microservices.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_4.jpg" alt="image">
+        <div class="caption">Technology heterogenity</div>
+    </a>
+</div>
+
+<ul>
+<li>
+<p><strong>Robustness</strong></p>
+<ul>
+<li>a component in a system can fail but as long as the problem doesn&rsquo;t cascade, the rest
+of the system still works</li>
+</ul>
+</li>
+<li>
+<p><strong>Scaling</strong>
+<span class="sidenote-number"><small class="sidenote">
+Book recommendation: <a href="https://www.goodreads.com/de/book/show/7282390-the-art-of-scalability">The art of scalability</a>
+</small></span></p>
+</li>
+<li>
+<p><strong>Ease of Deployment</strong></p>
+<ul>
+<li>fast delivery of features</li>
+<li>decreases fear of deployment (see Accelerate)</li>
+<li>change a single service and deploy it independently of the system</li>
+</ul>
+</li>
+<li>
+<p><strong>Organizational alignment</strong></p>
+<ul>
+<li>small teams working on small code bases tend to be more productive</li>
+<li>microservices allow us to better align our architecture to our organization
+<ul>
+<li>minimize the number of people working in the team
+<ul>
+<li>helps to find the sweet spot of team size and productivity</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Composability</strong></p>
+<ul>
+<li>reusable components</li>
+<li>allow functionality to be consumed in different ways
+<ul>
+<li>for different purposes: website, desktop, mobile application etc.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="pain-points">Pain Points</h3>
+<ul>
+<li>
+<p><strong>Developer Experience</strong></p>
+<ul>
+<li>new technologies are options not requirements</li>
+<li>when adopting microservices
+<ul>
+<li>you&rsquo;ll have to understand issues around data consistency, latency, service modeling</li>
+<li>and how these ideas change the way you think about software development</li>
+<li>it takes time to understand new concepts
+<ul>
+<li>this leads to less time developing new features</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Technology overload</strong></p>
+</li>
+<li>
+<p><strong>Costs</strong></p>
+</li>
+<li>
+<p><strong>Reporting</strong></p>
+<ul>
+<li>data and logs are scattered across multiple components</li>
+</ul>
+</li>
+<li>
+<p><strong>Monitoring and troubleshooting</strong>
+<span class="sidenote-number"><small class="sidenote">
+Book recommendation: <a href="https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/">Distributed Systems Observability</a>
+</small></span></p>
+</li>
+<li>
+<p><strong>Security</strong></p>
+</li>
+<li>
+<p><strong>Latency</strong></p>
+</li>
+<li>
+<p><strong>Data consistency</strong></p>
+</li>
+</ul>
+<h2 id="ch-dot-2-how-to-model-microservices">Ch. 2: How to model microservices</h2>
+<h3 id="information-hiding"><a href="https://brainfck.org/#Information%20hiding">Information hiding</a></h3>
+<ul>
+<li>hide as many details as possible behind a module / microservice boundary</li>
+<li>Parnas identified following benefits:
+<ul>
+<li>improved development time</li>
+<li>comprehensibility
+<ul>
+<li>each module is isolated and therefore better to understand</li>
+</ul>
+</li>
+<li>flexibility</li>
+</ul>
+</li>
+</ul>
+<h3 id="cohesion">Cohesion</h3>
+<ul>
+<li>code that changes together, stays together</li>
+<li>strong cohesion
+<ul>
+<li>ensure related behavior is at one place</li>
+</ul>
+</li>
+<li>weak cohesion
+<ul>
+<li>related functionality is spread across the system</li>
+</ul>
+</li>
+</ul>
+<h3 id="coupling">Coupling</h3>
+<ul>
+<li>loosely coupled
+<ul>
+<li>change to one service should not require a change to another</li>
+</ul>
+</li>
+<li>a loosely coupled services knows as little as it needs about the services it communicates with
+<ul>
+<li>limitation of number of different types of calls is important</li>
+</ul>
+</li>
+</ul>
+<h3 id="interplay-of-coupling-and-cohesion">Interplay of coupling and cohesion</h3>
+<blockquote>
+<p>A structure is stable if cohesion is strong and coupling is low.</p>
+</blockquote>
+<ul>
+<li>cohesion applies to the relationship between things <strong>inside</strong> a boundary</li>
+<li>coupling describes relationship <strong>between things across</strong> a boundary</li>
+<li>still: there is no best way how to organize code</li>
+</ul>
+<h3 id="types-of-coupling"><a href="https://brainfck.org/#Types%20of%20coupling">Types of coupling</a></h3>
+<h4 id="domain-coupling">Domain coupling</h4>
+<ul>
+<li>one microservice interacts with another microservice because it needs the functionality
+the other microservice provides</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_5.jpg" class="glightbox" data-glightbox="title:Domain coupling; description: Each microservice has a different functionality; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_5.jpg" alt="image">
+        <div class="caption">Domain coupling</div>
+    </a>
+</div>
+
+<ul>
+<li>considered as a <em>loose</em> form of coupling</li>
+<li>again, information hiding: Share only what you absolutely have to, and send only the
+absolute minimum amount of data that you need</li>
+</ul>
+<h4 id="pass-through-coupling">Pass-through coupling</h4>
+<ul>
+<li>one microservice passes data to some other microservice because data is needed by another microservice</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_6.jpg" class="glightbox" data-glightbox="title:Pass-through coupling; description: Some information is passed from one microservice to another; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_6.jpg" alt="image">
+        <div class="caption">Pass-through coupling</div>
+    </a>
+</div>
+
+<h4 id="common-coupling">Common coupling</h4>
+<ul>
+<li>when 1 or 2 microservices make use of a <strong>common</strong> set of data
+<ul>
+<li>use of shared DB</li>
+<li>use of shared memory/filesystem</li>
+</ul>
+</li>
+<li>problem: changes to data can impact multiple microservices at once</li>
+<li>better solution would be to implement <a href="https://brainfck.org/#CRUD">CRUD</a> operations and let only 1
+microservice handle shared DB operations</li>
+</ul>
+<h4 id="content-coupling">Content coupling</h4>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_7.jpg" class="glightbox" data-glightbox="title:Content coupling; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_7.jpg" alt="image">
+        <div class="caption">Content coupling</div>
+    </a>
+</div>
+
+<ul>
+<li>when an upstream service reaches into internals of a downstream service anc changes its
+internal state</li>
+</ul>
+<h3 id="ddd">DDD</h3>
+<p><a href="https://brainfck.org/#DDD">DDD</a> stands for Domain-Driven Design.</p>
+<h4 id="concepts">Concepts</h4>
+<!--list-separator-->
+<ul>
+<li>
+<p>Ubiquitous language</p>
+<ul>
+<li>use the same terms in code as the user use</li>
+<li>have <strong>common</strong> language between delivery team and actual people (aka customers)
+<ul>
+<li>helps to understand business by logic</li>
+<li>helps with communication</li>
+</ul>
+</li>
+<li>use real-world language in code</li>
+</ul>
+</li>
+</ul>
+<!--list-separator-->
+<ul>
+<li>
+<p>Aggregates</p>
+<ul>
+<li>
+<p>a <strong>representation</strong> of real domain concept</p>
+<ul>
+<li>something like an <code>Order</code>, an <code>Invoice</code>, <code>Stock Item</code></li>
+</ul>
+</li>
+<li>
+<p>aggregates typically have an information cycle around them</p>
+</li>
+<li>
+<p>in general</p>
+<ul>
+<li>
+<p>aggregate as something that has</p>
+<ul>
+<li>state</li>
+<li>identity</li>
+<li>information cycle</li>
+</ul>
+<p>that will be managed as part of the system</p>
+</li>
+</ul>
+</li>
+<li>
+<p>aggregates can have <strong>relationships</strong> to other aggregates</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_8.jpg" class="glightbox" data-glightbox="title:Relationship between aggregates; description: If relationships exist inside scope of the same microservices, we could use foreign keys to store relationship; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_8.jpg" alt="image">
+        <div class="caption">Relationship between aggregates</div>
+    </a>
+</div>
+
+</li>
+</ul>
+</li>
+</ul>
+<!--list-separator-->
+<ul>
+<li>
+<p>Bounded context</p>
+<ul>
+<li>a larger organizational boundary
+<ul>
+<li>within it explicit responsibilities need to be carried out</li>
+</ul>
+</li>
+<li>bounded contexts hide implementation details (<a href="https://brainfck.org/#Information%20hiding">Information hiding</a>)</li>
+<li>bounded contexts contain <code>1-n</code> aggregates
+<ul>
+<li>some aggregates may be exposed outside the bounded context</li>
+<li>others may be hidden internally</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="event-storming">Event Storming</h4>
+<ul>
+<li>collaborative brainstorming exercise designed to help design a domain model</li>
+<li>invented by <a href="https://www.eventstorming.com/">Alberto Brandolini</a></li>
+</ul>
+<h4 id="boundaries-between-microservices">Boundaries between microservices</h4>
+<p>There are some factors when defining clear boundaries between microservice</p>
+<ul>
+<li><strong>volatility</strong></li>
+<li><strong>data</strong>
+<ul>
+<li>also with concern to security</li>
+</ul>
+</li>
+<li><strong>technology</strong></li>
+<li><strong>organizational</strong>
+<ul>
+<li>Layering Inside vs Layering Outside</li>
+</ul>
+</li>
+</ul>
+<h2 id="ch-dot-3-split-the-monolith">Ch. 3: Split the monolith</h2>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_2.jpg" class="glightbox" data-glightbox="title:Monolith types; description: Types of monoliths; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_2.jpg" alt="image">
+        <div class="caption">Monolith types</div>
+    </a>
+</div>
+
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_3.jpg" class="glightbox" data-glightbox="title:Monolith types; description: Distributed monolith: A system that consists of multiple services but for whatever reason the entire system must be deployed together. ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_3.jpg" alt="image">
+        <div class="caption">Monolith types</div>
+    </a>
+</div>
+
+<ul>
+<li>you need to have a <strong>goal</strong> before moving to microservices
+<ul>
+<li>
+<p>should be a conscious decision</p>
+</li>
+<li>
+<p>without clear understanding of what you want to achieve, you could fall into the trap of <strong>confusing activity with outcome</strong></p>
+<blockquote>
+<p>Spinning up a few more copies of your existing monolith system behind a load balancer may well help you scale your system
+much more efficiently than going through a complex and length decomposition to microservices.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="decomposition-patterns">Decomposition patterns</h3>
+<ul>
+<li>
+<p>Strangler fig pattern
+<span class="sidenote-number"><small class="sidenote">
+By <a href="https://martinfowler.com/bliki/StranglerFigApplication.html">Martin Fowler</a>
+</small></span>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_9.jpg" class="glightbox" data-glightbox="title:Strangler fig pattern; description: An interception layer could catch calls and distribute them between a monolith and microservices.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_9.jpg" alt="image">
+        <div class="caption">Strangler fig pattern</div>
+    </a>
+</div>
+</p>
+</li>
+<li>
+<p>Parallel run</p>
+</li>
+<li>
+<p>Feature toggles</p>
+</li>
+</ul>
+<h3 id="data-decomposition-concerns">Data Decomposition concerns</h3>
+<ul>
+<li>performance</li>
+<li>data integrity</li>
+<li>transactions</li>
+<li>Tooling</li>
+<li>Reporting DB</li>
+</ul>
+<h2 id="ch-dot-4-communication-styles">Ch. 4: Communication styles</h2>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_10.jpg" class="glightbox" data-glightbox="title:Communication styles; description: In-process vs. inter-process communication (IPC); descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_10.jpg" alt="image">
+        <div class="caption">Communication styles</div>
+    </a>
+</div>
+
+<ul>
+<li>styles for IPC communications
+<ul>
+<li><strong>synchronous blocking</strong></li>
+<li><strong>asynchronous blocking</strong></li>
+<li><strong>request-response</strong></li>
+<li><a href="https://brainfck.org/#Event-Driven%20Architecture">Event-Driven Architecture</a></li>
+<li><strong>Common data</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="eda">EDA</h3>
+<ul>
+<li>events vs messages
+<ul>
+<li><strong>event</strong>: is a fact</li>
+<li><strong>message</strong>: is a thing</li>
+<li>a message contains an event</li>
+</ul>
+</li>
+</ul>
+<h2 id="ch-dot-5-implementing-communication">Ch. 5: Implementing communication</h2>
+<h3 id="criterias-for-ideal-technology">Criterias for ideal technology</h3>
+<ul>
+<li>
+<p>backward compatibility</p>
+</li>
+<li>
+<p>make your interface(s) explicit</p>
+<ul>
+<li>use of explicit schemas
+<span class="sidenote-number"><small class="sidenote">
+Like <a href="https://swagger.io/specification/">OpenAPI</a>
+</small></span></li>
+</ul>
+</li>
+<li>
+<p>keep your APIs technology-agnostic</p>
+</li>
+<li>
+<p>make your service simple for the consumers</p>
+</li>
+<li>
+<p>hide internal implementation details</p>
+</li>
+</ul>
+<h3 id="technology-choices">Technology choices</h3>
+<ul>
+<li>
+<p><a href="https://brainfck.org/#RPC">RPC</a></p>
+<ul>
+<li>SOAP</li>
+<li><a href="https://brainfck.org/#gRPC">gRPC</a></li>
+</ul>
+</li>
+<li>
+<p>REST
+<span class="sidenote-number"><small class="sidenote">
+Book recommendation: <a href="https://www.goodreads.com/en/book/show/8266727-rest-in-practice">REST in Practice: Hypermedia and Systems Architecture</a> (by Jim Webber, Savas Parastatidis, Ian Robinson)
+</small></span></p>
+</li>
+<li>
+<p>GraphQL</p>
+<ul>
+<li>alternative: <a href="https://brainfck.org/#BFF">BFF</a> (Backend-For Frontend) pattern
+<span class="sidenote-number"><small class="sidenote">
+This <a href="https://blog.bitsrc.io/bff-pattern-backend-for-frontend-an-introduction-e4fa965128bf">article</a> provides a quite good introduction.
+</small></span>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_13.jpg" class="glightbox" data-glightbox="title:Backend for Frontend (BFF); description: Define different services for web, mobile, native clients and return only the amount of data needed. ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_13.jpg" alt="image">
+        <div class="caption">Backend for Frontend (BFF)</div>
+    </a>
+</div>
+</li>
+</ul>
+</li>
+<li>
+<p>Message brokers</p>
+<ul>
+<li>use queues/topics</li>
+</ul>
+</li>
+</ul>
+<h3 id="api-gateway">API Gateway</h3>
+<ul>
+<li>built on top on existing HTTP proxy products</li>
+<li>main function: reverse proxy
+<ul>
+<li>but also authentication, logging, rate limiting</li>
+</ul>
+</li>
+<li>Examples:
+<ul>
+<li><a href="https://aws.amazon.com/api-gateway/">AWS API Gateway</a></li>
+<li><a href="https://cloud.google.com/api-gateway">GCP API Gateway</a></li>
+</ul>
+</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_11.jpg" class="glightbox" data-glightbox="title:API Gateway; description: North-south traffic is handled by an API GW (Gateway), east-west traffic via a service mesh. ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_11.jpg" alt="image">
+        <div class="caption">API Gateway</div>
+    </a>
+</div>
+
+<h2 id="ch-dot-6-workflow">Ch. 6: Workflow</h2>
+<h3 id="distributed-transactions">Distributed Transactions</h3>
+<h4 id="two-phase-commits--2pc">Two-phase Commits (2PC)</h4>
+<ul>
+<li>a commit algorithm to make transactional changes in a distributed system, where multiple separate parts need to be updated</li>
+</ul>
+<h4 id="sagas">Sagas</h4>
+<ul>
+<li>coordinate multiple changes in state</li>
+<li>but without locking resources for a long period</li>
+<li>involves
+<ul>
+<li>backward recovery</li>
+<li>forward recovery</li>
+</ul>
+</li>
+<li>allows to recover from <em>business</em> failures not technical ones</li>
+<li>when rollback is involved, maybe a compensating transaction is needed</li>
+</ul>
+<h4 id="books">Books</h4>
+<ul>
+<li><a href="https://www.goodreads.com/book/show/85012.Enterprise_Integration_Patterns">Enterprise Integration Patterns: Designing, Building, and Deploying Messaging Solutions</a></li>
+<li><a href="https://www.goodreads.com/en/book/show/55362275-practical-process-automation">Practical Process Automation</a></li>
+</ul>
+<h2 id="ch-dot-7-build">Ch. 7: Build</h2>
+<ul>
+<li>on <a href="https://brainfck.org/#Continuous%20Integration%20(CI)">Continuous Integration (CI)</a></li>
+<li>how to organize artifacts
+<ul>
+<li>monorepo</li>
+<li>multirepo</li>
+</ul>
+</li>
+</ul>
+<h2 id="ch-dot-8-deployment">Ch. 8: Deployment</h2>
+<h3 id="principles-of-microservices-deployment"><a href="https://brainfck.org/#Microservices/Deployment">Principles of Microservices Deployment</a></h3>
+<ul>
+<li>
+<p><strong>isolated execution</strong></p>
+<ul>
+<li>own computing resources</li>
+<li>don&rsquo;t impact other microservices instances</li>
+</ul>
+</li>
+<li>
+<p><strong>focus on automation</strong></p>
+<ul>
+<li>adopt automation as core part of your culture</li>
+</ul>
+</li>
+<li>
+<p><strong>Infrastructure as a Code</strong>
+<span class="sidenote-number"><small class="sidenote">
+Book: <a href="https://www.goodreads.com/en/book/show/26544394-infrastructure-as-code">Infrastructure as Code: Managing Servers in the Cloud</a>
+</small></span></p>
+</li>
+<li>
+<p><strong>zero-downtime deployment</strong></p>
+<ul>
+<li>independent deployability
+<ul>
+<li>new deployment of microservices can be done without downtime to users/clients of microservices</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>desired state management</strong></p>
+<ul>
+<li>maintain microservices in a defined state
+<ul>
+<li>allocate new instances if needed</li>
+</ul>
+</li>
+<li>GitOps
+<ul>
+<li>brings together desired state management and IaC (Infrastructure as Code)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>progressive delivery</strong></p>
+<ul>
+<li>implement many of the ideeas in <a href="https://brainfck.org/#Accelerate">Accelerate</a></li>
+<li>separate deployment from release</li>
+<li>feature releases
+<ul>
+<li>use as part of trunk-based development</li>
+<li>not yet finished functionality can be deployed and hidden from users (e.g. feature toggles)</li>
+<li>functionality can still be turned on/off</li>
+</ul>
+</li>
+<li>canary releases</li>
+<li>parallel runs</li>
+</ul>
+</li>
+</ul>
+<h2 id="ch-dot-10-from-monitoring-to-obersavability">Ch. 10: From monitoring to obersavability</h2>
+<h3 id="the-observability-of-a-system">The observability of a system</h3>
+<ul>
+<li>
+<p>is the extenct to which you can understand the internal state of the system
+from external output</p>
+</li>
+<li>
+<p><strong>monitoring</strong> is something we <em>do</em></p>
+<ul>
+<li>it&rsquo;s an activity</li>
+</ul>
+</li>
+<li>
+<p><strong>observability</strong></p>
+<ul>
+<li>rather a <em>property</em> of a system</li>
+</ul>
+</li>
+<li>
+<p>pillars of observability</p>
+<ul>
+<li>metrics</li>
+<li>logging/logs</li>
+<li>events</li>
+<li>traces</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_12.jpg" class="glightbox" data-glightbox="title:Correlation IDs in logs; description: In order to correlate different logs (from different sources) a request ID could be used (and set in the API Gateway) and passed through to different microservices. ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/building-microservices-2nd-edition/microservices_07-02-2022_12.35_12.jpg" alt="image">
+        <div class="caption">Correlation IDs in logs</div>
+    </a>
+</div>
+
+</li>
+</ul>
+<h3 id="alert-fatigue">Alert fatigue</h3>
+<blockquote>
+<p>Alert fatigue—also known as alarm fatigue—is when an overwhelming number of
+alerts desensitizes the people tasked with responding to them, leading to missed
+or ignored alerts or delayed responses &ndash; <a href="https://www.atlassian.com/incident-management/on-call/alert-fatigue">Source</a>
+<span class="sidenote-number"><small class="sidenote">
+Also a good reading: <a href="https://humanisticsystems.com/2015/10/16/fit-for-purpose-questions-about-alarm-system-design-from-theory-and-practice/">Alarm design: From nuclear power to WebOps</a>.
+</small></span></p>
+</blockquote>
+<h4 id="what-makes-a-good-alert">What makes a good alert</h4>
+<p>An alert has to be:</p>
+<ul>
+<li><strong>relevant</strong></li>
+<li><strong>unique</strong></li>
+<li><strong>timely</strong></li>
+<li><strong>prioritized</strong>
+<ul>
+<li>give enough information to decide in which order alerts should be dealth
+with</li>
+</ul>
+</li>
+<li><strong>understandable</strong>
+<ul>
+<li>information has to be clear and readable</li>
+</ul>
+</li>
+<li><strong>diagnostic</strong>
+<ul>
+<li>it needs to be clear what is wrong</li>
+</ul>
+</li>
+<li><strong>advisory</strong>
+<ul>
+<li>help the operator understand what actions need to taken</li>
+</ul>
+</li>
+<li><strong>focussed</strong>
+<ul>
+<li>draw attention to the most important issues</li>
+</ul>
+</li>
+</ul>
+<h4 id="on-the-importance-of-testing">On the importance of testing <span class="tag"><span class="quote">quote</span></span></h4>
+<blockquote>
+<p>&ldquo;Not testing in production is like not practitioning with the full orchestra because your solo sounded fine at home&rdquo;</p>
+</blockquote>
+<h3 id="semantic-monitoring">Semantic monitoring</h3>
+<ul>
+<li>compare against normal conditions</li>
+<li>you could use synthetic transactions</li>
+<li>other options
+<ul>
+<li>A/B testing</li>
+<li>canary releases</li>
+<li><a href="https://brainfck.org/#Chaos%20engineering">Chaos engineering</a></li>
+<li>parallel runs</li>
+<li>smoke tests</li>
+</ul>
+</li>
+</ul>
+<h3 id="tools">Tools</h3>
+<ul>
+<li><a href="https://opentelemetry.io/">opentelemetry.io</a></li>
+</ul>
+<h2 id="ch-dot-11-security">Ch. 11: Security</h2>
+<h3 id="lifecycle-of-secrets">Lifecycle of secrets</h3>
+<ul>
+<li><strong>Creation</strong>
+<ul>
+<li>How we create the secret</li>
+</ul>
+</li>
+<li><strong>Distribution</strong>
+<ul>
+<li>How do we make sure the secrets get to the right place?</li>
+</ul>
+</li>
+<li><strong>Storage</strong>
+<ul>
+<li>Is the secret stored in a way only authorized parties can access it?</li>
+</ul>
+</li>
+<li><strong>Monitoring</strong>
+<ul>
+<li>Do we know how secret is used?</li>
+</ul>
+</li>
+<li><strong>Rotations</strong>
+<ul>
+<li>Are we able to change the secret without causing problems?</li>
+</ul>
+</li>
+</ul>
+<h2 id="ch-dot-12-resiliency">Ch. 12: Resiliency</h2>
+<h3 id="resiliency">Resiliency</h3>
+<ul>
+<li>
+<p>defined by David D. Woods
+<span class="sidenote-number"><small class="sidenote">
+Book: <a href="https://www.goodreads.com/book/show/910055.Resilience_Engineering">Resilience Engineering: Concepts and Precepts</a>
+</small></span></p>
+</li>
+<li>
+<p>aspects</p>
+<ul>
+<li><strong>robustness</strong>
+<ul>
+<li>ability to absorb perturbation</li>
+</ul>
+</li>
+<li><strong>rebound</strong>
+<ul>
+<li>recover after a traumatic event</li>
+</ul>
+</li>
+<li><strong>graceful extensibility</strong>
+<ul>
+<li>how to deal with an unexpected situation</li>
+</ul>
+</li>
+<li><strong>sustained adaptability</strong>
+<ul>
+<li>adapt to changing environments, stakeholders and demands</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="ch-dot-14-user-interfaces">Ch. 14: User interfaces</h2>
+<h3 id="stream-aligned-teams">Stream-aligned teams</h3>
+<ul>
+<li>
+<p>topologies how to build organizations, teams
+<span class="sidenote-number"><small class="sidenote">
+Book recommendation: <a href="https://www.goodreads.com/en/book/show/44135420-team-topologies">Team Topologies: Organizing Business and Technology Teams for Fast Flow</a>
+</small></span></p>
+</li>
+<li>
+<p>aka &ldquo;full-stack teams&rdquo;</p>
+</li>
+<li>
+<p>a team aligned to a single, valuable stream of work</p>
+</li>
+<li>
+<p>the team is empowered to build and deliver customer or user value as quickly
+and independently as possible, without requiring hand-offs to other teams to
+perform parts of the work</p>
+</li>
+</ul>
+<h3 id="microfrontends">Microfrontends</h3>
+<ul>
+<li>
+<p>architectural style where independently deliverable frontend applications are
+composed into a greater whole
+<span class="sidenote-number"><small class="sidenote">
+Check out Martin Fowler&rsquo;s <a href="https://martinfowler.com/articles/micro-frontends.html">article</a>.
+</small></span></p>
+</li>
+<li>
+<p>possible implementations</p>
+<ul>
+<li>widget-based decomposition</li>
+<li>page-based decomposition</li>
+</ul>
+</li>
+</ul>
+<h3 id="scs">SCS</h3>
+<ul>
+<li>
+<p>stands for Self-Contained Systems
+<span class="sidenote-number"><small class="sidenote">
+Read more on the <a href="https://scs-architecture.org/">official site</a>
+</small></span></p>
+</li>
+<li>
+<p>highlights</p>
+<ul>
+<li>each SCS is an autonomous web application with no shared UI</li>
+<li>each SCS is owned by one team</li>
+<li>asynchronous communication should be used whenever possible</li>
+<li>no business code can be shared between multiple SCSs</li>
+</ul>
+</li>
+</ul>
+<h2 id="ch-dot-15-organizational-structures">Ch. 15: Organizational structures</h2>
+<ul>
+<li><a href="#stream-aligned-teams">Stream-aligned teams</a>
+<ul>
+<li>concept aligns with loosely-coupled organizations (as in <a href="https://brainfck.org/#Accelerate">Accelerate</a>)</li>
+</ul>
+</li>
+</ul>
+<h3 id="conways-law">Conways Law</h3>
+<blockquote>
+<p>&ldquo;Any organization that designs a system will inevitably produce a design whose structure
+is a copy of the organizations communication structure&rdquo; - Melvin Conway</p>
+</blockquote>
+<h3 id="all-about-people">All about people</h3>
+<blockquote>
+<p>&ldquo;Whatever industry you operate in, it is all about your people, and catching them doing things right, and providing them with the
+confidence, the motivation, the freedom and desire to achieve their true potential&rdquo; - John Timpson
+<span class="sidenote-number"><small class="sidenote">
+Also interesting is the concept of paved roads, where best-practices are available but deviations are also allowed.
+</small></span></p>
+</blockquote>
+<h2 id="ch-dot-16-the-evolutionary-architect">Ch. 16: The evolutionary architect</h2>
+<h3 id="role-of-architects">Role of architects</h3>
+<ul>
+<li>We should think of the role of IT architects more as <strong>town planners</strong> than architects for the built environment
+<span class="sidenote-number"><small class="sidenote">
+Sam uses the <a href="https://en.wikipedia.org/wiki/Seagram_Building">Seagram Building</a> (designed by Mies van der Rohe) as an universal place to visualize the role of an (IT) architect.
+</small></span></li>
+</ul>
+<h3 id="buildings-and-software">Buildings and software</h3>
+<blockquote>
+<p>The comparison with software should be obvious. As our users use our software, we need
+to react and change. We cannot foresee everything that will happen, and so rather than
+plan for any eventuality, we should plan to allow for change by avoiding the urge to
+overspecify every last thing. Our city (the system) needs to be a good, happy place for
+everyone who uses it. One thing that people often forget is that our system doesn&rsquo;t just
+accommodate users; it also accommodates developers and operations people who also have
+to work there, and who have the job of making sure it can change as required.</p>
+</blockquote>
+<h3 id="governance">Governance</h3>
+<blockquote>
+<p>Governance ensures that enterprise objectives are achieved by evaluating
+stakeholder needs, conditions and options; setting direction through
+prioritisation and decision making; and monitoring performance, compliance and
+progress against agreed-on direction and objectives. &ndash; Cobit 5</p>
+</blockquote>
+<h3 id="responsibilities-of-the-evolutionary-architect">Responsibilities of the evolutionary architect</h3>
+<ul>
+<li><strong>Vision</strong>
+<ul>
+<li>clearly communicated technical vision for the system that will help meet requirements of customers and organization</li>
+</ul>
+</li>
+<li><strong>Empathy</strong>
+<ul>
+<li>understand impact of decissions on customers and colleagues</li>
+</ul>
+</li>
+<li><strong>Collaboration</strong>
+<ul>
+<li>engage with as many of your pears and colleagues as possible to help
+define, refine and execute the vision</li>
+</ul>
+</li>
+<li><strong>Adaptability</strong>
+<ul>
+<li>tech vision changes as required by customers/organization</li>
+</ul>
+</li>
+<li><strong>Autonomy</strong>
+<ul>
+<li>balance between standardizing and enabling autonomy for your teams</li>
+</ul>
+</li>
+<li><strong>Governance</strong>
+<ul>
+<li>system being implemented fits the tech vision</li>
+<li>make sure it&rsquo;s easy for people to do the right thing</li>
+</ul>
+</li>
+</ul>
+<h3 id="book-recommendations">Book recommendations</h3>
+<ul>
+<li><a href="https://www.goodreads.com/en/book/show/35755822-building-evolutionary-architectures">Building evolutionary architectures</a></li>
+<li><a href="https://www.goodreads.com/book/show/49828197-the-software-architect-elevator">The software architect elevator</a></li>
+</ul>
+</div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2022/07/12/tiddlywiki-and-emacs/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2022 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>
