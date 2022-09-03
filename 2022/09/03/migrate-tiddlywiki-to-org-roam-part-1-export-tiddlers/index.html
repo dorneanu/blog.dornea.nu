@@ -1,0 +1,1588 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Migrate Tiddlywiki to org-roam - Part 1: Export Tiddlers - blog.dornea.nu</title>
+  <meta content='Migrate Tiddlywiki to org-roam - Part 1: Export Tiddlers - blog.dornea.nu' property='title' />
+  <meta content='Migrate Tiddlywiki to org-roam - Part 1: Export Tiddlers - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="In the first part of this series I&rsquo;ll outline the main factors why I&rsquo;ve decided to move my digital garden / braindump / Zettelkasten to org-roam and which factors have facilitated this decision. In the 2nd part (still work in progress) I will expand more how I&rsquo;ve built the new brainfck.org using hugo, ox-hugo and org-roam.  Motivation I&rsquo;ve been using Tiddlywiki for almost 10 years now and setup different instances for work, personal stuff and lately as my own personal knowledge management system." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2022/09/03/migrate-tiddlywiki-to-org-roam-part-1-export-tiddlers/" />
+
+
+<meta property="article:published_time" content="2022-09-03T22:04:00&#43;02:00"/>
+
+<meta property="article:modified_time" content="2022-09-03T22:04:37&#43;02:00"/>
+
+
+
+
+
+  
+  
+
+
+
+
+
+<meta name="generator" content="Hugo 0.89.4" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Migrate Tiddlywiki to org-roam - Part 1: Export Tiddlers</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>03 Sep 2022</time> 
+     | 
+    
+
+    
+     ~
+  
+
+16 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/tiddlywiki' class="link silver">tiddlywiki</a> <a href='https://blog.dornea.nu/tags/org' class="link silver">org</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item active">
+                    Part 1: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+      
+
+
+<blockquote class="notice warning">
+  In the <strong>first part</strong> of this series I&rsquo;ll outline the main factors why I&rsquo;ve decided
+to move my digital garden / braindump / Zettelkasten to <a href="https://github.com/org-roam/org-roam">org-roam</a> and which factors
+have facilitated this decision. In the <strong>2nd part</strong> (still work in progress) I will expand more
+how I&rsquo;ve built the new <a href="https://brainfck.org">brainfck.org</a> using <a href="https://gohugo.io/">hugo</a>, <a href="https://github.com/kaushalmodi/ox-hugo">ox-hugo</a> and <a href="https://github.com/org-roam/org-roam">org-roam</a>.
+</blockquote>
+
+<h2 id="motivation">Motivation</h2>
+<p>I&rsquo;ve been using Tiddlywiki for almost 10 years now and setup different instances for
+work, personal stuff and lately as my own <a href="https://tw5.brainfck.org">personal knowledge management system</a>. I&rsquo;ve
+used it to save highlights, notes, quotes from different sources and organized them
+in an useful way. I used <a href="https://tw5.brainfck.org/#Journals">daily journaling</a> to handle the daily input of ideas and (web)
+articles I&rsquo;m constantly exposed to. I talked at work about the importance of PKMS
+and how Tiddlywiki can increase productivity and contribute to better (mental) health
+by using it as a second brain.
+<span class="sidenote-number"><small class="sidenote">
+Other popular terms: Zettelkasten (slip box in German), memex, braindump or digital garden.
+</small></span>
+Basically it&rsquo;s all about giving your a brain a rest and offload information to a medium so
+your brain doesn&rsquo;t have to remember everything:</p>
+<blockquote>
+<p>Your brain is for having ideas, not for holding them &ndash; <a href="https://brainfck.org/book/getting-things-done-the-art-of-stress-free-productivity/">Getting Things Done</a></p>
+</blockquote>
+<p>While I initially started using just one <em>single</em> HTML file for my
+tiddlers, I soon switched over to the <a href="https://tiddlywiki.com/static/Node.js.html">nodeJS installation</a>. This still
+has better benefits like:</p>
+<ul>
+<li>you can run the instance in <a href="https://blog.dornea.nu/2022/07/12/tiddlywiki-and-emacs/#basic-setup">Docker</a>
+<ul>
+<li>install <code>tiddlywiki</code> and its dependencies without messing around with your system</li>
+</ul>
+</li>
+<li>you&rsquo;ll get multiple &ldquo;flat&rdquo; files (<code>.tid</code> files are in <em>plain text</em>)
+<ul>
+<li>you can apply <code>sed</code>, <code>awk</code>, <code>bash</code> <em>foo</em> to extract/modify data</li>
+<li>even if Tiddlywiki will be discontinued some day, you&rsquo;ll still be able to import your notes in whatever note-taking syntax</li>
+</ul>
+</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/brainfck-20220903-tw5.png" class="glightbox" data-glightbox="title:old brainfck - Now available at https://tw5.brainfck.org; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/brainfck-20220903-tw5.png" alt="image">
+        <div class="caption">old brainfck - Now available at https://tw5.brainfck.org</div>
+    </a>
+</div>
+
+<p>Among the many packages I&rsquo;ve used, <a href="https://giffmex.org/stroll/stroll.html">stroll</a> has definitely changed the way
+I interacted with Tiddlywiki. It allowed me to <em>focus</em> more on the note-taking process
+by dividing the screen into 2 columns. This allowed me to work on different tiddlers
+simultaneously. Still it took me hours to process my notes and digitize them into Tiddlywiki. I guess the UI kind of slowed me down, mostly because I&rsquo;m a <em>keyboard-centric</em>
+user and don&rsquo;t use the mouse that often. Switching between tiddlers, closing them, creating
+new ones always involved <em>mouse interaction</em>.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/tiddlywiki-stroll.png" class="glightbox" data-glightbox="title:Tiddlywiki using stroll; description: stroll allowed you to split the screen into multiple columns, backlinks are automatically shown.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/tiddlywiki-stroll.png" alt="image">
+        <div class="caption">Tiddlywiki using stroll</div>
+    </a>
+</div>
+
+<p>For the same reason I&rsquo;ve been using VIM for more than a decade and since more than 2 years I&rsquo;m happy to consider myself an <a href="https://www.emacswiki.org/emacs/Evil">evil</a> Emacs user. It became not only my primary editor, but also my <a href="https://blog.dornea.nu/2022/06/29/rss/atom-emacs-and-elfeed/">RSS feeds reader</a>, mail client, YouTube video player, IDE, API client&hellip; I basically live in Emacs
+<span class="sidenote-number"><small class="sidenote">
+Here is my <a href="https://github.com/dorneanu/dotfiles/blob/master/dot_doom.d/config.org">config.org</a>
+</small></span>
+and try to avoid as many context switches as possible.</p>
+<h2 id="personal-preferences">Personal preferences</h2>
+<h3 id="org-mode-as-lingua-franca">ORG mode as lingua franca</h3>
+<p>After going down the Emacs rabbit hole, I&rsquo;ve adopted <a href="https://orgmode.org/">ORG mode</a> as my main file format for writing documents, exporting these to other formats (PDF, markdown, Confluence, Jira and many others), creating diagrams (mainly plantuml), <a href="https://slides.dornea.nu/">presentations</a>, writing technical documentation and hopefully some day for publishing a whole book. For the note-taking phase I write my notes in ORG mode and create a rudimentary outline sorted by chapters/sections. Usually I use the same structure to create my blog posts from (like I did in the <a href="https://blog.dornea.nu/tags/books">book summaries</a>). Extracting pieces of information for individual tiddlers, however, tends to be a <em>time-intensive process</em>. I&rsquo;ve managed to use <a href="https://blog.dornea.nu/2022/07/12/tiddlywiki-and-emacs/#get-tiddler">the Tiddlywiki API within Emacs</a> but my Elisp skills are still not good for doing more advanced stuff like:</p>
+<ul>
+<li>fetch existing tiddlers, modify body in a new buffer, save new tiddler</li>
+<li>when linking text to new/existing tiddler, show list (in the minibuffer) of Tiddlers and if not create new one(s)</li>
+<li>show cross-references (e. g. Backlinks) for a specific tiddler</li>
+<li>refile specific (ORG) headline to a new tiddler</li>
+</ul>
+<p>All these features are some however doable <strong>within</strong> Tiddlywiki using stroll and <a href="https://saqimtiaz.github.io/streams/">streams</a>. But I don&rsquo;t want to use the web UI anymore since I&rsquo;m already <em>inside</em> Emacs for the majority of the day 😅</p>
+<h3 id="editing-on-steroids">Editing on steroids</h3>
+<p>At some point I began adopting ORG style syntax for the new tiddlers too:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/tiddlywiki-syntax.png" class="glightbox" data-glightbox="title:Tiddlywiki Syntax; description: Syntax is pretty similar to the ORG mode one; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/tiddlywiki-syntax.png" alt="image">
+        <div class="caption">Tiddlywiki Syntax</div>
+    </a>
+</div>
+
+<p>If you pay attention, there are lots of similarities. That&rsquo;s why I could easily <em>copy and paste</em> most of the  ORG content into the tiddlers. As for the rest (source blocks, quotes, examples, sidenotes etc.) manual conversion (or using <a href="https://github.com/dfeich/org8-wikiexporters">ox-tiddly</a> ) was necessary.</p>
+<p>It was especially this part that slowed me down in my post-reading process mainly because:</p>
+<ul>
+<li>I&rsquo;m writing my notes in Emacs (using ORG)
+<ul>
+<li>converting to full tiddlywiki syntax takes time</li>
+</ul>
+</li>
+<li>in some of blog posts (written in <a href="https://github.com/dorneanu/blog/tree/master/org">ORG</a>) I wanted to include some content from different tiddlers
+<ul>
+<li>I had to convert Tiddlywiki content back to ORG syntax again</li>
+</ul>
+</li>
+</ul>
+<p>This back and forth between ORG/Emacs and Tiddlywiki combined with the fact I was maintaining <em>multiples sources</em> of information (my raw notes <em>in ORG</em>, my own thoughts / processed notes <em>in Tiddlywiki</em>) brought me to <a href="https://github.com/org-roam/org-roam">org-roam</a>. Not only this, but it also forced me to rethink my note-taking workflow and make adjustments to the whole system.</p>
+
+
+
+<blockquote class="notice info">
+  I&rsquo;ll explicitly cover org-roam, hugo and ox-hugo in the next part.
+</blockquote>
+
+<h2 id="exporting-from-tiddlywiki">Exporting from Tiddlywiki</h2>
+<p>As I&rsquo;ve started exporting my notes from Tiddlywiki I soon realized there are 2 options to do so:</p>
+<ul>
+<li>you could use external standard Unix utilities
+<ul>
+<li>and parse files using <code>sed</code>, <code>aws</code> &amp; co.</li>
+</ul>
+</li>
+<li>but you could also use <a href="https://tiddlywiki.com/static/TemplateTiddlers">Tiddlywikis internal templating system</a> to <em>generate</em> data</li>
+</ul>
+<h3 id="export-tiddlers">Export tiddlers</h3>
+<p><a href="https://github.com/davidag">David Alfonso</a> has done a great job and put together a <a href="https://github.com/davidag/tiddlywiki-migrator">repository</a> that helps you with the
+export of tiddlers. All you need is to export all your tiddlers bundled as one single HTML and
+then follow the instructions in the <code>README</code>.</p>
+<p>In my Tiddlywiki root directory I had a <code>tiddlywiki.info</code> with a build step to export all tiddlers:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">ls -l
+cat tiddlywiki.info
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">total 168
+drwxr-xr-x 3 victor users   4096 Aug 30 06:09 output
+drwxr-xr-x 2 victor users 163840 Aug 29 21:14 tiddlers
+-rw-r--r-- 1 victor users   1316 Aug 16 06:00 tiddlywiki.info
+{
+    &#34;description&#34;: &#34;Basic client-server edition&#34;,
+    &#34;plugins&#34;: [
+        &#34;tiddlywiki/tiddlyweb&#34;,
+        &#34;tiddlywiki/filesystem&#34;,
+        &#34;tiddlywiki/highlight&#34;
+    ],
+    &#34;themes&#34;: [
+        &#34;tiddlywiki/vanilla&#34;,
+        &#34;tiddlywiki/snowwhite&#34;
+    ],
+    &#34;build&#34;: {
+        &#34;index&#34;: [
+            &#34;--rendertiddler&#34;,
+            &#34;$:/plugins/tiddlywiki/tiddlyweb/save/offline&#34;,
+            &#34;index.html&#34;,
+            &#34;text/plain&#34;
+        ],
+        &#34;static&#34;: [
+            &#34;--rendertiddler&#34;,
+            &#34;$:/core/templates/static.template.html&#34;,
+            &#34;static.html&#34;,
+            &#34;text/plain&#34;,
+            &#34;--rendertiddler&#34;,
+            &#34;$:/core/templates/alltiddlers.template.html&#34;,
+            &#34;alltiddlers.html&#34;,
+            &#34;text/plain&#34;,
+            &#34;--rendertiddlers&#34;,
+            &#34;[!is[system]]&#34;,
+            &#34;$:/core/templates/static.tiddler.html&#34;,
+            &#34;static&#34;,
+            &#34;text/plain&#34;,
+            &#34;--rendertiddler&#34;,
+            &#34;$:/core/templates/static.template.css&#34;,
+            &#34;static/static.css&#34;,
+            &#34;text/plain&#34;
+        ],
+        &#34;books&#34;: [
+            &#34;--render&#34;,
+            &#34;[!is[system]prefix[Cashkurs]tag[Book]]&#34;,
+            &#34;[encodeuricomponent[]addprefix[books/]addsuffix[.org]]&#34;,
+            &#34;text/plain&#34;,
+            &#34;$:/vd/templates/render-book&#34;
+        ]
+    }
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Now let&rsquo;s generate the single HTML file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">tiddlywiki . --build index
+ls -lh ./output/index.html
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">-rw-r--r-- 1 victor users 6.0M Aug 30 06:09 ./output/index.html
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="generate-html-and-meta-files">Generate HTML and meta files</h3>
+<p>Once you have generated your single HTML Tiddlywiki file, clone the <a href="https://github.com/davidag/tiddlywiki-migrator">repository</a> and copy your
+file to <code>wiki.html</code> inside the repository&rsquo;s root folder. Then you can run <code>make</code> to export your tiddlers.</p>
+<p>Afterwards, for each tiddler, you will get:</p>
+<ul>
+<li>a <code>HTML</code> file (with the tiddler&rsquo;s content)</li>
+<li>a <code>meta</code> file (containing header information)</li>
+</ul>
+<figure><img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/html-meta-files.png"
+         alt="Figure 1: The original tiddler gets exported into one HTML and one meta file."/><figcaption>
+            <p><span class="figure-number">Figure 1: </span>The original tiddler gets exported into one HTML and one meta file.</p>
+        </figcaption>
+</figure>
+
+<p>As an example (for the &ldquo;zucker&rdquo; tiddler):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cat ./tmp_wiki/output/zucker.html
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">: <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Auch Saccharose<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Gehört zur Familie der Saccharide<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Formen<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Einfachzucker<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;tc-tiddlylink tc-tiddlylink-resolves&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;#Glukose&#34;</span><span class="p">&gt;</span>Glukose<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;tc-tiddlylink tc-tiddlylink-resolves&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;#Fruktose&#34;</span><span class="p">&gt;</span>Fruktose<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Mehrfachzucker<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Stärke<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Haushaltszucker<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Dissacharid<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Besteht aus 2 Monosacchariden<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Glukose (Traubenzucker)<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Fruktose (Fruchtzucker)<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;tc-tiddlylink tc-tiddlylink-resolves&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;#S%C3%BC%C3%9Fstoffe&#34;</span><span class="p">&gt;</span>Süßstoffe<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  HTML file
+</div>
+<p>And now the <code>meta</code> data:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cat ./tmp_wiki/output/zucker.meta
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">created: 20200727100215598
+lang: de
+modified: 20210518184433986
+origin: [[&lt;&lt;. bibliography &#34;Der Ernährungskompass&#34; &#34;Der Ernährungskompass&#34;&gt;&gt;]]
+revision: 0
+tags:
+title: Zucker
+tmap.id: c268554d-9122-4728-88e0-0549ec026010
+type: text/vnd.tiddlywiki
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="convert-to-org-mode">Convert to ORG mode</h3>
+<p>The original repository will export by default all tiddlers to <code>markdown</code>. Since <code>pandoc</code> is used
+we can also export to ORG mode directly by changing the Makefile.
+<span class="sidenote-number"><small class="sidenote">
+I&rsquo;ve created a <a href="https://github.com/dorneanu/tiddlywiki-migrator">fork</a> with my own customizations.
+</small></span>
+Instead of exporting to <code>commonmark</code> we export to <code>markdown</code> first:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="err">...</span>
+<span class="nf">$(MARKDOWN_DIR)/%.md </span><span class="o">:</span> <span class="k">$(</span><span class="nv">TW_OUTPUT_DIR</span><span class="k">)</span>/%.<span class="n">html</span>
+    @echo <span class="s2">&#34;Generating markdown file &#39;</span><span class="k">$(</span>@F<span class="k">)</span><span class="s2">&#39;...&#34;</span>
+    @<span class="k">$(</span>PANDOC<span class="k">)</span> -f html-native_divs-native_spans -t markdown <span class="se">\
+</span><span class="se"></span>        --wrap<span class="o">=</span>none -o - <span class="s2">&#34;</span>$<span class="s2">^&#34;</span> &gt;&gt; <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+<span class="err">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Then for every generated <code>markdown</code> file we</p>
+<ul>
+<li>add <code>#+</code> to every header line (in the corresponding <code>.meta</code> file)</li>
+<li>insert a newline after header lines</li>
+<li>convert the <code>markdown</code> file to <code>ORG</code> format</li>
+</ul>
+<!--listend-->
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="err">...</span>
+
+<span class="nf">$(ORG_DIR)/%.org </span><span class="o">:</span> <span class="k">$(</span><span class="nv">MARKDOWN_DIR</span><span class="k">)</span>/%.<span class="n">md</span>
+    @echo <span class="s2">&#34;Generating ORG file &#39;</span><span class="k">$(</span>@F<span class="k">)</span><span class="s2">&#39;...&#34;</span>
+
+    <span class="c1"># Add #+ to every header line</span>
+    @cat <span class="s2">&#34;</span><span class="k">$(</span>TW_OUTPUT_DIR<span class="k">)</span><span class="s2">/`basename </span>$<span class="s2">^ .md`.meta&#34;</span> <span class="p">|</span> sed -s <span class="s1">&#39;s/^/#+/&#39;</span> &gt;&gt; <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+
+    <span class="c1"># Insert newline after header lines</span>
+    @echo <span class="s2">&#34;&#34;</span> &gt;&gt; <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+
+    <span class="c1"># Convert from markdown to org</span>
+    @<span class="k">$(</span>PANDOC<span class="k">)</span> -f markdown -t org --wrap<span class="o">=</span>none -o - <span class="s2">&#34;</span>$<span class="s2">^&#34;</span> &gt;&gt; <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+
+<span class="err">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><figure><img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/combined-files.png"
+         alt="Figure 2: The ORG file consists of the meta file (where every line is prepended by #&#43;) and the corresponding markdown file."/><figcaption>
+            <p><span class="figure-number">Figure 2: </span>The ORG file consists of the meta file (where every line is prepended by #+) and the corresponding markdown file.</p>
+        </figcaption>
+</figure>
+
+<p>This is how the final ORG file looks like:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cat org_tiddlers/zucker.org
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org"><span class="cs">#+created</span><span class="c">: 20200727100215598</span>
+<span class="cs">#+lang</span><span class="c">: de</span>
+<span class="cs">#+modified</span><span class="c">: 20210518184433986</span>
+<span class="cs">#+origin</span><span class="c">: [[&lt;&lt;. bibliography &#34;Der Ernährungskompass&#34; &#34;Der Ernährungskompass&#34;&gt;&gt;]]</span>
+<span class="cs">#+revision</span><span class="c">: 0</span>
+<span class="cs">#+tags</span><span class="c">:</span>
+<span class="cs">#+title</span><span class="c">: Zucker</span>
+#+tmap.id: c268554d-9122-4728-88e0-0549ec026010
+<span class="cs">#+type</span><span class="c">: text/vnd.tiddlywiki</span>
+
+<span class="k">- </span>  Auch Saccharose
+<span class="k">- </span>  Gehört zur Familie der Saccharide
+<span class="k">- </span>  Formen
+    <span class="k">- </span>  Einfachzucker
+        <span class="k">- </span>  [Glukose](#Glukose){.tc-tiddlylink .tc-tiddlylink-resolves}
+        <span class="k">- </span>  [Fruktose](#Fruktose){.tc-tiddlylink
+            .tc-tiddlylink-resolves}
+    <span class="k">- </span>  Mehrfachzucker
+        <span class="k">- </span>  Stärke
+<span class="k">- </span>  Haushaltszucker
+    <span class="k">- </span>  Dissacharid
+    <span class="k">- </span>  Besteht aus 2 Monosacchariden
+        <span class="k">- </span>  Glukose (Traubenzucker)
+        <span class="k">- </span>  Fruktose (Fruchtzucker)
+<span class="k">- </span>  [Süßstoffe](#S%C3%BC%C3%9Fstoffe){.tc-tiddlylink
+    .tc-tiddlylink-resolves}
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  Generated ORG file
+</div>
+<h2 id="extract-bookmarks">Extract bookmarks</h2>
+<p>I have lots of bookmarks (each one is mapped to one <code>tiddler</code>) tagged in this way:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cat org_tiddlers/bookmarks/writing_a_technical_book_in_emacs_and_org_mode_.org
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org"><span class="cs">#+created</span><span class="c">: 20220201125456750</span>
+<span class="cs">#+modified</span><span class="c">: 20220203071728094</span>
+<span class="cs">#+name</span><span class="c">: Writing a Technical Book in Emacs and Org Mode</span>
+<span class="cs">#+note</span><span class="c">: Author writes about the workflow itself, importance of pomodoro</span>
+<span class="cs">#+revision</span><span class="c">: 0</span>
+<span class="cs">#+tags</span><span class="c">: Bookmark [[ORG Mode]] Writing</span>
+<span class="cs">#+title</span><span class="c">: Writing a Technical Book in Emacs and Org Mode</span>
+<span class="cs">#+type</span><span class="c">: text/vnd.tiddlywiki</span>
+<span class="cs">#+url</span><span class="c">: https://www.kpkaiser.com/programming/writing-a-technical-book-in-emacs-and-org-mode/</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>So each bookmarks consists of:</p>
+<ul>
+<li>a <em>name</em></li>
+<li>a <em>note</em></li>
+<li>an <em>url</em></li>
+<li>a <em>title</em> (usually the same as <em>name</em>)</li>
+</ul>
+<p>Now we can easily parse these files and create the desired structure. For this purpose I&rsquo;ve used this tinny <code>Python</code> snippet:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">note</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+<span class="n">title</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+<span class="n">created</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+
+    <span class="c1"># Extract created</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&#34;^#\+created: (.*)$&#34;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">created</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Extract note</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&#34;^#\+title: (.*)$&#34;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Extract note</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&#34;^#\+note: (.*)$&#34;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">note</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Extract URL</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&#34;^#\+url: (.*)$&#34;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Extract tags</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&#34;^#\+tags: (.*)$&#34;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">_tags</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="n">_tags</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34; &#34;</span><span class="p">)</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;:&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;:</span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="s2">:&#34;</span>
+
+
+<span class="c1"># Print</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;* [[</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">][</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">]]</span><span class="se">\t\t</span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="se">\n</span><span class="s2">  :PROPERTIES:</span><span class="se">\n</span><span class="s2">  :CREATED: </span><span class="si">{</span><span class="n">created</span><span class="si">}</span><span class="se">\n</span><span class="s2">  :NOTE: </span><span class="si">{</span><span class="n">note</span><span class="si">}</span><span class="se">\n</span><span class="s2">  :END:</span><span class="se">\n</span><span class="s2"> &#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Used against our bookmark file it will yield:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cat org_tiddlers/bookmarks/writing_a_technical_book_in_emacs_and_org_mode_.org <span class="p">|</span> python3 /tmp/extract-bookmark.py
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org"><span class="gh">*</span><span class="gs"> [[https://www.kpkaiser.com/programming/writing-a-technical-book-in-emacs-and-org-mode/][Writing a Technical Book in Emacs and Org Mode ]]		:Bookmark:[[ORG:Mode]]:Writing:</span>
+<span class="c">  :PROPERTIES:
+</span><span class="c"></span><span class="cs">  :CREATED: 20220201125456750
+</span><span class="cs">  :NOTE: Author writes about the workflow itself, importance of pomodoro
+</span><span class="cs"></span><span class="c">  :END:</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This way we get a nice <a href="https://orgmode.org/guide/Headlines.html">ORG mode headline</a> with some <a href="https://orgmode.org/guide/Properties.html">properties</a>. Now let&rsquo;s convert
+all available bookmarks and save into one big file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> org_tiddlers
+rm /tmp/bookmarks.org
+grep * -e <span class="s2">&#34;#+tags:.*Bookmark*&#34;</span> -l <span class="p">|</span> xargs -I <span class="s2">&#34;{}&#34;</span> sh -c <span class="s2">&#34;grep -e &#39;^#.*</span>$<span class="s2">&#39; {} | python3 /tmp/extract-bookmark.py; mv {} bookmarks/&#34;</span> &gt;&gt; /tmp/bookmarks.org
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s check how many entries we got:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cat /tmp/bookmarks.org <span class="p">|</span> grep <span class="s2">&#34;\* \[\[&#34;</span> <span class="p">|</span> wc -l -
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">425 -
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="extract-journal-entries">Extract journal entries</h2>
+<p>Collect all <code>journal</code> tiddlers and merge them into one big file.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> org_tiddlers
+rm /tmp/journals.org
+grep * -e <span class="s2">&#34;#+tags: Journal&#34;</span> -l <span class="p">|</span> xargs -I % sh -c <span class="se">\
+</span><span class="se"></span>   <span class="s2">&#34;echo -e &#39;* %&#39; | tr -d &#39;.org&#39; &gt;&gt; /tmp/journals.org; \
+</span><span class="s2">    cat % | sed &#39;/^#+tmap.id/d;/^#+title:/d;/^#+tags:/d;/^#+created:/d;/^#+modified/d;/^#+revision/d;/^#+type/d&#39; \
+</span><span class="s2">    &gt;&gt; /tmp/journals.org&#34;</span>
+head -n <span class="m">10</span> /tmp/journals.org
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org"><span class="gh">*</span><span class="gs"> 2020-09-14</span>
+
+<span class="k">- </span>[[<span class="na">https://www.swr.de/swr2/programm/broadcastcontrib-swr-13438.html</span>][<span class="nt">Wie funktioniert Selbstregulierung?</span>]]
+  <span class="k">- </span>auch in der [[<span class="na">https://www.ardaudiothek.de/wissen/wie-funktioniert-selbstregulierung/80172244</span>][<span class="nt">ARD audiothek</span>]]
+<span class="k">- </span>Un podcast interesant despre [[<span class="na">https://www.stareanatiei.ro/podcasts/</span>][<span class="nt">starea natiei</span>]]
+  <span class="k">- </span>este si [[<span class="na">https://www.youtube.com/channel/UCtK5Oe8sHjp6WPcwWuHUVpQ</span>][<span class="nt">canal youtube</span>]]
+<span class="k">- </span>[[<span class="na">https://stackoverflow.com/questions/42531643/amazon-s3-static-web-hosting-caching</span>][<span class="nt">how to use caching with S3 static site hosting</span>]]
+<span class="gh">*</span><span class="gs"> 2020-09-15</span>
+
+<span class="k">- </span>this site supports now [[<span class="na">https://brainfck.org</span>][<span class="nt">TLS/SSL</span>]]
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="extract-books">Extract books</h2>
+<p>This was the most difficult part and I&rsquo;ll try to explain why. This is how a <code>book</code> tiddler usually looks like (<a href="https://tw5.brainfck.org/#1984">1984</a>):</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/1984-tiddler.png" class="glightbox" data-glightbox="title:1984 book; description: There are different related tiddlers I&#39;ve created to each book tiddler; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/1984-tiddler.png" alt="image">
+        <div class="caption">1984 book</div>
+    </a>
+</div>
+
+<p>Usually I have some content inside the tiddler but also some additional tiddlers related to the book:</p>
+<ul>
+<li><strong>notes/quotes</strong>
+<ul>
+<li>most of the time these are <strong>quotes</strong></li>
+<li>Examples: <code>1984 - Note 1</code>, <code>1984 - Note 2</code> etc.</li>
+</ul>
+</li>
+<li><strong>subtopics</strong>
+<ul>
+<li>for each interesting thought/concept I&rsquo;ve found in the book I create a new tiddler where the name has following syntax: <code>&lt;book&gt;/&lt;subtopic&gt;</code>.
+<ul>
+<li>I&rsquo;ve initially read about this idea on <a href="https://zettelkasten.sorenbjornstad.com/">Soren&rsquo;s Zettelkasten</a> and I liked it</li>
+</ul>
+</li>
+<li>Examples:
+<ul>
+<li><a href="https://tw5.brainfck.org/#1984/Versklavung">1984/Versklavung</a></li>
+<li><a href="https://tw5.brainfck.org/#1984/Krieg%20ist%20Frieden">1984/Krieg ist Frieden</a></li>
+<li><a href="https://tw5.brainfck.org/#1984/Wohlstand">1984/Wohlstand</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Basically I wanted to merge every tiddler into one <code>ORG</code> file.</p>
+<figure><img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/book-tiddlers.png"
+         alt="Figure 3: Merge every single tiddler related to 1984 into one big ORG file."/><figcaption>
+            <p><span class="figure-number">Figure 3: </span>Merge every single tiddler related to 1984 into one big ORG file.</p>
+        </figcaption>
+</figure>
+
+<p>Instead of applying some <code>sed</code> &amp; <code>awk</code> magic, I decided to use Tiddlywikis internal templating system. The <a href="http://tw5.brainfck.org/#%24%3A%2Fcore%2Ftemplates%2Fstatic.tiddler.html">$:/core/templates/static.tiddler.html</a> template for examples defines how a single tiddler should be exported
+to its corresponding HTML file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">\define tv-wikilink-template() $uri_doubleencoded$.html
+\define tv-config-toolbar-icons() no
+\define tv-config-toolbar-text() no
+\define tv-config-toolbar-class() tc-btn-invisible
+\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]
+`<span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">&#34;Content-Type&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;text/html;charset=utf-8&#34;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;generator&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;TiddlyWiki&#34;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;tiddlywiki-version&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;`{{$:/core/templates/version}}`&#34;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;apple-mobile-web-app-capable&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;yes&#34;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;apple-mobile-web-app-status-bar-style&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;black-translucent&#34;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;mobile-web-app-capable&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;yes&#34;</span><span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;format-detection&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;telephone=no&#34;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;faviconLink&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;shortcut icon&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;favicon.ico&#34;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;stylesheet&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;static.css&#34;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>`<span class="err">&lt;</span>$view field=&#34;caption&#34;&gt;<span class="err">&lt;</span>$view field=&#34;title&#34;/&gt;<span class="err">&lt;</span>/$view&gt;: {{$:/core/wiki/title}}`<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;tc-body&#34;</span><span class="p">&gt;</span>
+`{{$:/StaticBanner||$:/core/templates/html-tiddler}}`
+<span class="p">&lt;</span><span class="nt">section</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;tc-story-river tc-static-story-river&#34;</span><span class="p">&gt;</span>
+`<span class="err">&lt;</span>$view tiddler=&#34;$:/core/ui/ViewTemplate&#34; format=&#34;htmlwikified&#34;/&gt;`
+<span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>We can use the same mechanism to define a template for a book tiddler whenever this has to be
+exported. But first of all let&rsquo;s see how a template is used when exporting:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="nf">export-books </span><span class="o">:</span> <span class="n">deps</span> <span class="n">pre</span>
+    @echo <span class="s2">&#34;Exporting all book tiddlers from </span><span class="k">$(</span>ORIGINAL_TIDDLYWIKI<span class="k">)</span><span class="s2"> to ORG with custom render template&#34;</span>
+    <span class="k">$(</span>NODEJS<span class="k">)</span> <span class="k">$(</span>TIDDLYWIKI_JS<span class="k">)</span> <span class="k">$(</span>WIKI_NAME<span class="k">)</span> --load <span class="k">$(</span>ORIGINAL_TIDDLYWIKI<span class="k">)</span> <span class="se">\
+</span><span class="se"></span>        --render <span class="o">[</span>!is<span class="o">[</span>system<span class="o">]</span>tag<span class="o">[</span>Book<span class="o">]]</span> <span class="o">[</span>encodeuricomponent<span class="o">[]</span>addprefix<span class="o">[</span>books/<span class="o">]</span>addsuffix<span class="o">[</span>.org<span class="o">]]</span> <span class="se">\
+</span><span class="se"></span>        text/plain <span class="nv">$$</span>:/vd/templates/render-book
+    <span class="k">$(</span>NODEJS<span class="k">)</span> <span class="k">$(</span>SAFE_RENAME_JS<span class="k">)</span> <span class="k">$(</span>TW_OUTPUT_DIR<span class="k">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This is what happens:</p>
+<ul>
+<li>we load the single HTML Tiddlywiki file via <code>--load</code></li>
+<li>we use <code>--render</code>
+<span class="sidenote-number"><small class="sidenote">
+Read more about the <a href="https://tiddlywiki.com/static/RenderCommand.html">RenderCommand</a>.
+</small></span>
+to export a list of tiddlers</li>
+<li>as a filter we use <code>[!is[system]tag[Book]]</code> which means:
+<ul>
+<li>give me all non-<a href="https://tiddlywiki.com/static/SystemTiddlers.html">system tiddlers</a> and from this selection</li>
+<li>give me all tiddlers tagged with <code>Book</code></li>
+</ul>
+</li>
+<li><code>[encodeuricomponent[]addprefix[books/]addsuffix[.org]]</code> handles the file path of tiddler to be exported</li>
+<li><code>$$:/vd/templates/render-book</code> is the name of the template to be used</li>
+</ul>
+<p>And now <code>$:/vd/templates/render-book</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org">\define quotesFilter() [prefix&lt;<span class="s">currentTiddler</span>&gt;!title&lt;<span class="s">currentTiddler</span>&gt;tag[quote]sortan[]]
+\define childrenFilter() [prefix&lt;<span class="s">currentTiddler</span>&gt;!title&lt;<span class="s">currentTiddler</span>&gt;!tag[quote]sortan[]]
+
+&lt;<span class="s">$list filter=[all[current]]</span>&gt;
+<span class="gh">*</span><span class="gs"> {{!!title}}</span>
+<span class="c">  :PROPERTIES:
+</span><span class="c"></span><span class="cs">  :FINISHED: {{!!finished_year}}-{{!!finished_month}}
+</span><span class="cs"></span><span class="c">  :END:</span>
+<span class="gu">**</span> Description
+{{!!text}}
+&lt;<span class="s">/$list</span>&gt;
+
+<span class="gu">**</span> Notes
+&lt;$list filter=&#34;[subfilter&lt;<span class="s">childrenFilter</span>&gt;]&#34;&gt;
+<span class="gu">***</span> {{!!title}}                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED: {{!!created}}
+</span><span class="cs">      :TAGS: {{!!tags}}
+</span><span class="cs"></span><span class="c">      :END:</span>
+&lt;<span class="s">/$list</span>&gt;
+
+<span class="gu">**</span> Quotes
+&lt;$list filter=&#34;[subfilter&lt;<span class="s">quotesFilter</span>&gt;]&#34;&gt;
+<span class="gu">***</span> {{!!title}}                 <span class="ge"> :quote:</span>
+{{!!text}}
+&lt;<span class="s">/$list</span>&gt;
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 3:</span>
+  The Tiddlywiki render template I've used to export my books and related tiddlers.
+</div>
+<p>Let&rsquo;s dissect the snippet fragment by fragment.</p>
+<h3 id="add-book-content">Add book content</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org">...
+&lt;<span class="s">$list filter=[all[current]]</span>&gt;
+<span class="gh">*</span><span class="gs"> {{!!title}}</span>
+<span class="c">  :PROPERTIES:
+</span><span class="c"></span><span class="cs">  :FINISHED: {{!!finished_year}}-{{!!finished_month}}
+</span><span class="cs"></span><span class="c">  :END:</span>
+<span class="gu">**</span> Description
+{{!!text}}
+&lt;<span class="s">/$list</span>&gt;
+...
+</code></pre></td></tr></table>
+</div>
+</div><p>We create a list of tiddlers with following filter: <code>[all[current]]</code> (another way to express we just want the <em>current</em> tiddler).
+We then create an ORG mode headline consisting of the field <code>title</code> in the current tiddler (<code>{{!!title}}</code>). Then we add
+a <code>FINISHED</code> property using the fields <code>finished_year</code> and <code>finished_month</code></p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/1984-fields.png" class="glightbox" data-glightbox="title:Fields of 1984 tiddler; description: Every field in the tiddler can be accessed via {{!!field}}; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/1984-fields.png" alt="image">
+        <div class="caption">Fields of 1984 tiddler</div>
+    </a>
+</div>
+
+<p>Then I create a sub-heading called <code>Description</code> where I put the tiddler&rsquo;s content (field <code>text</code>).</p>
+<h3 id="add-notes">Add notes</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org">...
+\define childrenFilter() [prefix&lt;<span class="s">currentTiddler</span>&gt;!title&lt;<span class="s">currentTiddler</span>&gt;!tag[quote]sortan[]]
+...
+<span class="gu">**</span> Notes
+&lt;$list filter=&#34;[subfilter&lt;<span class="s">childrenFilter</span>&gt;]&#34;&gt;
+<span class="gu">***</span> {{!!title}}                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED: {{!!created}}
+</span><span class="cs">      :TAGS: {{!!tags}}
+</span><span class="cs"></span><span class="c">      :END:</span>
+&lt;<span class="s">/$list</span>&gt;
+...
+</code></pre></td></tr></table>
+</div>
+</div><p>We create a sub-heading called <code>Notes</code> where we add additional sub-nodes. For this to work we create again
+a list of tiddlers where we apply the filter: <code>[subfilter&lt;childrenFilter&gt;]</code>. <code>childrenFilter</code> is defined
+at the top:</p>
+<ul>
+<li>
+<p><code>prefix&lt;currentTiddler&gt;</code></p>
+<ul>
+<li>We focus only on the tiddlers which have the <code>currentTiddler</code> as a prefix.</li>
+<li>if <code>currentTiddler</code> is 1984, then this will match
+<ul>
+<li><code>1984 - Note 1</code></li>
+<li><code>1984/Wohlstand</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>!title&lt;currentTiddler&gt;</code></p>
+<ul>
+<li>This makes sure we don&rsquo;t match ourself (the <code>currentTiddler</code>)</li>
+</ul>
+</li>
+<li>
+<p><code>!tag[quote]</code></p>
+<ul>
+<li>Match only tiddlers which don&rsquo;t have tag <code>quote</code></li>
+</ul>
+</li>
+<li>
+<p><code>sortan[]</code></p>
+<ul>
+<li>Sort list of tiddlers by text field
+<span class="sidenote-number"><small class="sidenote">
+The <a href="https://tiddlywiki.com/static/sortan%2520Operator.html">sortan Operator</a>
+</small></span></li>
+</ul>
+</li>
+</ul>
+<p>For the sub-heading we then add some properties: <code>CREATED</code> (field <code>created</code>) and <code>TAGS</code> (field <code>tags</code>).</p>
+<h3 id="add-quotes">Add quotes</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org">\define quotesFilter() [prefix&lt;<span class="s">currentTiddler</span>&gt;!title&lt;<span class="s">currentTiddler</span>&gt;tag[quote]sortan[]]
+...
+<span class="gu">**</span> Quotes
+&lt;$list filter=&#34;[subfilter&lt;<span class="s">quotesFilter</span>&gt;]&#34;&gt;
+<span class="gu">***</span> {{!!title}}                 <span class="ge"> :quote:</span>
+{{!!text}}
+&lt;<span class="s">/$list</span>&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>Also here we create a sub-heading called <code>Quotes</code> and underneath we create additional sub-nodes
+for the quotes. As for <code>Notes</code> we have a subfilter (<code>quotesFilter</code>):</p>
+<ul>
+<li>it matches all tiddlers which have the currentTiddler&rsquo;s title as a prefix</li>
+<li>AND are tagged by <code>quote</code>.</li>
+</ul>
+<h3 id="put-everything-together">Put everything together</h3>
+<p>Now that we have a template let&rsquo;s have a look at the output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ tiddlywiki . --load ./output/index.html <span class="se">\
+</span><span class="se"></span>               --render <span class="s2">&#34;[!is[system]prefix[1984]tag[Book]]&#34;</span> <span class="se">\
+</span><span class="se"></span>               <span class="s2">&#34;[encodeuricomponent[]addprefix[books/]addsuffix[.org]]&#34;</span> <span class="se">\
+</span><span class="se"></span>               <span class="s2">&#34;text/plain&#34;</span><span class="se">\
+</span><span class="se"></span>               <span class="s2">&#34;</span>$<span class="s2">:/vd/templates/render-book&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 4:</span>
+  Export everything related to '1984' by applying the <code>$:/vd/templates/render-book</code> template.
+</div>
+<p>And this is what we get:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cat ./output/books/1984.org
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org"><span class="gh">*</span><span class="gs"> 1984</span>
+<span class="c">  :PROPERTIES:
+</span><span class="c"></span><span class="cs">  :FINISHED: 2021-05
+</span><span class="cs"></span><span class="c">  :END:</span>
+<span class="gu">**</span> Description
+<span class="gh">*</span><span class="gs"> Theorie und Praxis des oligarchischen Kollektivismus</span>
+<span class="gu">**</span> von Emmanuel Goldstein
+<span class="gu">**</span> Kapitel 1: Unwissenheit ist Stärke
+<span class="gu">**</span> Kapitel 3: 1984/Krieg ist Frieden
+
+<span class="gu">**</span> Notes
+<span class="gu">***</span> 1984/3 Arten von Menschen                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS: Definition
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Aufteilung der Welt                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS: Stub
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Der Große Bruder                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Doppeldenk                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Krieg                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Krieg ist Frieden                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Kulturelle Integrität                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Rolle der Partei                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Versklavung                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+
+<span class="gu">***</span> 1984/Wohlstand                 <span class="ge"> :note:</span>
+<span class="c">      :PROPERTIES:
+</span><span class="c"></span><span class="cs">      :CREATED:
+</span><span class="cs">      :TAGS:
+</span><span class="cs"></span><span class="c">      :END:</span>
+<span class="gu">**</span> Quotes
+<span class="gu">***</span> 1984 - Note 1                 <span class="ge"> :quote:</span>
+Krieg ist Frieden, Freiheit ist Sklaverei, Unwissenheit ist Stärke - Ministerium für Wahrheit
+
+
+<span class="gu">***</span> 1984 - Note 2                 <span class="ge"> :quote:</span>
+Gedankendelikt hat nicht den Tod zur Folge: Gedankendelikt IST der Tod.
+
+
+<span class="gu">***</span> 1984 - Note 3                 <span class="ge"> :quote:</span>
+&#34;Begreifst du denn nicht, dass Neusprech zur ein Ziel hat, nämlich den Gedankenspielraum einzuengen? Zu guter Letzt werden wir
+Gedankendelikte buchstäblich unmöglich machen, weil es keine Wörter mehr geben wird, um sie auszudrücken. Jeder
+Begriff, der jemals benötigt werden könnte, wird durch exakt ein Wort ausgedrückt sein, dessen Bedeutung streng definiert ist und dessen
+sämtliche Nebendeutungen eliminiert und vergessen sind.&#34;
+
+
+<span class="gu">***</span> 1984 - Note 4                 <span class="ge"> :quote:</span>
+Freiheit bedeutet die Freiheit, zu sagen, dass zwei und zwei vier ist. Gilt dies, ergibt sich alles übrige von selbst.
+
+
+<span class="gu">***</span> 1984 - Note 5                 <span class="ge"> :quote:</span>
+Die Massen revoltieren nie aus eigenem Antrieb, und sie revoltieren nie, nur weil sie unterdrückt werden. Solange man ihnen die Vergleichsmaßstäbe entzieht, werden sie nicht einmal merken, dass man sie unterdrückt.
+</code></pre></td></tr></table>
+</div>
+</div><p>I think that&rsquo;s pretty good.
+<span class="sidenote-number"><small class="sidenote">
+And this is the final <a href="https://brainfck.org/book/1984/">result</a>.
+</small></span>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/brainfck-20220903-hugo.png" class="glightbox" data-glightbox="title:New brainfck.org; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/brainfck-20220903-hugo.png" alt="image">
+        <div class="caption">New brainfck.org</div>
+    </a>
+</div>
+</p>
+<p>I intentionally didn&rsquo;t add content in the <code>Notes</code> section to the sub-nodes. In the next post
+I&rsquo;ll explain how I managed to quickly review my notes using <code>Emacs</code> and some <code>Elisp</code> and add content on the go.</p>
+
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item active">
+                    Part 1: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+  </div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2022/08/10/book-summary-building-microservices-2nd-edition/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2022 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>
