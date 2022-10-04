@@ -1,0 +1,1382 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Migrate Tiddlywiki to org-roam - Part 2: org-roam and hugo - blog.dornea.nu</title>
+  <meta content='Migrate Tiddlywiki to org-roam - Part 2: org-roam and hugo - blog.dornea.nu' property='title' />
+  <meta content='Migrate Tiddlywiki to org-roam - Part 2: org-roam and hugo - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="In the first part of this series I&rsquo;ve outlined the main factors for moving my digital garden / braindump / Zettelkasten to org-roam and which factors have facilitated this decision. In the 2nd part I will expand more how I&rsquo;ve built the new brainfck.org using hugo, ox-hugo and org-roam.  Extracting tiddlers from my Tiddlywiki setup was only the first step towards a Second Brain using org-roam. Since I&rsquo;m a clear advocate for public digital gardens, I didn&rsquo;t want to keep my notes only for my self." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2022/10/04/migrate-tiddlywiki-to-org-roam-part-2-org-roam-and-hugo/" />
+
+
+<meta property="article:published_time" content="2022-10-04T21:43:00&#43;02:00"/>
+
+<meta property="article:modified_time" content="2022-10-04T21:43:50&#43;02:00"/>
+
+
+
+
+
+  
+  
+
+
+
+
+
+<meta name="generator" content="Hugo 0.89.4" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Migrate Tiddlywiki to org-roam - Part 2: org-roam and hugo</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>04 Oct 2022</time> 
+     | 
+    
+
+    
+     ~
+  
+
+14 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/hugo' class="link silver">hugo</a> <a href='https://blog.dornea.nu/tags/pkms' class="link silver">pkms</a> <a href='https://blog.dornea.nu/tags/tiddlywiki' class="link silver">tiddlywiki</a> <a href='https://blog.dornea.nu/tags/emacs' class="link silver">emacs</a> <a href='https://blog.dornea.nu/tags/org' class="link silver">org</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2022/09/03/migrate-tiddlywiki-to-org-roam-part-1-export-tiddlers/">
+                        Part 1: Migrate Tiddlywiki to org-roam - Part 1: Export Tiddlers
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item active">
+                    Part 2: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+      
+
+
+<blockquote class="notice warning">
+  In the <a href="https://blog.dornea.nu/2022/09/03/migrate-tiddlywiki-to-org-roam-part-1-export-tiddlers/">first part</a> of this series I&rsquo;ve outlined the main factors for moving my digital
+garden / braindump / Zettelkasten to <a href="https://github.com/org-roam/org-roam">org-roam</a> and which factors have facilitated this
+decision. In the <strong>2nd part</strong> I will expand more how I&rsquo;ve built the new <a href="https://brainfck.org">brainfck.org</a> using
+<a href="https://gohugo.io/">hugo</a>, <a href="https://github.com/kaushalmodi/ox-hugo">ox-hugo</a> and <a href="https://github.com/org-roam/org-roam">org-roam</a>.
+</blockquote>
+
+<p>Extracting tiddlers from my <a href="https://tw5.brainfck.org">Tiddlywiki setup</a> was only the first step towards a <a href="https://brainfck.org/book/building-a-second-brain/">Second
+Brain</a> using <a href="https://www.orgroam.com/">org-roam</a>. Since I&rsquo;m a clear advocate for <strong>public</strong> digital gardens, I didn&rsquo;t want
+to keep my notes only for my self. Having built several sites with <a href="https://gohugo.io">hugo</a> already, it felt
+natural to chose it as a publishing system for my new setup.</p>
+<p>In the following I will try to emphasize some important challenges I have experienced
+while <em>migrating</em> Tiddlywiki tiddlers to org-roam, creating and editing the content and finally
+<em>export</em> it to HTML via <code>hugo</code>.</p>
+<h2 id="hugo">hugo</h2>
+<p>As a starting point I have used <a href="https://github.com/jethrokuan/braindump">Jethro&rsquo;s braindump repository</a> especially for the <code>Elisp</code> part.
+<span class="sidenote-number"><small class="sidenote">
+You can also have a look at my <a href="https://github.com/dorneanu/roam">own repository</a>.
+</small></span>
+First of all I&rsquo;m a big fan of <code>Makefiles</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="nf">export</span><span class="o">:</span>
+	python build.py
+<span class="nf">dev</span><span class="o">:</span>
+	hugo server -b http://127.0.0.1:1315/ -v --port <span class="m">1315</span> --noHTTPCache --cleanDestinationDir --debug --gc
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Makefile
+</div>
+<p>I use <code>python</code>
+<span class="sidenote-number"><small class="sidenote">
+I plan to switch to some Makefile only version in the future.
+</small></span>
+for the export task:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># files = glob.glob(&#34;org/books/done/*.org&#34;) + glob.glob(&#34;org/topics/*.org&#34;) + glob.glob(&#34;org/journal/*.org&#34;)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;build.ninja&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ninja_file</span><span class="p">:</span>
+    <span class="n">ninja_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span><span class="s2">rule org2md                            ❶
+</span><span class="s2">  command = emacs --batch -l ~/.emacs.d/init.el -l publish.el --eval &#39;(brainfck/publish &#34;$in&#34;)&#39;
+</span><span class="s2">  description = org2md $in
+</span><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span>
+
+    <span class="c1"># Pages                            ❷</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&#34;org/*.org&#34;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;content/pages/</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.md&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#34;</span>
+        <span class="n">ninja_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span><span class="s2">build </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">: org2md </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">
+</span><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span>
+
+    <span class="c1"># Books                            ❸</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&#34;org/books/done/*.org&#34;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;content/books/</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.md&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#34;</span>
+        <span class="n">ninja_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span><span class="s2">build </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">: org2md </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">
+</span><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span>
+
+    <span class="c1"># Journal                          ❹</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&#34;org/journal/*.org&#34;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;content/journal/</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.md&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#34;</span>
+        <span class="n">ninja_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span><span class="s2">build </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">: org2md </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">
+</span><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span>
+
+    <span class="c1"># Topics                           ❺</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&#34;org/topics/*.org&#34;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;content/topics/</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.md&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#34;</span>
+        <span class="n">ninja_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span><span class="s2">build </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">: org2md </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">
+</span><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span>
+
+
+
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&#34;ninja&#34;</span><span class="p">])</span>             <span class="err">❻</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  build.py
+</div>
+<p>This small snippet generates ❶ <a href="https://ninja-build.org/manual.html#_build_statements">build statements</a> for <a href="https://pypi.org/project/ninja/">ninja</a> ❻. The <code>build.ninja</code> file will contain something similar to:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="err">rule</span> <span class="err">org2md</span>
+  <span class="nv">command</span> <span class="o">=</span> emacs --batch -l ~/.emacs.d/init.el -l publish.el --eval <span class="s1">&#39;(brainfck/publish &#34;$in&#34;)&#39;</span>
+  <span class="nv">description</span> <span class="o">=</span> org2md <span class="nv">$in</span>
+
+<span class="nf">build content/pages/index.md</span><span class="o">:</span> <span class="n">org</span>2<span class="n">md</span> <span class="n">org</span>/<span class="n">index</span>.<span class="n">org</span>
+
+<span class="nf">build content/pages/bookshelf.md</span><span class="o">:</span> <span class="n">org</span>2<span class="n">md</span> <span class="n">org</span>/<span class="n">bookshelf</span>.<span class="n">org</span>
+
+<span class="nf">build content/books/breath_the_new_science_of_a_lost_art.md</span><span class="o">:</span> <span class="n">org</span>2<span class="n">md</span> <span class="n">org</span>/<span class="n">books</span>/<span class="n">done</span>/<span class="n">breath_the_new_science_of_a_lost_art</span>.<span class="n">org</span>
+
+<span class="err">[...]</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 3:</span>
+  build.ninja
+</div>
+<p>For each folder in my <code>org-roam-directory</code> (pages ❷, books ❸, journal ❹, topics ❺)</p>
+<ul>
+<li><a href="https://docs.python.org/3/library/glob.html#">glob</a> will find any ORG files</li>
+<li>a new <a href="https://ninja-build.org/manual.html#_build_statements">ninja build statement</a> will be written to <code>build.ninja</code></li>
+</ul>
+<p>Each build command consists of <code>org2md</code> which internally calls <code>publish.el</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;package</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">setq</span> <span class="nv">package-archives</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;melpa&#34;</span> <span class="o">.</span> <span class="s">&#34;https://melpa.org/packages/&#34;</span><span class="p">)</span>
+                         <span class="p">(</span><span class="s">&#34;org&#34;</span> <span class="o">.</span> <span class="s">&#34;http://orgmode.org/elpa/&#34;</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;find-lisp</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;ox-hugo</span><span class="p">)</span>
+
+<span class="c1">;; https://github.com/kaushalmodi/ox-hugo/issues/500#issuecomment-1006674469</span>
+<span class="p">(</span><span class="nb">defun</span> <span class="nv">replace-in-string</span> <span class="p">(</span><span class="nv">what</span> <span class="nv">with</span> <span class="nv">in</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">replace-regexp-in-string</span> <span class="p">(</span><span class="nf">regexp-quote</span> <span class="nv">what</span><span class="p">)</span> <span class="nv">with</span> <span class="nv">in</span> <span class="no">nil</span> <span class="ss">&#39;literal</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">defun</span> <span class="nv">zeeros/fix-doc-path</span> <span class="p">(</span><span class="nv">path</span><span class="p">)</span>          <span class="err">❸</span>
+  <span class="c1">;; (replace-in-string &#34;../../topics/&#34; &#34;&#34; (replace-in-string &#34;../../topics/&#34; &#34;&#34; path)</span>
+  <span class="p">(</span><span class="nv">replace-in-string</span> <span class="s">&#34;../../topics/&#34;</span> <span class="s">&#34;../topics/&#34;</span> <span class="nv">path</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">replace-in-string</span> <span class="s">&#34;../books/done/&#34;</span> <span class="s">&#34;../books/&#34;</span> <span class="nv">path</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">replace-in-string</span> <span class="s">&#34;books/done/&#34;</span> <span class="s">&#34;books/&#34;</span> <span class="nv">path</span><span class="p">)</span>
+
+  <span class="p">)</span>
+
+<span class="err">❹</span>
+<span class="p">(</span><span class="nv">advice-add</span> <span class="ss">&#39;org-export-resolve-id-link</span> <span class="nb">:filter-return</span> <span class="nf">#&#39;</span><span class="nv">zeeros/fix-doc-path</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">defun</span> <span class="nv">brainfck/publish</span> <span class="p">(</span><span class="nv">file</span><span class="p">)</span>             <span class="err">❶</span>
+  <span class="p">(</span><span class="nb">with-current-buffer</span> <span class="p">(</span><span class="nv">find-file-noselect</span> <span class="nv">file</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">setq-local</span> <span class="nv">org-hugo-base-dir</span> <span class="s">&#34;/cs/priv/repos/roam&#34;</span><span class="p">)</span>
+    <span class="c1">;; (setq-local org-hugo-section &#34;posts&#34;)</span>
+    <span class="p">(</span><span class="nb">setq-local</span> <span class="nv">org-export-with-tags</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">setq-local</span> <span class="nv">org-export-with-broken-links</span> <span class="no">t</span><span class="p">)</span>
+    <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;org-hugo-special-block-type-properties</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&#34;sidenote&#34;</span> <span class="o">.</span> <span class="p">(</span><span class="nb">:trim-pre</span> <span class="no">t</span> <span class="nb">:trim-post</span> <span class="no">t</span><span class="p">)))</span>
+    <span class="p">(</span><span class="nb">setq</span> <span class="nv">org-agenda-files</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">let</span> <span class="p">((</span><span class="nv">org-id-extra-files</span> <span class="p">(</span><span class="nv">directory-files-recursively</span> <span class="nv">org-roam-directory</span> <span class="s">&#34;\.org$&#34;</span><span class="p">)))</span>
+      <span class="p">(</span><span class="nv">org-hugo-export-wim-to-md</span><span class="p">))))</span>       <span class="err">❷</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 4:</span>
+  publish.el
+</div>
+<p>The main function <code>brainfck/publish</code> ❶ basically calls <code>org-hugo-export-wim-to-md</code> ❷ which
+will &ldquo;export the current subtree/all subtrees/current file to a Hugo post&rdquo;. Before doing
+so some local variables are set and <code>org-id-extra-files</code> is populated with all available ORG
+roam file paths. This variable holds all files/paths where ORG should search for IDs.</p>
+<p>And because some IDs couldn&rsquo;t be resolved properly
+<span class="sidenote-number"><small class="sidenote">
+Obviously there is a <a href="https://github.com/kaushalmodi/ox-hugo/issues/500#issuecomment-1006674469">bug</a>.
+</small></span>
+I had to use some &ldquo;hook&rdquo; ❹ for rewriting ❸
+some file paths within the generated markdown files.</p>
+<p>For testing purposes you can call the <code>publish.el</code> with just one argument:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ emacs --batch -l ~/.emacs.d/init.el -l publish.el --eval <span class="s2">&#34;(brainfck/publish \&#34;org/books/done/building_microservices_2nd_edition.org\&#34;)&#34;</span>
+
+<span class="o">[</span>...<span class="o">]</span>
+Loading gnus <span class="o">(</span>native compiled elisp<span class="o">)</span>...
+Ignoring ’:ensure t’ in ’lsp-ui’ config
+Ignoring ’:ensure t’ in ’json-snatcher’ config
+Initializing org-roam database...
+Clearing removed files...
+Clearing removed files...done
+Processing modified files...
+Processing modified files...done
+Clearing removed files...
+Clearing removed files...done
+Processing modified files...
+Processing modified files...done
+org-super-agenda-mode enabled.
+<span class="o">[</span>...<span class="o">]</span>
+Loading linum <span class="o">(</span>native compiled elisp<span class="o">)</span>...
+<span class="m">768</span> files scanned, <span class="m">410</span> files contains IDs, and <span class="m">426</span> IDs found.
+<span class="o">[</span>ox-hugo<span class="o">]</span> Exporting ‘Building Microservices <span class="o">(</span>2nd edition<span class="o">)</span>’ <span class="o">(</span>building_microservices_2nd_edition.org<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 5:</span>
+  Example call for publish.el
+</div>
+<h3 id="backlinks">Backlinks</h3>
+<p>Backlinks are an essential feature that let you visualize inter-connected content.
+Whenever I set a link to another <code>org-roam</code> node in an ORG file, the exported markdown content will look like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown">...
+<span class="k">-</span>   2022-09-05 ◦ [<span class="nt">Authenticating SSH via User Certificates (server) · Yubikey Handbook</span>](<span class="na">https://ruimarinho.gitbooks.io/yubikey-handbook/content/ssh/authenticating-ssh-via-user-certificates-server/</span>)  ([SSH]({{<span class="p">&lt;</span> <span class="nt">relref</span> <span class="err">&#34;../</span><span class="na">topics</span><span class="err">/</span><span class="na">ssh</span><span class="err">.</span><span class="na">md</span><span class="err">&#34;</span> <span class="p">&gt;</span>}}))
+...
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 6:</span>
+  Excerpt from my journal entry <a href="https://brainfck.org/j/2022-09-05">2022-09-05</a>
+</div>
+<p>You can see I&rsquo;ve set a reference to <a href="https://brainfck.org/t/ssh">SSH</a> which looks like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[SSH]({{&lt; relref &#34;../topics/ssh.md&#34; &gt;}})
+</code></pre></td></tr></table>
+</div>
+</div><p>The question is: For a given node/topic how can we find all nodes containing a link to current node? Well we can parse
+content and actually <em>search</em> for that specific topic. In <code>hugo</code> you can do something like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="o">...</span>
+<span class="p">{{</span> <span class="err">$</span><span class="nx">re</span> <span class="o">:=</span> <span class="nx">printf</span> <span class="s">`[&#34;/(]%s.+[&#34;/)]`</span> <span class="p">.</span><span class="nx">page</span><span class="p">.</span><span class="nx">File</span><span class="p">.</span><span class="nx">LogicalName</span> <span class="p">|</span> <span class="nx">lower</span> <span class="p">}}</span> <span class="err">❶</span>
+<span class="p">{{</span> <span class="err">$</span><span class="nx">backlinks</span> <span class="o">:=</span> <span class="nx">slice</span> <span class="p">}}</span>
+
+<span class="p">{{</span> <span class="k">range</span> <span class="nx">where</span> <span class="nx">site</span><span class="p">.</span><span class="nx">RegularPages</span> <span class="s">&#34;RelPermalink&#34;</span> <span class="s">&#34;ne&#34;</span> <span class="p">.</span><span class="nx">page</span><span class="p">.</span><span class="nx">RelPermalink</span> <span class="p">}}</span>
+<span class="p">{{</span> <span class="k">if</span> <span class="p">(</span><span class="nx">findRE</span> <span class="err">$</span><span class="nx">re</span> <span class="p">.</span><span class="nx">RawContent</span> <span class="mi">1</span><span class="p">)</span> <span class="p">}}</span>                                 <span class="err">❷</span>
+        <span class="p">{{</span> <span class="err">$</span><span class="nx">backlinks</span> <span class="p">=</span> <span class="err">$</span><span class="nx">backlinks</span> <span class="p">|</span> <span class="nx">append</span> <span class="p">.</span> <span class="p">}}</span>                    <span class="err">❸</span>
+    <span class="p">{{</span> <span class="nx">end</span> <span class="p">}}</span>
+<span class="p">{{</span> <span class="nx">end</span> <span class="p">}}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 7:</span>
+  hugo partial to scan for backlinks for a given page
+</div>
+<ul>
+<li>❶ <code>.page.File.LogicalName</code> is sth like <code>ssh.md</code>
+<ul>
+<li><code>`[&quot;/(]%s.+[&quot;/)]` .page.File.LogicalName | lower</code> will then yield <code>`[&quot;/(]ssh.md.+[&quot;/)]`</code></li>
+</ul>
+</li>
+<li>❷ find any lines containing the logical file name (<code>ssh.md</code>) inside parantheses
+<ul>
+<li>examples: [ssh.md], &ldquo;ssh.md&rdquo;, (ssh.md)</li>
+</ul>
+</li>
+<li>❸ if we have any matches add page to <code>$backlinks</code> slice</li>
+</ul>
+<p>Let&rsquo;s have a look at the regular expression. Therefore I&rsquo;ll use some <code>Go</code> snippets to test the regexp:
+<span class="sidenote-number"><small class="sidenote">
+You can also play <a href="https://regex101.com/r/agR7Ko/2">here</a>.
+</small></span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;regexp&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">pattern</span> <span class="o">:=</span> <span class="nx">regexp</span><span class="p">.</span><span class="nf">MustCompile</span><span class="p">(</span><span class="s">`(?i)[&#34;/(]ssh.md.+[&#34;/)]`</span><span class="p">)</span>
+    <span class="nx">inputs</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span>
+        <span class="s">&#34;[SSH]({{&lt; relref \&#34;../topics/ssh.md\&#34; &gt;}})&#34;</span><span class="p">,</span>
+        <span class="s">&#34;[we mention SSH in the link description]({{&lt; relref \&#34;../topics/ssh.md\&#34; &gt;}})&#34;</span><span class="p">,</span>
+        <span class="s">&#34;[no mention at all]({{&lt; relref \&#34;../topics/ssh.md\&#34; &gt;}})&#34;</span><span class="p">,</span>
+        <span class="s">&#34;[no mention at all, also in the ref]({{&lt; relref \&#34;../topics/other.md\&#34; &gt;}})&#34;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">inputs</span> <span class="p">{</span>
+        <span class="nx">matches</span> <span class="o">:=</span> <span class="nx">pattern</span><span class="p">.</span><span class="nf">FindAllString</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">matches</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">matches</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 8:</span>
+  Small Go utility to test our regexp against some common use cases.
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[/ssh.md&#34; */&gt;}})]
+[/ssh.md&#34; */&gt;}})]
+[/ssh.md&#34; */&gt;}})]
+</code></pre></td></tr></table>
+</div>
+</div><p>Once we have populated the <code>backlinks</code> slice with a list of pages backlinking to the current page
+we can then search inside the page content for exactly the lines containing the backlink:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="p">{{</span> <span class="err">$</span><span class="nx">content_re</span> <span class="o">:=</span> <span class="nx">printf</span> <span class="s">`.*\[%s\].*`</span> <span class="p">.</span><span class="nx">page</span><span class="p">.</span><span class="nx">Title</span> <span class="p">}}</span>                    <span class="err">❶</span>
+<span class="o">...</span>
+    <span class="p">{{</span> <span class="k">range</span> <span class="err">$</span><span class="nx">backlinks</span> <span class="p">}}</span>
+        <span class="p">{{</span> <span class="err">$</span><span class="nx">matches</span> <span class="o">:=</span> <span class="nx">findRE</span> <span class="err">$</span><span class="nx">content_re</span> <span class="p">.</span><span class="nx">RawContent</span><span class="p">}}</span>
+            <span class="p">&lt;</span><span class="nx">li</span> <span class="nx">class</span><span class="p">=</span><span class="s">&#34;lh-copy&#34;</span><span class="p">&gt;&lt;</span><span class="nx">a</span> <span class="nx">class</span><span class="p">=</span><span class="s">&#34;link f5&#34;</span> <span class="nx">href</span><span class="p">=</span><span class="s">&#34;{{ .RelPermalink }}&#34;</span><span class="p">&gt;{{</span> <span class="p">.</span><span class="nx">Title</span> <span class="p">}}&lt;</span><span class="o">/</span><span class="nx">a</span><span class="p">&gt;&lt;</span><span class="o">/</span><span class="nx">li</span><span class="p">&gt;</span>
+            <span class="p">{{</span> <span class="k">if</span> <span class="err">$</span><span class="nx">matches</span> <span class="p">}}</span>                                           <span class="err">❷</span>
+                <span class="p">&lt;</span><span class="nx">blockquote</span><span class="p">&gt;</span>
+                    <span class="p">{{</span> <span class="k">range</span> <span class="err">$</span><span class="nx">matches</span> <span class="p">}}</span>
+                    <span class="p">{{</span> <span class="p">.</span> <span class="p">|</span> <span class="nx">markdownify</span> <span class="p">}}</span>
+                    <span class="p">{{</span> <span class="nx">end</span> <span class="p">}}</span>
+                <span class="p">&lt;</span><span class="o">/</span><span class="nx">blockquote</span><span class="p">&gt;</span>
+        <span class="p">{{</span> <span class="nx">end</span> <span class="p">}}</span>
+    <span class="p">{{</span> <span class="nx">end</span> <span class="p">}}</span>
+<span class="o">...</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>We search for any line containing the current page title (❶)</li>
+<li>If we have any matches we call <code>markdownify</code> against that line (❷)</li>
+</ul>
+<p>And this is how the result <a href="https://brainfck.org/t/ssh">looks like</a>:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/backlinks.png" class="glightbox" data-glightbox="title:Backlinks for the SSH page; description: For any available hugo page/node we search for backlinks. These are the backlinks for the SSH topic: https://brainfck.org/t/ssh ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/backlinks.png" alt="image">
+        <div class="caption">Backlinks for the SSH page</div>
+    </a>
+</div>
+
+<p>For the sake of completeness here&rsquo;s the full <a href="https://github.com/dorneanu/roam/blob/main/layouts/partials/backlinks.html">backlinks partial</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ $re := printf `[&#34;/(]%s.+[&#34;/)]` .page.File.LogicalName | lower }}
+{{ $content_re := printf `.*\[%s\].*` .page.Title }}
+{{ $backlinks := slice }}
+
+{{ range where site.RegularPages &#34;RelPermalink&#34; &#34;ne&#34; .page.RelPermalink }}
+    {{ if (findRE $re .RawContent 1) }}
+        {{ $backlinks = $backlinks | append . }}
+    {{ end }}
+{{ end }}
+
+<span class="p">&lt;</span><span class="nt">hr</span><span class="p">&gt;</span>
+{{ if gt (len $backlinks) 0 }}
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;bl-section&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;</span>Links to this note<span class="p">&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;backlinks&#34;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+            {{ range $backlinks }}
+                {{ $matches := findRE $content_re .RawContent}}
+                    <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;lh-copy&#34;</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;link f5&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .RelPermalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+                    {{ if $matches }}
+                        <span class="p">&lt;</span><span class="nt">blockquote</span><span class="p">&gt;</span>
+                            {{ range $matches }}
+                            {{ . | markdownify }}
+                            {{ end }}
+                        <span class="p">&lt;/</span><span class="nt">blockquote</span><span class="p">&gt;</span>
+                {{ end }}
+            {{ end }}
+        <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{{ else }}
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;bl-section&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h4</span><span class="p">&gt;</span>No notes link to this note<span class="p">&lt;/</span><span class="nt">h4</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{{ end }}
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 9:</span>
+  hugo partial for generating backlinks
+</div>
+<p>As a last step I had to make use of this partial in my <a href="https://github.com/dorneanu/roam/blob/main/layouts/_default/single.html">single.html</a> template:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">...
+
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;lh-copy post-content&#34;</span><span class="p">&gt;</span>{{ .Content }}<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  {{ partial &#34;backlinks.html&#34; (dict &#34;page&#34; .) }}
+
+...
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 10:</span>
+  In order to use the backlinks partial, you'll have to embed in your <code>single</code> template.
+</div>
+<h3 id="section-pages">Section pages</h3>
+<h4 id="group-topics-by-capital-letter">Group topics by capital letter</h4>
+<p>For the <a href="https://brainfck.org/topics">topics</a> page I wanted to group my topics by the first letter. Therefore in <code>layouts/topics/list.html</code> I&rsquo;ve inserted following:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ define &#34;main&#34; }}
+<span class="p">&lt;</span><span class="nt">main</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;center mv4 content-width ph3&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;f2 fw6 heading-font&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;post-content&#34;</span><span class="p">&gt;</span>
+    {{ .Content }}
+
+    <span class="c">&lt;!-- create a list with all uppercase letters --&gt;</span>
+    {{ $letters := split &#34;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#34; &#34;&#34; }}
+
+    <span class="c">&lt;!-- range all pages sorted by their title --&gt;</span>
+    {{ range .Data.Pages.ByTitle }}
+        <span class="c">&lt;!-- get the first character of each title. Assumes that the title is never empty! --&gt;</span>
+        {{ $firstChar := substr .Title 0 1 | upper }}
+
+        <span class="c">&lt;!-- in case $firstChar is a letter --&gt;</span>
+        {{ if $firstChar | in $letters }}
+
+            <span class="c">&lt;!-- get the current letter --&gt;</span>
+            {{ $curLetter := $.Scratch.Get &#34;curLetter&#34; }}
+
+            <span class="c">&lt;!-- if $curLetter isn&#39;t set or the letter has changed --&gt;</span>
+            {{ if ne $firstChar $curLetter }}
+                <span class="c">&lt;!-- update the current letter and print it --&gt;</span>
+                <span class="c">&lt;!-- https://gohugohq.com/howto/hugo-create-first-letter-indexed-list/ --&gt;</span>
+
+                <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+                {{ $.Scratch.Set &#34;curLetter&#34; $firstChar }}
+                <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>{{ $firstChar }}<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;list-pages&#34;</span><span class="p">&gt;</span>
+            {{ end }}
+                <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;&#34;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;title&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .Params.externalLink | default .RelPermalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+                <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        {{ end }}
+    {{ end }}
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+{{ partial &#34;table-of-contents&#34; . }}
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;pagination tc db fixed-l bottom-2-l right-2-l mb3 mb0-l&#34;</span><span class="p">&gt;</span>
+    {{ partial &#34;back-to-top.html&#34; . }}
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{{ end }}
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 11:</span>
+  Define how to show list of topics (group by first letter)
+</div>
+<h4 id="group-books-by-year-and-month">Group books by year and month</h4>
+<p>Following snippet will show a <a href="https://brainfck.org/books">list of books</a> grouped by year. For each year each book will be shown
+along with the <code>date</code> in <code>yyyy-mm</code> format.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">{{ define &#34;main&#34; }}
+<span class="p">&lt;</span><span class="nt">main</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;center mv4 content-width ph3&#34;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;f2 fw6 heading-font&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    {{ .Content }}
+
+    {{ range (where .Site.RegularPages &#34;Type&#34; &#34;in&#34; (slice &#34;books&#34;)).GroupByDate &#34;2006&#34; }}
+    <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>{{ .Key }}<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;list-pages&#34;</span><span class="p">&gt;</span>
+        {{ range .Pages.ByDate }}
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;lh-copy&#34;</span><span class="p">&gt;</span>
+            {{ $curDate := .Date.Format (.Site.Params.dateFormat | default &#34;2006-02&#34; ) }}
+            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;date&#34;</span><span class="p">&gt;</span>{{ printf &#34;%s &#34; (slicestr $curDate 0 7 ) }}<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;title&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;{{ .Params.externalLink | default .RelPermalink }}&#34;</span><span class="p">&gt;</span>{{ .Title }}<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        {{- end -}}
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    {{ end }}
+<span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;pagination tc db fixed-l bottom-2-l right-2-l mb3 mb0-l&#34;</span><span class="p">&gt;</span>
+    {{ partial &#34;back-to-top.html&#34; . }}
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{{ end }}
+</code></pre></td></tr></table>
+</div>
+</div>
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/group-books-by-year.png" class="glightbox" data-glightbox="title:Group books by year and month; description: I like to have an overview which books I&#39;ve read each year grouped by the month when I completed. ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/group-books-by-year.png" alt="image">
+        <div class="caption">Group books by year and month</div>
+    </a>
+</div>
+
+<h2 id="org-roam">org-roam</h2>
+
+
+
+<blockquote class="notice info">
+  As a complete <code>org-roam</code> novice I&rsquo;ve found <a href="https://www.youtube.com/watch?v=AyhPmypHDEw&amp;ab_channel=SystemCrafters">Getting Started with Org Roam - Build a Second
+Brain in Emacs</a> (<a href="https://systemcrafters.cc/build-a-second-brain-in-emacs/getting-started-with-org-roam/">notes</a>) to be a quite good introduction. It will give you enough background
+to get you started with <code>org-roam</code>. For more advanced topics you could also read <a href="https://systemcrafters.net/build-a-second-brain-in-emacs/5-org-roam-hacks/">5 Org Roam
+Hacks for Better Productivity in Emacs</a> or check out my <a href="https://brainfck.org/t/org-roam">org-roam topic</a> for more resources.
+</blockquote>
+
+<p>By default all org-roam nodes are placed within the <strong>same directory</strong>. However, one big directory
+for all notes didn&rsquo;t resonate with me at all. I came up with following <em>hierarchy</em> inside <code>org-roam-directory</code>:
+<span class="sidenote-number"><small class="sidenote">
+Check out the org folder inside the <a href="https://github.com/dorneanu/roam/tree/main/org">roam repository</a>.
+</small></span></p>
+<ul>
+<li><strong>org/</strong>
+This is the root org-roam directory.
+<ul>
+<li><strong>books/</strong>
+<ul>
+<li>
+<p>this is where all books (stored as individual ORG files) should be located at</p>
+</li>
+<li>
+<p>I consider these files my <em>literature</em> notes</p>
+<blockquote>
+<p>&ldquo;A literature note is a source reference in a reference manager, optionally with one
+or more attached notes. The term ‘literature note’ derives from the note cards on
+which Niklas Luhmann, the prolific sociologist and originator of the Zettelkasten
+Method, recorded bibliographic references (Ahrens, 18).&rdquo; &ndash; <a href="https://zettelkasten.de/posts/concepts-sohnke-ahrens-explained">zettelkasten.de</a></p>
+</blockquote>
+</li>
+<li>
+<p><em>thoughts</em> and <em>concepts</em> found within one book <em>may</em> remain here</p>
+<ul>
+<li>or at same time I move it to an individual topic
+<ul>
+<li>For example the topic <a href="https://brainfck.org/book/building-a-second-brain/#para">P.A.R.A.</a> is contained withing the book <a href="https://brainfck.org/book/building-a-second-brain/#para">Building a Second Brain</a>.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><em>quotes</em> are now stored in the same (book ORG mode) file (<a href="https://brainfck.org/book/building-a-second-brain/#quotes">example</a>)</p>
+</li>
+</ul>
+</li>
+<li><strong>topics/</strong>
+<ul>
+<li>all individual topics are stored here
+<ul>
+<li>Examples: <a href="https://brainfck.org/t/ssh">SSH</a>, <a href="https://brainfck.org/t/ddd">DDD</a>, <a href="https://brainfck.org/t/attention-economy/">Attention Economy</a></li>
+</ul>
+</li>
+<li>I don&rsquo;t distinguish between <em>collection</em> nodes, <em>thoughts</em> and <em>concepts</em></li>
+</ul>
+</li>
+<li><strong>journal/</strong>
+<ul>
+<li>files inside this folder are daily <a href="https://brainfck.org/journal">journals</a></li>
+<li>each file name has following format: <code>YYYY-MM-DD.org</code></li>
+<li>this is where I usually store thoughts, links which I haven&rsquo;t categorized yet
+<ul>
+<li>or put into the right topic</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>notes/</strong>
+<ul>
+<li>I don&rsquo;t use this section yet (I&rsquo;m also not sure if it&rsquo;s needed at all)</li>
+<li>This category relates to notes writen in my <em>own</em> words
+<ul>
+<li>can link to concepts inside a <a href="https://brainfck.org/books">book</a></li>
+<li>can refer to multiple <a href="https://brainfck.org/topics">topics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/org-roam-buffer-with-backlinks.png" class="glightbox" data-glightbox="title:ORG Roam buffer with backlinks; description: On the left side you can see my notes for the topic DDD. On the right side you see all other notes containing a link (back-reference) to the DDD note.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/org-roam-buffer-with-backlinks.png" alt="image">
+        <div class="caption">ORG Roam buffer with backlinks</div>
+    </a>
+</div>
+
+<h3 id="capture-templates">Capture templates</h3>
+<p>For rapid capture <code>org-roam</code> uses pre-defined capture templates
+<span class="sidenote-number"><small class="sidenote">
+You can also store <a href="https://systemcrafters.net/build-a-second-brain-in-emacs/capturing-notes-efficiently/#storing-templates-in-org-files">templates in Org files</a>.
+</small></span>
+(similar to <a href="https://orgmode.org/manual/Capture-templates.html">ORG mode capture templates</a>) whenever a new entry (topic, book, note, quote etc.) should be added. These are mine:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">org-roam-capture-templates</span>
+<span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;d&#34;</span> <span class="s">&#34;default&#34;</span> <span class="nv">plain</span>
+  <span class="s">&#34;%?&#34;</span>
+  <span class="nb">:if-new</span> <span class="p">(</span><span class="nv">file+head</span> <span class="s">&#34;topics/${slug}.org&#34;</span> <span class="s">&#34;#+title: ${title}\n&#34;</span><span class="p">)</span>    <span class="err">❶</span>
+  <span class="nb">:unnarrowed</span> <span class="no">t</span><span class="p">)</span>
+  <span class="p">(</span><span class="s">&#34;j&#34;</span> <span class="s">&#34;Journal&#34;</span> <span class="nv">plain</span> <span class="s">&#34;%?&#34;</span>                                         <span class="err">❷</span>
+   <span class="nb">:if-new</span> <span class="p">(</span><span class="nv">file+head</span> <span class="s">&#34;journal/%&lt;%Y-%m-%d&gt;.org&#34;</span>
+            <span class="s">&#34;#+title: %&lt;%Y-%m-%d&gt;\n#+filetags: journal\n#+date: %&lt;%Y-%m-%d&gt;\n&#34;</span><span class="p">)</span>
+   <span class="nb">:immediate-finish</span> <span class="no">t</span>
+   <span class="nb">:unnarrowed</span> <span class="no">t</span><span class="p">)</span>
+ <span class="p">(</span><span class="s">&#34;b&#34;</span> <span class="s">&#34;book&#34;</span> <span class="nv">plain</span> <span class="s">&#34;%?&#34;</span>                                             <span class="err">❸</span>
+  <span class="nb">:if-new</span>
+  <span class="p">(</span><span class="nv">file+head</span> <span class="s">&#34;books/${slug}.org&#34;</span> <span class="s">&#34;#+title: ${title}\n#+filetags: book\n&#34;</span><span class="p">)</span>
+  <span class="nb">:immediate-finish</span> <span class="no">t</span>
+  <span class="nb">:unnarrowed</span> <span class="no">t</span><span class="p">)</span>
+  <span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 12:</span>
+  ORG Roam capture templates
+</div>
+<p>Per default ❶ every new entry is a topic. Additionally I want every journal ❷ file to contain several meta information (properties) (like <code>#+date</code> and <code>#+filetags</code>).</p>
+<p>Last but not least I want every book ❸ to be stored under <code>&lt;ORG Roam directory root&gt;/books/</code>.</p>
+<h2 id="emacs-kung-fu">Emacs Kung Fu</h2>
+<p>As I was transitioning content from multiple folders into the <code>org-roam</code> directory
+I&rsquo;ve used Emacs editing capabilities to edit and create content using small <code>Elisp</code> snippets and <em>macros</em>. Let&rsquo;s explore some workflows.</p>
+<h3 id="insert-content-at-point">Insert content at point</h3>
+<p>Whenever I was adding content (e.g. from sub-tiddlers) to main topic nodes (previsouly main tiddler in Tiddlywiki), I wanted to quickly <strong>jump between directories</strong> where my tiddlers
+were exported as org content.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">dorneanu/roam-insert</span> <span class="p">(</span><span class="nv">dir</span><span class="p">)</span>     <span class="err">❶</span>
+  <span class="p">(</span><span class="nb">let*</span> <span class="p">(</span>
+        <span class="p">(</span><span class="nv">filename</span> <span class="p">(</span><span class="nv">read-file-name</span> <span class="s">&#34;filename: &#34;</span> <span class="nv">dir</span> <span class="no">nil</span> <span class="no">nil</span> <span class="no">nil</span><span class="p">)))</span>
+        <span class="p">(</span><span class="nf">insert-file-contents</span> <span class="nv">filename</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="c1">;; Define global key bindings         ❷</span>
+<span class="p">(</span><span class="nv">global-set-key</span> <span class="p">(</span><span class="nv">kbd</span> <span class="s">&#34;C-c m b&#34;</span><span class="p">)</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span> <span class="p">(</span><span class="nv">dorneanu/roam-insert</span> <span class="s">&#34;/cs/priv/repos/brainfck.org/tw5/output/books&#34;</span><span class="p">)))</span>
+<span class="p">(</span><span class="nv">global-set-key</span> <span class="p">(</span><span class="nv">kbd</span> <span class="s">&#34;C-c m t&#34;</span><span class="p">)</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span> <span class="p">(</span><span class="nv">dorneanu/roam-insert</span> <span class="s">&#34;/cs/priv/repos/tiddlywiki-migrator/org_tiddlers&#34;</span><span class="p">)))</span>
+<span class="p">(</span><span class="nv">global-set-key</span> <span class="p">(</span><span class="nv">kbd</span> <span class="s">&#34;C-c m .&#34;</span><span class="p">)</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span> <span class="p">(</span><span class="nv">dorneanu/roam-insert</span> <span class="s">&#34;/cs/priv/repos/roam/org/topics/&#34;</span><span class="p">)))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Therefore I&rsquo;ve defined a function ❶ which reads a file content after this has been
+selected. The (temporary) key bindings ❷ allowed me to <strong>jump between</strong> following <strong>folders</strong>
+and insert content quickly:</p>
+<ul>
+<li><code>/cs/priv/repos/brainfck.org/tw5/output/books</code>
+<ul>
+<li>This is where I&rsquo;ve exported my book tiddlers along with their correspondig sub-tiddlers (read the <a href="https://blog.dornea.nu/2022/09/03/migrate-tiddlywiki-to-org-roam-part-1-export-tiddlers/">first post</a> for the explanations regarding books and their sub-tiddlers)</li>
+</ul>
+</li>
+<li><code>/cs/priv/repos/tiddlywiki-migrator/org_tiddlers</code>
+<ul>
+<li>This is where <strong>all</strong> tiddlers got exported to initially</li>
+</ul>
+</li>
+<li><code>/cs/priv/repos/roam/org/topics</code>
+<ul>
+<li>this is the <strong>root</strong> org-roam folder for topics</li>
+</ul>
+</li>
+</ul>
+<h3 id="add-structure-template-for-quotes">Add structure template for quotes</h3>
+<p>Let&rsquo;s say you have following ORG content:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-org" data-lang="org"><span class="gh">*</span><span class="gs"> Book title</span>
+<span class="gu">**</span> Notes
+<span class="gu">***</span> Note 1
+     Some text
+<span class="gu">***</span> Note 2
+     Another text
+<span class="gu">***</span> Note 3
+     Some loooooong text
+</code></pre></td></tr></table>
+</div>
+</div><p>How can you easily put the content underneath each note (Note 1, Note 2, Note 3) into
+quote blocks? Here is where <em>macros</em> came to my rescue. With my cursor on <code>Note 1</code> I typed:</p>
+<ul>
+<li><code>C-x (</code>
+<ul>
+<li><code>kmacro-start-macro</code></li>
+<li>start macro</li>
+</ul>
+</li>
+<li><code>g j</code>
+<ul>
+<li><code>outline-forward-same-level</code></li>
+<li>go to next headline (in the same level)</li>
+</ul>
+</li>
+<li><code>j</code> (move cursor to next line)</li>
+<li><code>M-m i p</code>
+<ul>
+<li><code>mark-paragraph</code></li>
+<li>mark whole paragraph</li>
+</ul>
+</li>
+<li><code>C-c C-,</code>
+<ul>
+<li><code>org-insert-structure-template</code></li>
+<li>wrap marked region into &hellip;</li>
+</ul>
+</li>
+<li><code>q</code>
+<ul>
+<li>a quote block</li>
+</ul>
+</li>
+<li><code>C-x )</code>
+<ul>
+<li><code>kmacro-end-macro</code></li>
+<li>end macro sequence</li>
+</ul>
+</li>
+</ul>
+<p>Here is some screencast:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/macro-edit-notes.gif" class="glightbox" data-glightbox="title:Using macros for adding block quotes; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/migrate-tiddlywiki-to-org-roam/macro-edit-notes.gif" alt="image">
+        <div class="caption">Using macros for adding block quotes</div>
+    </a>
+</div>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>In retrospect I think I&rsquo;ve spent way to much pretious lifetime for this project - and I&rsquo;m
+not finished yet. There are still to many empty topics (no content at all) and links
+pointing to nirvana (e.g. links in old Tiddlywiki syntax). However, I think, the effort
+will pay off in the long run! In fact I already feel more productive as I&rsquo;m able to quickly
+search for notes (in books, topics, journals etc.) and create these on-the-fly if not existant.</p>
+<p>I&rsquo;ve definitely improved my Emacs Kung Fu™ and learned even more about its editing
+features (macros!). I also hope <code>org-roam</code> will help me produce even more content and
+prevent me from just <a href="https://zettelkasten.de/posts/collectors-fallacy/">collecting random notes</a>.</p>
+
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2022/09/03/migrate-tiddlywiki-to-org-roam-part-1-export-tiddlers/">
+                        Part 1: Migrate Tiddlywiki to org-roam - Part 1: Export Tiddlers
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item active">
+                    Part 2: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+  </div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2022/09/27/book-summary-building-a-second-brain/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2022 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>
