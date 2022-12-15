@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Releasing Gocial - blog.dornea.nu</title>
+  <meta content='Releasing Gocial - blog.dornea.nu' property='title' />
+  <meta content='Releasing Gocial - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="More than a year ago I started working on a side project born out of the furstration I had with buffer, ifttt and zapier. The use case was pretty simple: I just wanted to share an article and some comments about it on multiple social media platforms from a single location.
+All sharing services had great functionalities (e.g. automated workflows) Initially I played with RSS and hugo for publishing content via a RSS feed which will then trigger posts on Twitter, LinkedIn &amp; co." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2022/12/15/releasing-gocial/" />
+
+
+<meta property="article:published_time" content="2022-12-15T21:40:00&#43;01:00"/>
+
+<meta property="article:modified_time" content="2022-12-15T21:40:50&#43;01:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.89.4" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Releasing Gocial</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>15 Dec 2022</time> 
+     | 
+    
+
+    
+     ~
+  
+
+3 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/golang' class="link silver">golang</a> <a href='https://blog.dornea.nu/tags/project' class="link silver">project</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+
+      <p>More than a year ago I started working on a <a href="https://brainfck.org/t/deliberate-practice">side project</a> born out of the furstration I had with <a href="https://buffer.com/">buffer</a>, <a href="https://ifttt.com/">ifttt</a> and <a href="https://zapier.com/">zapier</a>. The use
+case was pretty simple: I just wanted to share an article and some comments about it on
+multiple social media platforms from a single location.</p>
+<p>All sharing services had great functionalities (e.g. automated workflows)
+<span class="sidenote-number"><small class="sidenote">
+Initially I played with <a href="https://blog.dornea.nu/2022/06/13/rss-and-atom-for-digital-minimalists/#distribute-content">RSS and hugo</a> for publishing content via a RSS feed which
+will then trigger posts on Twitter, LinkedIn &amp; co.
+</small></span>
+but you&rsquo;re always limited in the number of shares you can distribute withing a time
+frame without paying for premium. At the same time they all lacked support for LinkedIn
+which then sparked the idea for <a href="https://gocial.netlify.app/">gocial</a>. After having a look at the <a href="https://learn.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/ugc-post-api?view=li-lms-unversioned&amp;tabs=http">LinkedIn Post API</a>
+<span class="sidenote-number"><small class="sidenote">
+Which apparently now it&rsquo;s legacy and got replaced by the <a href="https://learn.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/posts-api?view=li-lms-2022-11&amp;tabs=http">posts API</a>.
+</small></span>
+I decided I&rsquo;ll implement my own service in <a href="https://blog.dornea.nu/tags/golang">Golang</a> and learn more about
+<a href="https://brainfck.org/t/OAuth">OAuth</a> and <a href="https://brainfck.org/t/JWT">JWT</a> tokens.</p>
+<div title="Gocial main page">
+<figure><a href="https://gocial.netlify.app"><img src=" /posts/img/2022/gocial/2022-12-screenshot.png"></a><figcaption> gocial main page</figcaption></figure>
+</div>
+<h2 id="design">Design</h2>
+<p>For the overall <em>system design</em> I use a <a href="https://brainfck.org/t/serverless">serverless</a> environment to run my Golang binary. Currently I use <a href="https://www.netlify.com/">netlify.com</a> to host my Lambda function which serves all the functionalities via
+HTTP and some REST API.</p>
+<p>As for the <em>software architecture</em> I&rsquo;ve used <a href="https://brainfck.org/t/hexagonal-architecture">hexagonal architecture</a>
+to have more or less strict boundaries between the <em>domains</em> and enable <em>lose coupling</em>.</p>
+<h3 id="sketching-ideas">Sketching ideas</h3>
+<p>As always I&rsquo;ve started with a rough idea how the code structure should like. Initially I wrote
+down some ideas on my whiteboard
+<span class="sidenote-number"><small class="sidenote">
+And yeah, coding and drawing with kids is possible! 😊
+</small></span>
+and codified these later on.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/gocial/architecture-sketches.jpg" class="glightbox" data-glightbox="title:Early ideas; description: This is how everything began. I&#39;ve sketched some initial ideas before implementing the core parts.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/gocial/architecture-sketches.jpg" alt="image">
+        <div class="caption">Early ideas</div>
+    </a>
+</div>
+
+<h3 id="hexagonal-architecture">Hexagonal Architecture</h3>
+<p>I know the picture below doesn&rsquo;t look like an <em>hexagonal</em> structure but it should at least emphasize what the <em>core domain</em> is about.</p>
+
+
+
+<blockquote class="notice info">
+  I&rsquo;ve recently release an online presentation on this topic. Checkout <a href="https://slides.dornea.nu/2022/hexagonal-architecture/">Hexagonal Architecture (Basic Introduction using Python)</a>.
+</blockquote>
+
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2022/gocial/architecture.png" class="glightbox" data-glightbox="title:Hexagonal Architecture; description: Read more at &lt;a href=&#39;https://github.com/dorneanu/gocial&#39;&gt;github.com/dorneanu/gocial&lt;/a&gt;; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2022/gocial/architecture.png" alt="image">
+        <div class="caption">Hexagonal Architecture</div>
+    </a>
+</div>
+
+<h2 id="project-layout">Project layout</h2>
+<p>For the project structure/layout I&rsquo;ve decided to go with this structure:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">gocial:
+
+├── cli
+├── docs
+├── internal
+├── lambda
+└── server
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Overall project structure
+</div>
+<h3 id="internal"><code>/internal</code></h3>
+<p>This is where the <em>gocial</em> specific domain code goes to. This includes <em>entities</em>, different <em>services</em> and the <em>authentication</em> part.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">  ./internal
+  ├── config
+  │   └── config.go
+  ├── entity
+  │   ├── identity.go
+  │   ├── providers.go
+  │   └── share.go
+  ├── identity
+  │   ├── cookie_repository.go
+  │   ├── file_repository.go
+  │   └── repository.go
+  ├── jwt
+  │   └── token.go
+  ├── oauth
+  │   ├── goth_repository.go
+  │   ├── repository.go
+  │   └── service.go
+  └── share
+      ├── linkedin_repository.go
+      ├── repository.go
+      ├── service.go
+      └── twitter_repository.go
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="server"><code>/server</code></h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">  ./server
+  ├── api.go
+  ├── html
+  │   ├── html.go
+  │   ├── package.json
+  │   ├── package-lock.json
+  │   ├── postcss.config.js
+  │   ├── static
+  │   │   └── main.css
+  │   ├── tailwind.config.js
+  │   ├── tailwind.css
+  │   ├── tailwind.js
+  │   └── templates
+  │       ├── about.html
+  │       ├── auth
+  │       ├── base.html
+  │       ├── index.html
+  │       ├── partials
+  │       └── share
+  ├── http.go
+  ├── oauth.go
+  └── share.go
+</code></pre></td></tr></table>
+</div>
+</div><p>This folder contains HTTP server specific functionalities:</p>
+<ul>
+<li><code>/html</code>
+<ul>
+<li>here I put all the HTML templates and components (partials)</li>
+<li>I use <a href="https://tailwindcss.com/">tailwindCSS</a> so there is a little bit of <code>npm</code> foo</li>
+</ul>
+</li>
+<li><code>http.go</code>
+<ul>
+<li>responsible for launching the HTTP server and setting up API routes</li>
+<li>renders HTML templates</li>
+</ul>
+</li>
+<li><code>api.go</code>
+<ul>
+<li>handles different API routes (e.g. sharing articles/comments)</li>
+</ul>
+</li>
+<li><code>oauth.go</code>
+<ul>
+<li>defines API endpoints for doing OAuth</li>
+</ul>
+</li>
+</ul>
+<h2 id="project-repository">Project repository</h2>
+<figure><a href="https://github.com/dorneanu/gocial"><img src=" https://socialify.git.ci/dorneanu/gocial/image?description=1&descriptionEditable=gocial%20-%20social%20media%20interactions&font=Source%20Code%20Pro&forks=1&language=1&name=1&owner=1&pattern=Solid&stargazers=1&theme=Light"></a><figcaption> Check out the github repository</figcaption></figure>
+
+    
+
+  </div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2022/12/02/10-years-in-the-infosec-industry/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2022 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>

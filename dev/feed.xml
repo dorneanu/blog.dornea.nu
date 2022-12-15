@@ -13,6 +13,235 @@
     
     
     <item>
+      <title>Releasing Gocial</title>
+      <link>https://blog.dornea.nu/2022/12/15/releasing-gocial/</link>
+      <pubDate>Thu, 15 Dec 2022 21:40:00 +0100</pubDate>
+      
+      <guid>https://blog.dornea.nu/2022/12/15/releasing-gocial/</guid>
+      <content:encoded><![CDATA[<p>More than a year ago I started working on a <a href="https://brainfck.org/t/deliberate-practice">side project</a> born out of the furstration I had with <a href="https://buffer.com/">buffer</a>, <a href="https://ifttt.com/">ifttt</a> and <a href="https://zapier.com/">zapier</a>. The use
+case was pretty simple: I just wanted to share an article and some comments about it on
+multiple social media platforms from a single location.</p>
+<p>All sharing services had great functionalities (e.g. automated workflows)
+<span class="sidenote-number"><small class="sidenote">
+Initially I played with <a href="/2022/06/13/rss-and-atom-for-digital-minimalists/#distribute-content">RSS and hugo</a> for publishing content via a RSS feed which
+will then trigger posts on Twitter, LinkedIn &amp; co.
+</small></span>
+but you&rsquo;re always limited in the number of shares you can distribute withing a time
+frame without paying for premium. At the same time they all lacked support for LinkedIn
+which then sparked the idea for <a href="https://gocial.netlify.app/">gocial</a>. After having a look at the <a href="https://learn.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/ugc-post-api?view=li-lms-unversioned&amp;tabs=http">LinkedIn Post API</a>
+<span class="sidenote-number"><small class="sidenote">
+Which apparently now it&rsquo;s legacy and got replaced by the <a href="https://learn.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/posts-api?view=li-lms-2022-11&amp;tabs=http">posts API</a>.
+</small></span>
+I decided I&rsquo;ll implement my own service in <a href="/tags/golang">Golang</a> and learn more about
+<a href="https://brainfck.org/t/OAuth">OAuth</a> and <a href="https://brainfck.org/t/JWT">JWT</a> tokens.</p>
+<div title="Gocial main page">
+<figure><a href="https://gocial.netlify.app"><img src=" /posts/img/2022/gocial/2022-12-screenshot.png"></a><figcaption> gocial main page</figcaption></figure>
+</div>
+<h2 id="design">Design</h2>
+<p>For the overall <em>system design</em> I use a <a href="https://brainfck.org/t/serverless">serverless</a> environment to run my Golang binary. Currently I use <a href="https://www.netlify.com/">netlify.com</a> to host my Lambda function which serves all the functionalities via
+HTTP and some REST API.</p>
+<p>As for the <em>software architecture</em> I&rsquo;ve used <a href="https://brainfck.org/t/hexagonal-architecture">hexagonal architecture</a>
+to have more or less strict boundaries between the <em>domains</em> and enable <em>lose coupling</em>.</p>
+<h3 id="sketching-ideas">Sketching ideas</h3>
+<p>As always I&rsquo;ve started with a rough idea how the code structure should like. Initially I wrote
+down some ideas on my whiteboard
+<span class="sidenote-number"><small class="sidenote">
+And yeah, coding and drawing with kids is possible! 😊
+</small></span>
+and codified these later on.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2022/gocial/architecture-sketches.jpg" class="glightbox" data-glightbox="title:Early ideas; description: This is how everything began. I&#39;ve sketched some initial ideas before implementing the core parts.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2022/gocial/architecture-sketches.jpg" alt="image">
+        <div class="caption">Early ideas</div>
+    </a>
+</div>
+
+<h3 id="hexagonal-architecture">Hexagonal Architecture</h3>
+<p>I know the picture below doesn&rsquo;t look like an <em>hexagonal</em> structure but it should at least emphasize what the <em>core domain</em> is about.</p>
+
+
+
+<blockquote class="notice info">
+  I&rsquo;ve recently release an online presentation on this topic. Checkout <a href="https://slides.dornea.nu/2022/hexagonal-architecture/">Hexagonal Architecture (Basic Introduction using Python)</a>.
+</blockquote>
+
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2022/gocial/architecture.png" class="glightbox" data-glightbox="title:Hexagonal Architecture; description: Read more at &lt;a href=&#39;https://github.com/dorneanu/gocial&#39;&gt;github.com/dorneanu/gocial&lt;/a&gt;; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2022/gocial/architecture.png" alt="image">
+        <div class="caption">Hexagonal Architecture</div>
+    </a>
+</div>
+
+<h2 id="project-layout">Project layout</h2>
+<p>For the project structure/layout I&rsquo;ve decided to go with this structure:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">gocial:
+
+├── cli
+├── docs
+├── internal
+├── lambda
+└── server
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Overall project structure
+</div>
+<h3 id="internal"><code>/internal</code></h3>
+<p>This is where the <em>gocial</em> specific domain code goes to. This includes <em>entities</em>, different <em>services</em> and the <em>authentication</em> part.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">  ./internal
+  ├── config
+  │   └── config.go
+  ├── entity
+  │   ├── identity.go
+  │   ├── providers.go
+  │   └── share.go
+  ├── identity
+  │   ├── cookie_repository.go
+  │   ├── file_repository.go
+  │   └── repository.go
+  ├── jwt
+  │   └── token.go
+  ├── oauth
+  │   ├── goth_repository.go
+  │   ├── repository.go
+  │   └── service.go
+  └── share
+      ├── linkedin_repository.go
+      ├── repository.go
+      ├── service.go
+      └── twitter_repository.go
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="server"><code>/server</code></h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">  ./server
+  ├── api.go
+  ├── html
+  │   ├── html.go
+  │   ├── package.json
+  │   ├── package-lock.json
+  │   ├── postcss.config.js
+  │   ├── static
+  │   │   └── main.css
+  │   ├── tailwind.config.js
+  │   ├── tailwind.css
+  │   ├── tailwind.js
+  │   └── templates
+  │       ├── about.html
+  │       ├── auth
+  │       ├── base.html
+  │       ├── index.html
+  │       ├── partials
+  │       └── share
+  ├── http.go
+  ├── oauth.go
+  └── share.go
+</code></pre></td></tr></table>
+</div>
+</div><p>This folder contains HTTP server specific functionalities:</p>
+<ul>
+<li><code>/html</code>
+<ul>
+<li>here I put all the HTML templates and components (partials)</li>
+<li>I use <a href="https://tailwindcss.com/">tailwindCSS</a> so there is a little bit of <code>npm</code> foo</li>
+</ul>
+</li>
+<li><code>http.go</code>
+<ul>
+<li>responsible for launching the HTTP server and setting up API routes</li>
+<li>renders HTML templates</li>
+</ul>
+</li>
+<li><code>api.go</code>
+<ul>
+<li>handles different API routes (e.g. sharing articles/comments)</li>
+</ul>
+</li>
+<li><code>oauth.go</code>
+<ul>
+<li>defines API endpoints for doing OAuth</li>
+</ul>
+</li>
+</ul>
+<h2 id="project-repository">Project repository</h2>
+<figure><a href="https://github.com/dorneanu/gocial"><img src=" https://socialify.git.ci/dorneanu/gocial/image?description=1&descriptionEditable=gocial%20-%20social%20media%20interactions&font=Source%20Code%20Pro&forks=1&language=1&name=1&owner=1&pattern=Solid&stargazers=1&theme=Light"></a><figcaption> Check out the github repository</figcaption></figure>
+]]></content:encoded>
+    </item>
+    
+    <item>
       <title>10 years in the InfoSec industry</title>
       <link>https://blog.dornea.nu/2022/12/02/10-years-in-the-infosec-industry/</link>
       <pubDate>Fri, 02 Dec 2022 14:36:00 +0100</pubDate>
