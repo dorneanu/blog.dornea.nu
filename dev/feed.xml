@@ -13,6 +13,998 @@
     
     
     <item>
+      <title>AWS Custom resources with Lambda and Golang</title>
+      <link>https://blog.dornea.nu/2023/04/06/aws-custom-resources-with-lambda-and-golang/</link>
+      <pubDate>Thu, 06 Apr 2023 16:11:12 +0200</pubDate>
+      
+      <guid>https://blog.dornea.nu/2023/04/06/aws-custom-resources-with-lambda-and-golang/</guid>
+      <content:encoded><![CDATA[<h2 id="motivation">Motivation</h2>
+<p><a href="https://aws.amazon.com/cdk/">CDK</a> is a great framework by AWS that allows you to define cloud infrastructure
+as code (IaC). You can use your favourite programming language such as
+TypeScript, Python, Java, <a href="https://brainfck.org/t/golang">Golang</a> to define your resources.
+This feature is particularly convenient as it automates the generation of
+CloudFormation templates in a readable and more manageable way.</p>
+<p>However, not every AWS resource can be mapped directly to a CloudFormation
+template using CDK. In my particular case I had to create <strong>secure</strong> SSM parameters
+from within CDK. Typically this is how you create a SSM parameter in
+CloudFormation:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">Resources</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">MySSMParameter</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;AWS::SSM::Parameter&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">Properties</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;String&#34;</span><span class="w">     </span><span class="l">❶</span><span class="w">
+</span><span class="w">      </span><span class="nt">Name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/my/ssm/parameter&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">Value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;myValue&#34;</span><span class="w">
+</span><span class="w">      </span><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Description&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Sample CloudFormation template for creating SSM parameters
+</div>
+<p>In ❶ you specify the type of the SSM parameter:</p>
+<ul>
+<li><em>standard</em> (<code>String</code>)
+<ul>
+<li>simple key-value string pair</li>
+<li>does <strong>not</strong> support versioning</li>
+</ul>
+</li>
+<li><em>advanced</em> (<code>StringList</code>)
+<ul>
+<li>key-value pairs with additional metadata</li>
+<li>does support versioning</li>
+</ul>
+</li>
+<li><em>secure string</em> (<code>SecureString</code>)
+<ul>
+<li>similar to standard parameters but the data is encrypted at rest using AWS KMS</li>
+<li>this is used for storing sensitive data such as passwords, API keys and other credentials</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Depending on the stack action, CloudFormation sends your function a Create,
+Update, or Delete event. Because each event is handled differently, make sure
+that there are no unintended behaviors when any of the three event types is
+received. &ndash; <a href="https://aws.amazon.com/premiumsupport/knowledge-center/best-practices-custom-cf-lambda/">Source</a></p>
+</blockquote>
+<p>Custom resources can be used in an AWS CloudFormation stack to <em>create</em>, <em>update</em>,
+<em>delete</em> some resources that are not available as a native CFN (CloudFormation)
+resource. This could be SSL certificates that need to be generated in a certain
+way, custom DNS records or anything outside AWS. The Lambda function will take
+care of the lifecycle management of that specific resource.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/custom-resource-poc/sequence.png" class="glightbox" data-glightbox="title:General workflow; description: The general workflow and how each component relates to each other.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/custom-resource-poc/sequence.png" alt="image">
+        <div class="caption">General workflow</div>
+    </a>
+</div>
+
+<p>In CDK you would create your custom resource which has a so called <code>provider</code>
+attached (in our case it&rsquo;s a <a href="#aws-lambda">Lambda function</a>) meant to implement the logic
+whenever the resource is created, updated or deleted. After <code>cdk synth</code> a new
+CloudFormation template for the CDK stack is created. Whenever a resource is
+created/updated/deleted a new CloudFormation <strong>event</strong> will occur. This event will
+be sent to the Lambda function which eventually will create/update/delete SSM
+parameters based on the event&rsquo;s properties.</p>
+<p>This gives you enough flexibility to define <em>what</em> should happen when certain
+events occur. Let&rsquo;s dig into deeper into the specifics.</p>
+<h2 id="aws-lambda">AWS Lambda</h2>
+<h3 id="basic-template">Basic template</h3>
+<p>As mentioned before the custom resource should be <em>baked</em> by an AWS Lambda function. This is how you would write the basic function structure:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;context&#34;</span>
+    <span class="s">&#34;encoding/json&#34;</span>
+    <span class="s">&#34;fmt&#34;</span>
+
+    <span class="s">&#34;github.com/aws/aws-lambda-go/cfn&#34;</span>
+<span class="p">)</span>
+<span class="c1">// Global AWS session variable
+</span><span class="c1"></span><span class="kd">var</span> <span class="nx">awsSession</span> <span class="nx">aws</span><span class="p">.</span><span class="nx">Config</span>  <span class="c1">// ❶
+</span><span class="c1"></span>
+<span class="c1">// init will setup the AWS session
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>              <span class="c1">// ❷
+</span><span class="c1"></span>    <span class="nx">cfg</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">LoadDefaultConfig</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">config</span><span class="p">.</span><span class="nf">WithRegion</span><span class="p">(</span><span class="s">&#34;eu-central-1&#34;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;unable to load SDK config, %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">awsSession</span> <span class="p">=</span> <span class="nx">cfg</span>
+<span class="p">}</span>
+
+<span class="c1">// lambdaHandler handles incoming CloudFormation events
+</span><span class="c1">// and is of type cfn.CustomResourceFunction
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">lambdaHandler</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">event</span> <span class="nx">cfn</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">physicalResourceID</span> <span class="kt">string</span>
+    <span class="nx">responseData</span> <span class="o">:=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{}</span>
+
+    <span class="k">switch</span> <span class="nx">event</span><span class="p">.</span><span class="nx">ResourceType</span> <span class="p">{</span>    <span class="c1">// ❹
+</span><span class="c1"></span>    <span class="k">case</span> <span class="s">&#34;AWS::CloudFormation:CustomResource&#34;</span><span class="p">:</span>
+        <span class="nx">customResourceHandler</span> <span class="o">:=</span> <span class="nf">NewSSMCustomResourceHandler</span><span class="p">(</span><span class="nx">awsSession</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nx">customResourceHandler</span><span class="p">.</span><span class="nf">HandleEvent</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="nx">event</span><span class="p">)</span>
+    <span class="k">default</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span><span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Unknown resource type: %s&#34;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">ResourceType</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">physicalResourceID</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// main function
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// From : https://github.com/aws/aws-lambda-go/blob/main/cfn/wrap.go
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">// LambdaWrap returns a CustomResourceLambdaFunction which is something lambda.Start()
+</span><span class="c1"></span>	<span class="c1">// will understand. The purpose of doing this is so that Response Handling boiler
+</span><span class="c1"></span>	<span class="c1">// plate is taken away from the customer and it makes writing a Custom Resource
+</span><span class="c1"></span>	<span class="c1">// simpler.
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">//	func myLambda(ctx context.Context, event cfn.Event) (physicalResourceID string, data map[string]interface{}, err error) {
+</span><span class="c1"></span>	<span class="c1">//		physicalResourceID = &#34;arn:....&#34;
+</span><span class="c1"></span>	<span class="c1">//		return
+</span><span class="c1"></span>	<span class="c1">//	}
+</span><span class="c1"></span>	<span class="c1">//
+</span><span class="c1"></span>	<span class="c1">//	func main() {
+</span><span class="c1"></span>	<span class="c1">//		lambda.Start(cfn.LambdaWrap(myLambda))
+</span><span class="c1"></span>	<span class="c1">//	}
+</span><span class="c1"></span>	<span class="nx">lambda</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">cfn</span><span class="p">.</span><span class="nf">LambdaWrap</span><span class="p">(</span><span class="nx">lambdaHandler</span><span class="p">))</span>  <span class="c1">// ➌
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  Basic structure of the AWS Lambda function in Go
+</div>
+<p>Some explanations:</p>
+<ul>
+<li>The <code>main</code> function will call a lambda handler ➌</li>
+<li>Before <code>main</code> gets executed the <code>init</code> function will be executed first ❷
+<ul>
+<li>it will try to connect to AWS and populate the global variable defined at ❶</li>
+</ul>
+</li>
+<li>within <code>lambdaHandler</code> we also have to make sure check for the right CFN custom resource <strong>type</strong> ❹</li>
+</ul>
+<h3 id="custom-resource-handler">Custom resource handler</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// handleSSMCustomResource decides what to do in case of CloudFormation event
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="nx">SSMCustomResourceHandler</span><span class="p">)</span> <span class="nf">HandleSSMCustomResource</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">event</span> <span class="nx">cfn</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">switch</span> <span class="nx">event</span><span class="p">.</span><span class="nx">RequestType</span> <span class="p">{</span>   <span class="c1">//  ❶
+</span><span class="c1"></span>    <span class="k">case</span> <span class="nx">cfn</span><span class="p">.</span><span class="nx">RequestCreate</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nx">cfn</span><span class="p">.</span><span class="nx">RequestUpdate</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nx">cfn</span><span class="p">.</span><span class="nx">RequestDelete</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span>
+    <span class="k">default</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Unknown request type: %s&#34;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">RequestType</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  The main handler of the Lambda function
+</div>
+<p>Supposing we use a custom type called <code>SSMCustomResourceHandler</code> we can have a main entrypoint (in this example called <code>HandleSSMCustomResource</code>) where we call a different method depending on the events request type ❶.</p>
+<p>Each method will apply trigger different sorts of operations. This is what will happen whenever a new custom resource is <strong>created</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Create creates a new SSM parameter
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="nx">SSMCustomResourceHandler</span><span class="p">)</span> <span class="nf">Create</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">event</span> <span class="nx">cfn</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">physicalResourceID</span> <span class="kt">string</span>
+
+    <span class="c1">// Get custom resource parameter from event
+</span><span class="c1"></span>    <span class="nx">ssmPath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">strProperty</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="s">&#34;key&#34;</span><span class="p">)</span>    <span class="c1">// ❶
+</span><span class="c1"></span>    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">physicalResourceID</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Couldn&#39;t extract credential&#39;s key: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">physicalResourceID</span> <span class="p">=</span> <span class="nx">ssmPath</span>                 <span class="c1">// ❷
+</span><span class="c1"></span>
+    <span class="nx">ssmValue</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">strProperty</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="s">&#34;value&#34;</span><span class="p">)</span> <span class="c1">// ❶
+</span><span class="c1"></span>    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">physicalResourceID</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Couldn&#39;t extract credential&#39;s value: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Put new parameter                            ➌
+</span><span class="c1"></span>    <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">ssmClient</span><span class="p">.</span><span class="nf">PutParameter</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="o">&amp;</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">PutParameterInput</span><span class="p">{</span>
+        <span class="nx">Name</span><span class="p">:</span>      <span class="nx">aws</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="nx">ssmPath</span><span class="p">),</span>
+        <span class="nx">Value</span><span class="p">:</span>     <span class="nx">aws</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="nx">ssmValue</span><span class="p">),</span>
+        <span class="nx">Type</span><span class="p">:</span>      <span class="nx">types</span><span class="p">.</span><span class="nx">ParameterTypeSecureString</span><span class="p">,</span>
+        <span class="nx">Overwrite</span><span class="p">:</span> <span class="nx">aws</span><span class="p">.</span><span class="nf">Bool</span><span class="p">(</span><span class="kc">true</span><span class="p">),</span>
+    <span class="p">})</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Put parameter into SSM: %s&#34;</span><span class="p">,</span> <span class="nx">physicalResourceID</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">physicalResourceID</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Couldn&#39;t put parameter (%s): %s\n&#34;</span><span class="p">,</span> <span class="nx">ssmPath</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">physicalResourceID</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Create method of the SSMCustomResourceHandler
+</div>
+<p><code>Create</code> should create a new SSM parameter (of type <code>SecureString</code>) based on the information contained within the CloudFormation
+event. In ❶ I use a helper function to extract a property out of the <code>event</code>. Once we have the <code>ssmPath</code> we also set the <code>physicalResourceID</code> to that value ❷. Afterwards we will call <code>PutParameter</code> which should create a new SSM parameter.</p>
+<p>The CloudFormation event contains much information. This is what it looks like:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;RequestType&#34;</span><span class="p">:</span> <span class="s2">&#34;Create&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;RequestID&#34;</span><span class="p">:</span> <span class="s2">&#34;b37cee19-f52d-4801-89f0-eed1be454756&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;ResponseURL&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;ResourceType&#34;</span><span class="p">:</span> <span class="s2">&#34;AWS::CloudFormation::CustomResource&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;PhysicalResourceID&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;LogicalResourceID&#34;</span><span class="p">:</span> <span class="s2">&#34;SSMCredential63DBA3F67&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;StackID&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:cloudformation:eu-central-1:xxxx:stack/CustomResourcesGolang/a0de3b10-c3e1-11ed-9d97-02c&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;ResourceProperties&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;ServiceToken&#34;</span><span class="p">:</span> <span class="s2">&#34;arn:aws:lambda:eu-central-1:xxxxxxxxxxxx:function:CustomResourcesGolang-ProviderframeworkonEvent83C1-Dt9Jv3RwL9KT&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="s2">&#34;/testing6&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="s2">&#34;some-secret-value&#34;</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;OldResourceProperties&#34;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="cdk">CDK</h2>
+<p>Now that we know how to deal with CloudFormation events and how to manage the custom resource, let&rsquo;s deep-dive into DevOps and setup a small CDK application. Usually I would write the CDK part in Python but for this project I&rsquo;ve setup my very first CDK application in TypeScript 😏. Let&rsquo;s start with the basic template.</p>
+<h3 id="deployment-stack">Deployment Stack</h3>
+<p>The deployment stack I&rsquo;ve defined which resources/components should be created:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">cdk</span> <span class="kr">from</span> <span class="s2">&#34;aws-cdk-lib&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">path</span> <span class="kr">from</span> <span class="s2">&#34;path&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">customResources</span> <span class="kr">from</span> <span class="s2">&#34;aws-cdk-lib/custom-resources&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">lambda</span> <span class="kr">from</span> <span class="s2">&#34;aws-cdk-lib/aws-lambda&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">iam</span> <span class="kr">from</span> <span class="s1">&#39;aws-cdk-lib/aws-iam&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span> <span class="nx">spawnSync</span><span class="p">,</span> <span class="nx">SpawnSyncOptions</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;child_process&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span> <span class="nx">Construct</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;constructs&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span> <span class="nx">SSMCredential</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./custom-resource&#34;</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">DeploymentsStack</span> <span class="kr">extends</span> <span class="nx">cdk</span><span class="p">.</span><span class="nx">Stack</span> <span class="p">{</span>  <span class="c1">// ❶
+</span><span class="c1"></span>  <span class="kr">constructor</span><span class="p">(</span><span class="nx">scope</span>: <span class="kt">Construct</span><span class="p">,</span> <span class="nx">id</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">props?</span>: <span class="kt">cdk.StackProps</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">props</span><span class="p">);</span>
+
+    <span class="c1">// Build the Golang based Lambda function
+</span><span class="c1"></span>    <span class="kr">const</span> <span class="nx">lambdaPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s2">&#34;../../&#34;</span><span class="p">);</span>
+
+    <span class="c1">// Create IAM role
+</span><span class="c1"></span>    <span class="kr">const</span> <span class="nx">iamRole</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">iam</span><span class="p">.</span><span class="nx">Role</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;Role&#39;</span><span class="p">,</span> <span class="p">{...});</span>  <span class="c1">// ❷
+</span><span class="c1"></span>
+    <span class="c1">// Add further policies to IAM role
+</span><span class="c1"></span>    <span class="nx">iamRole</span><span class="p">.</span><span class="nx">addToPolicy</span><span class="p">(...);</span>                           <span class="c1">// ➌
+</span><span class="c1"></span>
+    <span class="c1">// Create Lambda function
+</span><span class="c1"></span>    <span class="kr">const</span> <span class="nx">lambdaFunc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lambda</span><span class="p">.</span><span class="nb">Function</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&#34;GolangCustomResources&#34;</span><span class="p">,</span> <span class="p">{...});</span>   <span class="c1">// ❹
+</span><span class="c1"></span>
+    <span class="c1">// Create a new custom resource provider
+</span><span class="c1"></span>    <span class="kr">const</span> <span class="nx">provider</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">customResources</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&#34;Provider&#34;</span><span class="p">,</span> <span class="p">{...});</span>   <span class="c1">// ❺
+</span><span class="c1"></span>
+    <span class="c1">// Create custom resource
+</span><span class="c1"></span>    <span class="k">new</span> <span class="nx">SSMCredential</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&#34;SSMCredential1&#34;</span><span class="p">,</span> <span class="nx">provider</span><span class="p">,</span> <span class="p">{...});</span>               <span class="c1">// ❻
+</span><span class="c1"></span>  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  deployments-stack.ts
+</div>
+<p>So my CDK application will:</p>
+<ul>
+<li>create a new CloudFormation stack called <code>DeploymentsStack</code> ❶</li>
+<li>create a new IAM role ❷
+<ul>
+<li>used to attach it to the lambda function</li>
+<li>here we define the IAM policies required to operate on SSM parameters</li>
+</ul>
+</li>
+<li>add several IAM policies to the IAM role ➌</li>
+<li>create a new AWS Lambda function ❹</li>
+<li>create a so called provider ❺ which is responsible for the lifecycle management of the custom resources in AWS
+<ul>
+<li>in our case this is our lambda function</li>
+<li>I&rsquo;m not sure if this can be something different 😕</li>
+</ul>
+</li>
+</ul>
+<h3 id="custom-resource">Custom resource</h3>
+<p>In the previous section I&rsquo;ve mentioned <code>SSMCredential</code> which is our new custom resource to implement a SSM parameter of type <code>SecureString</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">path</span> <span class="kr">from</span> <span class="s2">&#34;path&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">cdk</span> <span class="kr">from</span> <span class="s2">&#34;aws-cdk-lib&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">customResources</span> <span class="kr">from</span> <span class="s2">&#34;aws-cdk-lib/custom-resources&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span> <span class="nx">Construct</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;constructs&#34;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">fs</span> <span class="o">=</span> <span class="kr">require</span><span class="p">(</span><span class="s2">&#34;fs&#34;</span><span class="p">);</span>
+
+<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">SSMCredentialProps</span> <span class="p">{</span>   <span class="c1">// ❶
+</span><span class="c1"></span>  <span class="nx">key</span>: <span class="kt">string</span><span class="p">;</span>
+  <span class="nx">value</span>: <span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// SSMCredential is an AWS custom resource
+</span><span class="c1">//
+</span><span class="c1">// Example code from: https://github.com/aws-samples/aws-cdk-examples/blob/master/typescript/custom-resource/my-custom-resource.ts
+</span><span class="c1"></span><span class="kr">export</span> <span class="kr">class</span> <span class="nx">SSMCredential</span> <span class="kr">extends</span> <span class="nx">Construct</span> <span class="p">{</span>  <span class="c1">// ❷
+</span><span class="c1"></span>  <span class="kr">public</span> <span class="kr">readonly</span> <span class="nx">response</span>: <span class="kt">string</span><span class="p">;</span>
+
+  <span class="kr">constructor</span><span class="p">(</span>
+    <span class="nx">scope</span>: <span class="kt">Construct</span><span class="p">,</span>
+    <span class="nx">id</span>: <span class="kt">string</span><span class="p">,</span>
+    <span class="nx">provider</span>: <span class="kt">customResources.Provider</span><span class="p">,</span>
+    <span class="nx">props</span>: <span class="kt">SSMCredentialProps</span>
+  <span class="p">)</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+
+    <span class="kr">const</span> <span class="nx">resource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">cdk</span><span class="p">.</span><span class="nx">CustomResource</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="p">{</span>  <span class="c1">// ➌
+</span><span class="c1"></span>      <span class="nx">serviceToken</span>: <span class="kt">provider.serviceToken</span><span class="p">,</span>               <span class="c1">// ❹
+</span><span class="c1"></span>      <span class="nx">properties</span>: <span class="kt">props</span><span class="p">,</span>                                 <span class="c1">// ❺
+</span><span class="c1"></span>    <span class="p">});</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">response</span> <span class="o">=</span> <span class="nx">resource</span><span class="p">.</span><span class="nx">getAtt</span><span class="p">(</span><span class="s2">&#34;Response&#34;</span><span class="p">).</span><span class="nx">toString</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  custom-resource.ts
+</div>
+<ul>
+<li>the <code>SSMCredentialProps</code> define the arguments ❶  to be passed to the custom resource
+<ul>
+<li><code>key</code>: the parameter&rsquo;s name</li>
+<li><code>value</code>: the value the parameter should hold</li>
+</ul>
+</li>
+<li>the custom resource itself is of type <code>SSMCredential</code> ❷
+<ul>
+<li>it has a <code>constructor</code></li>
+<li>inside it a new CDK custom resource is being initialized ➌
+<ul>
+<li>the serviceToken is the ARN of the provider which implements this custom resource type.</li>
+<li>additionally we pass in the arguments ❺ (as properties)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>And this is how it&rsquo;s used withing the previously defined <code>DeploymentsStack</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="kr">import</span> <span class="p">{</span> <span class="nx">SSMCredential</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./custom-resource&#34;</span><span class="p">;</span>
+<span class="p">...</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">DeploymentsStack</span> <span class="kr">extends</span> <span class="nx">cdk</span><span class="p">.</span><span class="nx">Stack</span> <span class="p">{</span>
+  <span class="kr">constructor</span><span class="p">(</span><span class="nx">scope</span>: <span class="kt">Construct</span><span class="p">,</span> <span class="nx">id</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">props?</span>: <span class="kt">cdk.StackProps</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">super</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">props</span><span class="p">);</span>
+
+    <span class="p">...</span>
+
+    <span class="c1">// Create a new custom resource provider
+</span><span class="c1"></span>    <span class="kr">const</span> <span class="nx">provider</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">customResources</span><span class="p">.</span><span class="nx">Provider</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&#34;Provider&#34;</span><span class="p">,</span> <span class="p">{</span>
+      <span class="nx">onEventHandler</span>: <span class="kt">lambdaFunc</span><span class="p">,</span>
+    <span class="p">});</span>
+
+    <span class="c1">// Create custom resource
+</span><span class="c1"></span>    <span class="k">new</span> <span class="nx">SSMCredential</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&#34;SSMCredential1&#34;</span><span class="p">,</span> <span class="nx">provider</span><span class="p">,</span> <span class="p">{</span>
+      <span class="nx">key</span><span class="o">:</span> <span class="s2">&#34;/test/testing&#34;</span><span class="p">,</span>
+      <span class="nx">value</span><span class="o">:</span> <span class="s2">&#34;some-secret-value&#34;</span><span class="p">,</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  How to use a SSMCredential in your CDK stack
+</div>
+<h2 id="screenshots">Screenshots</h2>
+<p>As pictures say more than words, let&rsquo;s have a look at some screenshots to better
+understand what&rsquo;s happening under the hood. Doing so you might get a better
+understanding of the workflow and all the involved components that are created
+by CDK.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/custom-resource-poc/cloudformation-tree-view.png" class="glightbox" data-glightbox="title:The CloudFormation stack in the AWS console. Here we have created 2 custom resources of type SSMCredential.; description: Different resources are created by CloudFormation. ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/custom-resource-poc/cloudformation-tree-view.png" alt="image">
+        <div class="caption">The CloudFormation stack in the AWS console. Here we have created 2 custom resources of type SSMCredential.</div>
+    </a>
+</div>
+
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/custom-resource-poc/ssm-parameter-securestring.png" class="glightbox" data-glightbox="title:The SSM parameters created by the Lambda function are of type SecureString.; description: THe SSM parameters are of type SecureString; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/custom-resource-poc/ssm-parameter-securestring.png" alt="image">
+        <div class="caption">The SSM parameters created by the Lambda function are of type SecureString.</div>
+    </a>
+</div>
+
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/custom-resource-poc/ssm-parameter-tags.png" class="glightbox" data-glightbox="title:Each SSM parameter has a tag (stackID) assigned.; description: Each SSM parameter has a tag assigned. ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/custom-resource-poc/ssm-parameter-tags.png" alt="image">
+        <div class="caption">Each SSM parameter has a tag (stackID) assigned.</div>
+    </a>
+</div>
+
+<h2 id="testing">Testing</h2>
+<h3 id="unit-tests">Unit tests</h3>
+<p>The SSMCustomResourceHandler <a href="https://github.com/dorneanu/aws-custom-resource-golang/blob/37e54831c1251c22fa4c37bafdbccf413a8e049c/internal/aws_custom_resource.go#L23-L25">structure has a SSM client</a> in order to PUT and DELETE parameters:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// SSMParameterAPI defines an interface for the SSM API calls
+</span><span class="c1">// I use this interface in order to be able to mock out the SSM client and implement unit tests properly.
+</span><span class="c1">//
+</span><span class="c1">// Also check https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/gov2/ssm
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">SSMParameterAPI</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">DeleteParameter</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">DeleteParameterInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">DeleteParameterOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">PutParameter</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">PutParameterInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">PutParameterOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">SSMCustomResourceHandler</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">ssmClient</span> <span class="nx">SSMParameterAPI</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  In <a href="https://github.com/dorneanu/aws-custom-resource-golang/tree/37e54831c1251c22fa4c37bafdbccf413a8e049c/internal/aws_custom_resource.go">aws_custom_resource.go</a>
+</div>
+<p>I use my own interface for the SSM parameter API as this can be easily mocked out when writing unit tests:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// SSMParameterApiImpl is a mock for SSMParameterAPI
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">SSMParameterApiImpl</span> <span class="kd">struct</span><span class="p">{}</span>
+
+<span class="c1">// PutParameter
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="nx">SSMParameterApiImpl</span><span class="p">)</span> <span class="nf">PutParameter</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">PutParameterInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">PutParameterOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">output</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">PutParameterOutput</span><span class="p">{}</span>
+	<span class="k">return</span> <span class="nx">output</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+
+<span class="c1">// DeleteParameter
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="nx">SSMParameterApiImpl</span><span class="p">)</span> <span class="nf">DeleteParameter</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">DeleteParameterInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">DeleteParameterOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">output</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">ssm</span><span class="p">.</span><span class="nx">DeleteParameterOutput</span><span class="p">{}</span>
+	<span class="k">return</span> <span class="nx">output</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  In aws_custom_resource_test.go
+</div>
+<p>Now I can use the <code>SSMParameterApiImpl</code> as a mocked client as it satisfies the <code>SSMParameterAPI</code> interface:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestPutParameter</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">mockedAPI</span> <span class="o">:=</span> <span class="nx">SSMParameterApiImpl</span><span class="p">{}</span>
+	<span class="nx">ssmHandler</span> <span class="o">:=</span> <span class="nx">SSMCustomResourceHandler</span><span class="p">{</span>
+		<span class="nx">ssmClient</span><span class="p">:</span> <span class="nx">mockedAPI</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  In aws_custom_resource_test.go
+</div>
+<p>All we have to do now is to create a cfn.Event and call the Create method of the SSMHandlerCustomResource class:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestPutParameter</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">mockedAPI</span> <span class="o">:=</span> <span class="nx">SSMParameterApiImpl</span><span class="p">{}</span>
+	<span class="nx">ssmHandler</span> <span class="o">:=</span> <span class="nx">SSMCustomResourceHandler</span><span class="p">{</span>
+		<span class="nx">ssmClient</span><span class="p">:</span> <span class="nx">mockedAPI</span><span class="p">,</span>
+	<span class="p">}</span>
+
+	<span class="c1">// Create new SSM parameter
+</span><span class="c1"></span>	<span class="nx">cfnEvent</span> <span class="o">:=</span> <span class="nx">cfn</span><span class="p">.</span><span class="nx">Event</span><span class="p">{</span>
+		<span class="nx">RequestType</span><span class="p">:</span>        <span class="s">&#34;Create&#34;</span><span class="p">,</span>
+		<span class="nx">RequestID</span><span class="p">:</span>          <span class="s">&#34;xxx&#34;</span><span class="p">,</span>
+		<span class="nx">ResponseURL</span><span class="p">:</span>        <span class="s">&#34;some-url-here&#34;</span><span class="p">,</span>
+		<span class="nx">ResourceType</span><span class="p">:</span>       <span class="s">&#34;AWS::CloudFormation::CustomResource&#34;</span><span class="p">,</span>
+		<span class="nx">PhysicalResourceID</span><span class="p">:</span> <span class="s">&#34;&#34;</span><span class="p">,</span>
+		<span class="nx">LogicalResourceID</span><span class="p">:</span>  <span class="s">&#34;SSMCredentialTesting1&#34;</span><span class="p">,</span>
+		<span class="nx">StackID</span><span class="p">:</span>            <span class="s">&#34;arn:aws:cloudformation:eu-central-1:9999999:stack/CustomResourcesGolang&#34;</span><span class="p">,</span>
+		<span class="nx">ResourceProperties</span><span class="p">:</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span>
+			<span class="s">&#34;ServiceToken&#34;</span><span class="p">:</span> <span class="s">&#34;arn:aws:lambda:eu-central-1:9999999:function:CustomResourcesGolang-Function&#34;</span><span class="p">,</span>
+			<span class="s">&#34;key&#34;</span><span class="p">:</span>          <span class="s">&#34;/testing3&#34;</span><span class="p">,</span>
+			<span class="s">&#34;value&#34;</span><span class="p">:</span>        <span class="s">&#34;some-secret-value&#34;</span><span class="p">,</span>
+		<span class="p">},</span>
+	<span class="p">}</span>
+	<span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">_</span> <span class="p">=</span> <span class="nx">ssmHandler</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">cfnEvent</span><span class="p">)</span>
+
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="integration-tests">Integration tests</h3>
+<p>I&rsquo;ve used <a href="https://aws.amazon.com/de/serverless/sam/">AWS SAM</a> to locally invoke the Lambda function created via CDK.  Make sure you have <code>aws-sam-cli</code> installed on your machine.</p>
+<p>After the initial call <code>aws-sam</code> will first download the Docker image for your function:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">...
+Invoking /main <span class="o">(</span>go1.x<span class="o">)</span>
+Local image was not found.
+Removing rapid images <span class="k">for</span> repo public.ecr.aws/sam/emulation-go1.x
+...
+</code></pre></td></tr></table>
+</div>
+</div><p>Afterwards invoking the Lambda locally is quite easy:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ cdk synth
+$ sam <span class="nb">local</span> invoke -t cdk.out/CustomResourcesGolang.template.json GolangCustomResources
+...
+Mounting /home/victor/work/repos/aws-custom-resource-golang/deployments/cdk.out/asset.1ac1b002ba7d09e11c31702e1724d092e837796c2ed40541947abdfc6eb75947 as /var/task:ro,delegated, inside runt
+ime container
+2023/03/31 11:42:29 Starting lambda
+2023/03/31 11:42:29 event: cfn.Event<span class="o">{</span>RequestType:<span class="s2">&#34;&#34;</span>, RequestID:<span class="s2">&#34;&#34;</span>, ResponseURL:<span class="s2">&#34;&#34;</span>, ResourceType:<span class="s2">&#34;&#34;</span>, PhysicalResourceID:<span class="s2">&#34;&#34;</span>, LogicalResourceID:<span class="s2">&#34;&#34;</span>, StackID:<span class="s2">&#34;&#34;</span>, ResourceProperties:map<span class="o">[</span>string<span class="o">]</span>in
+terface <span class="o">{}(</span>nil<span class="o">)</span>, OldResourceProperties:map<span class="o">[</span>string<span class="o">]</span>interface <span class="o">{}(</span>nil<span class="o">)}</span>
+2023/03/31 11:42:29 sending status failed: Unknown resource type:
+Put <span class="s2">&#34;&#34;</span>: unsupported protocol scheme <span class="s2">&#34;&#34;</span>: Error
+null
+<span class="o">{</span><span class="s2">&#34;errorMessage&#34;</span>:<span class="s2">&#34;Put \&#34;\&#34;: unsupported protocol scheme \&#34;\&#34;&#34;</span>,<span class="s2">&#34;errorType&#34;</span>:<span class="s2">&#34;Error&#34;</span><span class="o">}</span>END RequestId: 93eed487-2441-4d41-a0b6-d939efeab99f
+REPORT RequestId: 93eed487-2441-4d41-a0b6-d939efeab99f  Init Duration: 0.30 ms  Duration: 224.84 ms     Billed Duration: <span class="m">225</span> ms Memory Size: <span class="m">128</span> MB     Max Memory Used: <span class="m">128</span> M
+</code></pre></td></tr></table>
+</div>
+</div><p>Of course you need to specify a payload to your function. You can store your payload (of type CloudFormation event) as a JSON file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ cat tests/create.json
+<span class="o">{</span>
+  <span class="s2">&#34;RequestType&#34;</span>: <span class="s2">&#34;Create&#34;</span>,
+  <span class="s2">&#34;RequestID&#34;</span>: <span class="s2">&#34;9bf90339-c6f0-47ff-ad67-e19226facf6e&#34;</span>,
+  <span class="s2">&#34;ResponseURL&#34;</span>: <span class="s2">&#34;https://some-url&#34;</span>,
+  <span class="s2">&#34;ResourceType&#34;</span>: <span class="s2">&#34;AWS::CloudFormation::CustomResource&#34;</span>,
+  <span class="s2">&#34;PhysicalResourceID&#34;</span>: <span class="s2">&#34;&#34;</span>,
+  <span class="s2">&#34;LogicalResourceID&#34;</span>: <span class="s2">&#34;SSMCredential21D358858&#34;</span>,
+  <span class="s2">&#34;StackID&#34;</span>: <span class="s2">&#34;arn:aws:cloudformation:eu-central-1:xxxxxxxxxxxx:stack/CustomResourcesGolang/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&#34;</span>,
+  <span class="s2">&#34;ResourceProperties&#34;</span>: <span class="o">{</span>
+    <span class="s2">&#34;ServiceToken&#34;</span>: <span class="s2">&#34;arn:aws:lambda:eu-central-1:xxxxxxxxxxxx:function:CustomResourcesGolang-ProviderframeworkonEvent83C1-Dt9Jv3RwL9KT&#34;</span>,
+    <span class="s2">&#34;key&#34;</span>: <span class="s2">&#34;/test/testing12345&#34;</span>,
+    <span class="s2">&#34;value&#34;</span>: <span class="s2">&#34;some-secret-value&#34;</span>
+  <span class="o">}</span>,
+  <span class="s2">&#34;OldResourceProperties&#34;</span>: <span class="o">{}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Then you can specify the JSON file</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ sam <span class="nb">local</span> invoke -t cdk.out/CustomResourcesGolang.template.json GolangCustomResources -e ../tests/create.json
+
+Invoking /main <span class="o">(</span>go1.x<span class="o">)</span>
+Local image is up-to-date
+Using <span class="nb">local</span> image: public.ecr.aws/lambda/go:1-rapid-x86_64.
+
+Mounting /home/victor/work/repos/aws-custom-resource-golang/deployments/cdk.out/asset.1ac1b002ba7d09e11c31702e1724d092e837796c2ed40541947abdfc6eb75947 as /var/task:ro,delegated, inside runt
+ime container
+START RequestId: cb8c7882-269c-434e-ace1-f6958940ee2e Version: <span class="nv">$LATEST</span>
+2023/03/31 11:48:16 Starting lambda
+2023/03/31 11:48:16 event: cfn.Event<span class="o">{</span>RequestType:<span class="s2">&#34;Create&#34;</span>, RequestID:<span class="s2">&#34;9bf90339-c6f0-47ff-ad67-e19226facf6e&#34;</span>, ResponseURL:<span class="s2">&#34;https://some-file&#34;</span>, ResourceType:<span class="s2">&#34;AWS::CloudFormation::CustomResour
+</span><span class="s2">ce&#34;</span>, PhysicalResourceID:<span class="s2">&#34;&#34;</span>, LogicalResourceID:<span class="s2">&#34;SSMCredential21D358858&#34;</span>, StackID:<span class="s2">&#34;arn:aws:cloudformation:eu-central-1:xxxxxxxxxxxx:stack/CustomResourcesGolang/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+</span><span class="s2">xxxxx&#34;</span>, ResourceProperties:map<span class="o">[</span>string<span class="o">]</span>interface <span class="o">{}{</span><span class="s2">&#34;ServiceToken&#34;</span>:<span class="s2">&#34;arn:aws:lambda:eu-central-1:xxxxxxxxxxxx:function:CustomResourcesGolang-ProviderframeworkonEvent83C1-Dt9Jv3RwL9KT&#34;</span>, <span class="s2">&#34;key&#34;</span>:
+<span class="s2">&#34;/test/testing12345&#34;</span>, <span class="s2">&#34;value&#34;</span>:<span class="s2">&#34;some-secret-value&#34;</span><span class="o">}</span>, OldResourceProperties:map<span class="o">[</span>string<span class="o">]</span>interface <span class="o">{}{}}</span>
+2023/03/31 11:48:16 Creating SSM parameter
+2023/03/31 11:48:16 Put parameter into SSM: /test/testing12345
+Put <span class="s2">&#34;https://some-file&#34;</span>: dial tcp: lookup some-file on 192.168.179.1:53: no such host: Error
+null
+END RequestId: cb8c7882-269c-434e-ace1-f6958940ee2e
+REPORT RequestId: cb8c7882-269c-434e-ace1-f6958940ee2e  Init Duration: 0.13 ms  Duration: 327.24 ms     Billed Duration: <span class="m">328</span> ms Memory Size: <span class="m">128</span> MB     Max Memory Used: <span class="m">128</span> MB
+<span class="o">{</span><span class="s2">&#34;errorMessage&#34;</span>:<span class="s2">&#34;Put \&#34;https://some-file\&#34;: dial tcp: lookup some-file on 192.168.179.1:53: no such host&#34;</span>,<span class="s2">&#34;errorType&#34;</span>:<span class="s2">&#34;Error&#34;</span><span class="o">}</span>%
+</code></pre></td></tr></table>
+</div>
+</div><p>This one fails coz I didn&rsquo;t specify any valid <code>ResponseURL</code>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I think this approach opens a lot of possibilities to create advanced custom resources based on your needs. You could for example use custom resources to <strong>deploy resources across multiple accounts</strong>. For Security reasons you could <strong>enforce several compliance policies</strong> and monitor for compliance deviations. Or you could <strong>use some 3rd-party APIs</strong> to pass data back and forth (e.g. user management, product stocks etc.)</p>
+<p>As you have control over the logic implemented in the AWS Lambda function and therefore define how your custom resources should be managed, the possibilities are endless. Have fun creating your own custom resources!</p>
+<h2 id="resources">Resources</h2>
+<h3 id="general">General</h3>
+<ul>
+<li>2023-02-07 ◦ <a href="https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/gov2">aws-doc-sdk-examples/gov2 at main · awsdocs/aws-doc-sdk-examples · GitHub</a></li>
+<li>2023-01-31 ◦ <a href="https://github.com/aws/aws-cdk/issues/5796">CloudFormation needs physicalResourceId for custom-resources.AwsSdkCall when used in custom-resources.AwsCustomResource as onDelete property · Issue #5796 · aws/aws-cdk · GitHub</a></li>
+<li>2023-01-20 ◦ <a href="https://medium.com/@mo.asgari/creating-aws-custom-resources-in-go-2e128cacb964">Create AWS Custom Resources in Go | by Mo Asgari | Medium</a></li>
+<li>2023-01-20 ◦ <a href="https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/custom-resource">github.com/aws-cdk-examples/typescript/custom-resource</a></li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li>2023-04-06 ◦ <a href="https://www.slideshare.net/MichaelFelch/welcome-to-the-jungle-pentesting-aws">Welcome to the Jungle: Pentesting AWS</a></li>
+</ul>
+<h3 id="golang">Golang</h3>
+<ul>
+<li>2023-02-08 ◦ <a href="https://aws.github.io/aws-sdk-go-v2/docs/unit-testing/">Unit Testing with the AWS SDK for Go V2 | AWS SDK for Go V2</a></li>
+</ul>
+]]></content:encoded>
+    </item>
+    
+    <item>
       <title>Book summary: Fooled by randomness</title>
       <link>https://blog.dornea.nu/2023/02/04/book-summary-fooled-by-randomness/</link>
       <pubDate>Sat, 04 Feb 2023 20:58:50 +0100</pubDate>
