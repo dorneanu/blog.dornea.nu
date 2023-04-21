@@ -13,6 +13,333 @@
     
     
     <item>
+      <title>Read Hackernews and Reddit the Emacs way</title>
+      <link>https://blog.dornea.nu/2023/04/21/read-hackernews-and-reddit-the-emacs-way/</link>
+      <pubDate>Fri, 21 Apr 2023 07:14:42 +0200</pubDate>
+      
+      <guid>https://blog.dornea.nu/2023/04/21/read-hackernews-and-reddit-the-emacs-way/</guid>
+      <content:encoded><![CDATA[<h2 id="motivation">Motivation</h2>
+<p>Usually when I consume my daily <a href="/2022/06/13/rss-and-atom-for-digital-minimalists/">news feeds</a>, I prefer to keep context switching
+to a minimum. Whether you&rsquo;re a busy professional or just someone who values
+their time, you might want to streamline your online reading experience as much
+as possible. For me, this means sticking to <a href="https://brainfck.org/t/emacs">Emacs</a> and
+using tools like <a href="/2022/06/29/rss/atom-emacs-and-elfeed/">elfeed and pocket-reader</a> to stay on top of my reading list.</p>
+<p>Unfortunately, this approach doesn&rsquo;t work with content served within comments at
+Hackernews or Reddit, where you usually have lots of comments and discussion
+threads. This is where I began to struggle, as I found myself bouncing back and
+forth between Emacs and my browser in order to stay on top of the conversation.</p>
+<p>Luckily, I&rsquo;ve found <a href="https://github.com/thanhvg/emacs-hnreader">hnreader</a> and <a href="https://github.com/thanhvg/emacs-reddigg">reddigg</a> which have changed the way I consume
+content on these platforms. These packages are specifically designed to help you
+navigate and read through Hackernews and Reddit threads directly from within
+Emacs, saving you from the hassle of constantly switching between different apps
+and tabs.</p>
+<p>In my opinion these are the most underrated packages and in this post I&rsquo;d like
+to show you how they can help you improve your reading experience. By the end of
+this post, you&rsquo;ll have a better understanding of how to use <a href="https://github.com/thanhvg/emacs-hnreader">hnreader</a> and <a href="https://github.com/thanhvg/emacs-reddigg">reddigg</a>
+to read and navigate through even the most complex Hackernews and Reddit
+threads, all without ever having to leave the comfort of <a href="https://brainfck.org/t/emacs">Emacs</a>.</p>
+<h2 id="hnreader">hnreader</h2>
+<p>Without any customizations you can use <code>hnreader</code> straightaway. Currently you have following options:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/hnreader-reddigg/hnreader-functions.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/hnreader-reddigg/hnreader-functions.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<p>Invoking each function will return a buffer with the latest 30 posts in that category:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/hnreader-reddigg/hnreader-top-posts.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/hnreader-reddigg/hnreader-top-posts.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<p>Let&rsquo;s have a look how we can add customized behaviour.</p>
+<h3 id="basic-functions">Basic functions</h3>
+<p>The easiest way to show comments for a thread ID is to use</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">hnreader-readpage-promise</span> <span class="s">&#34;https://news.ycombinator.com/item?id=34482433&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Open a new buffer with the HN page
+</div>
+<p>This will create a new buffer and load the <em>readpage</em> for that specific HN URL</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/hnreader-reddigg/hnreader-readpage-buffer.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/hnreader-reddigg/hnreader-readpage-buffer.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">hnreader-promise-comment</span> <span class="s">&#34;https://news.ycombinator.com/item?id=34482433&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  Open a new buffer with the HN threads
+</div>
+<p>This will create a new buffer and load all comments from this specific Hackernews thread:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/hnreader-reddigg/hnreader-comments-buffer.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/hnreader-reddigg/hnreader-comments-buffer.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<h3 id="elfeed-integrations">elfeed integrations</h3>
+<p>Whenever you have a Hackernews specific link inside your buffer you may want to open it using:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my/elfeed-hn-show-comments-at-point</span> <span class="p">()</span>
+  <span class="s">&#34;Show HN comments for an URL at point&#34;</span>
+  <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">setq-local</span> <span class="nv">hnreader-view-comments-in-same-window</span> <span class="no">t</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">hnreader-comment</span> <span class="p">(</span><span class="nf">format</span> <span class="s">&#34;%s&#34;</span> <span class="p">(</span><span class="nv">url-get-url-at-point</span><span class="p">))))</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Show HN comments for an URL at point
+</div>
+<p>You can of course call a function from the <code>elfeed-search</code> buffer to show the HN threads:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my/elfeed-hn-show-commments</span> <span class="p">(</span><span class="kp">&amp;optional</span> <span class="nv">link</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">let*</span> <span class="p">((</span><span class="nv">entry</span> <span class="p">(</span><span class="nb">if</span> <span class="p">(</span><span class="nf">eq</span> <span class="nv">major-mode</span> <span class="ss">&#39;elfeed-show-mode</span><span class="p">)</span>
+                    <span class="nv">elfeed-show-entry</span>
+                  <span class="p">(</span><span class="nv">elfeed-search-selected</span> <span class="nb">:ignore-region</span><span class="p">)))</span>
+         <span class="p">(</span><span class="nv">link</span> <span class="p">(</span><span class="nb">if</span> <span class="nv">link</span> <span class="nv">link</span> <span class="p">(</span><span class="nv">elfeed-entry-link</span> <span class="nv">entry</span><span class="p">))))</span>
+    <span class="p">(</span><span class="nb">setq-local</span> <span class="nv">hnreader-view-comments-in-same-window</span> <span class="no">nil</span><span class="p">)</span>
+    <span class="p">(</span><span class="nv">hnreader-promise-comment</span> <span class="p">(</span><span class="nf">format</span> <span class="s">&#34;%s&#34;</span> <span class="nv">link</span><span class="p">))))</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Opens new buffer when called from the elfeed-search buffer
+</div>
+<p>And these are my <code>elfeed</code> related keybindings:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-search-mode-map</span>
+      <span class="nb">:after</span> <span class="nv">elfeed-search</span>
+      <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+      <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+      <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
+      <span class="c1">;; ...</span>
+      <span class="nb">:n</span> <span class="s">&#34;H&#34;</span> <span class="nf">#&#39;</span><span class="nv">my/elfeed-hn-show-commments</span>
+      <span class="c1">;; ...)</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Key bindings for elfeed-search-mode
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-search-mode-map</span>
+      <span class="nb">:after</span> <span class="nv">elfeed-show</span>
+      <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+      <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+      <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
+      <span class="c1">;; ...</span>
+      <span class="nb">:n</span> <span class="s">&#34;H&#34;</span> <span class="nf">#&#39;</span><span class="nv">my/elfeed-hn-show-comments-at-point</span>
+      <span class="c1">;; ...)</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Key bindings for elfeed-show-mode
+</div>
+<h2 id="reddigg">reddigg</h2>
+<p><a href="https://github.com/thanhvg/emacs-reddigg">reddigg</a> is the similar solution for reddit. When invoked directly you have these options:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/hnreader-reddigg/reddigg-functions.png" class="glightbox" data-glightbox="title:reddigg functions; description: reddigg functions; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/hnreader-reddigg/reddigg-functions.png" alt="image">
+        <div class="caption">reddigg functions</div>
+    </a>
+</div>
+
+<p>After invoking <code>reddigg-view-frontpage</code> you&rsquo;ll get a new buffer with the last posts:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/hnreader-reddigg/reddigg-frontpage.png" class="glightbox" data-glightbox="title:reddigg front page; description: reddigg front page; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/hnreader-reddigg/reddigg-frontpage.png" alt="image">
+        <div class="caption">reddigg front page</div>
+    </a>
+</div>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my/elfeed-reddit-show-commments</span> <span class="p">(</span><span class="kp">&amp;optional</span> <span class="nv">link</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">let*</span> <span class="p">((</span><span class="nv">entry</span> <span class="p">(</span><span class="nb">if</span> <span class="p">(</span><span class="nf">eq</span> <span class="nv">major-mode</span> <span class="ss">&#39;elfeed-show-mode</span><span class="p">)</span>
+                    <span class="nv">elfeed-show-entry</span>
+                  <span class="p">(</span><span class="nv">elfeed-search-selected</span> <span class="nb">:ignore-region</span><span class="p">)))</span>
+         <span class="p">(</span><span class="nv">link</span> <span class="p">(</span><span class="nb">if</span> <span class="nv">link</span> <span class="nv">link</span> <span class="p">(</span><span class="nv">elfeed-entry-link</span> <span class="nv">entry</span><span class="p">))))</span>
+    <span class="p">(</span><span class="nv">reddigg-view-comments</span> <span class="nv">link</span><span class="p">)))</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="elfeed-integration">elfeed integration</h3>
+<p>We can also use <code>reddigg</code> to show reddit threads from within an <code>elfeed</code> buffer</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my/elfeed-reddit-show-commments</span> <span class="p">(</span><span class="kp">&amp;optional</span> <span class="nv">link</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">let*</span> <span class="p">((</span><span class="nv">entry</span> <span class="p">(</span><span class="nb">if</span> <span class="p">(</span><span class="nf">eq</span> <span class="nv">major-mode</span> <span class="ss">&#39;elfeed-show-mode</span><span class="p">)</span>
+                    <span class="nv">elfeed-show-entry</span>
+                  <span class="p">(</span><span class="nv">elfeed-search-selected</span> <span class="nb">:ignore-region</span><span class="p">)))</span>
+         <span class="p">(</span><span class="nv">link</span> <span class="p">(</span><span class="nb">if</span> <span class="nv">link</span> <span class="nv">link</span> <span class="p">(</span><span class="nv">elfeed-entry-link</span> <span class="nv">entry</span><span class="p">))))</span>
+    <span class="p">(</span><span class="nv">reddigg-view-comments</span> <span class="nv">link</span><span class="p">)))</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Show reddit comments from within elfeed
+</div>
+<p>And my related keybindings:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-search-mode-map</span>
+      <span class="nb">:after</span> <span class="nv">elfeed-search</span>
+      <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+      <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+      <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
+      <span class="c1">;; ...</span>
+      <span class="nb">:n</span> <span class="s">&#34;R&#34;</span> <span class="nf">#&#39;</span><span class="nv">my/elfeed-reddit-show-commments</span>
+      <span class="c1">;; ...</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Key bindings for reddigg
+</div>
+<p>When invoked you&rsquo;ll get an ORG mode styled buffer with all the comments for a specific reddit thread:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="/posts/img/2023/hnreader-reddigg/reddigg-comments.png" class="glightbox" data-glightbox="title:reddigg comments; description: reddigg comments; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="/posts/img/2023/hnreader-reddigg/reddigg-comments.png" alt="image">
+        <div class="caption">reddigg comments</div>
+    </a>
+</div>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>I hope you&rsquo;re as enthusiastic as I am. And if you have any better alternatives,
+please don&rsquo;t hesitate to let me know in the comments.</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
       <title>AWS Custom resources with Lambda and Golang</title>
       <link>https://blog.dornea.nu/2023/04/06/aws-custom-resources-with-lambda-and-golang/</link>
       <pubDate>Thu, 06 Apr 2023 16:22:13 +0200</pubDate>
