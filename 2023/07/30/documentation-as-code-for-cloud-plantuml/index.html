@@ -1,0 +1,1596 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Documentation as Code for Cloud - PlantUML - blog.dornea.nu</title>
+  <meta content='Documentation as Code for Cloud - PlantUML - blog.dornea.nu' property='title' />
+  <meta content='Documentation as Code for Cloud - PlantUML - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Basics I&rsquo;ve become a huge fan of PlantUML even before I came across the concept of &ldquo;documentation as code&rdquo; I also code for presentations. So the term presentation as code is also a thing.  and it instantly won me over with its capabilities. I have used it in many different roles (software engineer, security engineer, security architect) extensively to draw diagrams (components, sequences) and mind maps.
+Though initially, the general syntax might seem a bit challenging to understand, I believe that with some dedication, the learning curve becomes quite manageable." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2023/07/30/documentation-as-code-for-cloud-plantuml/" />
+
+
+<meta property="article:published_time" content="2023-07-30T21:27:03&#43;02:00"/>
+<meta property="article:modified_time" content="2023-07-30T21:27:03&#43;02:00"/>
+
+
+
+
+
+  
+  
+
+
+
+
+
+<meta name="generator" content="Hugo 0.89.4" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+
+
+<script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="b8a4b728-8eda-42fb-8376-10168c622160" async></script>
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Documentation as Code for Cloud - PlantUML</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>30 Jul 2023</time> 
+     | 
+    
+
+    
+     ~
+  
+
+14 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/documentation' class="link silver">documentation</a> <a href='https://blog.dornea.nu/tags/architecture' class="link silver">architecture</a> <a href='https://blog.dornea.nu/tags/plantuml' class="link silver">plantuml</a> <a href='https://blog.dornea.nu/tags/aws' class="link silver">aws</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2023/07/18/documentation-as-code-for-cloud/">
+                        Part 1: Documentation as Code for Cloud
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item active">
+                    Part 2: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+      <h2 id="basics">Basics</h2>
+<p>I&rsquo;ve become a huge fan of <a href="https://plantuml.com/">PlantUML</a> even before I came across the concept of
+&ldquo;<strong>documentation as code</strong>&rdquo;
+<span class="sidenote-number"><small class="sidenote">
+I also code for presentations. So the term <a href="https://slides.dornea.nu/2022/presentation-as-code">presentation as code</a> is also a thing.
+</small></span>
+and it instantly won me over with its capabilities. I have used it in many
+different roles (software engineer, security engineer, security architect)
+extensively to draw diagrams (<a href="https://plantuml.com/component-diagram">components</a>, <a href="https://plantuml.com/sequence-diagram">sequences</a>) and <a href="https://plantuml.com/mindmap-diagram">mind maps</a>.</p>
+<p>Though initially, the general syntax might seem a bit challenging to understand,
+I believe that with some dedication, the learning curve becomes quite
+manageable. The reward of mastering PlantUML is well worth the effort, as it
+empowers you to create <em>visually engaging</em> and <em>informative diagrams</em> seamlessly.</p>
+<p>One aspect where PlantUML might fall short is its default styling, which may not
+be as visually impressive as some other tools. However, this drawback can easily
+be overcome by incorporating icons and leveraging different themes to <em>breathe
+life</em> into your diagrams.
+<span class="sidenote-number"><small class="sidenote">
+For really cool diagrams you might want to have a look at <a href="https://crashedmind.github.io/PlantUMLHitchhikersGuide/">PlantUML Hitchhikers Guide</a>.
+</small></span>
+By doing so, you can elevate the aesthetic appeal and
+overall quality of your visual representations significantly by using standard
+icons (included withing the <a href="https://plantuml.com/stdlib">standard library</a>) and 3rd-party ones .</p>
+<p>Let&rsquo;s have a look how how a typical PlantUML document could look like:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">&lt;&lt;styling options&gt;&gt; ❶
+
+&lt;&lt;import of additional resources/modules&gt;&gt;  ❷
+&lt;&lt;import of 3rd-party resources&gt;&gt;  ➌
+
+&lt;&lt;resources&gt;&gt;  ❹
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  General structure of the PlantUML document
+</div>
+<p>At the top of the document ❶ you define the basic layout of the resulting
+drawing (landscape mode, font size, font family, default direction in which
+resources should be created, etc.). Then you start adding different modules ❷
+and ➌ which provide different entities and icons based on your needs. Finally
+you use your resources/entities, arrange them correspondingly and make
+relationships between them ❹.</p>
+<p>This is what I&rsquo;ll use for the examples within this blog post:</p>
+
+
+
+<blockquote class="notice info">
+  In this example I&rsquo;ve cloned <a href="https://github.com/awslabs/aws-icons-for-plantuml">aws-icons-for-plantuml</a> locally. That&rsquo;s why I&rsquo;ve used
+<code>/home/victor/work/repos/aws-icons-for-plantuml/dist</code> as the location of the AWS
+icon distribution. But you can still use an external URL such as
+<a href="https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v16.0/dist">https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v16.0/dist</a>.
+</blockquote>
+
+<p><a id="org-example-block--plantuml-includes"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">&#39; !define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v16.0/dist
+!define AWSPuml /home/victor/work/repos/aws-icons-for-plantuml/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/AWSSimplified.puml
+!include AWSPuml/ApplicationIntegration/APIGateway.puml
+!include AWSPuml/ApplicationIntegration/SimpleNotificationService.puml
+!include AWSPuml/ManagementGovernance/CloudWatch.puml
+!include AWSPuml/Compute/EC2.puml
+!include AWSPuml/Compute/EC2Instance.puml
+!include AWSPuml/Compute/LambdaLambdaFunction.puml
+!include AWSPuml/Groups/all.puml
+!include AWSPuml/Containers/EKSCloud.puml
+!include AWSPuml/Containers/ElasticKubernetesService.puml
+!include AWSPuml/Containers/Containers.puml
+!include AWSPuml/NetworkingContentDelivery/VPCNATGateway.puml
+!include AWSPuml/NetworkingContentDelivery/VPCInternetGateway.puml
+!include AWSPuml/NetworkingContentDelivery/VPCEndpoints.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
+!include AWSPuml/SecurityIdentityCompliance/IAMIdentityCenter.puml
+
+hide stereotype
+skinparam linetype ortho
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#org-example-block--plantuml-includes">Code Snippet 1</a>:</span>
+  Styling option and includes for plantuml (basically the <b>epilogue</b> for everything else used in this post)
+</div>
+<p>PlantUML is a powerful tool that goes beyond just creating basic diagrams; it
+also supports various types of grouped areas. These groupings play a crucial
+role in emphasizing the logical connections between different components or
+resources that belong to the same category, making it easier to understand
+complex systems.</p>
+<p>When working with PlantUML, you have the flexibility to employ different types
+of groups to organize your diagrams effectively. Some of these groups include:</p>
+<p><a id="table--aws-icons-plantuml-groups"></a></p>
+<div class="table-caption">
+  <span class="table-number"><a href="#table--aws-icons-plantuml-groups">Table 1</a>:</span>
+  List of available groups within aws-icons-plantuml
+</div>
+<table>
+<thead>
+<tr>
+<th>Group name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GenericGroup</td>
+<td>If the predefined groups don&rsquo;t suit your needs, you can use this group type for custom arrangements.</td>
+</tr>
+<tr>
+<td>GenericAltGroup</td>
+<td>Similar to the generic group, this one allows for alternative custom groupings.</td>
+</tr>
+<tr>
+<td>AWSCloudAltGroup</td>
+<td>This group allows you to represent alternative cloud arrangements in your AWS diagrams.</td>
+</tr>
+<tr>
+<td>VPCGroup</td>
+<td>It lets you create a clear representation of components within an AWS Virtual Private Cloud.</td>
+</tr>
+<tr>
+<td>RegionGroup</td>
+<td>It enables you to logically group components based on AWS regions.</td>
+</tr>
+<tr>
+<td>AvailabilityZoneGroup</td>
+<td>With this group, you can highlight components grouped by availability zones in AWS.</td>
+</tr>
+<tr>
+<td>SecurityGroupGroup</td>
+<td>Use this group to demonstrate the logical connections between security groups in AWS.</td>
+</tr>
+<tr>
+<td>AutoScalingGroupGroup</td>
+<td>This group is perfect for showcasing auto-scaling groups and their relationships.</td>
+</tr>
+<tr>
+<td>PrivateSubnetGroup</td>
+<td>This group emphasizes components that are part of private subnets in AWS.</td>
+</tr>
+<tr>
+<td>PublicSubnetGroup</td>
+<td>Similar to the previous one, but for components in public subnets in AWS.</td>
+</tr>
+<tr>
+<td>ServerContentsGroup</td>
+<td>Use this group to illustrate the contents of a server or its internal</td>
+</tr>
+<tr>
+<td>CorporateDataCenterGroup</td>
+<td>It helps you highlight components within a corporate data center.</td>
+</tr>
+<tr>
+<td>EC2InstanceContentsGroup</td>
+<td>Use this group to show the internal structure or contents of an EC2 instance.</td>
+</tr>
+<tr>
+<td>SpotFleetGroup</td>
+<td>This group allows you to group instances in AWS Spot Fleet.</td>
+</tr>
+<tr>
+<td>AWSAccountGroup</td>
+<td>With this group, you can demonstrate various components within an AWS account.</td>
+</tr>
+<tr>
+<td>IoTGreengrassDeploymentGroup</td>
+<td>Use this group to illustrate deployments in AWS IoT Greengrass.</td>
+</tr>
+<tr>
+<td>IoTGreengrassGroup</td>
+<td>This group lets you represent components within AWS IoT Greengrass.</td>
+</tr>
+<tr>
+<td>ElasticBeanstalkContainerGroup</td>
+<td>Use this group to showcase container-related elements in AWS Elastic Beanstalk.</td>
+</tr>
+<tr>
+<td>StepFunctionsWorkflowGroup</td>
+<td>This group is perfect for visually representing AWS Step Functions workflows.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="groups">Groups</h3>
+<p>Let&rsquo;s have a look at the most common groups:</p>
+<ul>
+<li>
+<p>Generic group</p>
+<p>The most useful group (without any icons) is the <strong>generic group</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">  <span class="nf">GenericGroup</span><span class="p">(</span><span class="nx">generic_group</span><span class="p">,</span> <span class="s">&#34;Generic Group&#34;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kn">package</span> <span class="s">&#34;Some Group&#34;</span> <span class="p">{</span>
+      <span class="nx">HTTP</span> <span class="o">-</span> <span class="p">[</span><span class="nx">First</span> <span class="nx">Component</span><span class="p">]</span>
+      <span class="p">[</span><span class="nx">Another</span> <span class="nx">Component</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="nx">node</span> <span class="s">&#34;Other Groups&#34;</span> <span class="p">{</span>
+      <span class="nx">FTP</span> <span class="o">-</span> <span class="p">[</span><span class="nx">Second</span> <span class="nx">Component</span><span class="p">]</span>
+      <span class="p">[</span><span class="nx">First</span> <span class="nx">Component</span><span class="p">]</span> <span class="o">--</span><span class="p">&gt;</span> <span class="nx">FTP</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  Using generic group
+</div>
+</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-group-generic.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-group-generic.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-group-generic.puml">Full PlantUML Code</a></center>
+<ul>
+<li>
+<p>Generic alt group</p>
+<p>If you want to use another layout (without dotted lines) you could go for <strong>generic alt group</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">  GenericAltGroup(generic_alt_group, &#34;Generic Alt Group&#34;) {
+    node node1
+    node node2
+    node node3
+    node node4
+    node node5
+    node1 -- node2 : label1
+    node1 .. node3 : label2
+    node1 ~~ node4 : label3
+    node1 == node5
+  }
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 3:</span>
+  Using generic alt group
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-group-generic-alt.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-group-generic-alt.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-group-generic-alt.puml">Full PlantUML Code</a></center>
+</li>
+</ul>
+<!--listend-->
+<ul>
+<li>
+<p>AWS Cloud Group</p>
+<p>The <strong>AWSCloudGroup</strong> along with <strong>AWSAccountGroup</strong> provides a more AWS-like grouping of resources.
+Here is one example using VPCs and private subnets:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">  AWSCloudGroup(aws_cloud, &#34;AWS Cloud Group&#34;) {
+    AWSAccountGroup(aws_acc_group, &#34;AWS Account Group&#34;) {
+      VPCGroup(vpc_group, &#34;VPC Group&#34;) {
+        PrivateSubnetGroup(priv_subnet1, &#34;Private Subnet Group&#34;) {
+          [component] as C1
+        }
+        PrivateSubnetGroup(priv_subnet2, &#34;Private Subnet Group&#34;) {
+          [component] as C2
+        }
+      }
+    }
+  }
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 4:</span>
+  Using AWS cloud group
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-group-awscloud.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-group-awscloud.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-group-awscloud.puml">Full PlantUML Code</a></center>
+</li>
+</ul>
+<h2 id="aws-architecture">AWS Architecture</h2>
+<p>On our journey of designing the AWS architecture for our innovative
+self-destroying email service, we should begin with a <strong>high-level overview</strong> to lay
+down the foundation. With PlantUML at our disposal, it&rsquo;s a wise approach to
+start by sketching the fundamental <strong>high-level concepts</strong>
+<span class="sidenote-number"><small class="sidenote">
+You may also check the first post for some diagrams using pen &amp; paper.
+</small></span>
+before going to deep into details.</p>
+<p>By starting with the <em>organizational units</em> and gradually adding layers of
+complexity, we can systematically build upon the architecture, ensuring a
+coherent and comprehensive representation of the entire system. This
+step-by-step approach allows us to understand each component&rsquo;s role and
+<em>relationships</em> before moving forward.</p>
+<p>In this initial phase, we&rsquo;ll focus on capturing the <strong>essence of the architecture</strong>,
+identifying the <strong>main components</strong> and their relationships. As we move on, we can
+gradually introduce additional elements/components to achieve a holistic and
+detailed representation of the mail service.</p>
+<p>Remember, a well-structured high-level design serves as a <strong>roadmap</strong>, guiding us
+through the design process and identifying potential challenges or areas that
+require further refinement. With PlantUML as our visual design tool, we can
+easily iterate and modify the architecture as needed, ensuring that our
+self-destroying email service is built on a solid and scalable foundation. So,
+let&rsquo;s start with the <strong>big picture</strong> and refine it step by step to create an AWS
+architecture that meets our requirements.</p>
+<h3 id="account-level">Account level</h3>
+<p>On the organizational level, we have three accounts: <strong>OU-Tech</strong>, <strong>OU-Security</strong>, and
+<strong>OU-DevOps</strong>. Each account has a <strong>prod</strong> environment.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">AWSCloudGroup(cloud) {
+  GenericGroup(ou_tech, &#34;OU-Tech&#34;) {
+    AWSAccountGroup(acc_tech_prod, &#34;prod&#34;) {
+    }
+  }
+
+  GenericGroup(ou_security, &#34;OU-Security&#34;) {
+    AWSAccountGroup(acc_security_prod, &#34;prod&#34;) {
+    }
+  }
+
+  GenericGroup(ou_devops, &#34;OU-DevOps&#34;) {
+    AWSAccountGroup(acc_devops_prod, &#34;prod&#34;) {
+    }
+  }
+}
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 5:</span>
+  Using AWS cloud group
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-accounts.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-accounts.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-aws-accounts.puml">Full PlantUML Code</a></center>
+<h3 id="vpcs-and-responsibilities">VPCs and responsibilities</h3>
+<p>On the VPC level, we have a custom VPC with two private subnets. The VPC has a
+VPC endpoint to API Gateway. The VPC endpoint is used by the API Gateway to
+access the EKS cluster.</p>
+<p>The <strong>DevOps</strong> organizational unit also has some responsibilities which are highlighted
+as &ldquo;groups&rdquo; inside the OU.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">AWSCloudGroup(cloud) {
+  GenericGroup(ou_tech, &#34;OU-Tech&#34;) {
+    AWSAccountGroup(acc_tech_prod, &#34;prod&#34;) {
+      VPCGroup(vpc_tech, &#34;Custom VPC&#34;) {
+        EKSCloud(tech_eks_cluster, &#34;Tech EKS Cluster&#34;, &#34;Cluster&#34;) {
+        }
+        VPCEndpoints(tech_vpc_endpoint, &#34;VPC Endpoint&#34;, &#34;VPC Endpoint&#34;)
+      }
+    }
+  }
+
+  GenericGroup(ou_security, &#34;OU-Security&#34;) {
+    AWSAccountGroup(acc_security_prod, &#34;prod&#34;) {
+    }
+  }
+
+  GenericGroup(ou_devops, &#34;OU-DevOps&#34;) {
+    AWSAccountGroup(acc_devops_prod, &#34;prod&#34;) {
+      GenericAltGroup(devops_cicd_group, &#34;CI/CD&#34;) {
+      }
+
+      GenericAltGroup(devops_infraprov_group, &#34;Infrastructure provisioning&#34;) {
+      }
+
+      GenericAltGroup(devops_releasemgmt_group, &#34;Release Management&#34;) {
+      }
+    }
+  }
+}
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 6:</span>
+  Using AWS cloud group
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-vpc.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-vpc.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-aws-vpc.puml">Full PlantUML Code</a></center>
+<h3 id="relations">Relations</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">AWSCloudGroup(cloud) {
+  GenericGroup(ou_tech, &#34;OU-Tech&#34;) {
+    AWSAccountGroup(acc_tech_prod, &#34;prod&#34;) {
+      VPCGroup(vpc_tech, &#34;Custom VPC&#34;) {
+        EKSCloud(tech_eks_cluster, &#34;Tech EKS Cluster&#34;, &#34;Cluster&#34;) {
+        }
+        VPCEndpoints(tech_vpc_endpoint, &#34;VPC Endpoint&#34;, &#34;VPC Endpoint&#34;)
+      }
+      APIGateway(tech_api_gw, &#34;API GW&#34;, &#34;API GW&#34;)
+    }
+
+    &#39; Relationships
+    tech_api_gw --&gt; tech_vpc_endpoint
+  }
+
+  GenericGroup(ou_security, &#34;OU-Security&#34;) {
+    AWSAccountGroup(acc_security_prod, &#34;prod&#34;) {
+      CloudWatch(sec_cloudwatch, &#34;Cloudwatch&#34;, &#34;Cloudwatch&#34;)
+      SimpleStorageService(sec_s3, &#34;S3 Bucket&#34;, &#34;S3 Bucket&#34;)
+      IAMIdentityCenter(sec_iam_center, &#34;IAM&#34;, &#34;IAM&#34;)
+
+      GenericAltGroup(sec_alerting_group, &#34;Alerting&#34;) {
+        SimpleNotificationService(sec_sns, &#34;SNS&#34;, &#34;SNS&#34;)
+        LambdaLambdaFunction(sec_lambda, &#34;Lambda&#34;, &#34;Lambda&#34;)
+      }
+
+    }
+    &#39; Relationships
+    tech_api_gw --&gt; sec_iam_center
+    sec_cloudwatch --&gt; sec_alerting_group
+    tech_eks_cluster -- sec_s3
+  }
+
+  GenericGroup(ou_devops, &#34;OU-DevOps&#34;) {
+    AWSAccountGroup(acc_devops_prod, &#34;prod&#34;) {
+      GenericAltGroup(devops_cicd_group, &#34;CI/CD&#34;) {
+      }
+
+      GenericAltGroup(devops_infraprov_group, &#34;Infrastructure provisioning&#34;) {
+      }
+
+      GenericAltGroup(devops_releasemgmt_group, &#34;Release Management&#34;) {
+      }
+
+      &#39; Relationships
+      devops_infraprov_group -right- acc_tech_prod
+      devops_cicd_group -right- tech_eks_cluster
+    }
+  }
+}
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 7:</span>
+  Using AWS cloud group
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-full.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-full.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-aws-full.puml">Full PlantUML Code</a></center>
+<h3 id="what-about-the-rest">What about the rest?</h3>
+<p>Our diagram is not complete yet. Every group region could have its own diagram (as if you would zoom in into a specific component). Let&rsquo;s have a look how we add Kubernetes related components such as <em>nodes</em>, <em>pods</em> and <em>services</em>.
+<span class="sidenote-number"><small class="sidenote">
+Also have a look at <a href="https://crashedmind.github.io/PlantUMLHitchhikersGuide/kubernetes/kubernetes.html">Hitchhikers Guide on Kubernetes</a>.
+</small></span></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">AWSCloudGroup(cloud) {
+  GenericGroup(ou_tech, &#34;OU-Tech&#34;) {
+    AWSAccountGroup(acc_tech_prod, &#34;prod&#34;) {
+      VPCGroup(vpc_tech, &#34;Custom VPC&#34;) {
+        EKSCloud(tech_eks_cluster, &#34;EKS Cluster&#34;, &#34;Cluster&#34;) {
+          GenericGroup(grou_tech_eks_service, &#34;Kubernetes Service&#34;) {
+            Containers(tech_eks_pod1, &#34;pod&#34;, &#34;Pods&#34;)
+            Containers(tech_eks_pod2, &#34;pod&#34;, &#34;Pods&#34;)
+          }
+        }
+        VPCEndpoints(tech_vpc_endpoint, &#34;VPC Endpoint&#34;, &#34;VPC Endpoint&#34;)
+      }
+      APIGateway(tech_api_gw, &#34;API GW&#34;, &#34;API GW&#34;)
+    }
+
+    &#39; Relationships
+    tech_api_gw --&gt; tech_vpc_endpoint
+  }
+
+  GenericGroup(ou_security, &#34;OU-Security&#34;) {
+    AWSAccountGroup(acc_security_prod, &#34;prod&#34;) {
+      CloudWatch(sec_cloudwatch, &#34;Cloudwatch&#34;, &#34;Cloudwatch&#34;)
+      SimpleStorageService(sec_s3, &#34;S3 Bucket&#34;, &#34;S3 Bucket&#34;)
+      IAMIdentityCenter(sec_iam_center, &#34;IAM&#34;, &#34;IAM&#34;)
+
+      GenericGroup(sec_alerting_group, &#34;Alerting&#34;) {
+        SimpleNotificationService(sec_sns, &#34;SNS&#34;, &#34;SNS&#34;)
+        LambdaLambdaFunction(sec_lambda, &#34;Lambda&#34;, &#34;Lambda&#34;)
+      }
+
+    }
+    &#39; Relationships
+    tech_api_gw --&gt; sec_iam_center
+    sec_cloudwatch --&gt; sec_alerting_group
+    tech_eks_cluster -- sec_s3
+  }
+
+  GenericGroup(ou_devops, &#34;OU-DevOps&#34;) {
+    AWSAccountGroup(acc_devops_prod, &#34;prod&#34;) {
+      GenericAltGroup(devops_cicd_group, &#34;CI/CD&#34;) {
+      }
+
+      GenericAltGroup(devops_infraprov_group, &#34;Infrastructure provisioning&#34;) {
+      }
+
+      GenericAltGroup(devops_releasemgmt_group, &#34;Release Management&#34;) {
+      }
+
+      &#39; Relationships
+      devops_infraprov_group -right- acc_tech_prod
+      devops_cicd_group -right- tech_eks_cluster
+    }
+  }
+}
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 8:</span>
+  Using AWS cloud group
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-full-eks.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-aws-full-eks.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-aws-full-eks.puml">Full PlantUML Code</a></center>
+<h2 id="sequence-diagrams">Sequence diagrams</h2>
+<p>When examining the previsouly sketched architecture, it is not immediately clear
+how the mail service can be used. To gain a better understanding of the
+<strong>fundamental workflows</strong>, it is necessary to adopt <a href="https://plantuml.com/sequence-diagram">sequence diagrams</a>. These
+diagrams should be created for each business use case.</p>
+
+
+
+<blockquote class="notice info">
+  The examples below don&rsquo;t require the <strong>epilogue</strong> (styling and additional modules).
+</blockquote>
+
+<h3 id="without-fancy-icons">Without fancy icons</h3>
+<p>Let&rsquo;s explore some sequence diagrams <strong>without</strong> icons and additional styling:</p>
+<ul>
+<li>
+<p>Compose and send mails</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">  @startuml
+  title Sending a Self-Destructing Email
+
+  actor User
+  participant Frontend
+  participant AuthenticationService
+  participant EmailCompositionService
+  participant EncryptionService
+  participant LifetimeManagementService
+  participant NotificationService
+
+  User -&gt; Frontend: Compose email
+  Frontend -&gt; AuthenticationService: Authenticate user
+  AuthenticationService --&gt; Frontend: User authenticated
+  Frontend -&gt; EmailCompositionService: Compose email with content
+  EmailCompositionService -&gt; EncryptionService: Encrypt email content
+  EncryptionService --&gt; EmailCompositionService: Email content encrypted
+  EmailCompositionService -&gt; LifetimeManagementService: Set expiration time
+  note right: Expire after N hours
+  LifetimeManagementService --&gt; EmailCompositionService: Expiration time set
+  EmailCompositionService -&gt; NotificationService: Notify recipient
+  NotificationService --&gt; EmailCompositionService: Recipient notified
+  EmailCompositionService --&gt; Frontend: Email composition complete
+  Frontend --&gt; User: Email sent
+  @enduml
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 9:</span>
+  Plantuml
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-seq-send.puml">Full PlantUML Code</a></center>
+</li>
+</ul>
+<!--listend-->
+<ul>
+<li>
+<p>Receive and view mails</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">  @startuml
+  actor Recipient
+  participant NotificationMicroservice
+  participant Frontend
+  participant EncryptionMicroservice
+  participant LifetimeManagementMicroservice
+
+  Recipient -&gt; NotificationMicroservice: Received Email Notification
+  NotificationMicroservice -&gt; Frontend: Get Email Data
+  Frontend -&gt; EncryptionMicroservice: Decrypt Email Content
+  Frontend -&gt; Frontend: Display Email
+  Frontend -&gt; LifetimeManagementMicroservice: Check Expiration Status
+  LifetimeManagementMicroservice -&gt; Frontend: Email Expired
+  @enduml
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 10:</span>
+  Plantuml sequence diagram for receiving and viewing mails
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-receive.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-receive.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-seq-receive.puml">Full PlantUML Code</a></center>
+</li>
+</ul>
+<!--listend-->
+<ul>
+<li>
+<p>Compose and send mails (with logging)</p>
+<p>Now let&rsquo;s complicate things a little bit and also make sure we <strong>log</strong> requests and <strong>store</strong> necessary data to our storage system:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">  @startuml
+  actor User
+  participant Frontend
+  participant AuthMicroservice
+  participant EncryptionMicroservice
+  participant CompositionMicroservice
+  participant LifetimeManagementMicroservice
+  participant LoggingService
+  participant DataStorage
+
+  User -&gt; Frontend: Compose Email
+  Frontend -&gt; AuthMicroservice: Authenticate User
+  AuthMicroservice -&gt; Frontend: User Authenticated
+  Frontend -&gt; CompositionMicroservice: Send Email Data
+  CompositionMicroservice -&gt; EncryptionMicroservice: Encrypt Email Content
+  EncryptionMicroservice -&gt; LifetimeManagementMicroservice: Set Expiration Time
+  LifetimeManagementMicroservice -&gt; Frontend: Expiration Time Set
+  Frontend -&gt; Frontend: Notify User (Email Sent)
+  Frontend -&gt; LoggingService: Log Email Sent Event
+  Frontend -&gt; DataStorage: Store Email Metadata
+  CompositionMicroservice -&gt; DataStorage: Store Encrypted Email Content
+  @enduml
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 11:</span>
+  Plantuml sequence diagram for composing and sending mails (with logging)
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-logging.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-logging.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-seq-send-logging.puml">Full PlantUML Code</a></center>
+</li>
+</ul>
+<h3 id="with-aws-icons">With AWS Icons</h3>
+<p>Let&rsquo;s add some AWS related icons and some boxes (for emphasizing components that belong together):</p>
+<ul>
+<li>
+<p>Send mails</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">  @startuml
+  &#39; Epilogue
+  skinparam BoxPadding 10
+
+  &#39; !define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v16.0/dist
+  !define AWSPuml /home/victor/work/repos/aws-icons-for-plantuml/dist
+  !include AWSPuml/AWSCommon.puml
+  !include AWSPuml/Compute/all.puml
+  !include AWSPuml/ApplicationIntegration/APIGateway.puml
+  !include AWSPuml/General/Internetalt1.puml
+  !include AWSPuml/Database/DynamoDB.puml
+
+  &#39; Components
+  actor User as User
+  APIGatewayParticipant(api_gateway, &#34;API Gateway&#34;, &#34;&#34;)
+
+  box &#34;EKS&#34; #LightBlue
+    participant AuthenticationService
+    participant EncryptionService
+    participant EmailCompositionService
+    participant NotificationService
+    participant LifetimeManagementService
+  end box
+
+  &#39; Relationships
+  User -&gt; api_gateway: POST /create-mail
+  == Authentication ==
+  api_gateway -&gt; AuthenticationService: Authenticate user
+  AuthenticationService -&gt; api_gateway: User authenticated
+
+  == Mail creation ==
+  api_gateway -&gt; EmailCompositionService: POST /create-mail
+  EncryptionService --&gt; EmailCompositionService: Email content encrypted
+  EmailCompositionService -&gt; LifetimeManagementService: Set expiration time
+  note right: Expire after N hours
+  LifetimeManagementService --&gt; EmailCompositionService: Expiration time set
+
+  == Notification ==
+  EmailCompositionService -&gt; NotificationService: Notify recipient
+  NotificationService --&gt; EmailCompositionService: Recipient notified
+  EmailCompositionService --&gt; api_gateway: Email composition complete
+  api_gateway --&gt; User: Email sent
+  @enduml
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 12:</span>
+  Sending mail workflow (with icons and boxes)
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-aws.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-aws.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-seq-send-aws.puml">Full PlantUML Code</a></center>
+</li>
+</ul>
+<!--listend-->
+<ul>
+<li>
+<p>Send mail (with logging and data storage)</p>
+<p>Now let&rsquo;s add <strong>logging</strong> and <strong>data storage</strong> to the sequence diagram</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">  @startuml
+  &#39; Epilogue
+  skinparam BoxPadding 10
+
+  &#39; !define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v16.0/dist
+  !define AWSPuml /home/victor/work/repos/aws-icons-for-plantuml/dist
+  !include AWSPuml/AWSCommon.puml
+  !include AWSPuml/Compute/all.puml
+  !include AWSPuml/Storage/all.puml
+  !include AWSPuml/ManagementGovernance/CloudWatch.puml
+  !include AWSPuml/ApplicationIntegration/APIGateway.puml
+  !include AWSPuml/General/Internetalt1.puml
+  !include AWSPuml/Database/DynamoDB.puml
+
+  &#39; Components
+  actor User as User
+  APIGatewayParticipant(api_gateway, &#34;API Gateway&#34;, &#34;&#34;)
+
+  box &#34;EKS&#34; #LightBlue
+    participant AuthenticationService
+    participant EncryptionService
+    participant EmailCompositionService
+    participant NotificationService
+    participant LifetimeManagementService
+  end box
+
+  box &#34;Storage&#34; #LightGray
+    SimpleStorageServiceParticipant(DataStorage, &#34;S3&#34;, &#34;&#34;)
+  end box
+
+  box &#34;Logging&#34; #LightCyan
+    CloudWatchParticipant(LoggingService, &#34;CloudWatch&#34;, &#34;CloudWatch&#34;)
+  end box
+
+
+  &#39; Relationships
+  User -&gt; api_gateway: POST /create-mail
+  == Authentication ==
+  api_gateway -&gt; AuthenticationService: Authenticate user
+  AuthenticationService -&gt; api_gateway: User authenticated
+
+  == Mail creation ==
+  api_gateway -&gt; EmailCompositionService: POST /create-mail
+  EncryptionService --&gt; EmailCompositionService: Email content encrypted
+  EmailCompositionService -&gt; DataStorage: Save mail metadata and encrypted content
+  EmailCompositionService -&gt; LifetimeManagementService: Set expiration time
+  note right: Expire after N hours
+  LifetimeManagementService --&gt; EmailCompositionService: Expiration time set
+
+  == Notification ==
+  EmailCompositionService -&gt; NotificationService: Notify recipient
+  NotificationService -&gt; LoggingService: Log Email sent event
+  NotificationService --&gt; EmailCompositionService: Recipient notified
+  EmailCompositionService --&gt; api_gateway: Email composition complete
+  api_gateway --&gt; User: Email sent
+  @enduml
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 13:</span>
+  Sending mail workflow (with icons and boxes)
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-aws-logging.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-aws-logging.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-seq-send-aws-logging.puml">Full PlantUML Code</a></center>
+</li>
+</ul>
+<h2 id="outlook">Outlook</h2>
+<p>Here are some useful PlantUML related resources:</p>
+<ul>
+<li><a href="https://plantuml.com/">plantuml.com</a>
+<ul>
+<li>Especially <a href="https://plantuml.com/sequence-diagram">sequences</a>, <a href="https://plantuml.com/mindmap-diagram">mindmaps</a>, <a href="https://plantuml.com/component-diagram">components</a></li>
+<li>And for software architecture: <a href="https://plantuml.com/class-diagram">class diagrams</a></li>
+</ul>
+</li>
+<li><a href="http://real-world-plantuml.com/">real-world-plantuml.com</a></li>
+<li><a href="https://crashedmind.github.io/PlantUMLHitchhikersGuide/">The Hitchhiker&rsquo;s Guide to PlantUML documentation</a></li>
+</ul>
+<p>In the next post, we&rsquo;ll cover the <a href="https://c4model.com/">C4 model</a>, a powerful framework for visualizing
+software and infrastructure architecture using a unified model and language.
+Stay tuned!</p>
+
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2023/07/18/documentation-as-code-for-cloud/">
+                        Part 1: Documentation as Code for Cloud
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item active">
+                    Part 2: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+  </div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2023/07/18/documentation-as-code-for-cloud/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2022 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>
