@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Parse podcast transcripts using ChatGPT - blog.dornea.nu</title>
+  <meta content='Parse podcast transcripts using ChatGPT - blog.dornea.nu' property='title' />
+  <meta content='Parse podcast transcripts using ChatGPT - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="I regularly listen to the podcast Lage der Nation which offers transcripts to premium subscribers on their website plus.ladernation.org. To export quotes from a recent episode and add them to my private knowledge database, I followed these steps:
+ I activated the developer console in my browser. In the network tab of the console, I saw a GET request to a URL like https://plus.lagedernation.org/&lt;...&gt;/?podlove_transcript=json, which fetches the JSON version of the transcripts (provided by podlove)." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2023/08/28/parse-podcast-transcripts-using-chatgpt/" />
+
+
+<meta property="article:published_time" content="2023-08-28T20:55:37&#43;02:00"/>
+<meta property="article:modified_time" content="2023-08-28T20:55:37&#43;02:00"/>
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.89.4" />
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+
+
+<script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="b8a4b728-8eda-42fb-8376-10168c622160" async></script>
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Parse podcast transcripts using ChatGPT</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>28 Aug 2023</time> 
+     | 
+    
+
+    
+     ~
+  
+
+8 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/podcast' class="link silver">podcast</a> <a href='https://blog.dornea.nu/tags/chatgpt' class="link silver">chatgpt</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+
+      <p>I regularly listen to the podcast <a href="https://lagedernation.org/">Lage der Nation</a> which offers <em>transcripts</em> to
+premium subscribers on their website <em>plus.ladernation.org.</em> To export quotes from
+a recent episode and add them to <a href="https://brainfck.org">my private knowledge database</a>, I followed these
+steps:</p>
+<ol>
+<li>I activated the developer console in my browser.</li>
+<li>In the network tab of the console, I saw a <code>GET</code> request to a URL like
+<code>https://plus.lagedernation.org/&lt;...&gt;/?podlove_transcript=json</code>, which fetches
+the JSON version of the transcripts (provided by <a href="https://podlove.org/">podlove</a>).</li>
+</ol>
+<p>Here&rsquo;s an excerpt:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="nt">&#34;start&#34;</span><span class="p">:</span> <span class="s2">&#34;00:00:04.500&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;start_ms&#34;</span><span class="p">:</span> <span class="mi">4500</span><span class="p">,</span>
+    <span class="nt">&#34;end&#34;</span><span class="p">:</span> <span class="s2">&#34;00:00:06.569&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;end_ms&#34;</span><span class="p">:</span> <span class="mi">6569</span><span class="p">,</span>
+    <span class="nt">&#34;speaker&#34;</span><span class="p">:</span> <span class="s2">&#34;2&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;voice&#34;</span><span class="p">:</span> <span class="s2">&#34;Philip&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;weiteren Sommerfolge mit einem&#34;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="nt">&#34;start&#34;</span><span class="p">:</span> <span class="s2">&#34;00:00:06.570&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;start_ms&#34;</span><span class="p">:</span> <span class="mi">6570</span><span class="p">,</span>
+    <span class="nt">&#34;end&#34;</span><span class="p">:</span> <span class="s2">&#34;00:00:08.849&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;end_ms&#34;</span><span class="p">:</span> <span class="mi">8849</span><span class="p">,</span>
+    <span class="nt">&#34;speaker&#34;</span><span class="p">:</span> <span class="s2">&#34;2&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;voice&#34;</span><span class="p">:</span> <span class="s2">&#34;Philip&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;weiteren ausführlichen Interview.&#34;</span>
+  <span class="p">},</span>
+  <span class="p">[</span><span class="err">...</span><span class="p">]</span>
+  <span class="p">{</span>
+    <span class="nt">&#34;start&#34;</span><span class="p">:</span> <span class="s2">&#34;00:13:41.850&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;start_ms&#34;</span><span class="p">:</span> <span class="mi">821850</span><span class="p">,</span>
+    <span class="nt">&#34;end&#34;</span><span class="p">:</span> <span class="s2">&#34;00:13:43.949&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;end_ms&#34;</span><span class="p">:</span> <span class="mi">823949</span><span class="p">,</span>
+    <span class="nt">&#34;speaker&#34;</span><span class="p">:</span> <span class="s2">&#34;152&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;voice&#34;</span><span class="p">:</span> <span class="s2">&#34;Jochem Marotzke&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;Ich glaube, da hilft ein&#34;</span>
+  <span class="p">},</span>
+  <span class="p">[</span><span class="err">...</span><span class="p">]</span>
+<span class="p">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Podcast transcripts in JSON format
+</div>
+<p>My desired output:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Philipp:
+[text]
+
+Jochem Marotzke:
+[text]
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Desired output
+</div>
+<p>I this post I&rsquo;d like to illustrate how you can leverage generative AI for
+solving this problem. For the following prompts I&rsquo;ll be using <a href="https://github.com/xenodium/chatgpt-shell">chatgpt-shell</a> (an API client for OpenAPI to be used within Emacs).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">ChatGPT<span class="o">(</span>3.5t/Programming<span class="o">)</span>&gt; I would like to write a simple
+Golang tool which will parse following JSON
+<span class="o">[</span>
+  <span class="o">{</span>
+    <span class="s2">&#34;start&#34;</span>: <span class="s2">&#34;00:00:04.500&#34;</span>,
+    <span class="s2">&#34;start_ms&#34;</span>: 4500,
+    <span class="s2">&#34;end&#34;</span>: <span class="s2">&#34;00:00:06.569&#34;</span>,
+    <span class="s2">&#34;end_ms&#34;</span>: 6569,
+    <span class="s2">&#34;speaker&#34;</span>: <span class="s2">&#34;2&#34;</span>,
+    <span class="s2">&#34;voice&#34;</span>: <span class="s2">&#34;Philip&#34;</span>,
+    <span class="s2">&#34;text&#34;</span>: <span class="s2">&#34;weiteren Sommerfolge mit einem&#34;</span>
+  <span class="o">}</span>,
+  <span class="o">{</span>
+    <span class="s2">&#34;start&#34;</span>: <span class="s2">&#34;00:00:06.570&#34;</span>,
+    <span class="s2">&#34;start_ms&#34;</span>: 6570,
+    <span class="s2">&#34;end&#34;</span>: <span class="s2">&#34;00:00:08.849&#34;</span>,
+    <span class="s2">&#34;end_ms&#34;</span>: 8849,
+    <span class="s2">&#34;speaker&#34;</span>: <span class="s2">&#34;2&#34;</span>,
+    <span class="s2">&#34;voice&#34;</span>: <span class="s2">&#34;Philip&#34;</span>,
+    <span class="s2">&#34;text&#34;</span>: <span class="s2">&#34;weiteren ausführlichen Interview.&#34;</span>
+  <span class="o">}</span>,
+<span class="o">]</span>
+
+First I want to print out the voice attribute and <span class="k">then</span> the text one. Unless the
+voice attribute doesn<span class="err">&#39;</span>t change I want the text of the voice attribute to be
+printed without newlines. In <span class="k">case</span> the voice attribute changes I want to a double
+newline to be printed out and <span class="k">then</span> print again the voice attribute.
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  ChatGPT prompt
+</div>
+<p>And now the response:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown">You can achieve what you described by parsing the JSON data and then iterating
+over the array of objects. For each object, you can keep track of the previous
+voice attribute and compare it with the current one to determine if a newline
+should be printed.
+
+Here&#39;s a simple example code snippet to get you started:
+
+<span class="s">```go
+</span><span class="s"></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;encoding/json&#34;</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;io/ioutil&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Item</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Start</span>    <span class="kt">string</span> <span class="s">`json:&#34;start&#34;`</span>
+	<span class="nx">StartMs</span>  <span class="kt">int</span>    <span class="s">`json:&#34;start_ms&#34;`</span>
+	<span class="nx">End</span>      <span class="kt">string</span> <span class="s">`json:&#34;end&#34;`</span>
+	<span class="nx">EndMs</span>    <span class="kt">int</span>    <span class="s">`json:&#34;end_ms&#34;`</span>
+	<span class="nx">Speaker</span>  <span class="kt">string</span> <span class="s">`json:&#34;speaker&#34;`</span>
+	<span class="nx">Voice</span>    <span class="kt">string</span> <span class="s">`json:&#34;voice&#34;`</span>
+	<span class="nx">Text</span>     <span class="kt">string</span> <span class="s">`json:&#34;text&#34;`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Read the JSON data from a file or any other source
+</span><span class="c1"></span>	<span class="nx">data</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">&#34;data.json&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Error reading JSON file:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="kd">var</span> <span class="nx">items</span> <span class="p">[]</span><span class="nx">Item</span>
+	<span class="nx">err</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">items</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Error parsing JSON:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="nx">prevVoice</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">item</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">items</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">item</span><span class="p">.</span><span class="nx">Voice</span> <span class="o">!=</span> <span class="nx">prevVoice</span> <span class="p">{</span>
+			<span class="c1">// Print a double newline if the voice attribute changes
+</span><span class="c1"></span>			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;\n\n&#34;</span><span class="p">,</span> <span class="nx">item</span><span class="p">.</span><span class="nx">Voice</span><span class="p">)</span>
+			<span class="nx">prevVoice</span> <span class="p">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">Voice</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="c1">// Print the text attribute without a newline
+</span><span class="c1"></span>			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34; &#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">Text</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">()</span> <span class="c1">// Print a newline at the end
+</span><span class="c1"></span><span class="p">}</span>
+<span class="s">```</span>
+
+Make sure to replace <span class="sb">`&#34;data.json&#34;`</span> with the path to your JSON file. The code
+reads the JSON file, parses it into a slice of <span class="sb">`Item`</span> structs, and then iterates
+over the items while printing the voice and text attributes according to your
+requirements.
+
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 3:</span>
+  ChatGPT response
+</div>
+<p>I wasn&rsquo;t quite happy about the fact I had to use <code>data.json</code> as an input to the program, so I asked ChatGPT to adapt a little bit:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">ChatGPT<span class="o">(</span>3.5t/Programming<span class="o">)</span>&gt; Change the program so that it accepts a CLI argument to specify the file.
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 4:</span>
+  ChatGPT prompt
+</div>
+<p>And voila:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown">To modify the program to accept a command-line argument for the JSON file, you
+can use the <span class="sb">`os`</span> package in Go. Here&#39;s an updated version of the code that
+incorporates this change:
+
+<span class="s">```go
+</span><span class="s"></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;encoding/json&#34;</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;io/ioutil&#34;</span>
+	<span class="s">&#34;os&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Item</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Start</span>   <span class="kt">string</span> <span class="s">`json:&#34;start&#34;`</span>
+	<span class="nx">StartMs</span> <span class="kt">int</span>    <span class="s">`json:&#34;start_ms&#34;`</span>
+	<span class="nx">End</span>     <span class="kt">string</span> <span class="s">`json:&#34;end&#34;`</span>
+	<span class="nx">EndMs</span>   <span class="kt">int</span>    <span class="s">`json:&#34;end_ms&#34;`</span>
+	<span class="nx">Speaker</span> <span class="kt">string</span> <span class="s">`json:&#34;speaker&#34;`</span>
+	<span class="nx">Voice</span>   <span class="kt">string</span> <span class="s">`json:&#34;voice&#34;`</span>
+	<span class="nx">Text</span>    <span class="kt">string</span> <span class="s">`json:&#34;text&#34;`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Check if the file path is provided as a command-line argument
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">)</span> <span class="p">&lt;</span> <span class="mi">2</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Please provide the JSON file path as a command-line argument.&#34;</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="nx">filePath</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+	<span class="c1">// Read the JSON file
+</span><span class="c1"></span>	<span class="nx">data</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="nx">filePath</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Error reading JSON file:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="kd">var</span> <span class="nx">items</span> <span class="p">[]</span><span class="nx">Item</span>
+	<span class="nx">err</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">items</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Error parsing JSON:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="nx">prevVoice</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">item</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">items</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">item</span><span class="p">.</span><span class="nx">Voice</span> <span class="o">!=</span> <span class="nx">prevVoice</span> <span class="p">{</span>
+			<span class="c1">// Print a double newline if the voice attribute changes
+</span><span class="c1"></span>			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;\n\n&#34;</span><span class="p">,</span> <span class="nx">item</span><span class="p">.</span><span class="nx">Voice</span><span class="p">)</span>
+			<span class="nx">prevVoice</span> <span class="p">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">Voice</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="c1">// Print the text attribute without a newline
+</span><span class="c1"></span>			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34; &#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">Text</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">()</span> <span class="c1">// Print a newline at the end
+</span><span class="c1"></span><span class="p">}</span>
+<span class="s">```</span>
+
+Now you can run the program with the JSON file path as a command-line argument
+like this:
+
+<span class="s">```shell
+</span><span class="s"></span>go run main.go data.json
+<span class="s">```</span>
+
+Replace <span class="sb">`main.go`</span> with the name of your Go source file, and <span class="sb">`data.json`</span> with the
+actual path to your JSON file.
+
+</code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 5:</span>
+  ChatGPT response
+</div>
+<p>I&rsquo;ve copied the Go code, put into main.go and ran it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">go run main.go
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Please provide the JSON file path as a command-line argument.
+</code></pre></td></tr></table>
+</div>
+</div><p>Ok, next try:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">go run main.go transcript.json <span class="p">|</span> head -n <span class="m">30</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"> Philip
+Ganz herzlich willkommen zur Lage der Nation mit einer weiteren Sommerfolge mit einem weiteren ausführlichen Interview. Mein Name ist Philip Banse.
+
+ Ulf
+Und ich bin Ulf Buermeyer. Der Philip ist Journalist. Ich bin Jurist aus Berlin. Schön, dass ihr wieder dabei seid bei unserem Podcast.
+
+ Philip
+Bevor es losgeht, bevor wir einsteigen in das heutige Interview, noch der Hinweis: Es gibt ja mal wieder eine Lage live. Hatten wir lange nicht mehr.
+
+ Ulf
+Mal wieder ist gut, Philip. Endlich mal wieder, würde ich sagen, denn wir haben ja jetzt eine ganze Weile Pause gemacht. Aber im Oktober sind wir wieder live zu sehen, und zwar genau genommen am 19. Oktober in Frankfurt am Main, am Rande der Frankfurter Buchmesse. Ganz wichtig: Ihr braucht keine Tickets für die Buchmesse, aber ihr braucht natürlich ein Ticket für die Lage live. Wenn ihr uns mal auf der Bühne dabei erleben wollt, wie wir die Lage der Nation aufnehmen, wie wir unser Buch vorstellen, aber auch, wie wir eure Fragen aus dem Publikum beantworten.
+
+ Philip
+Genau. Und hinterher gibt es da noch, wenn ihr wollt, ein gemeinsames Kaltgetränk und wir können uns ein bisschen unterhalten. Die Tickets für die Lage live gibt es unter Lage.Live, einfach im Browser eintippen, Lage.Live und ihr landet bei uns im Ticket Shop. Wir sind für das heutige Interview mal wieder in den Zug gestiegen. Es war eine mittelprächtige Erfahrung, muss ich ehrlich sagen. Aber wir sind noch rechtzeitig angekommen.
+
+ Ulf
+Als der Zug fuhr, war es schön. Es hat nur ein bisschen gedauert. 45 Minuten Verzögerung.
+
+ Philip
+Das war alles eingeplant.
+
+ Ulf
+Aber jetzt sind wir ja da. Und jetzt sitzen wir zusammen mit Professor Dr. Jochem Marotzke. Er arbeitet am Max Planck Institut für Meteorologie, ist genau genommen sogar der Direktor dieses MPI und einer der renommiertesten Klimaforscher in Deutschland. Und wahrscheinlich sogar international. Denn er ist unter anderem einer der Mitautoren, Autorinnen des jüngsten IPCC Berichts. Wer die Lage schon länger hörte, hat davon bestimmt schon mal gehört. Das ist so eine Art Metastudie, wo quasi der Stand der wissenschaftlichen Erkenntnis zum Thema Klimawandel zusammengefasst wird. Ganz herzlich willkommen in der Lage der Nation Professor Marotzke.
+
+ Jochen Marotzke
+Ja, vielen Dank für die Einladung.
+
+ Philip
+</code></pre></td></tr></table>
+</div>
+</div><p>I hope this might be useful to someone 🙂</p>
+
+    
+
+  </div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2023/07/30/documentation-as-code-for-cloud-plantuml/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2022 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>
