@@ -26,7 +26,7 @@ In this article I&rsquo;ll have a look how Python, Java and openssl (command lin
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -202,90 +202,90 @@ type="image/x-icon"/>
 </span><span class="lnt">83
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/*
-</span><span class="cm"> * Based on https://raw.githubusercontent.com/usefulfor/usefulfor/master/security/JBoss.java
-</span><span class="cm"> *
-</span><span class="cm"> * JBoss.java - Blowfish encryption/decryption tool with JBoss default password
-</span><span class="cm"> *    Daniel Martin Gomez &lt;daniel@ngssoftware.com&gt; - 03/Sep/2009
-</span><span class="cm"> *
-</span><span class="cm"> * This file may be used under the terms of the GNU General Public License
-</span><span class="cm"> * version 2.0 as published by the Free Software Foundation:
-</span><span class="cm"> *   http://www.gnu.org/licenses/gpl-2.0.html
-</span><span class="cm"> */</span>
-<span class="kn">import</span> <span class="nn">javax.crypto.*</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.crypto.spec.SecretKeySpec</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.math.BigInteger</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.xml.bind.DatatypeConverter</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JBlowfish</span>
-<span class="o">{</span>
-    <span class="kd">final</span> <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">char</span><span class="o">[]</span> <span class="n">hexArray</span> <span class="o">=</span> <span class="s">&#34;0123456789ABCDEF&#34;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">();</span>
-
-    <span class="c1">// Converts byte array to hex string
-</span><span class="c1"></span>    <span class="c1">// From: http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
-</span><span class="c1"></span>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">bytesToHex</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kt">char</span><span class="o">[]</span> <span class="n">hexChars</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="n">bytes</span><span class="o">.</span><span class="na">length</span> <span class="o">*</span> <span class="n">2</span><span class="o">];</span>
-        <span class="k">for</span> <span class="o">(</span> <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">bytes</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">j</span><span class="o">++</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">bytes</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">&amp;</span> <span class="n">0xFF</span><span class="o">;</span>
-            <span class="n">hexChars</span><span class="o">[</span><span class="n">j</span> <span class="o">*</span> <span class="n">2</span><span class="o">]</span> <span class="o">=</span> <span class="n">hexArray</span><span class="o">[</span><span class="n">v</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">4</span><span class="o">];</span>
-            <span class="n">hexChars</span><span class="o">[</span><span class="n">j</span> <span class="o">*</span> <span class="n">2</span> <span class="o">+</span> <span class="n">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">hexArray</span><span class="o">[</span><span class="n">v</span> <span class="o">&amp;</span> <span class="n">0x0F</span><span class="o">];</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">hexChars</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
-    <span class="o">{</span>
-
-        <span class="k">if</span> <span class="o">(</span> <span class="o">(</span> <span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">2</span> <span class="o">)</span> <span class="o">||</span> <span class="o">!(</span> <span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;-e&#34;</span><span class="o">)</span> <span class="o">|</span> <span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;-d&#34;</span><span class="o">)</span> <span class="o">)</span> <span class="o">)</span>
-        <span class="o">{</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="s">&#34;Usage:\n\tjava JBlowfish &lt;-e|-d&gt; &lt;encrypted_password&gt;&#34;</span> <span class="o">);</span>
-            <span class="k">return</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="n">String</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
-
-        <span class="c1">// Configuration
-</span><span class="c1"></span>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">key</span>  <span class="o">=</span> <span class="s">&#34;secret&#34;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">();</span>
-        <span class="n">String</span> <span class="n">IV</span>   <span class="o">=</span> <span class="s">&#34;12345678&#34;</span><span class="o">;</span>
-
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;-- Settings -----------&#34;</span><span class="o">);</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;KEY:\t &#34;</span> <span class="o">+</span> <span class="n">bytesToHex</span><span class="o">(</span><span class="n">key</span><span class="o">));</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;IV:\t &#34;</span> <span class="o">+</span> <span class="n">bytesToHex</span><span class="o">(</span><span class="n">IV</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
-
-        <span class="c1">// Create new Blowfish cipher
-</span><span class="c1"></span>        <span class="n">SecretKeySpec</span> <span class="n">keySpec</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SecretKeySpec</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="s">&#34;Blowfish&#34;</span><span class="o">);</span>
-        <span class="n">Cipher</span> <span class="n">cipher</span> <span class="o">=</span> <span class="n">Cipher</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="s">&#34;Blowfish/CBC/PKCS5Padding&#34;</span><span class="o">);</span>
-        <span class="n">String</span> <span class="n">out</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-
-        <span class="k">if</span> <span class="o">(</span> <span class="n">mode</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;-e&#34;</span><span class="o">)</span> <span class="o">)</span>
-        <span class="o">{</span>
-            <span class="n">String</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">args</span><span class="o">[</span><span class="n">1</span><span class="o">];</span>
-            <span class="n">cipher</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">Cipher</span><span class="o">.</span><span class="na">ENCRYPT_MODE</span><span class="o">,</span> <span class="n">keySpec</span><span class="o">,</span> <span class="k">new</span> <span class="n">javax</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">spec</span><span class="o">.</span><span class="na">IvParameterSpec</span><span class="o">(</span><span class="n">IV</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">encoding</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="na">doFinal</span><span class="o">(</span><span class="n">secret</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
-
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;-- Encrypted -----------&#34;</span><span class="o">);</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Base64:\t &#34;</span> <span class="o">+</span> <span class="n">DatatypeConverter</span><span class="o">.</span><span class="na">printBase64Binary</span><span class="o">(</span><span class="n">encoding</span><span class="o">));</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;HEX:\t &#34;</span> <span class="o">+</span> <span class="n">bytesToHex</span><span class="o">(</span><span class="n">encoding</span><span class="o">));</span>
-        <span class="o">}</span>
-        <span class="k">else</span>
-        <span class="o">{</span>
-            <span class="c1">// Decode Base64
-</span><span class="c1"></span>            <span class="kt">byte</span><span class="o">[]</span> <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">DatatypeConverter</span><span class="o">.</span><span class="na">parseBase64Binary</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="n">1</span><span class="o">]);</span>
-
-            <span class="c1">// Decrypt
-</span><span class="c1"></span>            <span class="n">cipher</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">Cipher</span><span class="o">.</span><span class="na">DECRYPT_MODE</span><span class="o">,</span> <span class="n">keySpec</span><span class="o">,</span> <span class="k">new</span> <span class="n">javax</span><span class="o">.</span><span class="na">crypto</span><span class="o">.</span><span class="na">spec</span><span class="o">.</span><span class="na">IvParameterSpec</span><span class="o">(</span><span class="n">IV</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="na">doFinal</span><span class="o">(</span><span class="n">ciphertext</span><span class="o">);</span>
-
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;-- Decrypted -----------&#34;</span><span class="o">);</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;HEX:\t &#34;</span> <span class="o">+</span> <span class="n">bytesToHex</span><span class="o">(</span><span class="n">message</span><span class="o">));</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;PLAIN:\t &#34;</span> <span class="o">+</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">message</span><span class="o">));</span>
-
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Based on https://raw.githubusercontent.com/usefulfor/usefulfor/master/security/JBoss.java
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * JBoss.java - Blowfish encryption/decryption tool with JBoss default password
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *    Daniel Martin Gomez &lt;daniel@ngssoftware.com&gt; - 03/Sep/2009
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * This file may be used under the terms of the GNU General Public License
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * version 2.0 as published by the Free Software Foundation:
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *   http://www.gnu.org/licenses/gpl-2.0.html
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">javax.crypto.*</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">javax.crypto.spec.SecretKeySpec</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.math.BigInteger</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">javax.xml.bind.DatatypeConverter</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JBlowfish</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="kd">protected</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">char</span><span class="o">[]</span><span class="w"> </span><span class="n">hexArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;0123456789ABCDEF&#34;</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// Converts byte array to hex string</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// From: http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">bytesToHex</span><span class="p">(</span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">bytes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">char</span><span class="o">[]</span><span class="w"> </span><span class="n">hexChars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">char</span><span class="o">[</span><span class="n">bytes</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">bytes</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bytes</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">0xFF</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hexChars</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hexArray</span><span class="o">[</span><span class="n">v</span><span class="w"> </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">4</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hexChars</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hexArray</span><span class="o">[</span><span class="n">v</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">0x0F</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">hexChars</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="w"> </span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">&#34;-e&#34;</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">&#34;-d&#34;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="w"> </span><span class="s">&#34;Usage:\n\tjava JBlowfish &lt;-e|-d&gt; &lt;encrypted_password&gt;&#34;</span><span class="w"> </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">key</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;secret&#34;</span><span class="p">.</span><span class="na">getBytes</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">IV</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;12345678&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;-- Settings -----------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;KEY:\t &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">bytesToHex</span><span class="p">(</span><span class="n">key</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;IV:\t &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">bytesToHex</span><span class="p">(</span><span class="n">IV</span><span class="p">.</span><span class="na">getBytes</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Create new Blowfish cipher</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SecretKeySpec</span><span class="w"> </span><span class="n">keySpec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SecretKeySpec</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;Blowfish&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Cipher</span><span class="w"> </span><span class="n">cipher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cipher</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">&#34;Blowfish/CBC/PKCS5Padding&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">mode</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">&#34;-e&#34;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">String</span><span class="w"> </span><span class="n">secret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">cipher</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">Cipher</span><span class="p">.</span><span class="na">ENCRYPT_MODE</span><span class="p">,</span><span class="w"> </span><span class="n">keySpec</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">javax</span><span class="p">.</span><span class="na">crypto</span><span class="p">.</span><span class="na">spec</span><span class="p">.</span><span class="na">IvParameterSpec</span><span class="p">(</span><span class="n">IV</span><span class="p">.</span><span class="na">getBytes</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cipher</span><span class="p">.</span><span class="na">doFinal</span><span class="p">(</span><span class="n">secret</span><span class="p">.</span><span class="na">getBytes</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;-- Encrypted -----------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Base64:\t &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">DatatypeConverter</span><span class="p">.</span><span class="na">printBase64Binary</span><span class="p">(</span><span class="n">encoding</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;HEX:\t &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">bytesToHex</span><span class="p">(</span><span class="n">encoding</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// Decode Base64</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">ciphertext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DatatypeConverter</span><span class="p">.</span><span class="na">parseBase64Binary</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// Decrypt</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">cipher</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">Cipher</span><span class="p">.</span><span class="na">DECRYPT_MODE</span><span class="p">,</span><span class="w"> </span><span class="n">keySpec</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">javax</span><span class="p">.</span><span class="na">crypto</span><span class="p">.</span><span class="na">spec</span><span class="p">.</span><span class="na">IvParameterSpec</span><span class="p">(</span><span class="n">IV</span><span class="p">.</span><span class="na">getBytes</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cipher</span><span class="p">.</span><span class="na">doFinal</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;-- Decrypted -----------&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;HEX:\t &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">bytesToHex</span><span class="p">(</span><span class="n">message</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;PLAIN:\t &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">message</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>The programm will encrypt messages using <em>Blowfish</em> in <em>CBC</em> mode. There are 2 modi available:</p>
 <ul>
@@ -305,15 +305,15 @@ type="image/x-icon"/>
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># javac JBlowfish.java</span>
-<span class="c1"># java -cp . JBlowfish -e secretmessage</span>
--- Settings -----------
-KEY:     <span class="m">736563726574</span>
-IV:      <span class="m">3132333435363738</span>
--- Encrypted -----------
-Base64:  <span class="nv">2CEndW0AA2xpsYz3XrXnrA</span><span class="o">==</span>
-HEX:     D82127756D00036C69B18CF75EB5E7AC
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># javac JBlowfish.java</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># java -cp . JBlowfish -e secretmessage</span>
+</span></span><span class="line"><span class="cl">-- Settings -----------
+</span></span><span class="line"><span class="cl">KEY:     <span class="m">736563726574</span>
+</span></span><span class="line"><span class="cl">IV:      <span class="m">3132333435363738</span>
+</span></span><span class="line"><span class="cl">-- Encrypted -----------
+</span></span><span class="line"><span class="cl">Base64:  <span class="nv">2CEndW0AA2xpsYz3XrXnrA</span><span class="o">==</span>
+</span></span><span class="line"><span class="cl">HEX:     D82127756D00036C69B18CF75EB5E7AC
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We just <em>encrypted</em> the message <em>&ldquo;secretmessage</em>&rdquo; with <em>Blowfish/CBC</em>. In the <em>settings</em> section you&rsquo;ll see the <code>KEY</code> and the <code>IV</code> in their <em>hex</em> representation. Afterwards the programm will show the <code>Base64</code> and the <code>hex</code> representation of <strong>encrypted</strong> message. <em>Decryption</em> works quite straightforward:</p>
 <div class="highlight"><div class="chroma">
@@ -327,14 +327,14 @@ HEX:     D82127756D00036C69B18CF75EB5E7AC
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># java -cp . JBlowfish -d 2CEndW0AA2xpsYz3XrXnrA==</span>
--- Settings -----------
-KEY:     <span class="m">736563726574</span>
-IV:      <span class="m">3132333435363738</span>
--- Decrypted -----------
-HEX:     7365637265746D657373616765
-PLAIN:   secretmessage
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># java -cp . JBlowfish -d 2CEndW0AA2xpsYz3XrXnrA==</span>
+</span></span><span class="line"><span class="cl">-- Settings -----------
+</span></span><span class="line"><span class="cl">KEY:     <span class="m">736563726574</span>
+</span></span><span class="line"><span class="cl">IV:      <span class="m">3132333435363738</span>
+</span></span><span class="line"><span class="cl">-- Decrypted -----------
+</span></span><span class="line"><span class="cl">HEX:     7365637265746D657373616765
+</span></span><span class="line"><span class="cl">PLAIN:   secretmessage
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Our little Java application does its job pretty fine. Ok, now let&rsquo;s have a look at <code>openssl</code>.</p>
 <h2 id="openssl---java">OpenSSL &lt;-&gt; Java</h2>
@@ -347,11 +347,11 @@ PLAIN:   secretmessage
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># echo &#34;secretmessage&#34; | openssl bf-cbc -nosalt -a -pass pass:victor -iv 3132333435363738 -p</span>
-<span class="nv">key</span><span class="o">=</span>FFC150A160D37E92012C196B6AF4160D
-<span class="nv">iv</span> <span class="o">=</span><span class="m">3132333435363738</span>
-+NtBjHQzii7i//apIvfHkw<span class="o">==</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># echo &#34;secretmessage&#34; | openssl bf-cbc -nosalt -a -pass pass:victor -iv 3132333435363738 -p</span>
+</span></span><span class="line"><span class="cl"><span class="nv">key</span><span class="o">=</span>FFC150A160D37E92012C196B6AF4160D
+</span></span><span class="line"><span class="cl"><span class="nv">iv</span> <span class="o">=</span><span class="m">3132333435363738</span>
+</span></span><span class="line"><span class="cl">+NtBjHQzii7i//apIvfHkw<span class="o">==</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>A few explanations:</p>
 <ul>
@@ -414,28 +414,28 @@ PLAIN:   secretmessage
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">In</span> <span class="p">[</span><span class="mi">67</span><span class="p">]:</span>    <span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">Blowfish</span>
-            <span class="kn">from</span> <span class="nn">Crypto</span> <span class="kn">import</span> <span class="n">Random</span>
-            <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
-            <span class="kn">from</span> <span class="nn">binascii</span> <span class="kn">import</span> <span class="n">hexlify</span><span class="p">,</span> <span class="n">unhexlify</span>
-
-
-            <span class="n">IV</span> <span class="o">=</span> <span class="s2">&#34;12345678&#34;</span>
-            <span class="n">KEY</span> <span class="o">=</span> <span class="s2">&#34;secret&#34;</span>
-
-            <span class="c1"># We&#39;ll use the Base64 string from JBlowfish output</span>
-            <span class="n">ciphertext</span> <span class="o">=</span> <span class="s2">&#34;2CEndW0AA2xpsYz3XrXnrA==&#34;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;base64&#34;</span><span class="p">)</span>
-
-            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">IV</span><span class="p">)</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;KEY: &#34;</span> <span class="o">+</span> <span class="n">KEY</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;hex&#34;</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;IV: &#34;</span> <span class="o">+</span> <span class="n">IV</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;hex&#34;</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Message: &#34;</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
-
-<span class="n">Out</span><span class="p">:</span>        <span class="n">KEY</span><span class="p">:</span> <span class="mi">736563726574</span>
-            <span class="n">IV</span><span class="p">:</span> <span class="mi">3132333435363738</span>
-            <span class="n">Message</span><span class="p">:</span> <span class="n">secretmessage</span><span class="err"></span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">67</span><span class="p">]:</span>    <span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">Blowfish</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">Crypto</span> <span class="kn">import</span> <span class="n">Random</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">binascii</span> <span class="kn">import</span> <span class="n">hexlify</span><span class="p">,</span> <span class="n">unhexlify</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">IV</span> <span class="o">=</span> <span class="s2">&#34;12345678&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">KEY</span> <span class="o">=</span> <span class="s2">&#34;secret&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># We&#39;ll use the Base64 string from JBlowfish output</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ciphertext</span> <span class="o">=</span> <span class="s2">&#34;2CEndW0AA2xpsYz3XrXnrA==&#34;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;base64&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">IV</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">message</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;KEY: &#34;</span> <span class="o">+</span> <span class="n">KEY</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;hex&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;IV: &#34;</span> <span class="o">+</span> <span class="n">IV</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;hex&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Message: &#34;</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Out</span><span class="p">:</span>        <span class="n">KEY</span><span class="p">:</span> <span class="mi">736563726574</span>
+</span></span><span class="line"><span class="cl">            <span class="n">IV</span><span class="p">:</span> <span class="mi">3132333435363738</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Message</span><span class="p">:</span> <span class="n">secretmessage</span><span class="err"></span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Well that looks good. This is what we got:</p>
 <table>
@@ -483,25 +483,25 @@ PLAIN:   secretmessage
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">In</span> <span class="p">[</span><span class="mi">71</span><span class="p">]:</span>    <span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">Blowfish</span>
-            <span class="kn">from</span> <span class="nn">Crypto</span> <span class="kn">import</span> <span class="n">Random</span>
-            <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
-            <span class="kn">from</span> <span class="nn">binascii</span> <span class="kn">import</span> <span class="n">hexlify</span><span class="p">,</span> <span class="n">unhexlify</span>
-
-
-            <span class="n">IV</span> <span class="o">=</span> <span class="s2">&#34;12345678&#34;</span>
-            <span class="n">KEY</span> <span class="o">=</span> <span class="s2">&#34;secret&#34;</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&#34;12345678&#34;</span>
-
-
-            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">IV</span><span class="p">)</span>
-            <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;HEX: &#34;</span> <span class="o">+</span> <span class="n">ciphertext</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;hex&#34;</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Base64: &#34;</span> <span class="o">+</span> <span class="n">ciphertext</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;base64&#34;</span><span class="p">))</span>
-
-<span class="n">Out</span><span class="p">:</span>        <span class="n">HEX</span><span class="p">:</span> <span class="mi">010</span><span class="n">a0d9149750a32</span>
-            <span class="n">Base64</span><span class="p">:</span> <span class="n">AQoNkUl1CjI</span><span class="o">=</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">71</span><span class="p">]:</span>    <span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">Blowfish</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">Crypto</span> <span class="kn">import</span> <span class="n">Random</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">binascii</span> <span class="kn">import</span> <span class="n">hexlify</span><span class="p">,</span> <span class="n">unhexlify</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">IV</span> <span class="o">=</span> <span class="s2">&#34;12345678&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">KEY</span> <span class="o">=</span> <span class="s2">&#34;secret&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">message</span> <span class="o">=</span> <span class="s2">&#34;12345678&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">IV</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;HEX: &#34;</span> <span class="o">+</span> <span class="n">ciphertext</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;hex&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Base64: &#34;</span> <span class="o">+</span> <span class="n">ciphertext</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;base64&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Out</span><span class="p">:</span>        <span class="n">HEX</span><span class="p">:</span> <span class="mi">010</span><span class="n">a0d9149750a32</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Base64</span><span class="p">:</span> <span class="n">AQoNkUl1CjI</span><span class="o">=</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now decrypt that ciphertext using openssl:</p>
 <div class="highlight"><div class="chroma">
@@ -513,12 +513,12 @@ PLAIN:   secretmessage
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># echo &#34;AQoNkUl1CjI=&#34; | openssl bf-cbc -d -a -nosalt -pass pass:secret -iv 3132333435363738  -p</span>
-<span class="nv">key</span><span class="o">=</span>5EBE2294ECD0E0F08EAB7690D2A6EE69
-<span class="nv">iv</span> <span class="o">=</span><span class="m">3132333435363738</span>
-bad decrypt
-140568446580392:error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt:evp_enc.c:539:
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># echo &#34;AQoNkUl1CjI=&#34; | openssl bf-cbc -d -a -nosalt -pass pass:secret -iv 3132333435363738  -p</span>
+</span></span><span class="line"><span class="cl"><span class="nv">key</span><span class="o">=</span>5EBE2294ECD0E0F08EAB7690D2A6EE69
+</span></span><span class="line"><span class="cl"><span class="nv">iv</span> <span class="o">=</span><span class="m">3132333435363738</span>
+</span></span><span class="line"><span class="cl">bad decrypt
+</span></span><span class="line"><span class="cl">140568446580392:error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt:evp_enc.c:539:
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Again the encryption key doesn&rsquo;t match the one we used in the Python code. Thus the Bas64 string can&rsquo;t be decoded by openssl.</p>
 <h2 id="conclusion">Conclusion</h2>
@@ -540,11 +540,11 @@ bad decrypt
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># echo &#34;this-is-secret&#34; | openssl bf-cbc -a -nosalt -pass pass:secret -iv 12345678 -p</span>
-<span class="nv">key</span><span class="o">=</span>5EBE2294ECD0E0F08EAB7690D2A6EE69
-<span class="nv">iv</span> <span class="o">=</span><span class="m">1234567800000000</span>
-<span class="nv">2whDyIn5hRdyXpRZbMZayw</span><span class="o">==</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># echo &#34;this-is-secret&#34; | openssl bf-cbc -a -nosalt -pass pass:secret -iv 12345678 -p</span>
+</span></span><span class="line"><span class="cl"><span class="nv">key</span><span class="o">=</span>5EBE2294ECD0E0F08EAB7690D2A6EE69
+</span></span><span class="line"><span class="cl"><span class="nv">iv</span> <span class="o">=</span><span class="m">1234567800000000</span>
+</span></span><span class="line"><span class="cl"><span class="nv">2whDyIn5hRdyXpRZbMZayw</span><span class="o">==</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now use those values in your code:</p>
 <div class="highlight"><div class="chroma">
@@ -568,24 +568,24 @@ bad decrypt
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">In</span> <span class="p">[</span><span class="mi">72</span><span class="p">]:</span>    <span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">Blowfish</span>
-            <span class="kn">from</span> <span class="nn">Crypto</span> <span class="kn">import</span> <span class="n">Random</span>
-            <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
-            <span class="kn">from</span> <span class="nn">binascii</span> <span class="kn">import</span> <span class="n">hexlify</span><span class="p">,</span> <span class="n">unhexlify</span>
-
-
-            <span class="n">KEY</span> <span class="o">=</span> <span class="n">unhexlify</span><span class="p">(</span><span class="s2">&#34;5EBE2294ECD0E0F08EAB7690D2A6EE69&#34;</span><span class="p">)</span>
-            <span class="n">IV</span> <span class="o">=</span> <span class="n">unhexlify</span><span class="p">(</span><span class="s2">&#34;1234567800000000&#34;</span><span class="p">)</span>
-            <span class="n">ciphertext</span> <span class="o">=</span> <span class="s2">&#34;2whDyIn5hRdyXpRZbMZayw==&#34;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;base64&#34;</span><span class="p">)</span>
-
-
-            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">IV</span><span class="p">)</span>
-            <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
-
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Message: &#34;</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
-
-<span class="n">Out</span><span class="p">:</span>        <span class="n">Message</span><span class="p">:</span> <span class="mi">12345678</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">72</span><span class="p">]:</span>    <span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">Blowfish</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">Crypto</span> <span class="kn">import</span> <span class="n">Random</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">from</span> <span class="nn">binascii</span> <span class="kn">import</span> <span class="n">hexlify</span><span class="p">,</span> <span class="n">unhexlify</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">KEY</span> <span class="o">=</span> <span class="n">unhexlify</span><span class="p">(</span><span class="s2">&#34;5EBE2294ECD0E0F08EAB7690D2A6EE69&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">IV</span> <span class="o">=</span> <span class="n">unhexlify</span><span class="p">(</span><span class="s2">&#34;1234567800000000&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ciphertext</span> <span class="o">=</span> <span class="s2">&#34;2whDyIn5hRdyXpRZbMZayw==&#34;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;base64&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">Blowfish</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">IV</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Message: &#34;</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Out</span><span class="p">:</span>        <span class="n">Message</span><span class="p">:</span> <span class="mi">12345678</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Also have a look at <a href="http://stackoverflow.com/questions/12227510/how-to-decrypt-unsalted-openssl-compatible-blowfish-cbc-pkcs5padding-password-in">this</a>. That&rsquo;s all for today. Cya next time!</p>
 
@@ -596,7 +596,7 @@ bad decrypt
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

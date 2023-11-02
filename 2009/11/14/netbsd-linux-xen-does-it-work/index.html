@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -115,11 +115,11 @@ type="image/x-icon"/>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ xm create -c linux
-Using config file &#34;/usr/pkg/etc/xen/linux&#34;.
-Error: (2, &#39;Invalid kernel&#39;, &#39;xc_dom_find_loader: no loader found
-&#39;)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">xm</span> <span class="n">create</span> <span class="o">-</span><span class="n">c</span> <span class="n">linux</span>
+</span></span><span class="line"><span class="cl"><span class="n">Using</span> <span class="n">config</span> <span class="n">file</span> <span class="s2">&#34;/usr/pkg/etc/xen/linux&#34;</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="n">Error</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Invalid kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;xc_dom_find_loader: no loader found</span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Whatever kernel you may specify be sure its an ELF binary (ELF 64-bit LSB executable, x86-64, version 1 (SYSV) in my case). You should find a <code>vmlinux</code> file in the kernel source directory (usually /usr/src). Be sure you use this file as your domU kernel and don&rsquo;t forget to create a ramdisk image as this is required by Xen. I won&rsquo;t waste my time helping you how to configure your domU and how to setup Xen + Xen tools. There are a lot of tutorials and (good) papers related to this issue. Feel free to invest some time in understanding Xen and the virtualization system. Perhaps I should mention that Xen 3.3 has a better kernel image support than Xen 3. You should be able to specify a compressed kernel image (bzImage) in your domU configuration without any problems. You should however - therefor I&rsquo;d like to thank #xen on Freenode for their great support - use a kernel image &gt;= 2.6.26 (correct me if I&rsquo;m wrong ?!). Debian Lenny provides vmlinuz-2.6.30 so you should be fine with that. At the moment there is no pciback support for Xen 3.3. As told <a href="http://mail-index.netbsd.org/port-xen/2009/10/26/msg005500.html">here</a> someone with python knowledge has to port pkgsrc/sysutils/xentools3/patches/{patch-dm,patch-dn} to xentools33. Although I had some good intensions and took a look at the files that have to be modified, I quickly gave it up due to its complexity. Maybe someone else - with more spare time - could commit some changes. Xen 3.3 needs pciback and I need pciback support on NetBSD. Back to Xen 3 &hellip; So I was able to pass some PCI device to my domU. Well not really, at least not using my own kernel. I had this configuration:</p>
 <div class="highlight"><div class="chroma">
@@ -131,12 +131,12 @@ Error: (2, &#39;Invalid kernel&#39;, &#39;xc_dom_find_loader: no loader found
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kernel = &#34;/vmlinuz-2.6.18-xen&#34;
-ramdisk = &#34;/initrd.img-2.6.30&#34;
-memory = 156
-name = &#34;debian&#34;
-disk = [ &#39;phy:/dev/wd0g,xvda,w&#39; ]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kernel = &#34;/vmlinuz-2.6.18-xen&#34;
+</span></span><span class="line"><span class="cl">ramdisk = &#34;/initrd.img-2.6.30&#34;
+</span></span><span class="line"><span class="cl">memory = 156
+</span></span><span class="line"><span class="cl">name = &#34;debian&#34;
+</span></span><span class="line"><span class="cl">disk = [ &#39;phy:/dev/wd0g,xvda,w&#39; ]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And got this:</p>
 <div class="highlight"><div class="chroma">
@@ -151,15 +151,15 @@ disk = [ &#39;phy:/dev/wd0g,xvda,w&#39; ]
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ dmesg | grep -e pci -e PCI
-PCI: setting up Xen PCI frontend stub
-PCI: System does not support PCI
-PCI: System does not support PCI
-pcifront pci-0: Installing PCI frontend
-pcifront pci-0: Creating PCI Frontend Bus 0000:03
-$ lspci
-03:00.0 Network controller: Intel Corporation PRO/Wireless 4965 AG or AGN [Kedron] Network Connection (rev 61)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ dmesg | grep -e pci -e PCI
+</span></span><span class="line"><span class="cl">PCI: setting up Xen PCI frontend stub
+</span></span><span class="line"><span class="cl">PCI: System does not support PCI
+</span></span><span class="line"><span class="cl">PCI: System does not support PCI
+</span></span><span class="line"><span class="cl">pcifront pci-0: Installing PCI frontend
+</span></span><span class="line"><span class="cl">pcifront pci-0: Creating PCI Frontend Bus 0000:03
+</span></span><span class="line"><span class="cl">$ lspci
+</span></span><span class="line"><span class="cl">03:00.0 Network controller: Intel Corporation PRO/Wireless 4965 AG or AGN [Kedron] Network Connection (rev 61)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Since wmlinuz-2.6.18-xen doesn&rsquo;t have built-in driver support for my WLAN card, I had to use some different kernel (2.6.30). Then I sould theoretically be able to use my PCI device. Well things turned up to be a little be different as expected:</p>
 <div class="highlight"><div class="chroma">
@@ -176,17 +176,17 @@ $ lspci
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kernel = &#34;/vmlinux-2.6.30&#34;
-ramdisk = &#34;/initrd.img-2.6.30&#34;
-memory = 156
-name = &#34;debian&#34;
-disk = [ &#39;phy:/dev/wd0g,xvda,w&#39; ]
-vif = [ &#39;bridge=bridge0&#39;  ]
-root = &#34;/dev/xvda&#34;
-pci = [ &#39;0000:03:00.0&#39;]
-#extra = &#34;xencons=tty1&#34;
-extra = &#34;1&#34;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kernel = &#34;/vmlinux-2.6.30&#34;
+</span></span><span class="line"><span class="cl">ramdisk = &#34;/initrd.img-2.6.30&#34;
+</span></span><span class="line"><span class="cl">memory = 156
+</span></span><span class="line"><span class="cl">name = &#34;debian&#34;
+</span></span><span class="line"><span class="cl">disk = [ &#39;phy:/dev/wd0g,xvda,w&#39; ]
+</span></span><span class="line"><span class="cl">vif = [ &#39;bridge=bridge0&#39;  ]
+</span></span><span class="line"><span class="cl">root = &#34;/dev/xvda&#34;
+</span></span><span class="line"><span class="cl">pci = [ &#39;0000:03:00.0&#39;]
+</span></span><span class="line"><span class="cl">#extra = &#34;xencons=tty1&#34;
+</span></span><span class="line"><span class="cl">extra = &#34;1&#34;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>dmesg</code> told me:</p>
 <div class="highlight"><div class="chroma">
@@ -206,20 +206,20 @@ extra = &#34;1&#34;
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ dmesg | grep -e &#34;PCI&#34; -e &#34;pci&#34;
-[    0.000000] Allocating PCI resources starting at 10000000 (gap:9c00000:f6400000)
-[    0.005111] PCI: Fatal: No config space access function found
-[    0.012608] PCI: System does not support PCI
-[    0.012615] PCI: System does not support PCI
-[    0.051897] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
-[    0.052676] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
-[    0.052683] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
-[    0.052696] cpcihp_zt5550: ZT5550 CompactPCI Hot Plug Driver version: 0.2
-[    0.052702] cpcihp_generic: Generic port I/O CompactPCI Hot Plug Driver version: 0.1
-[    0.052709] cpcihp_generic: not configured, disabling.
-[    0.052761] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
-[    0.164017] XENBUS: Device with no driver: device/pci/0
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ dmesg | grep -e &#34;PCI&#34; -e &#34;pci&#34;
+</span></span><span class="line"><span class="cl">[    0.000000] Allocating PCI resources starting at 10000000 (gap:9c00000:f6400000)
+</span></span><span class="line"><span class="cl">[    0.005111] PCI: Fatal: No config space access function found
+</span></span><span class="line"><span class="cl">[    0.012608] PCI: System does not support PCI
+</span></span><span class="line"><span class="cl">[    0.012615] PCI: System does not support PCI
+</span></span><span class="line"><span class="cl">[    0.051897] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+</span></span><span class="line"><span class="cl">[    0.052676] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
+</span></span><span class="line"><span class="cl">[    0.052683] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+</span></span><span class="line"><span class="cl">[    0.052696] cpcihp_zt5550: ZT5550 CompactPCI Hot Plug Driver version: 0.2
+</span></span><span class="line"><span class="cl">[    0.052702] cpcihp_generic: Generic port I/O CompactPCI Hot Plug Driver version: 0.1
+</span></span><span class="line"><span class="cl">[    0.052709] cpcihp_generic: not configured, disabling.
+</span></span><span class="line"><span class="cl">[    0.052761] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+</span></span><span class="line"><span class="cl">[    0.164017] XENBUS: Device with no driver: device/pci/0
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>&hellip; and <code>lspci</code> told me nothing:</p>
 <div class="highlight"><div class="chroma">
@@ -228,9 +228,9 @@ extra = &#34;1&#34;
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ lspci
-$
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ lspci
+</span></span><span class="line"><span class="cl">$
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>What went wrong? Did I miss something in the kernel configuration file? As you see there is a lot of work to do. I suppose there are no such problems under Linux (as dom0). Again: Correct me if I&rsquo;m wrong! I really appreciate NetBSDs Xen support on this <a href="http://www.netbsd.org/mailinglists/#port-xen">mailing list</a> as it provides precious information you might find helpful - like I did. Nevertheless we sholuld push up the whole porting process so we can have a 100% functionable Xen integration in NetBSD. If you got some ideas that might solve my problem (in particular) don&rsquo;t esitate to contact me. Or even better: Write a mail to the mailing list. The whole discussion can be followed on NetBSD&rsquo;s mailing list <a href="http://mail-index.netbsd.org/port-xen/2009/10/23/msg005478.html">port-xen</a>.</p>
 
@@ -241,7 +241,7 @@ $
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

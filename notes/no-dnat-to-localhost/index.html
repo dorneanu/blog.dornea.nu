@@ -10,8 +10,8 @@
 
 
 <meta property="og:description" content="Doing a simple port forwarding is actually a simple task:
-1  $ iptables -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080   This would redirect all traffic from 80 to 8080. But if you have some firewall activated, you&rsquo;ll have to allow both ports:
-1 2  $ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW   Otherwise the port forwarding won&rsquo;t work." />
+1 $ iptables -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080 This would redirect all traffic from 80 to 8080. But if you have some firewall activated, you&rsquo;ll have to allow both ports:
+1 2 $ iptables -A INPUT -p tcp --dport 80 -j ALLOW $ iptables -A INPUT -p tcp --dport 8080 -j ALLOW Otherwise the port forwarding won&rsquo;t work." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/notes/no-dnat-to-localhost/" />
 
@@ -27,7 +27,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -113,8 +113,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ iptables -A PREROUTING -p tcp --dport <span class="m">80</span> -j REDIRECT --to-ports <span class="m">8080</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="line"><span class="cl">$ iptables -A PREROUTING -p tcp --dport <span class="m">80</span> -j REDIRECT --to-ports <span class="m">8080</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This would redirect all traffic from <code>80</code> to <code>8080</code>. But if you have some <strong>firewall</strong> activated, you&rsquo;ll have to <strong>allow</strong> both ports:</p>
 <div class="highlight"><div class="chroma">
@@ -123,9 +123,9 @@ type="image/x-icon"/>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ iptables -A INPUT -p tcp --dport <span class="m">80</span> -j ALLOW
-$ iptables -A INPUT -p tcp --dport <span class="m">8080</span> -j ALLOW
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="line"><span class="cl">$ iptables -A INPUT -p tcp --dport <span class="m">80</span> -j ALLOW
+</span></span><span class="line"><span class="cl">$ iptables -A INPUT -p tcp --dport <span class="m">8080</span> -j ALLOW
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Otherwise the port forwarding won&rsquo;t work. But this is not the use case you want to achieve. In most cases you want to <strong>redirect</strong>
 traffic from one port (let&rsquo;s say <code>80</code>) from an external interface to another IP address (let&rsquo;s say <code>10.0.0.1:8080</code>). Using <strong>DNAT</strong> this
@@ -135,8 +135,8 @@ actually pretty easy to implement:</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ iptables -t nat -A PREROUTING -p tcp --dport <span class="m">80</span> -j DNAT --to-destination 10.0.0.1:8080
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="line"><span class="cl">$ iptables -t nat -A PREROUTING -p tcp --dport <span class="m">80</span> -j DNAT --to-destination 10.0.0.1:8080
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>For a full example have a look at <a href="http://stackoverflow.com/questions/14212807/iptables-forward-request-on-different-interfaces-and-port?answertab=votes#tab-top">this stackoverflow</a>.
 However in my case I wanted to do DNAT to the <strong>loopback</strong> interface which didn&rsquo;t work (<a href="http://lists.netfilter.org/pipermail/netfilter/2004-August/055074.html">this answer</a> confirms this). Using <strong>REDIRECT</strong> is also a pretty bad idea since I had to allow access to both ports (which is kind of stupid).</p>
@@ -152,14 +152,14 @@ However in my case I wanted to do DNAT to the <strong>loopback</strong> interfac
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash">$ apt-get install rinetd
-$ cat /etc/rinetd.conf
-<span class="o">[</span>...<span class="o">]</span>
-<span class="c1"># bindadress    bindport  connectaddress  connectport</span>
-&lt;external ip&gt;   <span class="m">80</span>          127.0.0.1       <span class="m">8080</span>
-<span class="o">[</span>...<span class="o">]</span>
-$ service rinetd restart
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="line"><span class="cl">$ apt-get install rinetd
+</span></span><span class="line"><span class="cl">$ cat /etc/rinetd.conf
+</span></span><span class="line"><span class="cl"><span class="o">[</span>...<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># bindadress    bindport  connectaddress  connectport</span>
+</span></span><span class="line"><span class="cl">&lt;external ip&gt;   <span class="m">80</span>          127.0.0.1       <span class="m">8080</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>...<span class="o">]</span>
+</span></span><span class="line"><span class="cl">$ service rinetd restart
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>I hope this would prevent others from spending their whole day on doing DNAT to localhost.</p>
 
@@ -170,7 +170,7 @@ $ service rinetd restart
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

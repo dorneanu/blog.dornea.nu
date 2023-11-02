@@ -10,9 +10,11 @@
 
 
 <meta property="og:description" content="AMI aws cli Some currated list of useful aws CLI commands.
-  API Gateway
-   desc command     get-domain-names $ aws apigatewayv2 get-domain-names      SSM
-   desc command     get parameter $ aws --profile default ssm get-parameter --with-decryption --name &quot;&lt;ssm path&gt;&quot;   put parameter $ aws ssm put-parameter --name &lt;path&gt; --value &lt;value&gt; --type SecureString --key-id &lt;KMS key ID&gt;      Cloudformation" />
+API Gateway
+desc command get-domain-names $ aws apigatewayv2 get-domain-names SSM
+desc command get parameter $ aws --profile default ssm get-parameter --with-decryption --name &quot;&lt;ssm path&gt;&quot; put parameter $ aws ssm put-parameter --name &lt;path&gt; --value &lt;value&gt; --type SecureString --key-id &lt;KMS key ID&gt; Cloudformation
+desc command tail for CF events $tail-stack-events -f --die -n 5 --region &lt;region&gt; -s &lt;stack name&gt; SQS
+desc command receive one message $ aws sqs receive-message --queue-url &lt;queue url&gt; --region &lt;region&gt; get attributes of queue $ aws sqs get-queue-attributes --queue-url &lt;queue url&gt; --region &lt;region&gt; --attribute-names All purge queue $ aws sqs purge-queue --queue-url &lt;queue url&gt; DynamodDB" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/notes/aws/" />
 
@@ -27,7 +29,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -220,8 +222,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">        $ aws dynamodb scan --table-name &lt;table name&gt; --filter-expression <span class="s2">&#34;repo_name = :repo&#34;</span> --expression-attribute-values <span class="s1">&#39;{&#34;:repo&#34;:{&#34;S&#34;:&#34;my_repo&#34;}}&#39;</span> --projection-expression <span class="s2">&#34;unique_id&#34;</span> &gt; results.log
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">        $ aws dynamodb scan --table-name &lt;table name&gt; --filter-expression <span class="s2">&#34;repo_name = :repo&#34;</span> --expression-attribute-values <span class="s1">&#39;{&#34;:repo&#34;:{&#34;S&#34;:&#34;my_repo&#34;}}&#39;</span> --projection-expression <span class="s2">&#34;unique_id&#34;</span> &gt; results.log
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then use <code>delete-item</code> to delete single entries:</p>
 <div class="highlight"><div class="chroma">
@@ -229,8 +231,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">        $ cat results.log <span class="p">|</span> jq -r <span class="s2">&#34;.Items[] | tojson&#34;</span> <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;\0&#39;</span> <span class="p">|</span> xargs -0 -I keyItem aws dynamodb delete-item --table-name &lt;table name&gt; --key<span class="o">=</span>keyItem
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">        $ cat results.log <span class="p">|</span> jq -r <span class="s2">&#34;.Items[] | tojson&#34;</span> <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;\0&#39;</span> <span class="p">|</span> xargs -0 -I keyItem aws dynamodb delete-item --table-name &lt;table name&gt; --key<span class="o">=</span>keyItem
+</span></span></code></pre></td></tr></table>
 </div>
 </div></li>
 </ul>
@@ -267,7 +269,7 @@ type="image/x-icon"/>
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

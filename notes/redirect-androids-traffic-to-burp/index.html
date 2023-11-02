@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -155,8 +155,8 @@ internet &ndash; router;</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -F&#34;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ adb shell &#34;iptables -t nat -F&#34;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="redirect-http-traffic-to-burp">Redirect HTTP traffic to Burp</h3>
 <div class="highlight"><div class="chroma">
@@ -164,8 +164,8 @@ internet &ndash; router;</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 192.168.0.2:8080
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 192.168.0.2:8080
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="redirect-https-traffic-to-burp">Redirect HTTPS traffic to Burp</h3>
 <div class="highlight"><div class="chroma">
@@ -173,8 +173,8 @@ internet &ndash; router;</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 192.168.0.2:8080
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ adb shell &#34;iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 192.168.0.2:8080
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="activate-masquerading">Activate Masquerading</h3>
 <div class="highlight"><div class="chroma">
@@ -183,9 +183,9 @@ internet &ndash; router;</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE&#34;
-$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE&#34;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE&#34;
+</span></span><span class="line"><span class="cl">$ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE&#34;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That&rsquo;s it. You can test it by making a HTTPS connection to <code>paypal.com</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -207,22 +207,22 @@ $ adb shell &#34;iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ curl -I https://www.paypal.com
-curl: (60) SSL certificate problem, verify that the CA cert is OK. Details:
-error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
-More details here: http://curl.haxx.se/docs/sslcerts.html
-
-curl performs SSL certificate verification by default, using a &#34;bundle&#34;
- of Certificate Authority (CA) public keys (CA certs). If the default
- bundle file isn&#39;t adequate, you can specify an alternate file
- using the --cacert option.
-If this HTTPS server uses a certificate signed by a CA represented in
- the bundle, the certificate verification probably failed due to a
- problem with the certificate (it might be expired, or the name might
- not match the domain name in the URL).
-If you&#39;d like to turn off curl&#39;s verification of the certificate, use
- the -k (or --insecure) option.
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ curl -I https://www.paypal.com
+</span></span><span class="line"><span class="cl">curl: (60) SSL certificate problem, verify that the CA cert is OK. Details:
+</span></span><span class="line"><span class="cl">error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
+</span></span><span class="line"><span class="cl">More details here: http://curl.haxx.se/docs/sslcerts.html
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">curl performs SSL certificate verification by default, using a &#34;bundle&#34;
+</span></span><span class="line"><span class="cl"> of Certificate Authority (CA) public keys (CA certs). If the default
+</span></span><span class="line"><span class="cl"> bundle file isn&#39;t adequate, you can specify an alternate file
+</span></span><span class="line"><span class="cl"> using the --cacert option.
+</span></span><span class="line"><span class="cl">If this HTTPS server uses a certificate signed by a CA represented in
+</span></span><span class="line"><span class="cl"> the bundle, the certificate verification probably failed due to a
+</span></span><span class="line"><span class="cl"> problem with the certificate (it might be expired, or the name might
+</span></span><span class="line"><span class="cl"> not match the domain name in the URL).
+</span></span><span class="line"><span class="cl">If you&#39;d like to turn off curl&#39;s verification of the certificate, use
+</span></span><span class="line"><span class="cl"> the -k (or --insecure) option.
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This happens because Burp is presenting the client (curl) it&rsquo;s own certificate. If you see that, then you&rsquo;re
 successfully redirecting your HTTP(s) traffic to Burp.</p>
@@ -237,7 +237,7 @@ successfully redirecting your HTTP(s) traffic to Burp.</p>
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

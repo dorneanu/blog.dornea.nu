@@ -26,7 +26,7 @@ Using encrypted secrets defined either per repository or organization, you can b
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -187,12 +187,12 @@ should provide. Generating mocks should be then also an easy task as described i
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
-	<span class="nf">ListAccessKeys</span><span class="p">()</span> <span class="o">...</span>
-	<span class="nf">CreateAccessKey</span><span class="p">()</span> <span class="o">...</span>
-	<span class="nf">DeleteAccessKey</span><span class="p">()</span> <span class="o">...</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">ListAccessKeys</span><span class="p">()</span> <span class="o">...</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">CreateAccessKey</span><span class="p">()</span> <span class="o">...</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">DeleteAccessKey</span><span class="p">()</span> <span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Additionally I&rsquo;ll use an own <code>Configuration</code> type meant to hold all information my applications needs. I find <a href="https://github.com/kelseyhightower/envconfig">github.com/kelseyhightower/envconfig</a> to be quite
 handy when you have to deal with <strong>environment</strong> variables:</p>
@@ -206,13 +206,13 @@ handy when you have to deal with <strong>environment</strong> variables:</p>
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Config holds all relevant information for this application to run
-</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Config</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="nx">IAM_User</span>   <span class="kt">string</span> <span class="s">`envconfig:&#34;IAM_USER&#34;, required:&#34;true&#34;`</span>
-	<span class="nx">AWS_REGION</span> <span class="kt">string</span> <span class="s">`envconfig:&#34;AWS_REGION&#34; required:&#34;true&#34;`</span>
-	<span class="o">...</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Config holds all relevant information for this application to run
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Config</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">IAM_User</span>   <span class="kt">string</span> <span class="s">`envconfig:&#34;IAM_USER&#34;, required:&#34;true&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">AWS_REGION</span> <span class="kt">string</span> <span class="s">`envconfig:&#34;AWS_REGION&#34; required:&#34;true&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="list-fetch-all-available-iam-keys">List/Fetch all available IAM keys</h3>
 <p>First of all let&rsquo;s list all available IAM access keys.</p>
@@ -288,83 +288,83 @@ handy when you have to deal with <strong>environment</strong> variables:</p>
 </span><span class="lnt">68
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
-
-<span class="kn">import</span> <span class="p">(</span>
-	<span class="s">&#34;context&#34;</span>
-	<span class="s">&#34;fmt&#34;</span>
-	<span class="s">&#34;log&#34;</span>
-
-	<span class="s">&#34;github.com/aws/aws-sdk-go-v2/aws&#34;</span>
-	<span class="s">&#34;github.com/aws/aws-sdk-go-v2/config&#34;</span>
-	<span class="s">&#34;github.com/aws/aws-sdk-go-v2/service/iam&#34;</span>
-	<span class="s">&#34;github.com/kelseyhightower/envconfig&#34;</span>
-<span class="p">)</span>
-
-<span class="c1">// Config holds all relevant information for this application to run
-</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Config</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="nx">IAM_User</span>   <span class="kt">string</span> <span class="s">`envconfig:&#34;IAM_USER&#34;, required:&#34;true&#34;`</span>
-	<span class="nx">AWS_REGION</span> <span class="kt">string</span> <span class="s">`envconfig:&#34;AWS_REGION&#34; required:&#34;true&#34;`</span>
-<span class="p">}</span>
-
-<span class="c1">// We&#39;ll define an interface fot the IAM API in order to make testing easy
-</span><span class="c1">// This interface will be extended as we go through the different steps
-</span><span class="c1"></span><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
-	<span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="c1">// ListAccessKeys retrieves the IAM access keys for an user
-</span><span class="c1"></span><span class="kd">func</span> <span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">c</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">api</span> <span class="nx">IAMAPI</span><span class="p">,</span> <span class="nx">username</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">input</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">{</span>
-		<span class="nx">MaxItems</span><span class="p">:</span> <span class="nx">aws</span><span class="p">.</span><span class="nf">Int32</span><span class="p">(</span><span class="nb">int32</span><span class="p">(</span><span class="mi">10</span><span class="p">)),</span>
-		<span class="nx">UserName</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">username</span><span class="p">,</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="nx">api</span><span class="p">.</span><span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">input</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="c1">// loadConfig will return an instance of Config
-</span><span class="c1"></span><span class="kd">func</span> <span class="nf">loadConfig</span><span class="p">()</span> <span class="o">*</span><span class="nx">Config</span> <span class="p">{</span>
-	<span class="kd">var</span> <span class="nx">c</span> <span class="nx">Config</span>
-	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">envconfig</span><span class="p">.</span><span class="nf">Process</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">c</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">c</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-	<span class="c1">// Get configuration
-</span><span class="c1"></span>	<span class="nx">c</span> <span class="o">:=</span> <span class="nf">loadConfig</span><span class="p">()</span>
-
-	<span class="c1">// Initialize AWS
-</span><span class="c1"></span>	<span class="nx">cfg</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">LoadDefaultConfig</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">())</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nb">panic</span><span class="p">(</span><span class="s">&#34;configuration error, &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
-	<span class="p">}</span>
-
-	<span class="c1">// Create new IAM client
-</span><span class="c1"></span>	<span class="nx">iam_client</span> <span class="o">:=</span> <span class="nx">iam</span><span class="p">.</span><span class="nf">NewFromConfig</span><span class="p">(</span><span class="nx">cfg</span><span class="p">)</span>
-	<span class="nx">result</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">iam_client</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">IAM_User</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Got an error retrieving user access keys:&#34;</span><span class="p">)</span>
-		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
-		<span class="k">return</span>
-	<span class="p">}</span>
-
-	<span class="c1">// Print available IAM access keys
-</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">key</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">result</span><span class="p">.</span><span class="nx">AccessKeyMetadata</span> <span class="p">{</span>
-		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Status for access key &#34;</span> <span class="o">+</span> <span class="o">*</span><span class="nx">key</span><span class="p">.</span><span class="nx">AccessKeyId</span> <span class="o">+</span> <span class="s">&#34;: &#34;</span> <span class="o">+</span> <span class="nb">string</span><span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nx">Status</span><span class="p">))</span>
-	<span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;context&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;log&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/aws/aws-sdk-go-v2/aws&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/aws/aws-sdk-go-v2/config&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/aws/aws-sdk-go-v2/service/iam&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/kelseyhightower/envconfig&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Config holds all relevant information for this application to run
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Config</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">IAM_User</span>   <span class="kt">string</span> <span class="s">`envconfig:&#34;IAM_USER&#34;, required:&#34;true&#34;`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">AWS_REGION</span> <span class="kt">string</span> <span class="s">`envconfig:&#34;AWS_REGION&#34; required:&#34;true&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// We&#39;ll define an interface fot the IAM API in order to make testing easy
+</span></span></span><span class="line"><span class="cl"><span class="c1">// This interface will be extended as we go through the different steps
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ListAccessKeys retrieves the IAM access keys for an user
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">c</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">api</span> <span class="nx">IAMAPI</span><span class="p">,</span> <span class="nx">username</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">input</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">MaxItems</span><span class="p">:</span> <span class="nx">aws</span><span class="p">.</span><span class="nf">Int32</span><span class="p">(</span><span class="nb">int32</span><span class="p">(</span><span class="mi">10</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">UserName</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">api</span><span class="p">.</span><span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">input</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// loadConfig will return an instance of Config
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">loadConfig</span><span class="p">()</span> <span class="o">*</span><span class="nx">Config</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">c</span> <span class="nx">Config</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">envconfig</span><span class="p">.</span><span class="nf">Process</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">c</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Get configuration
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">c</span> <span class="o">:=</span> <span class="nf">loadConfig</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Initialize AWS
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">cfg</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">config</span><span class="p">.</span><span class="nf">LoadDefaultConfig</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="s">&#34;configuration error, &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Create new IAM client
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">iam_client</span> <span class="o">:=</span> <span class="nx">iam</span><span class="p">.</span><span class="nf">NewFromConfig</span><span class="p">(</span><span class="nx">cfg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">result</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">iam_client</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">IAM_User</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Got an error retrieving user access keys:&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Print available IAM access keys
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">key</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">result</span><span class="p">.</span><span class="nx">AccessKeyMetadata</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Status for access key &#34;</span> <span class="o">+</span> <span class="o">*</span><span class="nx">key</span><span class="p">.</span><span class="nx">AccessKeyId</span> <span class="o">+</span> <span class="s">&#34;: &#34;</span> <span class="o">+</span> <span class="nb">string</span><span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nx">Status</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Status for access key AKIAWSIW5AN47M5YY72J: Active
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Status for access key AKIAWSIW5AN47M5YY72J: Active
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see there is an IAM access key with the ID <code>AKIAWSIW5AN47M5YY72J</code> and it&rsquo;s active.</p>
 <h3 id="generate-new-iam-access-key">Generate new IAM access key</h3>
@@ -377,11 +377,11 @@ handy when you have to deal with <strong>environment</strong> variables:</p>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
-	<span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Creating a new key pair should also be straght forwards:</p>
 <div class="highlight"><div class="chroma">
@@ -395,14 +395,14 @@ handy when you have to deal with <strong>environment</strong> variables:</p>
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// CreateAccessKey will create a new IAM access key for a specified user
-</span><span class="c1"></span><span class="kd">func</span> <span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">c</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">api</span> <span class="nx">IAMAPI</span><span class="p">,</span> <span class="nx">username</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">input</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyInput</span><span class="p">{</span>
-		<span class="nx">UserName</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">username</span><span class="p">,</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">input</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// CreateAccessKey will create a new IAM access key for a specified user
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">c</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">api</span> <span class="nx">IAMAPI</span><span class="p">,</span> <span class="nx">username</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">input</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyInput</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">UserName</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">api</span><span class="p">.</span><span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">input</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And then in the <code>main()</code> we add:</p>
 <div class="highlight"><div class="chroma">
@@ -418,16 +418,16 @@ handy when you have to deal with <strong>environment</strong> variables:</p>
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// Create new IAM access key
-</span><span class="c1"></span>	<span class="nx">new_key</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">iam_client</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">IAM_User</span><span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Couldn&#39;t create new key: &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
-		<span class="k">return</span>
-	<span class="p">}</span>
-
-	<span class="c1">// Print new key
-</span><span class="c1"></span>	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Created new access key with ID: &#34;</span> <span class="o">+</span> <span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">AccessKeyId</span> <span class="o">+</span> <span class="s">&#34; and secret key: &#34;</span> <span class="o">+</span> <span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">SecretAccessKey</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">	<span class="c1">// Create new IAM access key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">new_key</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span> <span class="nx">iam_client</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">IAM_User</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Couldn&#39;t create new key: &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Print new key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Created new access key with ID: &#34;</span> <span class="o">+</span> <span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">AccessKeyId</span> <span class="o">+</span> <span class="s">&#34; and secret key: &#34;</span> <span class="o">+</span> <span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">SecretAccessKey</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And if we run it, we&rsquo;ll get the new key id and the secret key:</p>
 <div class="highlight"><div class="chroma">
@@ -436,9 +436,9 @@ handy when you have to deal with <strong>environment</strong> variables:</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">...
-Created new access key with ID: AKIAWSIW5AN46DT2ENLL and secret key: ****************************************
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">Created new access key with ID: AKIAWSIW5AN46DT2ENLL and secret key: ****************************************
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="delete-old-access-key">Delete old access key</h3>
 <p>We&rsquo;ll extend the <code>IAMAPI</code> interface again:</p>
@@ -451,12 +451,12 @@ Created new access key with ID: AKIAWSIW5AN46DT2ENLL and secret key: ***********
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
-	<span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">DeleteAccessKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">IAMAPI</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">ListAccessKeys</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">ListAccessKeysOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">CreateAccessKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">CreateAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">DeleteAccessKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">params</span> <span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyInput</span><span class="p">,</span> <span class="nx">optFns</span> <span class="o">...</span><span class="kd">func</span><span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">Options</span><span class="p">))</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <code>DeleteAccessKey</code> will also need an <code>access key ID</code> and an <code>username</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -471,15 +471,15 @@ Created new access key with ID: AKIAWSIW5AN46DT2ENLL and secret key: ***********
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// DeleteAccessKey disables and removes an IAM access key
-</span><span class="c1"></span><span class="kd">func</span> <span class="nf">DeleteAccessKey</span><span class="p">(</span><span class="nx">c</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">api</span> <span class="nx">IAMAPI</span><span class="p">,</span> <span class="nx">keyID</span><span class="p">,</span> <span class="nx">username</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">input</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyInput</span><span class="p">{</span>
-		<span class="nx">AccessKeyId</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">keyID</span><span class="p">,</span>
-		<span class="nx">UserName</span><span class="p">:</span>    <span class="o">&amp;</span><span class="nx">username</span><span class="p">,</span>
-	<span class="p">}</span>
-	<span class="k">return</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteAccessKey</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">input</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// DeleteAccessKey disables and removes an IAM access key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">DeleteAccessKey</span><span class="p">(</span><span class="nx">c</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">api</span> <span class="nx">IAMAPI</span><span class="p">,</span> <span class="nx">keyID</span><span class="p">,</span> <span class="nx">username</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyOutput</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">input</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">iam</span><span class="p">.</span><span class="nx">DeleteAccessKeyInput</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">AccessKeyId</span><span class="p">:</span> <span class="o">&amp;</span><span class="nx">keyID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">UserName</span><span class="p">:</span>    <span class="o">&amp;</span><span class="nx">username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">api</span><span class="p">.</span><span class="nf">DeleteAccessKey</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">input</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>For this example we&rsquo;ll just delete the previously created IAM access key:</p>
 <div class="highlight"><div class="chroma">
@@ -498,19 +498,19 @@ Created new access key with ID: AKIAWSIW5AN46DT2ENLL and secret key: ***********
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">	<span class="c1">// Delete key
-</span><span class="c1"></span>	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">DeleteAccessKey</span><span class="p">(</span>
-		<span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span>
-		<span class="nx">iam_client</span><span class="p">,</span>
-		<span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">AccessKeyId</span><span class="p">,</span>
-		<span class="nx">c</span><span class="p">.</span><span class="nx">IAM_User</span><span class="p">,</span>
-	<span class="p">)</span>
-	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Couldn&#39;t delete key: &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
-		<span class="k">return</span>
-	<span class="p">}</span>
-	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Deleted key: %s\n&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">AccessKeyId</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">	<span class="c1">// Delete key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nf">DeleteAccessKey</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">iam_client</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">AccessKeyId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">c</span><span class="p">.</span><span class="nx">IAM_User</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Couldn&#39;t delete key: &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Deleted key: %s\n&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">new_key</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">.</span><span class="nx">AccessKeyId</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="github-setup">Github setup</h2>
 <p>The Github implementation will have to satisfy the <code>SecretsStore</code> interface:</p>
@@ -524,13 +524,13 @@ Created new access key with ID: AKIAWSIW5AN46DT2ENLL and secret key: ***********
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">SecretsStore</span> <span class="kd">interface</span> <span class="p">{</span>
-	<span class="nf">EncryptKey</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">entity</span><span class="p">.</span><span class="nx">EncryptedKey</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">ListSecrets</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">([]</span><span class="nx">entity</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">CreateSecret</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">EncryptedKey</span><span class="p">)</span> <span class="kt">error</span>
-	<span class="nf">DeleteSecret</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">EncryptedKey</span><span class="p">)</span> <span class="kt">error</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">SecretsStore</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">EncryptKey</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">entity</span><span class="p">.</span><span class="nx">EncryptedKey</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">ListSecrets</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">([]</span><span class="nx">entity</span><span class="p">.</span><span class="nx">AccessKey</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">CreateSecret</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">EncryptedKey</span><span class="p">)</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">DeleteSecret</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">entity</span><span class="p">.</span><span class="nx">EncryptedKey</span><span class="p">)</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="secretsstore-implementation">SecretsStore implementation</h3>
 <p>As we have done with <strong>AWS</strong> we&rsquo;ll try to decouple everything and have less cohesion. This will make every part of our code testable.
@@ -544,12 +544,12 @@ The <code>GithubSecretsStore</code> (implementing <code>SecretsStore</code>) wil
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">GithubSecretsStore</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="nx">repo_owner</span>    <span class="kt">string</span>
-	<span class="nx">repo_name</span>     <span class="kt">string</span>
-	<span class="nx">secretsClient</span> <span class="nx">GithubSecretsService</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">GithubSecretsStore</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">repo_owner</span>    <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">repo_name</span>     <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">secretsClient</span> <span class="nx">GithubSecretsService</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="make-secrets-service-abstract">Make secrets service abstract</h3>
 <p>The <code>secretsClient</code> is a <strong>service</strong> that allows us to create, upload and delete secrets using <a href="https://docs.github.com/en/rest/reference/actions#secrets">Github&rsquo;s Secrets API</a>. The <code>GithubSecretsService</code>
@@ -564,13 +564,13 @@ will have following definition (make sure to have a look at the methods provided
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">GithubSecretsService</span> <span class="kd">interface</span> <span class="p">{</span>
-	<span class="nf">GetRepoPublicKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">PublicKey</span><span class="p">,</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">CreateOrUpdateRepoSecret</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">eSecret</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">EncryptedSecret</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">ListRepoSecrets</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">opts</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Secrets</span><span class="p">,</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-	<span class="nf">DeleteRepoSecret</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">GithubSecretsService</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">GetRepoPublicKey</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">PublicKey</span><span class="p">,</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">CreateOrUpdateRepoSecret</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">eSecret</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">EncryptedSecret</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">ListRepoSecrets</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">opts</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">ListOptions</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Secrets</span><span class="p">,</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">DeleteRepoSecret</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">owner</span><span class="p">,</span> <span class="nx">repo</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This way we can create a <code>GithubSecretsStore</code> with a mocked version of <code>GithubSecretsService</code>. But there is still something missing. Of course, the <code>Github client</code> itself:</p>
 <div class="highlight"><div class="chroma">
@@ -580,10 +580,10 @@ will have following definition (make sure to have a look at the methods provided
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">GithubClient</span> <span class="kd">struct</span> <span class="p">{</span>
-	<span class="nx">client</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Client</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">GithubClient</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span> <span class="o">*</span><span class="nx">github</span><span class="p">.</span><span class="nx">Client</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="use-a-real-github-client">Use a real Github client</h3>
 <p>And how does this structure fit together with the <strong>service</strong> and the <strong>store</strong>? Following <em>constructor</em> should provide the answer:</p>
@@ -600,16 +600,16 @@ will have following definition (make sure to have a look at the methods provided
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">NewGithubClient</span><span class="p">(</span><span class="nx">accessToken</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">GithubSecretsService</span> <span class="p">{</span>
-	<span class="nx">ctx</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">()</span>
-	<span class="nx">ts</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">StaticTokenSource</span><span class="p">(</span>
-		<span class="o">&amp;</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">Token</span><span class="p">{</span><span class="nx">AccessToken</span><span class="p">:</span> <span class="nx">accessToken</span><span class="p">},</span>
-	<span class="p">)</span>
-	<span class="nx">tc</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">ts</span><span class="p">)</span>
-	<span class="nx">client</span> <span class="o">:=</span> <span class="nx">github</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">tc</span><span class="p">)</span>
-	<span class="k">return</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Actions</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewGithubClient</span><span class="p">(</span><span class="nx">accessToken</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">GithubSecretsService</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ctx</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ts</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">StaticTokenSource</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">		<span class="o">&amp;</span><span class="nx">oauth2</span><span class="p">.</span><span class="nx">Token</span><span class="p">{</span><span class="nx">AccessToken</span><span class="p">:</span> <span class="nx">accessToken</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">tc</span> <span class="o">:=</span> <span class="nx">oauth2</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">ts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">client</span> <span class="o">:=</span> <span class="nx">github</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="nx">tc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Actions</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here I initialize a new <code>github.Client</code> by using an OAUTH2 token. Afterwards I return <code>client.Actions</code> which btw satisfies the <code>GithubSecretsService</code> interface. Now let&rsquo;s code a constructor for the <code>GithubSecretsStore</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -623,14 +623,14 @@ will have following definition (make sure to have a look at the methods provided
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">NewGithubSecretsStore</span><span class="p">(</span><span class="nx">secretsService</span> <span class="nx">GithubSecretsService</span><span class="p">,</span> <span class="nx">repoOwner</span><span class="p">,</span> <span class="nx">repoName</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">GithubSecretsStore</span> <span class="p">{</span>
-	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">GithubSecretsStore</span><span class="p">{</span>
-		<span class="nx">secretsClient</span><span class="p">:</span> <span class="nx">secretsService</span><span class="p">,</span>
-		<span class="nx">repo_owner</span><span class="p">:</span>    <span class="nx">repoOwner</span><span class="p">,</span>
-		<span class="nx">repo_name</span><span class="p">:</span>     <span class="nx">repoName</span><span class="p">,</span>
-	<span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewGithubSecretsStore</span><span class="p">(</span><span class="nx">secretsService</span> <span class="nx">GithubSecretsService</span><span class="p">,</span> <span class="nx">repoOwner</span><span class="p">,</span> <span class="nx">repoName</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">GithubSecretsStore</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">GithubSecretsStore</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">secretsClient</span><span class="p">:</span> <span class="nx">secretsService</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">repo_owner</span><span class="p">:</span>    <span class="nx">repoOwner</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">repo_name</span><span class="p">:</span>     <span class="nx">repoName</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here <code>NewGithubSecretsStore</code> expects a <code>GithubSecretsService</code> and some other additional information (repository owner/name). As the <a href="https://brainfck.org/#LSP"> Liskow Substitution Principle</a> says:</p>
 <blockquote>
@@ -652,13 +652,13 @@ will have following definition (make sure to have a look at the methods provided
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">configStore</span><span class="p">.</span><span class="nf">GetValue</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="s">&#34;github-token&#34;</span><span class="p">)</span>
-<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;Unable to get value from config store: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="nx">githubSecretsClient</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">NewGithubClient</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">)</span>
-<span class="nx">secretsStore</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">NewGithubSecretsStore</span><span class="p">(</span><span class="nx">githubSecretsClient</span><span class="p">,</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">RepoOwner</span><span class="p">,</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">RepoName</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="line"><span class="cl"><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">configStore</span><span class="p">.</span><span class="nf">GetValue</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="s">&#34;github-token&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;Unable to get value from config store: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">githubSecretsClient</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">NewGithubClient</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">secretsStore</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">NewGithubSecretsStore</span><span class="p">(</span><span class="nx">githubSecretsClient</span><span class="p">,</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">RepoOwner</span><span class="p">,</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">RepoName</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="conclusion">Conclusion</h2>
 <p>Setting up a project with clean code in mind is not an easy task. You have to abstract things
@@ -675,7 +675,7 @@ and always keep in mind:</p>
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

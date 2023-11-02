@@ -26,7 +26,7 @@ When it comes to fuzzing there are a few tools to mention that have established 
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -182,20 +182,20 @@ In a nutshell <code>conntrackd</code>:</p>
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">Sync {
-        Mode FTFW{
-        }
-    UDP Default {
-        IPv4_address 192.168.122.242
-        IPv4_Destination_Address 192.168.122.252 
-        Port 3780
-        Interface ens3 
-        SndSocketBuffer 1249280
-        RcvSocketBuffer 1249280
-        Checksum on
-    }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Sync {
+</span></span><span class="line"><span class="cl">        Mode FTFW{
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    UDP Default {
+</span></span><span class="line"><span class="cl">        IPv4_address 192.168.122.242
+</span></span><span class="line"><span class="cl">        IPv4_Destination_Address 192.168.122.252 
+</span></span><span class="line"><span class="cl">        Port 3780
+</span></span><span class="line"><span class="cl">        Interface ens3 
+</span></span><span class="line"><span class="cl">        SndSocketBuffer 1249280
+</span></span><span class="line"><span class="cl">        RcvSocketBuffer 1249280
+</span></span><span class="line"><span class="cl">        Checksum on
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This configuration says:</p>
 <ul>
@@ -213,9 +213,9 @@ In the end the daemons are started by specifying the config file:</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ./src/conntrackd -C &lt;config file&gt;
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ./src/conntrackd -C &lt;config file&gt;
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>If you experience some crazy error messages, make sure you have following kernel modules loaded: <code>af_netlink</code></p>
@@ -232,13 +232,13 @@ In the end the daemons are started by specifying the config file:</p>
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ tshark -nr nat-traffic.pcap -E separator=&#34;,&#34; -T fields -e udp.srcport -e udp.dstport -e udp.length -e data  | head -n 5
-53085,3780,76,110000445815c162000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb000500040400000000080006000000780008000c7e64b2c3
-53085,3780,76,110000445815c163000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb0005000406000000000800060000001e0008000c7e64b2c3
-53085,3780,76,100000445815c164000c00000a216801d83ad4a30008000500000198000500020600000000080003c29a0050000500040100000000080006000000780008000ceb64b2c3
-53085,3780,76,110000445815c1aa000c00000a171f0cca0c1b21000800050000019a00050002060000000008000386e600350005000402000000000800060000003c0008000c7e64b2c3
-53085,3780,76,110000445815c1ab000c00000a171f0cca0c1b21000800050000019e00050002060000000008000386e60035000500040300000000080006000038400008000c7e64b2c3
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ tshark -nr nat-traffic.pcap -E separator=&#34;,&#34; -T fields -e udp.srcport -e udp.dstport -e udp.length -e data  | head -n 5
+</span></span><span class="line"><span class="cl">53085,3780,76,110000445815c162000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb000500040400000000080006000000780008000c7e64b2c3
+</span></span><span class="line"><span class="cl">53085,3780,76,110000445815c163000c00000a17680236ef368f000800050000019e00050002060000000008000391f201bb0005000406000000000800060000001e0008000c7e64b2c3
+</span></span><span class="line"><span class="cl">53085,3780,76,100000445815c164000c00000a216801d83ad4a30008000500000198000500020600000000080003c29a0050000500040100000000080006000000780008000ceb64b2c3
+</span></span><span class="line"><span class="cl">53085,3780,76,110000445815c1aa000c00000a171f0cca0c1b21000800050000019a00050002060000000008000386e600350005000402000000000800060000003c0008000c7e64b2c3
+</span></span><span class="line"><span class="cl">53085,3780,76,110000445815c1ab000c00000a171f0cca0c1b21000800050000019e00050002060000000008000386e60035000500040300000000080006000038400008000c7e64b2c3
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you have noticed the <code>UDP</code> payloads above are very similar to each other. However, <strong>bigger</strong> payloads were also transmitted:</p>
 <div class="highlight"><div class="chroma">
@@ -249,11 +249,11 @@ In the end the daemons are started by specifying the config file:</p>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">57252,3780,1444,1100004457e14ced000c00000a21680236ef249d000800050000019e000500020600000000080003d9ac01bb000500040300000000080006000038400008000ceb64b
-2c31100004457e14cee000c00000a17680236ef22ae000800050000019e000500020600000000080003c0a201bb000500040300000000080006000038400008000c7e64b2c31100004457
-e14cef000c00000a176801c3b265ac000800050000019e000500020600000000080003bc700050000500040300000000080006000038400008000c7e64b2c31100004457e14cf0000c000
-00a176802b0206cff000800050000019e000500020600000000080003c16401bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf1000c00000a21680136ef208d000800050000019e0005000206000000000800039dc201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf2000c00000a17680236ef249d000800050000019e000500020600000000080003d12c01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf3000c00000a21680236ef208d000800050000019e000500020600000000080003be7c01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf4000c00000a21680236ef37cb000800050000019e000500020600000000080003d4d201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf5000c00000a21680236ef208d000800050000019e000500020600000000080003de9001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf6000c00000a21680136ef208d000800050000019e000500020600000000080003bdae01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf7000c00000a17680336ef22af000800050000019e000500020600000000080003a37a01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf8000c00000a21680136ef208d000800050000019e0005000206000000000800039c8601bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf9000c00000a21680134314113000800050000019e00050002060000000008000382f401bb000500040300000000080006000038400008000ceb64b2c31100004c57e14cfa000c00000a21680236ef3698000800050000019e000500020600000000080003d27c01bb000500040300000000080006000038400008000ceb64b2c30006000eeb0600001100004457e14cfb000c00000a17680336ef249d000800050000019e000500020600000000080003de7601bb000500040300000000080006000038400008000c7e64b2c31100004457e14cfc000c00000a21680136ef208d000800050000019e0005000206000000000800039ce001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cfd000c00000a176803c01efd70000800050000019e000500020600000000080003b51001bb0005000403000000000800
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">57252,3780,1444,1100004457e14ced000c00000a21680236ef249d000800050000019e000500020600000000080003d9ac01bb000500040300000000080006000038400008000ceb64b
+</span></span><span class="line"><span class="cl">2c31100004457e14cee000c00000a17680236ef22ae000800050000019e000500020600000000080003c0a201bb000500040300000000080006000038400008000c7e64b2c31100004457
+</span></span><span class="line"><span class="cl">e14cef000c00000a176801c3b265ac000800050000019e000500020600000000080003bc700050000500040300000000080006000038400008000c7e64b2c31100004457e14cf0000c000
+</span></span><span class="line"><span class="cl">00a176802b0206cff000800050000019e000500020600000000080003c16401bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf1000c00000a21680136ef208d000800050000019e0005000206000000000800039dc201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf2000c00000a17680236ef249d000800050000019e000500020600000000080003d12c01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf3000c00000a21680236ef208d000800050000019e000500020600000000080003be7c01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf4000c00000a21680236ef37cb000800050000019e000500020600000000080003d4d201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf5000c00000a21680236ef208d000800050000019e000500020600000000080003de9001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf6000c00000a21680136ef208d000800050000019e000500020600000000080003bdae01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf7000c00000a17680336ef22af000800050000019e000500020600000000080003a37a01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf8000c00000a21680136ef208d000800050000019e0005000206000000000800039c8601bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf9000c00000a21680134314113000800050000019e00050002060000000008000382f401bb000500040300000000080006000038400008000ceb64b2c31100004c57e14cfa000c00000a21680236ef3698000800050000019e000500020600000000080003d27c01bb000500040300000000080006000038400008000ceb64b2c30006000eeb0600001100004457e14cfb000c00000a17680336ef249d000800050000019e000500020600000000080003de7601bb000500040300000000080006000038400008000c7e64b2c31100004457e14cfc000c00000a21680136ef208d000800050000019e0005000206000000000800039ce001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cfd000c00000a176803c01efd70000800050000019e000500020600000000080003b51001bb0005000403000000000800
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="analysis">Analysis</h2>
 <p>Now what valuable information can we extract from the payloads? Using <a href="http://www.secdev.org/projects/scapy/">scapy</a> I&rsquo;ve did
@@ -271,16 +271,16 @@ some basic traffic analysis:</p>
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">In [11]: p.payload.payload.show()
-
-###[ UDP ]###
-  sport     = 53085
-  dport     = nnp
-  len       = 76
-  chksum    = 0x1aa6
-###[ Raw ]###
-     load      = &#39;\x11\x00\x00DX\x15\xc1c\x00\x0c\x00\x00\n\x17h\x026\xef6\x8f\x00\x08\x00\x05\x00\x00\x01\x9e\x00\x05\x00\x02\x06\x00\x00\x00\x00\x08\x00\x03\x91\xf2\x01\xbb\x00\x05\x00\x04\x06\x00\x00\x00\x00\x08\x00\x06\x00\x00\x00\x1e\x00\x08\x00\x0c~d\xb2\xc3&#39;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="n">p</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">###[ UDP ]###</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sport</span>     <span class="o">=</span> <span class="mi">53085</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dport</span>     <span class="o">=</span> <span class="n">nnp</span>
+</span></span><span class="line"><span class="cl">  <span class="n">len</span>       <span class="o">=</span> <span class="mi">76</span>
+</span></span><span class="line"><span class="cl">  <span class="n">chksum</span>    <span class="o">=</span> <span class="mh">0x1aa6</span>
+</span></span><span class="line"><span class="cl"><span class="c1">###[ Raw ]###</span>
+</span></span><span class="line"><span class="cl">     <span class="nb">load</span>      <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x11\x00\x00</span><span class="s1">DX</span><span class="se">\x15\xc1</span><span class="s1">c</span><span class="se">\x00\x0c\x00\x00\n\x17</span><span class="s1">h</span><span class="se">\x02</span><span class="s1">6</span><span class="se">\xef</span><span class="s1">6</span><span class="se">\x8f\x00\x08\x00\x05\x00\x00\x01\x9e\x00\x05\x00\x02\x06\x00\x00\x00\x00\x08\x00\x03\x91\xf2\x01\xbb\x00\x05\x00\x04\x06\x00\x00\x00\x00\x08\x00\x06\x00\x00\x00\x1e\x00\x08\x00\x0c</span><span class="s1">~d</span><span class="se">\xb2\xc3</span><span class="s1">&#39;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Apparently this is no ASCII data (who would have expected that anyway? :) Using <code>gdb</code> I wanted to know what&rsquo;s inside the data
 and did some <strong>dynamic analysis</strong>. This way I was able to learn more about the data being passed over the wire and how
@@ -292,9 +292,9 @@ the source code is structured.</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ CCFLAGS=&#34;-g3 -gdwarf2&#34; ./configure
-[...]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ CCFLAGS=&#34;-g3 -gdwarf2&#34; ./configure
+</span></span><span class="line"><span class="cl">[...]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Afterwards you should be able to <strong>run</strong> it:</p>
 <div class="highlight"><div class="chroma">
@@ -302,8 +302,8 @@ the source code is structured.</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ sudo ./src/conntrackd -C conntrackd.conf
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ sudo ./src/conntrackd -C conntrackd.conf
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Sniffing the traffic you should see sth like this:</p>
 <div class="highlight"><div class="chroma">
@@ -320,17 +320,17 @@ the source code is structured.</p>
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ sudo tshark -i ens3 -Y udp -E separator=&#34;,&#34; -T fields -e ip.src -e udp.srcport -e udp.dstport -e udp.length -e data
-192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109293
-192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109294
-192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109295
-192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109296
-192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109297
-192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109298
-192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109299
-192.168.122.242,192.168.122.242,48786,3780,16,1a1000085810929a
-^C8 packets captured
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ sudo tshark -i ens3 -Y udp -E separator=&#34;,&#34; -T fields -e ip.src -e udp.srcport -e udp.dstport -e udp.length -e data
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109293
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109294
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109295
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109296
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109297
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109298
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a10000858109299
+</span></span><span class="line"><span class="cl">192.168.122.242,192.168.122.242,48786,3780,16,1a1000085810929a
+</span></span><span class="line"><span class="cl">^C8 packets captured
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The daemon will try to send out some &ldquo;keep-alive&rdquo; messages to its counterpart. Now we send those packets
 <strong>manually</strong> and debug the interesting part in the code. For packet generation I&rsquo;ll use <code>scapy</code> again (running as
@@ -354,22 +354,22 @@ the source code is structured.</p>
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">In [1]: from scapy.all import *
-WARNING: No route found for IPv6 destination :: (no default route?)
-
-In [2]: import binascii
-
-In [3]: p=Ether()/IP(dst=&#34;192.168.122.242&#34;)/UDP(dport=3780)
-
-In [4]: payload = binascii.unhexlify(&#34;1a10000858109293&#34;)
-
-In [5]: p/Raw(load=payload)
-Out[5]: &lt;Ether  type=IPv4 |&lt;IP  frag=0 proto=udp dst=192.168.122.242 |&lt;UDP  dport=nnp |&lt;Raw  load=&#39;\x1a\x10\x00\x08X\x10\x92\x93&#39; |&gt;&gt;&gt;&gt;
-
-In [7]: sendp(p/Raw(load=payload))
-.
-Sent 1 packets.
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">from</span> <span class="n">scapy</span><span class="o">.</span><span class="n">all</span> <span class="n">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">WARNING</span><span class="p">:</span> <span class="n">No</span> <span class="n">route</span> <span class="n">found</span> <span class="k">for</span> <span class="n">IPv6</span> <span class="n">destination</span> <span class="p">::</span> <span class="p">(</span><span class="n">no</span> <span class="n">default</span> <span class="n">route</span><span class="err">?</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">import</span> <span class="n">binascii</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">p</span><span class="o">=</span><span class="n">Ether</span><span class="p">()</span><span class="o">/</span><span class="ne">IP</span><span class="p">(</span><span class="n">dst</span><span class="o">=</span><span class="s2">&#34;192.168.122.242&#34;</span><span class="p">)</span><span class="o">/</span><span class="n">UDP</span><span class="p">(</span><span class="n">dport</span><span class="o">=</span><span class="mi">3780</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="s2">&#34;1a10000858109293&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">p</span><span class="o">/</span><span class="n">Raw</span><span class="p">(</span><span class="nb">load</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">Out</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">Ether</span>  <span class="n">type</span><span class="o">=</span><span class="n">IPv4</span> <span class="o">|&lt;</span><span class="ne">IP</span>  <span class="n">frag</span><span class="o">=</span><span class="mi">0</span> <span class="n">proto</span><span class="o">=</span><span class="n">udp</span> <span class="n">dst</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">122.242</span> <span class="o">|&lt;</span><span class="n">UDP</span>  <span class="n">dport</span><span class="o">=</span><span class="n">nnp</span> <span class="o">|&lt;</span><span class="n">Raw</span>  <span class="nb">load</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\x1a\x10\x00\x08</span><span class="s1">X</span><span class="se">\x10\x92\x93</span><span class="s1">&#39;</span> <span class="o">|&gt;&gt;&gt;&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="n">sendp</span><span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="n">Raw</span><span class="p">(</span><span class="nb">load</span><span class="o">=</span><span class="n">payload</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="n">Sent</span> <span class="mi">1</span> <span class="n">packets</span><span class="o">.</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="data-flow">Data flow</h3>
 <p>After heavy debugging sessions I was able to understand the data flow inside the code. Below I&rsquo;ll try to explain how <code>conntrackd</code> basically
@@ -399,24 +399,24 @@ works:</p>
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-		<span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">channel_get_fd</span><span class="p">(</span><span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-		<span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">O_NONBLOCK</span><span class="p">);</span>
-
-		<span class="k">switch</span><span class="p">(</span><span class="n">channel_type</span><span class="p">(</span><span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="p">{</span>
-		<span class="k">case</span> <span class="nl">CHANNEL_T_STREAM</span><span class="p">:</span>
-			<span class="n">register_fd</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">channel_accept_cb</span><span class="p">,</span>
-					<span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-					<span class="n">STATE</span><span class="p">(</span><span class="n">fds</span><span class="p">));</span>
-			<span class="k">break</span><span class="p">;</span>
-		<span class="k">case</span> <span class="nl">CHANNEL_T_DATAGRAM</span><span class="p">:</span>
-			<span class="n">register_fd</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">channel_handler</span><span class="p">,</span>
-					<span class="n">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-					<span class="n">STATE</span><span class="p">(</span><span class="n">fds</span><span class="p">));</span>
-			<span class="k">break</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="nf">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="nf">channel_get_fd</span><span class="p">(</span><span class="nf">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">O_NONBLOCK</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">switch</span><span class="p">(</span><span class="nf">channel_type</span><span class="p">(</span><span class="nf">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nl">CHANNEL_T_STREAM</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">register_fd</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">channel_accept_cb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">					<span class="nf">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">					<span class="nf">STATE</span><span class="p">(</span><span class="n">fds</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">case</span> <span class="nl">CHANNEL_T_DATAGRAM</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">register_fd</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">channel_handler</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">					<span class="nf">STATE_SYNC</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">channel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">					<span class="nf">STATE</span><span class="p">(</span><span class="n">fds</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Depending on the <strong>sync</strong> mode, then for every <strong>channel</strong> a channel <strong>handler</strong> is being registered. This
 will be called every time an &ldquo;event&rdquo; occurs, that means a packet arrives:</p>
@@ -440,18 +440,18 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">static</span> <span class="kt">void</span> <span class="nf">channel_handler</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
-	<span class="kt">int</span> <span class="n">k</span><span class="p">;</span>
-
-	<span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">CONFIG</span><span class="p">(</span><span class="n">event_iterations_limit</span><span class="p">);</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">channel_handler_routine</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">break</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">channel_handler</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="nf">CONFIG</span><span class="p">(</span><span class="n">event_iterations_limit</span><span class="p">);</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="nf">channel_handler_routine</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This will then call <a href="http://git.netfilter.org/conntrack-tools/tree/src/sync-mode.c#n178">channel_handler_routine</a>:</p>
 <div class="highlight"><div class="chroma">
@@ -484,33 +484,33 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">static</span> <span class="kt">int</span> <span class="nf">channel_handler_routine</span><span class="p">(</span><span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">m</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">ssize_t</span> <span class="n">numbytes</span><span class="p">;</span>
-	<span class="n">ssize_t</span> <span class="n">remain</span><span class="p">,</span> <span class="n">pending</span> <span class="o">=</span> <span class="n">cur</span> <span class="o">-</span> <span class="n">__net</span><span class="p">;</span>
-	<span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">__net</span><span class="p">;</span>
-
-	<span class="n">numbytes</span> <span class="o">=</span> <span class="n">channel_recv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">cur</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">__net</span><span class="p">)</span> <span class="o">-</span> <span class="n">pending</span><span class="p">);</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">numbytes</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
-		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-
-	<span class="n">remain</span> <span class="o">=</span> <span class="n">numbytes</span><span class="p">;</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">pending</span><span class="p">)</span> <span class="p">{</span>
-		<span class="n">remain</span> <span class="o">+=</span> <span class="n">pending</span><span class="p">;</span>
-		<span class="n">cur</span> <span class="o">=</span> <span class="n">__net</span><span class="p">;</span>
-	<span class="p">}</span>
-
-	<span class="k">while</span> <span class="p">(</span><span class="n">remain</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">struct</span> <span class="n">nethdr</span> <span class="o">*</span><span class="n">net</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">nethdr</span> <span class="o">*</span><span class="p">)</span> <span class="n">ptr</span><span class="p">;</span>
-		<span class="kt">int</span> <span class="n">len</span><span class="p">;</span>
-
-		<span class="c1">// HERE THE PACKET ITSELF IS ANALYZED
-</span><span class="c1"></span>		<span class="p">[...]</span>
-	<span class="p">}</span>
-
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">channel_handler_routine</span><span class="p">(</span><span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">m</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">ssize_t</span> <span class="n">numbytes</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">ssize_t</span> <span class="n">remain</span><span class="p">,</span> <span class="n">pending</span> <span class="o">=</span> <span class="n">cur</span> <span class="o">-</span> <span class="n">__net</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">__net</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">numbytes</span> <span class="o">=</span> <span class="nf">channel_recv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">cur</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">__net</span><span class="p">)</span> <span class="o">-</span> <span class="n">pending</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">numbytes</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">remain</span> <span class="o">=</span> <span class="n">numbytes</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">pending</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">remain</span> <span class="o">+=</span> <span class="n">pending</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="n">cur</span> <span class="o">=</span> <span class="n">__net</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">while</span> <span class="p">(</span><span class="n">remain</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">struct</span> <span class="n">nethdr</span> <span class="o">*</span><span class="n">net</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">nethdr</span> <span class="o">*</span><span class="p">)</span> <span class="n">ptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="kt">int</span> <span class="n">len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// HERE THE PACKET ITSELF IS ANALYZED
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="p">[...]</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Obvisouly <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel.c#n279">channel_recv</a> is called:</p>
 <div class="highlight"><div class="chroma">
@@ -521,11 +521,11 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="kt">int</span> <span class="nf">channel_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="k">return</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">recv</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">channel_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">channel</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="nf">recv</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Depending on which channel (variable <code>c</code>) is currently active <code>channel_recv</code> will then call the channel&rsquo;s
 <code>recv</code> function. The channel for UDP is stored in a structure called <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n128">channel_udp</a>:</p>
@@ -545,19 +545,19 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">struct</span> <span class="n">channel_ops</span> <span class="n">channel_udp</span> <span class="o">=</span> <span class="p">{</span>
-	<span class="p">.</span><span class="n">headersiz</span>	<span class="o">=</span> <span class="mi">28</span><span class="p">,</span> <span class="cm">/* IP header (20 bytes) + UDP header 8 (bytes) */</span>
-	<span class="p">.</span><span class="n">open</span>		<span class="o">=</span> <span class="n">channel_udp_open</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">close</span>		<span class="o">=</span> <span class="n">channel_udp_close</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">send</span>		<span class="o">=</span> <span class="n">channel_udp_send</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">recv</span>		<span class="o">=</span> <span class="n">channel_udp_recv</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">get_fd</span>		<span class="o">=</span> <span class="n">channel_udp_get_fd</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">isset</span>		<span class="o">=</span> <span class="n">channel_udp_isset</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">accept_isset</span>	<span class="o">=</span> <span class="n">channel_udp_accept_isset</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">stats</span>		<span class="o">=</span> <span class="n">channel_udp_stats</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">stats_extended</span> <span class="o">=</span> <span class="n">channel_udp_stats_extended</span><span class="p">,</span>
-<span class="p">};</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">channel_ops</span> <span class="n">channel_udp</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">headersiz</span>	<span class="o">=</span> <span class="mi">28</span><span class="p">,</span> <span class="cm">/* IP header (20 bytes) + UDP header 8 (bytes) */</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">open</span>		<span class="o">=</span> <span class="n">channel_udp_open</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">close</span>		<span class="o">=</span> <span class="n">channel_udp_close</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">send</span>		<span class="o">=</span> <span class="n">channel_udp_send</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">recv</span>		<span class="o">=</span> <span class="n">channel_udp_recv</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">get_fd</span>		<span class="o">=</span> <span class="n">channel_udp_get_fd</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">isset</span>		<span class="o">=</span> <span class="n">channel_udp_isset</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">accept_isset</span>	<span class="o">=</span> <span class="n">channel_udp_accept_isset</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">stats</span>		<span class="o">=</span> <span class="n">channel_udp_stats</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">stats_extended</span> <span class="o">=</span> <span class="n">channel_udp_stats_extended</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can notice <code>channel_udp.recv</code> is a function pointer to <a href="http://git.netfilter.org/conntrack-tools/tree/src/channel_udp.c#n49">channel_udp_recv</a>:</p>
 <div class="highlight"><div class="chroma">
@@ -570,13 +570,13 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="k">static</span> <span class="kt">int</span>
-<span class="nf">channel_udp_recv</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">channel</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="k">struct</span> <span class="n">udp_channel</span> <span class="o">*</span><span class="n">m</span> <span class="o">=</span> <span class="n">channel</span><span class="p">;</span>
-	<span class="k">return</span> <span class="n">udp_recv</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">server</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="nf">channel_udp_recv</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">channel</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="n">udp_channel</span> <span class="o">*</span><span class="n">m</span> <span class="o">=</span> <span class="n">channel</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nf">udp_recv</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">server</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So now we&rsquo;re getting closer to the function that is actually responsible for reading data from the wire. In <a href="http://git.netfilter.org/conntrack-tools/tree/src/udp.c#n193">udp_recv</a> all the magic happens:</p>
 <div class="highlight"><div class="chroma">
@@ -605,29 +605,29 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="n">ssize_t</span> <span class="nf">udp_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">udp_sock</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">ssize_t</span> <span class="n">ret</span><span class="p">;</span>
-	<span class="n">socklen_t</span> <span class="n">sin_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="p">);</span>
-
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">recvfrom</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span>
-		       <span class="n">data</span><span class="p">,</span> 
-		       <span class="n">size</span><span class="p">,</span>
-		       <span class="mi">0</span><span class="p">,</span>
-		       <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">addr</span><span class="p">,</span>
-		       <span class="o">&amp;</span><span class="n">sin_size</span><span class="p">);</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span>
-			<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">error</span><span class="o">++</span><span class="p">;</span>
-		<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
-	<span class="p">}</span>
-
-	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">bytes</span> <span class="o">+=</span> <span class="n">ret</span><span class="p">;</span>
-	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">messages</span><span class="o">++</span><span class="p">;</span>
-
-	<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="kt">ssize_t</span> <span class="nf">udp_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">udp_sock</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">ssize_t</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">socklen_t</span> <span class="n">sin_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ret</span> <span class="o">=</span> <span class="nf">recvfrom</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		       <span class="n">data</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">		       <span class="n">size</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		       <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		       <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">addr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		       <span class="o">&amp;</span><span class="n">sin_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">error</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">bytes</span> <span class="o">+=</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">messages</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Nothing special about: Just call <code>recvfrom</code>, read the data into <code>data</code> and update some statistics.</p>
 <h3 id="the-plan">The plan</h3>
@@ -670,40 +670,40 @@ the function was actually a quite easy task:</p>
 </span><span class="lnt">33
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="cp">#ifdef FUZZ
-</span><span class="cp"></span><span class="n">ssize_t</span> <span class="nf">my_udp_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">udp_sock</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">ssize_t</span> <span class="n">ret</span><span class="p">;</span>
-    <span class="kt">long</span> <span class="n">f_size</span><span class="p">;</span>
-    <span class="n">FILE</span> <span class="o">*</span><span class="n">f</span><span class="p">;</span>
-	<span class="n">socklen_t</span> <span class="n">sin_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="p">);</span>
-
-    <span class="c1">// Read file
-</span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">f</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">CONFIG</span><span class="p">(</span><span class="n">fuzz_file</span><span class="p">),</span> <span class="s">&#34;rb&#34;</span><span class="p">)))</span> <span class="p">{</span>
-        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;[FUZZ] Couldn&#39;t open file</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-    <span class="p">}</span>
-  
-    <span class="c1">// Get file length
-</span><span class="c1"></span>    <span class="n">fseek</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0L</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">);</span>
-    <span class="n">f_size</span> <span class="o">=</span> <span class="n">ftell</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
-    <span class="n">rewind</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
-
-    <span class="n">ret</span> <span class="o">=</span> <span class="n">fread</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
-    <span class="n">fclose</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
-	
-    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span>
-			<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">error</span><span class="o">++</span><span class="p">;</span>
-		<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
-    <span class="p">}</span>
-	
-    <span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">bytes</span> <span class="o">+=</span> <span class="n">f_size</span><span class="p">;</span>
-	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">messages</span><span class="o">++</span><span class="p">;</span>
-
-	<span class="k">return</span> <span class="n">f_size</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="cp">#endif
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="cp">#ifdef FUZZ
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="kt">ssize_t</span> <span class="nf">my_udp_recv</span><span class="p">(</span><span class="k">struct</span> <span class="n">udp_sock</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">ssize_t</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">long</span> <span class="n">f_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FILE</span> <span class="o">*</span><span class="n">f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">socklen_t</span> <span class="n">sin_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Read file
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">f</span> <span class="o">=</span> <span class="nf">fopen</span><span class="p">(</span><span class="nf">CONFIG</span><span class="p">(</span><span class="n">fuzz_file</span><span class="p">),</span> <span class="s">&#34;rb&#34;</span><span class="p">)))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;[FUZZ] Couldn&#39;t open file</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">    <span class="c1">// Get file length
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fseek</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0L</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">f_size</span> <span class="o">=</span> <span class="nf">ftell</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">rewind</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">ret</span> <span class="o">=</span> <span class="nf">fread</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fclose</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">error</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">bytes</span> <span class="o">+=</span> <span class="n">f_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">m</span><span class="o">-&gt;</span><span class="n">stats</span><span class="p">.</span><span class="n">messages</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">f_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Easy, right? Now <code>my_udp_recv</code> will read the file specified by <code>filename</code> and store the contents inside <code>data</code>. However,
 this simple modification implied several changes across the whole base.</p>
@@ -728,20 +728,20 @@ this simple modification implied several changes across the whole base.</p>
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ git clone https://github.com/dorneanu/conntrack-fuzzing
-$ cd conntrack-fuzzing
-$ CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
-[...]
-$ ./src/conntrackd --help 
-Connection tracking userspace daemon v1.4.4
-Usage: ./src/conntrackd [commands] [options]
-
-Daemon mode commands:
-  -X [fuzz-file], specify fuzz file
-  -d [options]          Run in daemon mode
-
-[...]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git clone https://github.com/dorneanu/conntrack-fuzzing
+</span></span><span class="line"><span class="cl">$ cd conntrack-fuzzing
+</span></span><span class="line"><span class="cl">$ CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">$ ./src/conntrackd --help 
+</span></span><span class="line"><span class="cl">Connection tracking userspace daemon v1.4.4
+</span></span><span class="line"><span class="cl">Usage: ./src/conntrackd [commands] [options]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Daemon mode commands:
+</span></span><span class="line"><span class="cl">  -X [fuzz-file], specify fuzz file
+</span></span><span class="line"><span class="cl">  -d [options]          Run in daemon mode
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[...]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now you can specify a file (<code>-X</code>) which will be used as parameter for <code>my_udp_recv</code>. The &ldquo;daemon&rdquo; will now just read
 the contents of the file, analyze the input and then simply exit.</p>
@@ -768,22 +768,22 @@ for <code>AFL</code>. All I had to do was to store those values as binary files:
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">In [1]: payload = &#34;1000003c5815c1c9000c00000a171f0cc3b265fa000800050000019800050002110000000008000305be0035000800060000001e0008000c7e64b2c3&#34;
-
-In [2]: import binascii
-
-In [3]: with open(&#34;/tmp/input1&#34;, &#34;wb&#34;) as f:
-   ...:     f.write(binascii.unhexlify(payload))
-   ...:     f.close()
-   ...: 
-
-In [4]: !hexdump -C /tmp/input1
-00000000  10 00 00 3c 58 15 c1 c9  00 0c 00 00 0a 17 1f 0c  |...&lt;X...........|
-00000010  c3 b2 65 fa 00 08 00 05  00 00 01 98 00 05 00 02  |..e.............|
-00000020  11 00 00 00 00 08 00 03  05 be 00 35 00 08 00 06  |...........5....|
-00000030  00 00 00 1e 00 08 00 0c  7e 64 b2 c3              |........~d..|
-0000003c
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">payload</span> <span class="o">=</span> <span class="s2">&#34;1000003c5815c1c9000c00000a171f0cc3b265fa000800050000019800050002110000000008000305be0035000800060000001e0008000c7e64b2c3&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">import</span> <span class="n">binascii</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="s2">&#34;/tmp/input1&#34;</span><span class="p">,</span> <span class="s2">&#34;wb&#34;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">   <span class="o">...</span><span class="p">:</span>     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">   <span class="o">...</span><span class="p">:</span>     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">   <span class="o">...</span><span class="p">:</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="o">!</span><span class="n">hexdump</span> <span class="o">-</span><span class="n">C</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">input1</span>
+</span></span><span class="line"><span class="cl"><span class="mi">00000000</span>  <span class="mi">10</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">3</span><span class="n">c</span> <span class="mi">58</span> <span class="mi">15</span> <span class="n">c1</span> <span class="n">c9</span>  <span class="mi">00</span> <span class="mi">0</span><span class="n">c</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">0</span><span class="n">a</span> <span class="mi">17</span> <span class="mi">1</span><span class="n">f</span> <span class="mi">0</span><span class="n">c</span>  <span class="o">|...&lt;</span><span class="n">X</span><span class="o">...........|</span>
+</span></span><span class="line"><span class="cl"><span class="mi">00000010</span>  <span class="n">c3</span> <span class="n">b2</span> <span class="mi">65</span> <span class="n">fa</span> <span class="mi">00</span> <span class="mi">08</span> <span class="mi">00</span> <span class="mi">05</span>  <span class="mi">00</span> <span class="mi">00</span> <span class="mi">01</span> <span class="mi">98</span> <span class="mi">00</span> <span class="mi">05</span> <span class="mi">00</span> <span class="mi">02</span>  <span class="o">|..</span><span class="n">e</span><span class="o">.............|</span>
+</span></span><span class="line"><span class="cl"><span class="mi">00000020</span>  <span class="mi">11</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">08</span> <span class="mi">00</span> <span class="mi">03</span>  <span class="mi">05</span> <span class="n">be</span> <span class="mi">00</span> <span class="mi">35</span> <span class="mi">00</span> <span class="mi">08</span> <span class="mi">00</span> <span class="mi">06</span>  <span class="o">|...........</span><span class="mf">5.</span><span class="o">...|</span>
+</span></span><span class="line"><span class="cl"><span class="mi">00000030</span>  <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">1</span><span class="n">e</span> <span class="mi">00</span> <span class="mi">08</span> <span class="mi">00</span> <span class="mi">0</span><span class="n">c</span>  <span class="mi">7</span><span class="n">e</span> <span class="mi">64</span> <span class="n">b2</span> <span class="n">c3</span>              <span class="o">|........~</span><span class="n">d</span><span class="o">..|</span>
+</span></span><span class="line"><span class="cl"><span class="mi">0000003</span><span class="n">c</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>For my test cases I&rsquo;ve chosen ca. 4-5 different payloads and stored them as binary files. Now I was ready to run <code>AFL</code>.</p>
 <h2 id="prepare-for-afl">Prepare for AFL</h2>
@@ -793,8 +793,8 @@ In [4]: !hexdump -C /tmp/input1
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ mkdir -p fuzzing/{ftfw,notrack}/input
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ mkdir -p fuzzing/{ftfw,notrack}/input
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>For every sync mode (ftwfw and notrack) I&rsquo;ve then copied the input values into <code>input</code>. As a next step I had to compile the source using
 <code>afl-gcc</code>:</p>
@@ -806,11 +806,11 @@ In [4]: !hexdump -C /tmp/input1
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ CC=afl-gcc AFL_USE_ASAN=1 CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
-[...]
-$ make -j 4
-[...]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ CC=afl-gcc AFL_USE_ASAN=1 CFLAGS=-DFUZZ LDFLAGS=-ldl ./configure
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">$ make -j 4
+</span></span><span class="line"><span class="cl">[...]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="running-afl">Running AFL</h2>
 <p><code>AFL</code> itself had to be ran as <code>root</code> since <code>conntrackd</code> requires privileged permissions:</p>
@@ -852,41 +852,41 @@ $ make -j 4
 </span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ echo core &gt;/proc/sys/kernel/core_pattern
-$ afl-fuzz -i fuzzing/ftfw/input/ -o fuzzing/ftfw/output ./src/conntrackd -C conntrackd.conf -X @@
-[+] You have 2 CPU cores and 1 runnable tasks (utilization: 50%).
-[+] Try parallel jobs - see /usr/local/share/doc/afl/parallel_fuzzing.txt.
-[*] Checking core_pattern...
-[*] Setting up output directories...
-[*] Scanning &#39;fuzzing/ftfw/input/&#39;...
-[+] No auto-generated dictionary tokens to reuse.
-[*] Creating hard links for all input files...
-[*] Validating target binary...
-[*] Attempting dry run with &#39;id:000000,orig:r1&#39;...
-[*] Spinning up the fork server...
-[+] All right - fork server is up.
-    len = 136, map size = 597, exec speed = 3185 us
-[*] Attempting dry run with &#39;id:000001,orig:r2&#39;...
-    len = 204, map size = 622, exec speed = 2569 us
-[*] Attempting dry run with &#39;id:000002,orig:r3&#39;...
-    len = 68, map size = 619, exec speed = 2545 us
-[*] Attempting dry run with &#39;id:000003,orig:r4&#39;...
-    len = 476, map size = 597, exec speed = 2867 us
-[!] WARNING: No new instrumentation output, test case may be useless.
-[+] All test cases processed.
-
-[!] WARNING: Some test cases look useless. Consider using a smaller set.
-[+] Here are some useful stats:
-
-    Test case count : 2 favored, 0 variable, 4 total
-       Bitmap range : 597 to 622 bits (average: 608.75 bits)
-        Exec timing : 2545 to 3185 us (average: 2792 us)
-
-[*] No -t option specified, so I&#39;ll use exec timeout of 20 ms.
-[+] All set and ready to roll!
-
-[...]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">echo</span> <span class="n">core</span> <span class="o">&gt;/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">kernel</span><span class="o">/</span><span class="n">core_pattern</span>
+</span></span><span class="line"><span class="cl"><span class="o">$</span> <span class="n">afl</span><span class="o">-</span><span class="n">fuzz</span> <span class="o">-</span><span class="n">i</span> <span class="n">fuzzing</span><span class="o">/</span><span class="n">ftfw</span><span class="o">/</span><span class="n">input</span><span class="o">/</span> <span class="o">-</span><span class="n">o</span> <span class="n">fuzzing</span><span class="o">/</span><span class="n">ftfw</span><span class="o">/</span><span class="n">output</span> <span class="o">./</span><span class="n">src</span><span class="o">/</span><span class="n">conntrackd</span> <span class="o">-</span><span class="n">C</span> <span class="n">conntrackd</span><span class="o">.</span><span class="n">conf</span> <span class="o">-</span><span class="n">X</span> <span class="err">@@</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">You</span> <span class="n">have</span> <span class="mi">2</span> <span class="n">CPU</span> <span class="n">cores</span> <span class="ow">and</span> <span class="mi">1</span> <span class="n">runnable</span> <span class="n">tasks</span> <span class="p">(</span><span class="n">utilization</span><span class="p">:</span> <span class="mi">50</span><span class="o">%</span><span class="p">)</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">Try</span> <span class="n">parallel</span> <span class="n">jobs</span> <span class="o">-</span> <span class="n">see</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">afl</span><span class="o">/</span><span class="n">parallel_fuzzing</span><span class="o">.</span><span class="n">txt</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Checking</span> <span class="n">core_pattern</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Setting</span> <span class="n">up</span> <span class="n">output</span> <span class="n">directories</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Scanning</span> <span class="s1">&#39;fuzzing/ftfw/input/&#39;</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">No</span> <span class="n">auto</span><span class="o">-</span><span class="n">generated</span> <span class="n">dictionary</span> <span class="n">tokens</span> <span class="n">to</span> <span class="n">reuse</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Creating</span> <span class="n">hard</span> <span class="n">links</span> <span class="k">for</span> <span class="n">all</span> <span class="n">input</span> <span class="n">files</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Validating</span> <span class="n">target</span> <span class="n">binary</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Attempting</span> <span class="n">dry</span> <span class="n">run</span> <span class="n">with</span> <span class="s1">&#39;id:000000,orig:r1&#39;</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Spinning</span> <span class="n">up</span> <span class="n">the</span> <span class="n">fork</span> <span class="n">server</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">All</span> <span class="n">right</span> <span class="o">-</span> <span class="n">fork</span> <span class="n">server</span> <span class="n">is</span> <span class="n">up</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">len</span> <span class="o">=</span> <span class="mi">136</span><span class="p">,</span> <span class="n">map</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">597</span><span class="p">,</span> <span class="n">exec</span> <span class="n">speed</span> <span class="o">=</span> <span class="mi">3185</span> <span class="n">us</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Attempting</span> <span class="n">dry</span> <span class="n">run</span> <span class="n">with</span> <span class="s1">&#39;id:000001,orig:r2&#39;</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">len</span> <span class="o">=</span> <span class="mi">204</span><span class="p">,</span> <span class="n">map</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">622</span><span class="p">,</span> <span class="n">exec</span> <span class="n">speed</span> <span class="o">=</span> <span class="mi">2569</span> <span class="n">us</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Attempting</span> <span class="n">dry</span> <span class="n">run</span> <span class="n">with</span> <span class="s1">&#39;id:000002,orig:r3&#39;</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">len</span> <span class="o">=</span> <span class="mi">68</span><span class="p">,</span> <span class="n">map</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">619</span><span class="p">,</span> <span class="n">exec</span> <span class="n">speed</span> <span class="o">=</span> <span class="mi">2545</span> <span class="n">us</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">Attempting</span> <span class="n">dry</span> <span class="n">run</span> <span class="n">with</span> <span class="s1">&#39;id:000003,orig:r4&#39;</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">len</span> <span class="o">=</span> <span class="mi">476</span><span class="p">,</span> <span class="n">map</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">597</span><span class="p">,</span> <span class="n">exec</span> <span class="n">speed</span> <span class="o">=</span> <span class="mi">2867</span> <span class="n">us</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">!</span><span class="p">]</span> <span class="n">WARNING</span><span class="p">:</span> <span class="n">No</span> <span class="n">new</span> <span class="n">instrumentation</span> <span class="n">output</span><span class="p">,</span> <span class="n">test</span> <span class="k">case</span> <span class="n">may</span> <span class="n">be</span> <span class="n">useless</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">All</span> <span class="n">test</span> <span class="n">cases</span> <span class="n">processed</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">!</span><span class="p">]</span> <span class="n">WARNING</span><span class="p">:</span> <span class="n">Some</span> <span class="n">test</span> <span class="n">cases</span> <span class="n">look</span> <span class="n">useless</span><span class="o">.</span> <span class="n">Consider</span> <span class="n">using</span> <span class="n">a</span> <span class="n">smaller</span> <span class="n">set</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">Here</span> <span class="n">are</span> <span class="n">some</span> <span class="n">useful</span> <span class="n">stats</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">Test</span> <span class="k">case</span> <span class="n">count</span> <span class="p">:</span> <span class="mi">2</span> <span class="n">favored</span><span class="p">,</span> <span class="mi">0</span> <span class="n">variable</span><span class="p">,</span> <span class="mi">4</span> <span class="n">total</span>
+</span></span><span class="line"><span class="cl">       <span class="n">Bitmap</span> <span class="nb">range</span> <span class="p">:</span> <span class="mi">597</span> <span class="n">to</span> <span class="mi">622</span> <span class="n">bits</span> <span class="p">(</span><span class="n">average</span><span class="p">:</span> <span class="mf">608.75</span> <span class="n">bits</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Exec</span> <span class="n">timing</span> <span class="p">:</span> <span class="mi">2545</span> <span class="n">to</span> <span class="mi">3185</span> <span class="n">us</span> <span class="p">(</span><span class="n">average</span><span class="p">:</span> <span class="mi">2792</span> <span class="n">us</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="n">No</span> <span class="o">-</span><span class="n">t</span> <span class="n">option</span> <span class="n">specified</span><span class="p">,</span> <span class="n">so</span> <span class="n">I</span><span class="s1">&#39;ll use exec timeout of 20 ms.</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">+</span><span class="p">]</span> <span class="n">All</span> <span class="n">set</span> <span class="ow">and</span> <span class="n">ready</span> <span class="n">to</span> <span class="n">roll</span><span class="o">!</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You can also monitor the current input using:</p>
 <div class="highlight"><div class="chroma">
@@ -894,8 +894,8 @@ $ afl-fuzz -i fuzzing/ftfw/input/ -o fuzzing/ftfw/output ./src/conntrackd -C con
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ watch -n1 &#39;cat fuzzing/ftfw/output/.cur_input | hexdump -C&#39;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ watch -n1 &#39;cat fuzzing/ftfw/output/.cur_input | hexdump -C&#39;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="results">Results</h2>
 <p>While the <strong>preparation</strong> steps were indeed time-consuming I think I have definitely improved my <code>gdb</code>
@@ -916,7 +916,7 @@ and feel free to drop your comments for additional questions/suggestions regardi
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

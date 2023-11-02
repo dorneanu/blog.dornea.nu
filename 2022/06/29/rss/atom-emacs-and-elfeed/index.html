@@ -26,7 +26,7 @@ Staying up-to-date with current technological trends, Security advisories, blog 
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -133,11 +133,11 @@ single newsletter, led me to <a href="https://github.com/skeeto/elfeed">elfeed</
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="c1">;; Somewhere in your .emacs file</span>
-<span class="p">(</span><span class="nb">setq</span> <span class="nv">elfeed-feeds</span>
-      <span class="o">&#39;</span><span class="p">(</span><span class="s">&#34;http://nullprogram.com/feed/&#34;</span>
-        <span class="s">&#34;https://planet.emacslife.com/atom.xml&#34;</span><span class="p">))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Somewhere in your .emacs file</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">setq</span> <span class="nv">elfeed-feeds</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&#39;</span><span class="p">(</span><span class="s">&#34;http://nullprogram.com/feed/&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;https://planet.emacslife.com/atom.xml&#34;</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>I didn&rsquo;t like this approach since the initial list was way to big to be managed.
 Then I came across <a href="https://github.com/remyhonig/elfeed-org">elfeed-org</a> which lets you organize your feeds in an ORG file.</p>
@@ -235,44 +235,44 @@ can easily add a link to getpocket (thanks to <a href="https://github.com/alphap
 </span><span class="lnt">37
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="c1">;; Define maps</span>
-<span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-search-mode-map</span>
-    <span class="nb">:after</span> <span class="nv">elfeed-search</span>
-    <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
-    <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
-    <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
-    <span class="nb">:n</span> <span class="s">&#34;q&#34;</span> <span class="nf">#&#39;</span><span class="nv">+rss/quit</span>
-    <span class="nb">:n</span> <span class="s">&#34;e&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-update</span>
-    <span class="nb">:n</span> <span class="s">&#34;r&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-untag-all-unread</span>
-    <span class="nb">:n</span> <span class="s">&#34;u&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-tag-all-unread</span>
-    <span class="nb">:n</span> <span class="s">&#34;s&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-live-filter</span>
-    <span class="nb">:n</span> <span class="s">&#34;RET&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-show-entry</span>
-    <span class="nb">:n</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-pdf</span>
-    <span class="nb">:n</span> <span class="s">&#34;+&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-tag-all</span>
-    <span class="nb">:n</span> <span class="s">&#34;-&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-untag-all</span>
-    <span class="nb">:n</span> <span class="s">&#34;S&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-set-filter</span>
-    <span class="nb">:n</span> <span class="s">&#34;b&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-browse-url</span>
-    <span class="nb">:n</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-eww-open</span>
-    <span class="nb">:n</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-elfeed-search-add-link</span>
-    <span class="nb">:n</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-yank</span><span class="p">)</span>
-<span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-show-mode-map</span>
-    <span class="nb">:after</span> <span class="nv">elfeed-show</span>
-    <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
-    <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
-    <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
-    <span class="nb">:nm</span> <span class="s">&#34;q&#34;</span> <span class="nf">#&#39;</span><span class="nv">+rss/delete-pane</span>
-    <span class="nb">:nm</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-elfeed-entry-add-link</span>
-    <span class="nb">:n</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-eww-open</span>
-    <span class="nb">:nm</span> <span class="s">&#34;o&#34;</span> <span class="nf">#&#39;</span><span class="nv">ace-link-elfeed</span>
-    <span class="nb">:nm</span> <span class="s">&#34;RET&#34;</span> <span class="nf">#&#39;</span><span class="nv">org-ref-elfeed-add</span>
-    <span class="nb">:nm</span> <span class="s">&#34;n&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-next</span>
-    <span class="nb">:nm</span> <span class="s">&#34;N&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-prev</span>
-    <span class="nb">:nm</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-pdf</span>
-    <span class="nb">:nm</span> <span class="s">&#34;+&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-tag</span>
-    <span class="nb">:nm</span> <span class="s">&#34;-&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-untag</span>
-    <span class="nb">:nm</span> <span class="s">&#34;s&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-new-live-search</span>
-    <span class="nb">:nm</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-yank</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Define maps</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-search-mode-map</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:after</span> <span class="nv">elfeed-search</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;q&#34;</span> <span class="nf">#&#39;</span><span class="nv">+rss/quit</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;e&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-update</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;r&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-untag-all-unread</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;u&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-tag-all-unread</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;s&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-live-filter</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;RET&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-show-entry</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-pdf</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;+&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-tag-all</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;-&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-untag-all</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;S&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-set-filter</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;b&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-browse-url</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-eww-open</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-elfeed-search-add-link</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-search-yank</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">elfeed-show-mode-map</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:after</span> <span class="nv">elfeed-show</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="nv">remap</span> <span class="nv">kill-this-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="nv">remap</span> <span class="nf">kill-buffer</span><span class="p">]</span> <span class="s">&#34;q&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="nv">doom-leader-key</span> <span class="no">nil</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;q&#34;</span> <span class="nf">#&#39;</span><span class="nv">+rss/delete-pane</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-elfeed-entry-add-link</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:n</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-eww-open</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;o&#34;</span> <span class="nf">#&#39;</span><span class="nv">ace-link-elfeed</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;RET&#34;</span> <span class="nf">#&#39;</span><span class="nv">org-ref-elfeed-add</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;n&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-next</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;N&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-prev</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-pdf</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;+&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-tag</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;-&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-untag</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;s&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-new-live-search</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:nm</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">elfeed-show-yank</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Whenever I press <strong>a</strong> in an <code>elfeed</code> related buffer the entries link will be added to getpocket.</p>
 <h2 id="bookmarks">Bookmarks</h2>
@@ -312,7 +312,7 @@ having to change the filter in-between:</p>
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

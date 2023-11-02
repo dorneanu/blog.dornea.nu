@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="I&rsquo;ve started writing this IPython notebook in order to make myself more comfortable with Android and its SDK. Due to some personal interests I thought I could also have a look at the available RE tools and learn more about their pros &amp; cos. In particular I had a closer look at AndroGuard which seems to be good at:
- Reverse engineering, Malware and goodware analysis of Android applications &hellip; and more (ninja !" />
+Reverse engineering, Malware and goodware analysis of Android applications &hellip; and more (ninja !" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/07/07/disect-android-apks-like-a-pro-static-code-analysis/" />
 
@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -134,29 +134,27 @@ type="image/x-icon"/>
 </span><span class="lnt">16
 </span><span class="lnt">17
 </span><span class="lnt">18
-</span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">➜  ~  virsh -c qemu:///system           
-
-Welcome to virsh, the virtualization interactive terminal.
-
-Type:  <span class="s1">&#39;help&#39;</span> <span class="k">for</span> <span class="nb">help</span> with commands
-       <span class="s1">&#39;quit&#39;</span> to quit
-
-virsh <span class="c1"># </span>
-virsh <span class="c1"># list --all</span>
- Id    Name                           State
-----------------------------------------------------
- <span class="m">2</span>     Ubuntu.GitLab                  running
- -     Linux.Kali                     shut off
- -     Ubuntu.Tracks                  shut off
- -     Windows7                       shut off
-
-virsh <span class="c1"># start Linux.Kali</span>
-Domain Linux.Kali started
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">➜  ~  virsh -c qemu:///system           
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Welcome to virsh, the virtualization interactive terminal.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Type:  <span class="s1">&#39;help&#39;</span> <span class="k">for</span> <span class="nb">help</span> with commands
+</span></span><span class="line"><span class="cl">       <span class="s1">&#39;quit&#39;</span> to quit
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">virsh <span class="c1"># </span>
+</span></span><span class="line"><span class="cl">virsh <span class="c1"># list --all</span>
+</span></span><span class="line"><span class="cl"> Id    Name                           State
+</span></span><span class="line"><span class="cl">----------------------------------------------------
+</span></span><span class="line"><span class="cl"> <span class="m">2</span>     Ubuntu.GitLab                  running
+</span></span><span class="line"><span class="cl"> -     Linux.Kali                     shut off
+</span></span><span class="line"><span class="cl"> -     Ubuntu.Tracks                  shut off
+</span></span><span class="line"><span class="cl"> -     Windows7                       shut off
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">virsh <span class="c1"># start Linux.Kali</span>
+</span></span><span class="line"><span class="cl">Domain Linux.Kali started
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now we&rsquo;re ready to login:</p>
 <div class="highlight"><div class="chroma">
@@ -173,17 +171,17 @@ Domain Linux.Kali started
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">➜  ~  ssh kali.local
-victor@kali.local<span class="err">&#39;</span>s password: 
-Linux kali 3.7-trunk-amd64 <span class="c1">#1 SMP Debian 3.7.2-0+kali8 x86_64</span>
-
-The programs included with the Kali GNU/Linux system are free software<span class="p">;</span>
-the exact distribution terms <span class="k">for</span> each program are described in the
-individual files in /usr/share/doc/*/copyright.
-
-Kali GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
-permitted by applicable law.
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">➜  ~  ssh kali.local
+</span></span><span class="line"><span class="cl">victor@kali.local<span class="err">&#39;</span>s password: 
+</span></span><span class="line"><span class="cl">Linux kali 3.7-trunk-amd64 <span class="c1">#1 SMP Debian 3.7.2-0+kali8 x86_64</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">The programs included with the Kali GNU/Linux system are free software<span class="p">;</span>
+</span></span><span class="line"><span class="cl">the exact distribution terms <span class="k">for</span> each program are described in the
+</span></span><span class="line"><span class="cl">individual files in /usr/share/doc/*/copyright.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Kali GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+</span></span><span class="line"><span class="cl">permitted by applicable law.
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="install-sdk">Install SDK</h3>
 <div class="highlight"><div class="chroma">
@@ -194,11 +192,11 @@ permitted by applicable law.
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# wget http://dl.google.com/android/android-sdk_r22.6.2-linux.tgz
-<span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# tar -zxf android-sdk_r22.6.2-linux.tgz
-<span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/root/work/apk/SDK/android-sdk-linux/tools<span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# which monitor
-/root/work/apk/SDK/android-sdk-linux/tools/monitor
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# wget http://dl.google.com/android/android-sdk_r22.6.2-linux.tgz
+</span></span><span class="line"><span class="cl"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# tar -zxf android-sdk_r22.6.2-linux.tgz
+</span></span><span class="line"><span class="cl"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/root/work/apk/SDK/android-sdk-linux/tools<span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/SDK# which monitor
+</span></span><span class="line"><span class="cl">/root/work/apk/SDK/android-sdk-linux/tools/monitor
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Make sure you have the <strong>ia32-libs</strong> installed.</p>
@@ -221,20 +219,20 @@ permitted by applicable law.
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import os
-import sys
-
-# Adjust PYTHONPATH
-sys.path.append(os.path.expanduser(&#39;~/work/bin/androguard&#39;))
-
-# Setup new PATH
-old_path = os.environ[&#39;PATH&#39;]
-new_path = old_path + &#34;:&#34; + &#34;/root/work/apk/SDK/android-sdk-linux/tools:/root/work/apk/SDK/android-sdk-linux/platform-tools:/root/work/apk/SDK/android-sdk-linux/build-tools/19.1.0&#34;
-os.environ[&#39;PATH&#39;] = new_path
-
-# Change working directory
-os.chdir(&#34;/root/work/apk/&#34;)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">sys</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Adjust PYTHONPATH</span>
+</span></span><span class="line"><span class="cl"><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/work/bin/androguard&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Setup new PATH</span>
+</span></span><span class="line"><span class="cl"><span class="n">old_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">new_path</span> <span class="o">=</span> <span class="n">old_path</span> <span class="o">+</span> <span class="s2">&#34;:&#34;</span> <span class="o">+</span> <span class="s2">&#34;/root/work/apk/SDK/android-sdk-linux/tools:/root/work/apk/SDK/android-sdk-linux/platform-tools:/root/work/apk/SDK/android-sdk-linux/build-tools/19.1.0&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_path</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Change working directory</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&#34;/root/work/apk/&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="setup-ipython-settings">Setup IPython settings</h3>
 <div class="highlight"><div class="chroma">
@@ -251,17 +249,17 @@ os.chdir(&#34;/root/work/apk/&#34;)
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">%pylab inline
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import networkx as nx
-from IPython.display import display_pretty, display_html, display_jpeg, display_png, display_json, display_latex, display_svg
-
-# Androguard stuff
-import androlyze as anz
-#import corae.bytecodes.dvm as dvm
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">%pylab inline
+</span></span><span class="line"><span class="cl">import pandas as pd
+</span></span><span class="line"><span class="cl">import numpy as np
+</span></span><span class="line"><span class="cl">import matplotlib.pyplot as plt
+</span></span><span class="line"><span class="cl">import networkx as nx
+</span></span><span class="line"><span class="cl">from IPython.display import display_pretty, display_html, display_jpeg, display_png, display_json, display_latex, display_svg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Androguard stuff
+</span></span><span class="line"><span class="cl">import androlyze as anz
+</span></span><span class="line"><span class="cl">#import corae.bytecodes.dvm as dvm
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Populating the interactive namespace from numpy and matplotlib
 </code></pre>
@@ -272,8 +270,8 @@ import androlyze as anz
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/DroidBox/APK# wget http://www.mediafire.com/download/e938k6t3y6ul1yy/FakeBankerAPKs.zip
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/DroidBox/APK# wget http://www.mediafire.com/download/e938k6t3y6ul1yy/FakeBankerAPKs.zip
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now you&rsquo;ll have to extract the archive. As mentioned on the site you&rsquo;ll have to contact the sites maintainer in order to get the password for the files. Thanks to <a href="https://twitter.com/snowfl0w">@snowfl0w</a> for providing me the password.</p>
 <blockquote>
@@ -301,25 +299,25 @@ import androlyze as anz
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/DroidBox/APK# 7z e FakeBankerAPKs.zip 
-
-7-Zip <span class="o">[</span>64<span class="o">]</span> 9.20  Copyright <span class="o">(</span>c<span class="o">)</span> 1999-2010 Igor Pavlov  2010-11-18
-p7zip Version 9.20 <span class="o">(</span><span class="nv">locale</span><span class="o">=</span>en_US.UTF-8,Utf16<span class="o">=</span>on,HugeFiles<span class="o">=</span>on,1 CPU<span class="o">)</span>
-
-Processing archive: FakeBankerAPKs.zip
-
-Extracting  7276e76298c50d2ee78271cf5114a176
-Enter password <span class="o">(</span>will not be echoed<span class="o">)</span> :
-
-Extracting  a15b704743f53d3edb9cdd1182ca78d1
-Extracting  aac4d15741abe0ee9b4afe78be090599
-
-Everything is Ok
-
-Files: <span class="m">3</span>
-Size:       <span class="m">629877</span>
-Compressed: <span class="m">622336</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">(</span>env<span class="o">)</span>root@kali:~/work/apk/DroidBox/APK# 7z e FakeBankerAPKs.zip 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">7-Zip <span class="o">[</span>64<span class="o">]</span> 9.20  Copyright <span class="o">(</span>c<span class="o">)</span> 1999-2010 Igor Pavlov  2010-11-18
+</span></span><span class="line"><span class="cl">p7zip Version 9.20 <span class="o">(</span><span class="nv">locale</span><span class="o">=</span>en_US.UTF-8,Utf16<span class="o">=</span>on,HugeFiles<span class="o">=</span>on,1 CPU<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Processing archive: FakeBankerAPKs.zip
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Extracting  7276e76298c50d2ee78271cf5114a176
+</span></span><span class="line"><span class="cl">Enter password <span class="o">(</span>will not be echoed<span class="o">)</span> :
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Extracting  a15b704743f53d3edb9cdd1182ca78d1
+</span></span><span class="line"><span class="cl">Extracting  aac4d15741abe0ee9b4afe78be090599
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Everything is Ok
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Files: <span class="m">3</span>
+</span></span><span class="line"><span class="cl">Size:       <span class="m">629877</span>
+</span></span><span class="line"><span class="cl">Compressed: <span class="m">622336</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="scratch-the-surface">Scratch the surface</h2>
 <p>In this section we&rsquo;ll have a brief look at the APK(s):</p>
@@ -335,9 +333,9 @@ Compressed: <span class="m">622336</span>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Change CWD
-os.chdir(&#34;/root/work/apk/DroidBox/APK&#34;)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Change CWD
+</span></span><span class="line"><span class="cl">os.chdir(&#34;/root/work/apk/DroidBox/APK&#34;)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="check-apks-contents">Check APKs contents</h3>
 <div class="highlight"><div class="chroma">
@@ -346,9 +344,9 @@ os.chdir(&#34;/root/work/apk/DroidBox/APK&#34;)
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-<span class="k">for</span> i in *<span class="p">;</span> <span class="k">do</span> file <span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in *<span class="p">;</span> <span class="k">do</span> file <span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>7276e76298c50d2ee78271cf5114a176: Zip archive data, at least v2.0 to extract
 a15b704743f53d3edb9cdd1182ca78d1: Zip archive data, at least v2.0 to extract
@@ -361,9 +359,9 @@ aac4d15741abe0ee9b4afe78be090599: Zip archive data, at least v2.0 to extract
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-unzip -l 7276e76298c50d2ee78271cf5114a176
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">unzip -l 7276e76298c50d2ee78271cf5114a176
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Archive:  7276e76298c50d2ee78271cf5114a176
 signed by SignApk
@@ -397,10 +395,10 @@ signed by SignApk
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-cp 7276e76298c50d2ee78271cf5114a176 FakeBanker.apk
-java -jar /root/work/bin/apktool1.5.2/apktool.jar d 7276e76298c50d2ee78271cf5114a176 output
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">cp 7276e76298c50d2ee78271cf5114a176 FakeBanker.apk
+</span></span><span class="line"><span class="cl">java -jar /root/work/bin/apktool1.5.2/apktool.jar d 7276e76298c50d2ee78271cf5114a176 output
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Destination directory (/root/work/apk/DroidBox/APK/output) already exists. Use -f switch if you want to overwrite it.
 </code></pre>
@@ -411,9 +409,9 @@ java -jar /root/work/bin/apktool1.5.2/apktool.jar d 7276e76298c50d2ee78271cf5114
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-cat output/AndroidManifest.xml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">cat output/AndroidManifest.xml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;manifest android:versionCode=&quot;1&quot; android:versionName=&quot;1.0&quot; package=&quot;com.gmail.xpack&quot;
@@ -468,11 +466,11 @@ cat output/AndroidManifest.xml
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">media_paths = !find output -regextype posix-egrep -regex &#34;^.*\.(png|jpg|jpeg|gif|bmp)$&#34;
-display(media_paths)
-for p in media_paths:
-    display(Image(filename=p))
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">media_paths = !find output -regextype posix-egrep -regex &#34;^.*\.(png|jpg|jpeg|gif|bmp)$&#34;
+</span></span><span class="line"><span class="cl">display(media_paths)
+</span></span><span class="line"><span class="cl">for p in media_paths:
+</span></span><span class="line"><span class="cl">    display(Image(filename=p))
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>['output/res/drawable-ldpi/ic_launcher1.png',
  'output/res/drawable-mdpi/ic_launcher1.png',
@@ -493,10 +491,10 @@ for p in media_paths:
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-<span class="c1"># Ignore smali directory</span>
-tree -f -I <span class="s2">&#34;smali&#34;</span> output/
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl"><span class="c1"># Ignore smali directory</span>
+</span></span><span class="line"><span class="cl">tree -f -I <span class="s2">&#34;smali&#34;</span> output/
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>output
 ├── output/AndroidManifest.xml
@@ -539,12 +537,12 @@ tree -f -I <span class="s2">&#34;smali&#34;</span> output/
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"> <span class="nt">&lt;receiver</span> <span class="na">android:name=</span><span class="s">&#34;com.gmail.xbroadcast.MessageReceiver&#34;</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;intent-filter</span> <span class="na">android:priority=</span><span class="s">&#34;999&#34;</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&#34;android.provider.Telephony.SMS_RECEIVED&#34;</span> <span class="nt">/&gt;</span>
-            <span class="nt">&lt;/intent-filter&gt;</span>
- <span class="nt">&lt;/receiver&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"> <span class="nt">&lt;receiver</span> <span class="na">android:name=</span><span class="s">&#34;com.gmail.xbroadcast.MessageReceiver&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;intent-filter</span> <span class="na">android:priority=</span><span class="s">&#34;999&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&#34;android.provider.Telephony.SMS_RECEIVED&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/intent-filter&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;/receiver&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That looks very suspicious as well. What about the main <strong>entry point</strong>:</p>
 <div class="highlight"><div class="chroma">
@@ -557,13 +555,13 @@ tree -f -I <span class="s2">&#34;smali&#34;</span> output/
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"> <span class="nt">&lt;activity</span> <span class="na">android:label=</span><span class="s">&#34;@string/app_name&#34;</span> <span class="na">android:name=</span><span class="s">&#34;com.gmail.xpack.MainActivity&#34;</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;intent-filter&gt;</span>
-                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&#34;android.intent.action.MAIN&#34;</span> <span class="nt">/&gt;</span>
-                <span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">&#34;android.intent.category.LAUNCHER&#34;</span> <span class="nt">/&gt;</span>
-            <span class="nt">&lt;/intent-filter&gt;</span>
- <span class="nt">&lt;/activity&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"> <span class="nt">&lt;activity</span> <span class="na">android:label=</span><span class="s">&#34;@string/app_name&#34;</span> <span class="na">android:name=</span><span class="s">&#34;com.gmail.xpack.MainActivity&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;intent-filter&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&#34;android.intent.action.MAIN&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">&#34;android.intent.category.LAUNCHER&#34;</span> <span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/intent-filter&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;/activity&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So obviously the class <em>com.gmail.xpack.MainActivity</em> contains the main entry point. In the next steps we will have a closer look at the code. Besides that there are 2 files which might be interesting:</p>
 <ul>
@@ -586,18 +584,18 @@ tree -f -I <span class="s2">&#34;smali&#34;</span> output/
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Use AndroGuard to static analysis
-# Have a look at https://code.google.com/p/androguard/wiki/RE for some introduction
-#a = anz.APK(&#39;KC.apk&#39;)
-a, d, dx = anz.AnalyzeAPK(&#39;FakeBanker.apk&#39;,decompiler=&#39;dex2jar&#39;)
-&#34;&#34;&#34;
-d = anz.DalvikVMFormat(a.get_dex())
-dx = anz.VMAnalysis( d )
-gx = anz.GVMAnalysis( dx, None )
-d.set_vmanalysis( dx )
-d.set_gvmanalysis( gx )
-&#34;&#34;&#34;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Use AndroGuard to static analysis
+</span></span><span class="line"><span class="cl"># Have a look at https://code.google.com/p/androguard/wiki/RE for some introduction
+</span></span><span class="line"><span class="cl">#a = anz.APK(&#39;KC.apk&#39;)
+</span></span><span class="line"><span class="cl">a, d, dx = anz.AnalyzeAPK(&#39;FakeBanker.apk&#39;,decompiler=&#39;dex2jar&#39;)
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">d = anz.DalvikVMFormat(a.get_dex())
+</span></span><span class="line"><span class="cl">dx = anz.VMAnalysis( d )
+</span></span><span class="line"><span class="cl">gx = anz.GVMAnalysis( dx, None )
+</span></span><span class="line"><span class="cl">d.set_vmanalysis( dx )
+</span></span><span class="line"><span class="cl">d.set_gvmanalysis( gx )
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>'\nd = anz.DalvikVMFormat(a.get_dex())\ndx = anz.VMAnalysis( d )\ngx = anz.GVMAnalysis( dx, None )\nd.set_vmanalysis( dx )\nd.set_gvmanalysis( gx )\n'
 </code></pre>
@@ -607,8 +605,8 @@ d.set_gvmanalysis( gx )
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">a.files
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a.files
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>{'AndroidManifest.xml': 'Unknown',
  'META-INF/CERT.RSA': 'Unknown',
@@ -633,8 +631,8 @@ d.set_gvmanalysis( gx )
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">a.permissions
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a.permissions
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>['android.permission.RECEIVE_BOOT_COMPLETED',
  'android.permission.READ_SMS',
@@ -649,8 +647,8 @@ d.set_gvmanalysis( gx )
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">a.get_activities()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a.get_activities()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>['com.gmail.xpack.MainActivity', 'com.gmail.xpack.ActUpdate']
 </code></pre>
@@ -659,8 +657,8 @@ d.set_gvmanalysis( gx )
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">a.get_services()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a.get_services()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>['com.gmail.xservices.XService', 'com.gmail.xservices.XSmsIncom']
 </code></pre>
@@ -669,8 +667,8 @@ d.set_gvmanalysis( gx )
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">a.get_receivers()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a.get_receivers()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>['com.gmail.xbroadcast.OnBootReceiver',
  'com.gmail.xbroadcast.MessageReceiver',
@@ -682,8 +680,8 @@ d.set_gvmanalysis( gx )
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">a.get_main_activity()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">a.get_main_activity()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>u'com.gmail.xpack.MainActivity'
 </code></pre>
@@ -692,8 +690,8 @@ d.set_gvmanalysis( gx )
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xpack_MainActivity.METHOD_onCreate.source()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d.CLASS_Lcom_gmail_xpack_MainActivity.METHOD_onCreate.source()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    protected void onCreate(android.os.Bundle p5)
     {
@@ -712,9 +710,9 @@ d.set_gvmanalysis( gx )
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">methods = d.CLASS_Lcom_gmail_xlibs_myFunctions.get_methods()
-for m in methods: print(m.get_name())
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">methods = d.CLASS_Lcom_gmail_xlibs_myFunctions.get_methods()
+</span></span><span class="line"><span class="cl">for m in methods: print(m.get_name())
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>&lt;init&gt;
 IntToStr
@@ -747,8 +745,8 @@ typeInternetConnection
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_setK12.source()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_setK12.source()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    public static String setK12(String p4, android.content.Context p5)
     {
@@ -775,8 +773,8 @@ typeInternetConnection
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_init.source()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_init.source()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    public Blowfish(String p2, String p3, String p4)
     {
@@ -795,9 +793,9 @@ typeInternetConnection
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">z = dx.tainted_variables.get_string(&#34;BLFSK&#34;)
-if z: z.show_paths(d)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">z</span> <span class="o">=</span> <span class="n">dx</span><span class="o">.</span><span class="n">tainted_variables</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s2">&#34;BLFSK&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">z</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">show_paths</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>R 62 Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
 R 17c Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
@@ -811,9 +809,9 @@ R 0 Lcom/gmail/xlibs/myFunctions;-&gt;setK12 (Ljava/lang/String; Landroid/conten
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-find output -name <span class="s2">&#34;blfs*&#34;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">find output -name <span class="s2">&#34;blfs*&#34;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>output/res/raw/blfs.key
 </code></pre>
@@ -823,9 +821,9 @@ find output -name <span class="s2">&#34;blfs*&#34;</span>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-cat output/res/raw/blfs.key
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">cat output/res/raw/blfs.key
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>NfvnkjlnvkjKCNXKDKLFHSKD:LJmdklsXKLNDS:&lt;XObcniuaebkjxbcz
 </code></pre>
@@ -836,9 +834,9 @@ cat output/res/raw/blfs.key
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-ls -l output/res/raw
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">ls -l output/res/raw
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>total 8
 -rw-r--r-- 1 root root   56 Jun 25 13:26 blfs.key
@@ -850,9 +848,9 @@ ls -l output/res/raw
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-cat output/res/raw/config.cfg
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">cat output/res/raw/config.cfg
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>HoBbgAt+xT9vXJUlyhYYAVOx5Oy4XSMLyc7JC+ly5a1tbUtWvFMny2yqavP9D9GT0ogg2U4LN5FZE8/0Y2duLgE7dfXLPcaeXKoIuTmJ4LBiUjS0OokxUPMOrJYCTCx2oWGmdHJqohz7QlbqnZPWch9BvjiWG3TeXKDkjrPKohMswoPA/EVQy3is6XBBfqYKoExCDci14mcoHfnbw1V+YAJlwONpjn1dmzVkJLVQ4ZEbg2WPD5LnXwhdGkhVXF4kS/pHk+6h4ZVd4CMcG7kbWpe7f/dbBX3zJ2NXP+E+MxYW/MTYrNRBMQIfZbuhGmsULXjpHb16R19NZvV4qQwi68KrFbc5hZyfSkWUwD50t2O3o9mSQB3/IlqzzA7VE3XxrsUkZQcBYEixFshSTN+lywZwohooyjGiPEhof7k08bo3YgkDh/8vMR1rttvUKs0xTdQtLF8iER8GDCt6ZUtG0+Lf2G+THOw/Azp/ipC3JJ7Rcj0m1uTj3AAjwfK69rcbtCTP6q5qV8pDEtSr3foU7KZvjCXJL/8TVvZozttjoHnJhI3x5KGKLrczoavKsbiR0iI3ncwGTI5CQ7uZwfMkB5Q2Y4M7oDFTurCPT3iRAvhUQN3Ah8TKAyzwACUlCk9nA2A7H9IFfTgI2QvaXQlNxkPeZMh+iOYImUELMSbNQ1HpsaF1Bbymg6vWTgvyViVsAjf+Y22y+n0eFJicsLPzc9GNs6bCgPCIDVRr2iLoiXjP8AE4gQUdxfqCQ1JtvBfWXmB4kAWb1ciuqsE1Zff+aahnT1Qbet1vA6g9DsTLuumqX0tjmCD/E50eL48Bz0etthaS7RbJiIpg3SU9Lio1GmZeYBB9/4FW4CB1M+cH9jjjKmj4sXUwcLrBDgD+JvCEc7VGxdLj/Ori631mkWvRtlKC4sIOLlHQEDwRcXDgvLnAKZYG65Tm4a5gr490Yco1QSKxeMkMKvMitGQS87ObKaqr30nfXZHMwdWLc6Q437aVyOxc9GvxGC7qmtnYU4Pw5alh1XKtXdjY4EGsVhk/MQ==
 </code></pre>
@@ -864,10 +862,10 @@ cat output/res/raw/config.cfg
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-base64 -d output/res/raw/config.cfg &gt; output/res/raw/config.cfg.raw
-file output/res/raw/config.cfg.raw
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">base64 -d output/res/raw/config.cfg &gt; output/res/raw/config.cfg.raw
+</span></span><span class="line"><span class="cl">file output/res/raw/config.cfg.raw
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>output/res/raw/config.cfg.raw: data
 </code></pre>
@@ -877,8 +875,8 @@ file output/res/raw/config.cfg.raw
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_encrypt.source()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_encrypt.source()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    public String encrypt(String p10)
     {
@@ -910,8 +908,8 @@ file output/res/raw/config.cfg.raw
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_decrypt.source()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d.CLASS_Lcom_gmail_xlibs_Blowfish.METHOD_decrypt.source()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    public String decrypt(String p9)
     {
@@ -943,8 +941,8 @@ file output/res/raw/config.cfg.raw
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getFirst.source()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getFirst.source()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    public static void getFirst(android.content.Context p14)
     {
@@ -993,8 +991,8 @@ file output/res/raw/config.cfg.raw
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">com</span><span class="o">.</span><span class="na">gmail</span><span class="o">.</span><span class="na">xlibs</span><span class="o">.</span><span class="na">myFunctions</span><span class="o">.</span><span class="na">parseXml</span><span class="o">(</span><span class="k">new</span> <span class="n">com</span><span class="o">.</span><span class="na">gmail</span><span class="o">.</span><span class="na">xlibs</span><span class="o">.</span><span class="na">Blowfish</span><span class="o">(</span><span class="n">v5</span><span class="o">,</span> <span class="s">&#34;base64&#34;</span><span class="o">,</span> <span class="s">&#34;12345678&#34;</span><span class="o">).</span><span class="na">decrypt</span><span class="o">(</span><span class="n">com</span><span class="o">.</span><span class="na">gmail</span><span class="o">.</span><span class="na">xlibs</span><span class="o">.</span><span class="na">myFunctions</span><span class="o">.</span><span class="na">getRawData</span><span class="o">(</span><span class="n">1</span><span class="o">.</span><span class="na">754581157260185e</span><span class="o">+</span><span class="n">38</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">p14</span><span class="o">)),</span> <span class="n">p14</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">com</span><span class="p">.</span><span class="na">gmail</span><span class="p">.</span><span class="na">xlibs</span><span class="p">.</span><span class="na">myFunctions</span><span class="p">.</span><span class="na">parseXml</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">com</span><span class="p">.</span><span class="na">gmail</span><span class="p">.</span><span class="na">xlibs</span><span class="p">.</span><span class="na">Blowfish</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;base64&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;12345678&#34;</span><span class="p">).</span><span class="na">decrypt</span><span class="p">(</span><span class="n">com</span><span class="p">.</span><span class="na">gmail</span><span class="p">.</span><span class="na">xlibs</span><span class="p">.</span><span class="na">myFunctions</span><span class="p">.</span><span class="na">getRawData</span><span class="p">(</span><span class="n">1</span><span class="p">.</span><span class="na">754581157260185e</span><span class="o">+</span><span class="n">38</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">p14</span><span class="p">)),</span><span class="w"> </span><span class="n">p14</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Obviously the encrypted file has some XML content which has to be parsed first. The <em>parseXML</em> function requires a String parameter containing the XML code. The XML code has to be first decrypted:</p>
 <div class="highlight"><div class="chroma">
@@ -1002,8 +1000,8 @@ file output/res/raw/config.cfg.raw
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="k">new</span> <span class="n">com</span><span class="o">.</span><span class="na">gmail</span><span class="o">.</span><span class="na">xlibs</span><span class="o">.</span><span class="na">Blowfish</span><span class="o">(</span><span class="n">v5</span><span class="o">,</span> <span class="s">&#34;base64&#34;</span><span class="o">,</span> <span class="s">&#34;12345678&#34;</span><span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="k">new</span><span class="w"> </span><span class="n">com</span><span class="p">.</span><span class="na">gmail</span><span class="p">.</span><span class="na">xlibs</span><span class="p">.</span><span class="na">Blowfish</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;base64&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;12345678&#34;</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>This will create a new <code>Blowfish</code> object where the parameters are set as shown below:</p>
 <ul>
@@ -1029,8 +1027,8 @@ file output/res/raw/config.cfg.raw
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getRawData.source()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">d.CLASS_Lcom_gmail_xlibs_myFunctions.METHOD_getRawData.source()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    public static String getRawData(int p9, int p10, android.content.Context p11)
     {
@@ -1066,12 +1064,12 @@ file output/res/raw/config.cfg.raw
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="o">...</span>
-<span class="n">String</span> <span class="n">str1</span> <span class="o">=</span> <span class="n">getRawData</span><span class="o">(</span><span class="n">2130968576</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">paramContext</span><span class="o">);</span>
-<span class="n">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="n">getRawData</span><span class="o">(</span><span class="n">2130968577</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">paramContext</span><span class="o">);</span>
-<span class="n">parseXml</span><span class="o">(</span><span class="k">new</span> <span class="n">Blowfish</span><span class="o">(</span><span class="n">str1</span><span class="o">,</span> <span class="s">&#34;base64&#34;</span><span class="o">,</span> <span class="s">&#34;12345678&#34;</span><span class="o">).</span><span class="na">decrypt</span><span class="o">(</span><span class="n">str2</span><span class="o">),</span> <span class="n">paramContext</span><span class="o">);</span>
-<span class="o">...</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">String</span><span class="w"> </span><span class="n">str1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getRawData</span><span class="p">(</span><span class="n">2130968576</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">paramContext</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">String</span><span class="w"> </span><span class="n">str2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getRawData</span><span class="p">(</span><span class="n">2130968577</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">paramContext</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">parseXml</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Blowfish</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;base64&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;12345678&#34;</span><span class="p">).</span><span class="na">decrypt</span><span class="p">(</span><span class="n">str2</span><span class="p">),</span><span class="w"> </span><span class="n">paramContext</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">...</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now what are those numbers: 2130968576 and 2130968577? Those are ressource identifier. If we hex them we&rsquo;ll have:</p>
 <pre><code>hex(2130968576) = 7f040000 and 
@@ -1084,9 +1082,9 @@ hex(2130968577) = 7f040001
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-grep -r <span class="s2">&#34;7f040000&#34;</span> output/* <span class="o">&amp;&amp;</span> grep -r <span class="s2">&#34;7f040001&#34;</span> output/*
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">grep -r <span class="s2">&#34;7f040000&#34;</span> output/* <span class="o">&amp;&amp;</span> grep -r <span class="s2">&#34;7f040001&#34;</span> output/*
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>output/res/values/public.xml:    &lt;public type=&quot;raw&quot; name=&quot;blfs&quot; id=&quot;0x7f040000&quot; /&gt;
 output/smali/com/gmail/xpack/R$raw.smali:.field public static final blfs:I = 0x7f040000
@@ -1101,9 +1099,9 @@ output/smali/com/gmail/xpack/R$raw.smali:.field public static final config:I = 0
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-grep <span class="s2">&#34;7f04000&#34;</span> output/smali/com/gmail/xpack/R<span class="se">\$</span>raw.smali
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;7f04000&#34;</span> output/smali/com/gmail/xpack/R<span class="se">\$</span>raw.smali
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>.field public static final blfs:I = 0x7f040000
 .field public static final config:I = 0x7f040001
@@ -1131,12 +1129,12 @@ grep <span class="s2">&#34;7f04000&#34;</span> output/smali/com/gmail/xpack/R<sp
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="k">if</span> <span class="o">(</span><span class="n">p10</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
-     <span class="n">v6</span> <span class="o">=</span> <span class="n">v5</span><span class="o">;</span>
-<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-    <span class="n">v6</span> <span class="o">=</span> <span class="n">com</span><span class="o">.</span><span class="na">gmail</span><span class="o">.</span><span class="na">xlibs</span><span class="o">.</span><span class="na">Blowfish</span><span class="o">.</span><span class="na">byte2hex</span><span class="o">(</span><span class="n">v5</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()).</span><span class="na">substring</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">50</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p10</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="n">v6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v5</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">v6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">com</span><span class="p">.</span><span class="na">gmail</span><span class="p">.</span><span class="na">xlibs</span><span class="p">.</span><span class="na">Blowfish</span><span class="p">.</span><span class="na">byte2hex</span><span class="p">(</span><span class="n">v5</span><span class="p">.</span><span class="na">getBytes</span><span class="p">()).</span><span class="na">substring</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">50</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>p10</code> is the 2nd argument given to getRawData. If you pay attention you may notice that if <code>p10</code> == 1 nothing special will happen. Otherwise (content of blfs.key is read out) there are some string manipulations taking place. This took me a while to notice it and was the reason I couldn&rsquo;t decrypt the config.cfg. This is what it does with the content of <code>blfs.key</code>:</p>
 <ul>
@@ -1174,32 +1172,32 @@ grep <span class="s2">&#34;7f04000&#34;</span> output/smali/com/gmail/xpack/R<sp
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">from Crypto.Cipher import Blowfish
-from Crypto import Random
-from struct import pack
-from binascii import hexlify, unhexlify
-
-# Read content from files
-blfs_key = !cat output/res/raw/blfs.key
-ciphertext_base64 = !cat output/res/raw/config.cfg
-ciphertext_raw = ciphertext_base64[0].decode(&#34;base64&#34;)
-
-# Some settings
-IV = &#34;12345678&#34;
-_KEY = blfs_key[0]
-ciphertext = ciphertext_raw
-
-# As seen in the source code: 
-#  * hex-encode the blfs key
-#  * take only the substring[0:50]
-KEY = hexlify(_KEY)[:50]
-
-# Do the decryption
-cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
-message = cipher.decrypt(ciphertext)
-
-message
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">from Crypto.Cipher import Blowfish
+</span></span><span class="line"><span class="cl">from Crypto import Random
+</span></span><span class="line"><span class="cl">from struct import pack
+</span></span><span class="line"><span class="cl">from binascii import hexlify, unhexlify
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Read content from files
+</span></span><span class="line"><span class="cl">blfs_key = !cat output/res/raw/blfs.key
+</span></span><span class="line"><span class="cl">ciphertext_base64 = !cat output/res/raw/config.cfg
+</span></span><span class="line"><span class="cl">ciphertext_raw = ciphertext_base64[0].decode(&#34;base64&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Some settings
+</span></span><span class="line"><span class="cl">IV = &#34;12345678&#34;
+</span></span><span class="line"><span class="cl">_KEY = blfs_key[0]
+</span></span><span class="line"><span class="cl">ciphertext = ciphertext_raw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># As seen in the source code: 
+</span></span><span class="line"><span class="cl">#  * hex-encode the blfs key
+</span></span><span class="line"><span class="cl">#  * take only the substring[0:50]
+</span></span><span class="line"><span class="cl">KEY = hexlify(_KEY)[:50]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Do the decryption
+</span></span><span class="line"><span class="cl">cipher = Blowfish.new(KEY, Blowfish.MODE_CBC, IV)
+</span></span><span class="line"><span class="cl">message = cipher.decrypt(ciphertext)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">message
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>'&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;\n          &lt;config&gt;\n            &lt;data rid=&quot;25&quot; \n                  shnum10=&quot;&quot; shtext10=&quot;&quot; shnum5=&quot;&quot; shtext5=&quot;&quot; shnum3=&quot;&quot; shtext3=&quot;&quot; shnum1=&quot;&quot; shtext1=&quot;&quot; \n                  del_dev=&quot;0&quot; \n                  url_main=&quot;http://best-invest-int.com/gallery/3.php;http://citroen-club.ch/images/3.php&quot; \n                  url_data=&quot;http://best-invest-int.com/gallery/1.php;http://citroen-club.ch/images/1.php&quot; \n                  url_sms=&quot;http://best-invest-int.com/gallery/2.php;http://citroen-club.ch/images/2.php&quot;\n                  url_log=&quot;http://best-invest-int.com/gallery/4.php;http://citroen-club.ch/images/4.php&quot;\n                  download_domain=&quot;certificates-security.com&quot;\n                  ready_to_bind=&quot;0&quot; /&gt;\n            \n          &lt;/config&gt;\x05\x05\x05\x05\x05'
 </code></pre>
@@ -1229,28 +1227,28 @@ message
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">from lxml import etree
-import xml.etree.ElementTree as ET
-
-# Remove dirty characters
-xml = message.replace(&#34;\x05&#34;, &#34;&#34;).replace(&#34;\n&#34;, &#34;&#34;)
-
-# Create XML tree from string
-root = etree.XML(xml)
-data = root.xpath(&#34;/config//data&#34;)
-
-frame = []
-# Get data
-for sample in data:
-    for attr_name, attr_value in sample.items():
-        values = attr_value.split(&#34;;&#34;)
-        for v in values:
-            frame.append((attr_name, v))
-
-# Show attributes found in /config/data
-df = pd.DataFrame(frame, columns=[&#39;Attribute&#39;, &#39;Value&#39;])
-df
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">from lxml import etree
+</span></span><span class="line"><span class="cl">import xml.etree.ElementTree as ET
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Remove dirty characters
+</span></span><span class="line"><span class="cl">xml = message.replace(&#34;\x05&#34;, &#34;&#34;).replace(&#34;\n&#34;, &#34;&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Create XML tree from string
+</span></span><span class="line"><span class="cl">root = etree.XML(xml)
+</span></span><span class="line"><span class="cl">data = root.xpath(&#34;/config//data&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">frame = []
+</span></span><span class="line"><span class="cl"># Get data
+</span></span><span class="line"><span class="cl">for sample in data:
+</span></span><span class="line"><span class="cl">    for attr_name, attr_value in sample.items():
+</span></span><span class="line"><span class="cl">        values = attr_value.split(&#34;;&#34;)
+</span></span><span class="line"><span class="cl">        for v in values:
+</span></span><span class="line"><span class="cl">            frame.append((attr_name, v))
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Show attributes found in /config/data
+</span></span><span class="line"><span class="cl">df = pd.DataFrame(frame, columns=[&#39;Attribute&#39;, &#39;Value&#39;])
+</span></span><span class="line"><span class="cl">df
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -1399,35 +1397,35 @@ df
 </span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import urllib2
- 
-# Get URLs from DataFrame (only the valid ones)
-urls = df[&#39;Value&#39;][10:19].tolist()
-#urls = [&#34;http://google.de/&#34;, &#34;http://blog.dornea.nu/about&#34;]
-resp = {}
-
-def get_status_code(host, path=&#34;/&#34;):
-    &#34;&#34;&#34; This function retreives the status code of a website by requesting
-        HEAD data from the host. This means that it only requests the headers.
-        If the host cannot be reached or something else goes wrong, it returns
-        None instead.
-    &#34;&#34;&#34;
-    try:
-        conn = httplib.HTTPConnection(host)
-        conn.request(&#34;HEAD&#34;, path)
-        return conn.getresponse().getheaders()
-    except StandardError:
-        return None
-
-# Iterate through URLs
-for u in urls:
-    p = &#39;(?:http.*://)?(?P&lt;host&gt;[^:/ ]+).?(?P&lt;port&gt;[0-9]*)/(?P&lt;path&gt;.*)&#39;
-    m = re.search(p, u)
-    if m:
-        status_code = get_status_code(m.group(&#39;host&#39;), &#34;/&#34; + m.group(&#39;path&#39;))
-        resp[u] = status_code
-resp
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import urllib2
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"># Get URLs from DataFrame (only the valid ones)
+</span></span><span class="line"><span class="cl">urls = df[&#39;Value&#39;][10:19].tolist()
+</span></span><span class="line"><span class="cl">#urls = [&#34;http://google.de/&#34;, &#34;http://blog.dornea.nu/about&#34;]
+</span></span><span class="line"><span class="cl">resp = {}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def get_status_code(host, path=&#34;/&#34;):
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34; This function retreives the status code of a website by requesting
+</span></span><span class="line"><span class="cl">        HEAD data from the host. This means that it only requests the headers.
+</span></span><span class="line"><span class="cl">        If the host cannot be reached or something else goes wrong, it returns
+</span></span><span class="line"><span class="cl">        None instead.
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    try:
+</span></span><span class="line"><span class="cl">        conn = httplib.HTTPConnection(host)
+</span></span><span class="line"><span class="cl">        conn.request(&#34;HEAD&#34;, path)
+</span></span><span class="line"><span class="cl">        return conn.getresponse().getheaders()
+</span></span><span class="line"><span class="cl">    except StandardError:
+</span></span><span class="line"><span class="cl">        return None
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Iterate through URLs
+</span></span><span class="line"><span class="cl">for u in urls:
+</span></span><span class="line"><span class="cl">    p = &#39;(?:http.*://)?(?P&lt;host&gt;[^:/ ]+).?(?P&lt;port&gt;[0-9]*)/(?P&lt;path&gt;.*)&#39;
+</span></span><span class="line"><span class="cl">    m = re.search(p, u)
+</span></span><span class="line"><span class="cl">    if m:
+</span></span><span class="line"><span class="cl">        status_code = get_status_code(m.group(&#39;host&#39;), &#34;/&#34; + m.group(&#39;path&#39;))
+</span></span><span class="line"><span class="cl">        resp[u] = status_code
+</span></span><span class="line"><span class="cl">resp
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>{'http://best-invest-int.com/gallery/1.php': None,
  'http://best-invest-int.com/gallery/2.php': None,
@@ -1462,13 +1460,13 @@ resp
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-mkdir DEX
-cp 7276e76298c50d2ee78271cf5114a176 DEX
-<span class="nb">cd</span> DEX
-unzip 7276e76298c50d2ee78271cf5114a176
-<span class="nb">cd</span> ..
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl">mkdir DEX
+</span></span><span class="line"><span class="cl">cp 7276e76298c50d2ee78271cf5114a176 DEX
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> DEX
+</span></span><span class="line"><span class="cl">unzip 7276e76298c50d2ee78271cf5114a176
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ..
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Archive:  7276e76298c50d2ee78271cf5114a176
 signed by SignApk
@@ -1526,39 +1524,39 @@ signed by SignApk
 </span><span class="lnt">32
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import hashlib
-import StringIO, pydot
-from IPython.display import Image
-from androguard.core.bytecodes.dvm import *
-from androguard.core.analysis.analysis import VMAnalysis
-from androguard.core.bytecode import method2dot, method2format, method2png
-
-
-d = DalvikVMFormat(open(&#34;DEX/classes.dex&#34;).read())
-x = VMAnalysis(d)
-d.set_vmanalysis(x)
-
-
-# Utilities
-def create_graph(data, output):
-    # Stolen from androguard/core/bytecode.py
-    buff = &#34;digraph {\n&#34;
-    buff += &#34;graph [rankdir=TB]\n&#34;
-    buff += &#34;node [shape=plaintext]\n&#34;
-    
-    # subgraphs cluster
-    buff += &#34;subgraph cluster_&#34; + hashlib.md5(output).hexdigest() + &#34; {\nlabel=\&#34;%s\&#34;\n&#34; % data[&#39;name&#39;]
-    buff += data[&#39;nodes&#39;]
-    buff += &#34;}\n&#34;
-
-    # subgraphs edges
-    buff += data[&#39;edges&#39;]
-    buff += &#34;}\n&#34;
-    
-    graph = pydot.graph_from_dot_data(buff)
-    
-    return graph
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import hashlib
+</span></span><span class="line"><span class="cl">import StringIO, pydot
+</span></span><span class="line"><span class="cl">from IPython.display import Image
+</span></span><span class="line"><span class="cl">from androguard.core.bytecodes.dvm import *
+</span></span><span class="line"><span class="cl">from androguard.core.analysis.analysis import VMAnalysis
+</span></span><span class="line"><span class="cl">from androguard.core.bytecode import method2dot, method2format, method2png
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">d = DalvikVMFormat(open(&#34;DEX/classes.dex&#34;).read())
+</span></span><span class="line"><span class="cl">x = VMAnalysis(d)
+</span></span><span class="line"><span class="cl">d.set_vmanalysis(x)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Utilities
+</span></span><span class="line"><span class="cl">def create_graph(data, output):
+</span></span><span class="line"><span class="cl">    # Stolen from androguard/core/bytecode.py
+</span></span><span class="line"><span class="cl">    buff = &#34;digraph {\n&#34;
+</span></span><span class="line"><span class="cl">    buff += &#34;graph [rankdir=TB]\n&#34;
+</span></span><span class="line"><span class="cl">    buff += &#34;node [shape=plaintext]\n&#34;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    # subgraphs cluster
+</span></span><span class="line"><span class="cl">    buff += &#34;subgraph cluster_&#34; + hashlib.md5(output).hexdigest() + &#34; {\nlabel=\&#34;%s\&#34;\n&#34; % data[&#39;name&#39;]
+</span></span><span class="line"><span class="cl">    buff += data[&#39;nodes&#39;]
+</span></span><span class="line"><span class="cl">    buff += &#34;}\n&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    # subgraphs edges
+</span></span><span class="line"><span class="cl">    buff += data[&#39;edges&#39;]
+</span></span><span class="line"><span class="cl">    buff += &#34;}\n&#34;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    graph = pydot.graph_from_dot_data(buff)
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    return graph
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="comgmailxlibsmyfunctions-getfirst">com.gmail.xlibs.myFunctions: getFirst()</h3>
 <div class="highlight"><div class="chroma">
@@ -1578,20 +1576,20 @@ def create_graph(data, output):
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Definition:  d.get_method_descriptor(self, class_name, method_name, descriptor)
-# 
-# Examples for method descriptors:
-#   R 62 Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
-#   R 17c Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
-#   R e8 Lcom/gmail/xlibs/myFunctions;-&gt;getSecond (Landroid/content/Context;)V
-#   R 0 Lcom/gmail/xlibs/myFunctions;-&gt;setK12 (Ljava/lang/String; Landroid/content/Context;)Ljava/lang/String;
-
-m = d.get_method_descriptor(&#34;Lcom/gmail/xlibs/myFunctions;&#34;, &#34;getFirst&#34;, &#34;(Landroid/content/Context;)V&#34;)
-buff_dot = method2dot(x.get_method(m))
-
-graph = create_graph(buff_dot, &#34;png&#34;)
-Image(graph.create_png())
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Definition:  d.get_method_descriptor(self, class_name, method_name, descriptor)
+</span></span><span class="line"><span class="cl"># 
+</span></span><span class="line"><span class="cl"># Examples for method descriptors:
+</span></span><span class="line"><span class="cl">#   R 62 Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
+</span></span><span class="line"><span class="cl">#   R 17c Lcom/gmail/xlibs/myFunctions;-&gt;getFirst (Landroid/content/Context;)V
+</span></span><span class="line"><span class="cl">#   R e8 Lcom/gmail/xlibs/myFunctions;-&gt;getSecond (Landroid/content/Context;)V
+</span></span><span class="line"><span class="cl">#   R 0 Lcom/gmail/xlibs/myFunctions;-&gt;setK12 (Ljava/lang/String; Landroid/content/Context;)Ljava/lang/String;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">m = d.get_method_descriptor(&#34;Lcom/gmail/xlibs/myFunctions;&#34;, &#34;getFirst&#34;, &#34;(Landroid/content/Context;)V&#34;)
+</span></span><span class="line"><span class="cl">buff_dot = method2dot(x.get_method(m))
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">graph = create_graph(buff_dot, &#34;png&#34;)
+</span></span><span class="line"><span class="cl">Image(graph.create_png())
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_79_0.png" alt="png"></p>
 <h3 id="comgmailxlibsmyfunctions-getsecond">com.gmail.xlibs.myFunctions: getSecond()</h3>
@@ -1604,12 +1602,12 @@ Image(graph.create_png())
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">m = d.get_method_descriptor(&#34;Lcom/gmail/xlibs/myFunctions;&#34;, &#34;getSecond&#34;, &#34;(Landroid/content/Context;)V&#34;)
-buff_dot = method2dot(x.get_method(m))
-
-graph = create_graph(buff_dot, &#34;png&#34;)
-Image(graph.create_png())
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">m = d.get_method_descriptor(&#34;Lcom/gmail/xlibs/myFunctions;&#34;, &#34;getSecond&#34;, &#34;(Landroid/content/Context;)V&#34;)
+</span></span><span class="line"><span class="cl">buff_dot = method2dot(x.get_method(m))
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">graph = create_graph(buff_dot, &#34;png&#34;)
+</span></span><span class="line"><span class="cl">Image(graph.create_png())
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_81_0.png" alt="png"></p>
 <h3 id="comgmailxservices-xrepeat">com.gmail.xservices: XRepeat</h3>
@@ -1621,10 +1619,10 @@ Image(graph.create_png())
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># We should have a list of PathP objects which represent where a specific method is called:
-paths = x.tainted_packages.search_methods(&#34;.&#34;, &#34;onReceive&#34;, &#34;.&#34;)
-paths
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># We should have a list of PathP objects which represent where a specific method is called:
+</span></span><span class="line"><span class="cl">paths = x.tainted_packages.search_methods(&#34;.&#34;, &#34;onReceive&#34;, &#34;.&#34;)
+</span></span><span class="line"><span class="cl">paths
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>[&lt;androguard.core.analysis.analysis.PathP instance at 0x101a5290&gt;]
 </code></pre>
@@ -1646,21 +1644,21 @@ paths
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Get the class manager from the VM
-cm = d.get_class_manager()
-
-src = []
-dst = []
-# Iterate through paths
-for p in paths:
-    src.append(p.get_src(cm))
-    dst.append(p.get_dst(cm))
-
-df_src = pd.DataFrame(src, columns=[&#39;From&#39;, &#39;Method&#39;, &#39;Type&#39;])
-df_dst = pd.DataFrame(dst, columns=[&#39;To&#39;, &#39;Method&#39;, &#39;Type&#39;])
-display_html(df_src)
-display_html(df_dst)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Get the class manager from the VM
+</span></span><span class="line"><span class="cl">cm = d.get_class_manager()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">src = []
+</span></span><span class="line"><span class="cl">dst = []
+</span></span><span class="line"><span class="cl"># Iterate through paths
+</span></span><span class="line"><span class="cl">for p in paths:
+</span></span><span class="line"><span class="cl">    src.append(p.get_src(cm))
+</span></span><span class="line"><span class="cl">    dst.append(p.get_dst(cm))
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">df_src = pd.DataFrame(src, columns=[&#39;From&#39;, &#39;Method&#39;, &#39;Type&#39;])
+</span></span><span class="line"><span class="cl">df_dst = pd.DataFrame(dst, columns=[&#39;To&#39;, &#39;Method&#39;, &#39;Type&#39;])
+</span></span><span class="line"><span class="cl">display_html(df_src)
+</span></span><span class="line"><span class="cl">display_html(df_dst)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -1711,12 +1709,12 @@ display_html(df_dst)
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">m = d.get_method_descriptor(&#34;Lcom/gmail/xservices/XRepeat;&#34;, &#34;onReceive&#34;, &#34;(Landroid/content/Context; Landroid/content/Intent;)V&#34;)
-
-buff_dot = method2dot(x.get_method(m))
-graph = create_graph(buff_dot, &#34;png&#34;)
-Image(graph.create_png())
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">m = d.get_method_descriptor(&#34;Lcom/gmail/xservices/XRepeat;&#34;, &#34;onReceive&#34;, &#34;(Landroid/content/Context; Landroid/content/Intent;)V&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">buff_dot = method2dot(x.get_method(m))
+</span></span><span class="line"><span class="cl">graph = create_graph(buff_dot, &#34;png&#34;)
+</span></span><span class="line"><span class="cl">Image(graph.create_png())
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_86_0.png" alt="png"></p>
 <h2 id="conclusion">Conclusion</h2>
@@ -1744,26 +1742,26 @@ Image(graph.create_png())
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># ~/work/bin/androguard/androdd.py -i FakeBanker.apk -f PNG -o neu</span>
-Dump information FakeBanker.apk in neu
-Clean directory neu
-Analysis ... End
-Decompilation ... End
-ERROR: module pydot not found
-Dump Landroid/support/v4/app/FragmentManager<span class="p">;</span> &lt;init&gt; <span class="o">()</span>V ... PNG ...
-Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
-  File <span class="s2">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 222, in &lt;module&gt;
-    main<span class="o">(</span>options, arguments<span class="o">)</span>
-  File <span class="s2">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 207, in main~~~~
-    export_apps_to_format<span class="o">(</span>options.input, a, options.output, options.limit, options.jar, options.decompiler, options.format<span class="o">)</span>
-  File <span class="s2">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 180, in export_apps_to_format
-    method2format<span class="o">(</span>filename + <span class="s2">&#34;.&#34;</span> + format, format, None, buff<span class="o">)</span>
-  File <span class="s2">&#34;/root/work/bin/androguard/androguard/core/bytecode.py&#34;</span>, line 338, in method2format
-    error<span class="o">(</span><span class="s2">&#34;module pydot not found&#34;</span><span class="o">)</span>
-  File <span class="s2">&#34;/root/work/bin/androguard/androguard/core/androconf.py&#34;</span>, line 270, in error
-    raise<span class="o">()</span>
-TypeError: exceptions must be old-style classes or derived from BaseException, not tuple
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># ~/work/bin/androguard/androdd.py -i FakeBanker.apk -f PNG -o neu</span>
+</span></span><span class="line"><span class="cl">Dump information FakeBanker.apk in neu
+</span></span><span class="line"><span class="cl">Clean directory neu
+</span></span><span class="line"><span class="cl">Analysis ... End
+</span></span><span class="line"><span class="cl">Decompilation ... End
+</span></span><span class="line"><span class="cl">ERROR: module pydot not found
+</span></span><span class="line"><span class="cl">Dump Landroid/support/v4/app/FragmentManager<span class="p">;</span> &lt;init&gt; <span class="o">()</span>V ... PNG ...
+</span></span><span class="line"><span class="cl">Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">  File <span class="s2">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 222, in &lt;module&gt;
+</span></span><span class="line"><span class="cl">    main<span class="o">(</span>options, arguments<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  File <span class="s2">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 207, in main~~~~
+</span></span><span class="line"><span class="cl">    export_apps_to_format<span class="o">(</span>options.input, a, options.output, options.limit, options.jar, options.decompiler, options.format<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  File <span class="s2">&#34;/root/work/bin/androguard/androdd.py&#34;</span>, line 180, in export_apps_to_format
+</span></span><span class="line"><span class="cl">    method2format<span class="o">(</span>filename + <span class="s2">&#34;.&#34;</span> + format, format, None, buff<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  File <span class="s2">&#34;/root/work/bin/androguard/androguard/core/bytecode.py&#34;</span>, line 338, in method2format
+</span></span><span class="line"><span class="cl">    error<span class="o">(</span><span class="s2">&#34;module pydot not found&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  File <span class="s2">&#34;/root/work/bin/androguard/androguard/core/androconf.py&#34;</span>, line 270, in error
+</span></span><span class="line"><span class="cl">    raise<span class="o">()</span>
+</span></span><span class="line"><span class="cl">TypeError: exceptions must be old-style classes or derived from BaseException, not tuple
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>But I don&rsquo;t want to complain about the project. In fact I think its the most comprehensive tool bundle out there for analytical purposes. If you know better alternatives just let me know about it. In the <strong>next part</strong> I&rsquo;ll be writing about <strong>dynamic code analysis</strong>. So stay tuned :)</p>
 
@@ -1774,7 +1772,7 @@ TypeError: exceptions must be old-style classes or derived from BaseException, n
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

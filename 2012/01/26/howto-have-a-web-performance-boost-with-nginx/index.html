@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -107,7 +107,7 @@ type="image/x-icon"/>
 
       <h2 id="why-nginx">Why Nginx?</h2>
 <p>Since I wanted to improve my sites load speed I thought I should look around for some lighttpd-alternatives which I have used for so many years. The really annoying thing about <code>lighttpd</code> is its configuration syntax. I don&rsquo;t think it&rsquo;s comprehensive nor easy to learn. Besides that I wanted to have a configuration where <code>memcahed</code> plays a major role: Serve static content (html) from memcache. Lighttpd does have some modules/tutorials how to interact with <code>memcached</code> but I couldn&rsquo;t find any working configuration. Frustration but also curiosity brought me to <code>Nginx</code>.</p>
-<p>According to the author Nginx <code>is an HTTP and reverse proxy server, as well as a mail proxy server</code>. I thought I should give it a try and test its performance against Lighttpd. Meanwhile I&rsquo;m using Lighttpd <code>'AND</code>' Nginx on my server due to some regexp issue that have to be solved very soon. In that case Nginx acts a a proxy server (see below for configuration stuff).</p>
+<p>According to the author Nginx <code>is an HTTP and reverse proxy server, as well as a mail proxy server</code>. I thought I should give it a try and test its performance against Lighttpd. Meanwhile I&rsquo;m using Lighttpd <code>'AND</code>&rsquo; Nginx on my server due to some regexp issue that have to be solved very soon. In that case Nginx acts a a proxy server (see below for configuration stuff).</p>
 <h2 id="get-it">Get it!</h2>
 <p>Before going further you should have the latest (stable) available Nginx version. If you use Debian make sure, you add following to your <code>/etc/apt/sources.list</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -115,8 +115,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">deb-src http://nginx.org/packages/debian/ squeeze nginx
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">deb-src http://nginx.org/packages/debian/ squeeze nginx
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>On my system I have currently version <code>1.0.9-1</code> installed.</p>
 <h2 id="basic-configuration">Basic configuration</h2>
@@ -165,47 +165,47 @@ type="image/x-icon"/>
 </span><span class="lnt">40
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">user www-data;
-worker_processes  5;
-worker_rlimit_nofile 8192;
-
-error_log  /var/log/nginx/error.log warn;
-pid        /var/run/nginx.pid;
-
-events {
-    worker_connections  4096;
-    use epoll;
-}
-
-http {
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
-    keepalive_requests    50;
-    keepalive_timeout     300 300;
-
-    log_format  main  &#39;$remote_addr - $remote_user [$time_local] &#34;$request&#34; &#39;
-                      &#39;$status $body_bytes_sent &#34;$http_referer&#34; &#39;
-                      &#39;&#34;$http_user_agent&#34; &#34;$http_x_forwarded_for&#34;&#39;;
-
-    access_log  /var/log/nginx/access.log  main;
-
-    sendfile        on;
-    #cp_nopush     on;
-
-    # Compression
-    gzip on;
-    gzip_buffers 16 8k;
-    gzip_comp_level 2;
-    gzip_http_version 1.1;
-    gzip_min_length 10;
-    gzip_types text/plain text/css application/x-javascript text/xml;
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_disable &#34;MSIE [1-6].&#34;;
-
-    include /etc/nginx/conf.d/*.conf;
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">user</span> <span class="n">www</span><span class="o">-</span><span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">worker_processes</span>  <span class="mi">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">worker_rlimit_nofile</span> <span class="mi">8192</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">error_log</span>  <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">error</span><span class="o">.</span><span class="n">log</span> <span class="n">warn</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">pid</span>        <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">nginx</span><span class="o">.</span><span class="n">pid</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">events</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">worker_connections</span>  <span class="mi">4096</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">use</span> <span class="n">epoll</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">include</span>       <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">mime</span><span class="o">.</span><span class="n">types</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">default_type</span>  <span class="n">application</span><span class="o">/</span><span class="n">octet</span><span class="o">-</span><span class="n">stream</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">keepalive_requests</span>    <span class="mi">50</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">keepalive_timeout</span>     <span class="mi">300</span> <span class="mi">300</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">log_format</span>  <span class="n">main</span>  <span class="s1">&#39;$remote_addr - $remote_user [$time_local] &#34;$request&#34; &#39;</span>
+</span></span><span class="line"><span class="cl">                      <span class="s1">&#39;$status $body_bytes_sent &#34;$http_referer&#34; &#39;</span>
+</span></span><span class="line"><span class="cl">                      <span class="s1">&#39;&#34;$http_user_agent&#34; &#34;$http_x_forwarded_for&#34;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">access_log</span>  <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">access</span><span class="o">.</span><span class="n">log</span>  <span class="n">main</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">sendfile</span>        <span class="n">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">#cp_nopush     on;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Compression</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip</span> <span class="n">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_buffers</span> <span class="mi">16</span> <span class="mi">8</span><span class="n">k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_comp_level</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_min_length</span> <span class="mi">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_types</span> <span class="n">text</span><span class="o">/</span><span class="n">plain</span> <span class="n">text</span><span class="o">/</span><span class="n">css</span> <span class="n">application</span><span class="o">/</span><span class="n">x</span><span class="o">-</span><span class="n">javascript</span> <span class="n">text</span><span class="o">/</span><span class="n">xml</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_vary</span> <span class="n">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_proxied</span> <span class="n">any</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gzip_disable</span> <span class="s2">&#34;MSIE [1-6].&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">include</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/*.</span><span class="n">conf</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>I won&rsquo;t explain every line since this is not what I&rsquo;m supposed to do. Please have a look at the links at the end of this article for additional links.</p>
 <h2 id="vhost-configuration">vHost configuration</h2>
@@ -320,113 +320,113 @@ http {
 </span><span class="lnt">106
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">server {
-        listen 80;
-        server_name dornea.nu;
-
-        root /var/www/sites/dornea.nu/htdocs/current; ## &lt;-- Your only path reference.
-
-        ## Drupal Boost with nginx 
-        set $boost &#34;&#34;;
-        set $boost_query &#34;_&#34;;
-
-        if ( $request_method = GET ) { 
-                set $boost G;
-        }
-
-        if ($http_cookie !~ &#34;DRUPAL_UID&#34;) {
-            set $boost &#34;${boost}D&#34;;
-        }
-
-        if ($query_string = &#34;&#34;) {
-            set $boost &#34;${boost}Q&#34;;
-        }
-
-        if ( -f $document_root/cache/normal/$host$request_uri$boost_query.html ) {
-            set $boost &#34;${boost}F&#34;;
-        }
-
-        if ($boost = GDQF){
-            rewrite ^.*$ /cache/normal/$host/$request_uri$boost_query.html break;
-        }
-
-        location = /favicon.ico {
-                log_not_found off;
-                access_log off;
-        }
-
-        location = /robots.txt {
-                allow all;
-                log_not_found off;
-                access_log off;
-        }
-
-        # This matters if you use drush
-        location = /backup {
-                auth_basic            &#34;Restricted&#34;;
-                auth_basic_user_file  /etc/lighttpd/lighttpd_passwords.inc;
-                #deny all;
-        }
-
-        # Very rarely should these ever be accessed outside of your lan
-        location ~* .(txt|log)$ {
-                allow 192.168.0.0/16;
-                deny all;
-        }
-
-        location ~ ..*/.*.php$ {
-                return 403;
-        }
-
-        location / {
-
-                set $memcached_key &#34;nginx:$request_uri&#34;;
-                memcached_pass 127.0.0.1:11211;
-                default_type       text/html;
-
-                error_page 404 405 502 = @fallback;
-                autoindex  on;
-        }
-
-        location @fallback {
-                try_files $uri @rewrite;
-        } 
-
-        location @rewrite {
-                # Some modules enforce no slash (/) at the end of the URL
-                # Else this rewrite block wouldn&#39;t be needed (GlobalRedirect)
-                #rewrite ^/system/test/(.*)$     /index.php?q=system/test/$1;
-                #rewrite ^/system/files/(.*)$    /index.php?q=system/files/$1;
-                rewrite ^/sitemap.xml$          /index.php?q=sitemap.xml;
-
-                rewrite ^/(.*)$                 /index.php?q=$1;
-        }
-
-        location ~ .php$ {
-                fastcgi_split_path_info ^(.+.php)(/.+)$;
-                #NOTE: You should have &#34;cgi.fix_pathinfo = 0;&#34; in php.ini
-                include fastcgi_params;
-                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-                fastcgi_param  VERIFIED $ssl_client_verify;
-                fastcgi_param  DN $ssl_client_s_dn;
-                fastcgi_intercept_errors on;
-        }
-
-        # Fighting with ImageCache? This little gem is amazing.
-        location ~ ^/sites/.*/files/imagecache/ {
-                try_files $uri @rewrite;
-        }
-        # Catch image styles for D7 too.
-        location ~ ^/sites/.*/files/styles/ {
-                try_files $uri @rewrite;
-        }
-
-        location ~* .(js|css|png|jpg|jpeg|gif|ico)$ {
-                expires 24h;
-                log_not_found off;
-        }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">server_name</span> <span class="n">dornea</span><span class="o">.</span><span class="n">nu</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">root</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">sites</span><span class="o">/</span><span class="n">dornea</span><span class="o">.</span><span class="n">nu</span><span class="o">/</span><span class="n">htdocs</span><span class="o">/</span><span class="n">current</span><span class="p">;</span> <span class="c1">## &lt;-- Your only path reference.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">## Drupal Boost with nginx </span>
+</span></span><span class="line"><span class="cl">        <span class="n">set</span> <span class="o">$</span><span class="n">boost</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">set</span> <span class="o">$</span><span class="n">boost_query</span> <span class="s2">&#34;_&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span> <span class="o">$</span><span class="n">request_method</span> <span class="o">=</span> <span class="n">GET</span> <span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">                <span class="n">set</span> <span class="o">$</span><span class="n">boost</span> <span class="n">G</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">$</span><span class="n">http_cookie</span> <span class="o">!~</span> <span class="s2">&#34;DRUPAL_UID&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">set</span> <span class="o">$</span><span class="n">boost</span> <span class="s2">&#34;${boost}D&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">$</span><span class="n">query_string</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">set</span> <span class="o">$</span><span class="n">boost</span> <span class="s2">&#34;${boost}Q&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span> <span class="o">-</span><span class="n">f</span> <span class="o">$</span><span class="n">document_root</span><span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">normal</span><span class="o">/$</span><span class="n">host</span><span class="o">$</span><span class="n">request_uri</span><span class="o">$</span><span class="n">boost_query</span><span class="o">.</span><span class="n">html</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">set</span> <span class="o">$</span><span class="n">boost</span> <span class="s2">&#34;${boost}F&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">$</span><span class="n">boost</span> <span class="o">=</span> <span class="n">GDQF</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rewrite</span> <span class="o">^.*$</span> <span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">normal</span><span class="o">/$</span><span class="n">host</span><span class="o">/$</span><span class="n">request_uri</span><span class="o">$</span><span class="n">boost_query</span><span class="o">.</span><span class="n">html</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">=</span> <span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">log_not_found</span> <span class="n">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">access_log</span> <span class="n">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">=</span> <span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">allow</span> <span class="n">all</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">log_not_found</span> <span class="n">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">access_log</span> <span class="n">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># This matters if you use drush</span>
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">=</span> <span class="o">/</span><span class="n">backup</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">auth_basic</span>            <span class="s2">&#34;Restricted&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">auth_basic_user_file</span>  <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">lighttpd</span><span class="o">/</span><span class="n">lighttpd_passwords</span><span class="o">.</span><span class="n">inc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">#deny all;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Very rarely should these ever be accessed outside of your lan</span>
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">~*</span> <span class="o">.</span><span class="p">(</span><span class="n">txt</span><span class="o">|</span><span class="nb">log</span><span class="p">)</span><span class="o">$</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">allow</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">16</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">deny</span> <span class="n">all</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">~</span> <span class="o">..*/.*.</span><span class="n">php</span><span class="o">$</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="mi">403</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="n">set</span> <span class="o">$</span><span class="n">memcached_key</span> <span class="s2">&#34;nginx:$request_uri&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">memcached_pass</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">11211</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">default_type</span>       <span class="n">text</span><span class="o">/</span><span class="n">html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="n">error_page</span> <span class="mi">404</span> <span class="mi">405</span> <span class="mi">502</span> <span class="o">=</span> <span class="err">@</span><span class="n">fallback</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">autoindex</span>  <span class="n">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="err">@</span><span class="n">fallback</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">try_files</span> <span class="o">$</span><span class="n">uri</span> <span class="err">@</span><span class="n">rewrite</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="err">@</span><span class="n">rewrite</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># Some modules enforce no slash (/) at the end of the URL</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># Else this rewrite block wouldn&#39;t be needed (GlobalRedirect)</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">#rewrite ^/system/test/(.*)$     /index.php?q=system/test/$1;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">#rewrite ^/system/files/(.*)$    /index.php?q=system/files/$1;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rewrite</span> <span class="o">^/</span><span class="n">sitemap</span><span class="o">.</span><span class="n">xml</span><span class="o">$</span>          <span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">php</span><span class="err">?</span><span class="n">q</span><span class="o">=</span><span class="n">sitemap</span><span class="o">.</span><span class="n">xml</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="n">rewrite</span> <span class="o">^/</span><span class="p">(</span><span class="o">.*</span><span class="p">)</span><span class="o">$</span>                 <span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">php</span><span class="err">?</span><span class="n">q</span><span class="o">=$</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">~</span> <span class="o">.</span><span class="n">php</span><span class="o">$</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fastcgi_split_path_info</span> <span class="o">^</span><span class="p">(</span><span class="o">.+.</span><span class="n">php</span><span class="p">)(</span><span class="o">/.+</span><span class="p">)</span><span class="o">$</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">#NOTE: You should have &#34;cgi.fix_pathinfo = 0;&#34; in php.ini</span>
+</span></span><span class="line"><span class="cl">                <span class="n">include</span> <span class="n">fastcgi_params</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fastcgi_param</span> <span class="n">SCRIPT_FILENAME</span> <span class="o">$</span><span class="n">document_root</span><span class="o">$</span><span class="n">fastcgi_script_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fastcgi_param</span>  <span class="n">VERIFIED</span> <span class="o">$</span><span class="n">ssl_client_verify</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fastcgi_param</span>  <span class="n">DN</span> <span class="o">$</span><span class="n">ssl_client_s_dn</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fastcgi_intercept_errors</span> <span class="n">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Fighting with ImageCache? This little gem is amazing.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">~</span> <span class="o">^/</span><span class="n">sites</span><span class="o">/.*/</span><span class="n">files</span><span class="o">/</span><span class="n">imagecache</span><span class="o">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">try_files</span> <span class="o">$</span><span class="n">uri</span> <span class="err">@</span><span class="n">rewrite</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Catch image styles for D7 too.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">~</span> <span class="o">^/</span><span class="n">sites</span><span class="o">/.*/</span><span class="n">files</span><span class="o">/</span><span class="n">styles</span><span class="o">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">try_files</span> <span class="o">$</span><span class="n">uri</span> <span class="err">@</span><span class="n">rewrite</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">location</span> <span class="o">~*</span> <span class="o">.</span><span class="p">(</span><span class="n">js</span><span class="o">|</span><span class="n">css</span><span class="o">|</span><span class="n">png</span><span class="o">|</span><span class="n">jpg</span><span class="o">|</span><span class="n">jpeg</span><span class="o">|</span><span class="n">gif</span><span class="o">|</span><span class="n">ico</span><span class="p">)</span><span class="o">$</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">expires</span> <span class="mi">24</span><span class="n">h</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">log_not_found</span> <span class="n">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Having Drupals boost module enabled you should have static pages on your server which will be served by the memcache daemon. At the beginning of the configuration nginx checks if any static content should be served at all (ist the user logged in? etc.) If there is a html file which correlates with the URI then nginx will load the files content from memcache. If not: the PHP script will be executed. Speaking of PHP.. Lets have a look at <code>/etc/nginx/</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -455,29 +455,29 @@ http {
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># cat /etc/nginx/fastcgi_params 
-fastcgi_pass   unix:/tmp/fcgi.sock;
-fastcgi_param  QUERY_STRING       $query_string;
-fastcgi_param  REQUEST_METHOD     $request_method;
-fastcgi_param  CONTENT_TYPE       $content_type;
-fastcgi_param  CONTENT_LENGTH     $content_length;
-fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
-fastcgi_param  REQUEST_URI        $request_uri;
-fastcgi_param  DOCUMENT_URI       $document_uri;
-fastcgi_param  DOCUMENT_ROOT      $document_root;
-fastcgi_param  SERVER_PROTOCOL    $server_protocol;
-fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
-fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
-fastcgi_param  REMOTE_ADDR        $remote_addr;
-fastcgi_param  REMOTE_PORT        $remote_port;
-fastcgi_param  SERVER_ADDR        $server_addr;
-fastcgi_param  SERVER_PORT        $server_port;
-fastcgi_param  SERVER_NAME        $server_name;
-
-fastcgi_index  index.php;
-
-fastcgi_param  REDIRECT_STATUS    200;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># cat /etc/nginx/fastcgi_params 
+</span></span><span class="line"><span class="cl">fastcgi_pass   unix:/tmp/fcgi.sock;
+</span></span><span class="line"><span class="cl">fastcgi_param  QUERY_STRING       $query_string;
+</span></span><span class="line"><span class="cl">fastcgi_param  REQUEST_METHOD     $request_method;
+</span></span><span class="line"><span class="cl">fastcgi_param  CONTENT_TYPE       $content_type;
+</span></span><span class="line"><span class="cl">fastcgi_param  CONTENT_LENGTH     $content_length;
+</span></span><span class="line"><span class="cl">fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
+</span></span><span class="line"><span class="cl">fastcgi_param  REQUEST_URI        $request_uri;
+</span></span><span class="line"><span class="cl">fastcgi_param  DOCUMENT_URI       $document_uri;
+</span></span><span class="line"><span class="cl">fastcgi_param  DOCUMENT_ROOT      $document_root;
+</span></span><span class="line"><span class="cl">fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+</span></span><span class="line"><span class="cl">fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+</span></span><span class="line"><span class="cl">fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+</span></span><span class="line"><span class="cl">fastcgi_param  REMOTE_ADDR        $remote_addr;
+</span></span><span class="line"><span class="cl">fastcgi_param  REMOTE_PORT        $remote_port;
+</span></span><span class="line"><span class="cl">fastcgi_param  SERVER_ADDR        $server_addr;
+</span></span><span class="line"><span class="cl">fastcgi_param  SERVER_PORT        $server_port;
+</span></span><span class="line"><span class="cl">fastcgi_param  SERVER_NAME        $server_name;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">fastcgi_index  index.php;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">fastcgi_param  REDIRECT_STATUS    200;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>I use a socket instead of child processes. The socket can be created using <code>/etc/init.d/fastcgi</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -525,48 +525,48 @@ fastcgi_param  REDIRECT_STATUS    200;
 </span><span class="lnt">41
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># cat /etc/init.d/fastcgi </span>
-<span class="c1">#!/bin/sh</span>
-
-<span class="c1">### BEGIN INIT INFO</span>
-<span class="c1"># Provides:          fastcgi</span>
-<span class="c1"># Required-Start:    $local_fs $remote_fs $network $syslog</span>
-<span class="c1"># Required-Stop:     $local_fs $remote_fs $network $syslog</span>
-<span class="c1"># Default-Start:     2 3 4 5</span>
-<span class="c1"># Default-Stop:      0 1 6</span>
-<span class="c1"># Short-Description: starts the FastCGI server</span>
-<span class="c1"># Description:       starts spawn-fcgi using start-stop-daemon</span>
-<span class="c1">### END INIT INFO</span>
-
-<span class="nv">PATH</span><span class="o">=</span>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-<span class="nv">DAEMON</span><span class="o">=</span>/usr/local/bin/php-fastcgi
-
-<span class="nb">test</span> -x <span class="nv">$DAEMON</span> <span class="o">||</span> <span class="nb">exit</span> <span class="m">0</span>
-
-<span class="nb">set</span> -e
-
-<span class="nv">RETVAL</span><span class="o">=</span><span class="m">0</span>
-<span class="k">case</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> in
-  start<span class="o">)</span>
-    <span class="nv">$DAEMON</span>
-    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
-  <span class="p">;;</span>
-  stop<span class="o">)</span>
-    killall -9 php5-cgi
-    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
-  <span class="p">;;</span>
-  restart<span class="o">)</span>
-    killall -9 php5-cgi
-    <span class="nv">$DAEMON</span>
-    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
-  <span class="p">;;</span>
-  *<span class="o">)</span>
-    <span class="nb">echo</span> <span class="s2">&#34;Usage: php-fastcgi {start|stop|restart}&#34;</span>
-    <span class="nb">exit</span> <span class="m">1</span>
-  <span class="p">;;</span>
-<span class="k">esac</span>
-<span class="nb">exit</span> <span class="nv">$RETVAL</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># cat /etc/init.d/fastcgi </span>
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/sh</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">### BEGIN INIT INFO</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Provides:          fastcgi</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Required-Start:    $local_fs $remote_fs $network $syslog</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Required-Stop:     $local_fs $remote_fs $network $syslog</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Default-Start:     2 3 4 5</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Default-Stop:      0 1 6</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Short-Description: starts the FastCGI server</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Description:       starts spawn-fcgi using start-stop-daemon</span>
+</span></span><span class="line"><span class="cl"><span class="c1">### END INIT INFO</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">PATH</span><span class="o">=</span>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+</span></span><span class="line"><span class="cl"><span class="nv">DAEMON</span><span class="o">=</span>/usr/local/bin/php-fastcgi
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">test</span> -x <span class="nv">$DAEMON</span> <span class="o">||</span> <span class="nb">exit</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -e
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">RETVAL</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">case</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> in
+</span></span><span class="line"><span class="cl">  start<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$DAEMON</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
+</span></span><span class="line"><span class="cl">  <span class="p">;;</span>
+</span></span><span class="line"><span class="cl">  stop<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    killall -9 php5-cgi
+</span></span><span class="line"><span class="cl">    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
+</span></span><span class="line"><span class="cl">  <span class="p">;;</span>
+</span></span><span class="line"><span class="cl">  restart<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    killall -9 php5-cgi
+</span></span><span class="line"><span class="cl">    <span class="nv">$DAEMON</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">RETVAL</span><span class="o">=</span><span class="nv">$?</span>
+</span></span><span class="line"><span class="cl">  <span class="p">;;</span>
+</span></span><span class="line"><span class="cl">  *<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Usage: php-fastcgi {start|stop|restart}&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">  <span class="p">;;</span>
+</span></span><span class="line"><span class="cl"><span class="k">esac</span>
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span> <span class="nv">$RETVAL</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>php-fastcgi</code> is located at /usr/local/bin/:</p>
 <div class="highlight"><div class="chroma">
@@ -576,10 +576,10 @@ fastcgi_param  REDIRECT_STATUS    200;
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># cat /usr/local/bin/php-fastcgi </span>
-<span class="c1">#!/bin/sh</span>
-/usr/bin/spawn-fcgi -F <span class="m">1</span> -C <span class="m">10</span> -a 127.0.0.1 -s /tmp/fcgi.sock -u www-data -g www-data -f <span class="s2">&#34;/usr/bin/php5-cgi -c /etc/php5/cgi/php.ini&#34;</span> -P /var/run/fastcgi-php.pid
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># cat /usr/local/bin/php-fastcgi </span>
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/sh</span>
+</span></span><span class="line"><span class="cl">/usr/bin/spawn-fcgi -F <span class="m">1</span> -C <span class="m">10</span> -a 127.0.0.1 -s /tmp/fcgi.sock -u www-data -g www-data -f <span class="s2">&#34;/usr/bin/php5-cgi -c /etc/php5/cgi/php.ini&#34;</span> -P /var/run/fastcgi-php.pid
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="nginx-as-proxy-server">Nginx as proxy server</h2>
 <p>As already mentioned nginx can be used as a proxy server. In my case I need nginx to redirect requests on a certain subdomain to <code>lighttpd</code> listening to a local interface. The configuration:</p>
@@ -617,39 +617,39 @@ fastcgi_param  REDIRECT_STATUS    200;
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">### dl.dornea.nu
-server {
-    listen 80;
-    server_name dl.dornea.nu;
-    root /var/www/sites/dl.dornea.nu/htdocs/current;
-    rewrite_log on;
-    index index.php index.html;
-
-    location / {
-        #index index.php index.html;
-        proxy_pass         http://127.0.0.1:8080/;
-        proxy_redirect     off;
-        proxy_set_header   Host             $host;
-        proxy_set_header   X-Real-IP        $remote_addr;
-        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-        proxy_connect_timeout      90;
-        proxy_send_timeout         90;
-        proxy_read_timeout         90;
-
-        proxy_buffer_size          4k;
-        proxy_buffers              4 32k;
-        proxy_busy_buffers_size    64k;
-        proxy_temp_file_write_size 64k;
-    } 
-
-    location ~* .(js|css|png|jpg|jpeg|gif|ico)$ {
-        expires 24h;
-        log_not_found off;
-    }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">### dl.dornea.nu</span>
+</span></span><span class="line"><span class="cl"><span class="n">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">server_name</span> <span class="n">dl</span><span class="o">.</span><span class="n">dornea</span><span class="o">.</span><span class="n">nu</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">root</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">sites</span><span class="o">/</span><span class="n">dl</span><span class="o">.</span><span class="n">dornea</span><span class="o">.</span><span class="n">nu</span><span class="o">/</span><span class="n">htdocs</span><span class="o">/</span><span class="n">current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rewrite_log</span> <span class="n">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">index</span> <span class="n">index</span><span class="o">.</span><span class="n">php</span> <span class="n">index</span><span class="o">.</span><span class="n">html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#index index.php index.html;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_pass</span>         <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8080</span><span class="o">/</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_redirect</span>     <span class="n">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_set_header</span>   <span class="n">Host</span>             <span class="o">$</span><span class="n">host</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_set_header</span>   <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="ne">IP</span>        <span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_set_header</span>   <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span>  <span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_connect_timeout</span>      <span class="mi">90</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_send_timeout</span>         <span class="mi">90</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_read_timeout</span>         <span class="mi">90</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_buffer_size</span>          <span class="mi">4</span><span class="n">k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_buffers</span>              <span class="mi">4</span> <span class="mi">32</span><span class="n">k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_busy_buffers_size</span>    <span class="mi">64</span><span class="n">k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proxy_temp_file_write_size</span> <span class="mi">64</span><span class="n">k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">location</span> <span class="o">~*</span> <span class="o">.</span><span class="p">(</span><span class="n">js</span><span class="o">|</span><span class="n">css</span><span class="o">|</span><span class="n">png</span><span class="o">|</span><span class="n">jpg</span><span class="o">|</span><span class="n">jpeg</span><span class="o">|</span><span class="n">gif</span><span class="o">|</span><span class="n">ico</span><span class="p">)</span><span class="o">$</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">expires</span> <span class="mi">24</span><span class="n">h</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log_not_found</span> <span class="n">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div><p>All requests to <code>'dl.dornea.nu/*</code>' will be redirected to <code>'http://127.0.0.1:8080</code>'. Isn&rsquo;t that simple? Simple configuration, no need for magic!</p>
+</div><p>All requests to <code>'dl.dornea.nu/*</code>&rsquo; will be redirected to <code>'http://127.0.0.1:8080</code>&rsquo;. Isn&rsquo;t that simple? Simple configuration, no need for magic!</p>
 <h2 id="benchmarks">Benchmarks</h2>
 <h3 id="ab-apache-suite-benchmark">ab (apache suite) benchmark</h3>
 <h4 id="lighttpd">lighttpd</h4>
@@ -712,62 +712,62 @@ server {
 </span><span class="lnt">55
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ ab -n <span class="m">1000</span> -c <span class="m">2</span> http://dornea.nu/
-This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">655654</span> $&gt;
-Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
-
-Benchmarking dornea.nu <span class="o">(</span>be patient<span class="o">)</span>
-Completed <span class="m">100</span> requests
-Completed <span class="m">200</span> requests
-Completed <span class="m">300</span> requests
-Completed <span class="m">400</span> requests
-Completed <span class="m">500</span> requests
-Completed <span class="m">600</span> requests
-Completed <span class="m">700</span> requests
-Completed <span class="m">800</span> requests
-Completed <span class="m">900</span> requests
-Completed <span class="m">1000</span> requests
-Finished <span class="m">1000</span> requests
-
-Server Software:        lighttpd/1.4.28
-Server Hostname:        dornea.nu
-Server Port:            <span class="m">80</span>
-
-Document Path:          /
-Document Length:        <span class="m">48134</span> bytes
-
-Concurrency Level:      <span class="m">2</span>
-Time taken <span class="k">for</span> tests:   1438.721 seconds
-Complete requests:      <span class="m">1000</span>
-Failed requests:        <span class="m">2</span>
-   <span class="o">(</span>Connect: 0, Receive: 0, Length: 2, Exceptions: 0<span class="o">)</span>
-Write errors:           <span class="m">0</span>
-Total transferred:      <span class="m">48619020</span> bytes
-HTML transferred:       <span class="m">48133998</span> bytes
-Requests per second:    0.70 <span class="o">[</span><span class="c1">#/sec] (mean)</span>
-Time per request:       2877.441 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>
-Time per request:       1438.721 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>
-Transfer rate:          33.00 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received
-
-Connection Times <span class="o">(</span>ms<span class="o">)</span>
-              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
-Connect:       <span class="m">36</span>   <span class="m">41</span>  18.8     <span class="m">39</span>     <span class="m">271</span>
-Processing:  <span class="m">1369</span> <span class="m">2836</span> 1314.7   <span class="m">2641</span>   <span class="m">15499</span>
-Waiting:     <span class="m">1215</span> <span class="m">2649</span> 1306.8   <span class="m">2467</span>   <span class="m">15346</span>
-Total:       <span class="m">1406</span> <span class="m">2877</span> 1314.6   <span class="m">2680</span>   <span class="m">15536</span>
-
-Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
-  50%   <span class="m">2680</span>
-  66%   <span class="m">2903</span>
-  75%   <span class="m">3062</span>
-  80%   <span class="m">3208</span>
-  90%   <span class="m">3841</span>
-  95%   <span class="m">5057</span>
-  98%   <span class="m">6924</span>
-  99%   <span class="m">9111</span>
- 100%  <span class="m">15536</span> <span class="o">(</span>longest request<span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ab -n <span class="m">1000</span> -c <span class="m">2</span> http://dornea.nu/
+</span></span><span class="line"><span class="cl">This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">655654</span> $&gt;
+</span></span><span class="line"><span class="cl">Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+</span></span><span class="line"><span class="cl">Licensed to The Apache Software Foundation, http://www.apache.org/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Benchmarking dornea.nu <span class="o">(</span>be patient<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Completed <span class="m">100</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">200</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">300</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">400</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">500</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">600</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">700</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">800</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">900</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">1000</span> requests
+</span></span><span class="line"><span class="cl">Finished <span class="m">1000</span> requests
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Server Software:        lighttpd/1.4.28
+</span></span><span class="line"><span class="cl">Server Hostname:        dornea.nu
+</span></span><span class="line"><span class="cl">Server Port:            <span class="m">80</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Document Path:          /
+</span></span><span class="line"><span class="cl">Document Length:        <span class="m">48134</span> bytes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Concurrency Level:      <span class="m">2</span>
+</span></span><span class="line"><span class="cl">Time taken <span class="k">for</span> tests:   1438.721 seconds
+</span></span><span class="line"><span class="cl">Complete requests:      <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">Failed requests:        <span class="m">2</span>
+</span></span><span class="line"><span class="cl">   <span class="o">(</span>Connect: 0, Receive: 0, Length: 2, Exceptions: 0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Write errors:           <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Total transferred:      <span class="m">48619020</span> bytes
+</span></span><span class="line"><span class="cl">HTML transferred:       <span class="m">48133998</span> bytes
+</span></span><span class="line"><span class="cl">Requests per second:    0.70 <span class="o">[</span><span class="c1">#/sec] (mean)</span>
+</span></span><span class="line"><span class="cl">Time per request:       2877.441 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Time per request:       1438.721 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Transfer rate:          33.00 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Connection Times <span class="o">(</span>ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
+</span></span><span class="line"><span class="cl">Connect:       <span class="m">36</span>   <span class="m">41</span>  18.8     <span class="m">39</span>     <span class="m">271</span>
+</span></span><span class="line"><span class="cl">Processing:  <span class="m">1369</span> <span class="m">2836</span> 1314.7   <span class="m">2641</span>   <span class="m">15499</span>
+</span></span><span class="line"><span class="cl">Waiting:     <span class="m">1215</span> <span class="m">2649</span> 1306.8   <span class="m">2467</span>   <span class="m">15346</span>
+</span></span><span class="line"><span class="cl">Total:       <span class="m">1406</span> <span class="m">2877</span> 1314.6   <span class="m">2680</span>   <span class="m">15536</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  50%   <span class="m">2680</span>
+</span></span><span class="line"><span class="cl">  66%   <span class="m">2903</span>
+</span></span><span class="line"><span class="cl">  75%   <span class="m">3062</span>
+</span></span><span class="line"><span class="cl">  80%   <span class="m">3208</span>
+</span></span><span class="line"><span class="cl">  90%   <span class="m">3841</span>
+</span></span><span class="line"><span class="cl">  95%   <span class="m">5057</span>
+</span></span><span class="line"><span class="cl">  98%   <span class="m">6924</span>
+</span></span><span class="line"><span class="cl">  99%   <span class="m">9111</span>
+</span></span><span class="line"><span class="cl"> 100%  <span class="m">15536</span> <span class="o">(</span>longest request<span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="nginx">nginx</h4>
 <div class="highlight"><div class="chroma">
@@ -828,61 +828,61 @@ Percentage of the requests served within a certain <span class="nb">time</span> 
 </span><span class="lnt">54
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ ab -n <span class="m">1000</span> -c <span class="m">2</span> http://dornea.nu/
-This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">655654</span> $&gt;
-Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
-
-Benchmarking dornea.nu <span class="o">(</span>be patient<span class="o">)</span>
-Completed <span class="m">100</span> requests
-Completed <span class="m">200</span> requests
-Completed <span class="m">300</span> requests
-Completed <span class="m">400</span> requests
-Completed <span class="m">500</span> requests
-Completed <span class="m">600</span> requests
-Completed <span class="m">700</span> requests
-Completed <span class="m">800</span> requests
-Completed <span class="m">900</span> requests
-Completed <span class="m">1000</span> requests
-Finished <span class="m">1000</span> requests
-
-Server Software:        nginx/1.0.9
-Server Hostname:        dornea.nu
-Server Port:            <span class="m">80</span>
-
-Document Path:          /
-Document Length:        <span class="m">48216</span> bytes
-
-Concurrency Level:      <span class="m">2</span>
-Time taken <span class="k">for</span> tests:   133.533 seconds
-Complete requests:      <span class="m">1000</span>
-Failed requests:        <span class="m">0</span>
-Write errors:           <span class="m">0</span>
-Total transferred:      <span class="m">48451000</span> bytes
-HTML transferred:       <span class="m">48216000</span> bytes
-Requests per second:    7.49 <span class="o">[</span><span class="c1">#/sec] (mean)</span>
-Time per request:       267.065 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>
-Time per request:       133.533 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>
-Transfer rate:          354.34 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received
-
-Connection Times <span class="o">(</span>ms<span class="o">)</span>
-              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
-Connect:       <span class="m">36</span>   <span class="m">42</span>  18.5     <span class="m">39</span>     <span class="m">268</span>
-Processing:   <span class="m">190</span>  <span class="m">225</span>  43.3    <span class="m">212</span>     <span class="m">483</span>
-Waiting:       <span class="m">36</span>   <span class="m">43</span>  17.9     <span class="m">40</span>     <span class="m">270</span>
-Total:        <span class="m">227</span>  <span class="m">267</span>  52.1    <span class="m">252</span>     <span class="m">713</span>
-
-Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
-  50%    <span class="m">252</span>
-  66%    <span class="m">259</span>
-  75%    <span class="m">262</span>
-  80%    <span class="m">269</span>
-  90%    <span class="m">299</span>
-  95%    <span class="m">371</span>
-  98%    <span class="m">471</span>
-  99%    <span class="m">481</span>
- 100%    <span class="m">713</span> <span class="o">(</span>longest request<span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ab -n <span class="m">1000</span> -c <span class="m">2</span> http://dornea.nu/
+</span></span><span class="line"><span class="cl">This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">655654</span> $&gt;
+</span></span><span class="line"><span class="cl">Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+</span></span><span class="line"><span class="cl">Licensed to The Apache Software Foundation, http://www.apache.org/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Benchmarking dornea.nu <span class="o">(</span>be patient<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Completed <span class="m">100</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">200</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">300</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">400</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">500</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">600</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">700</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">800</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">900</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">1000</span> requests
+</span></span><span class="line"><span class="cl">Finished <span class="m">1000</span> requests
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Server Software:        nginx/1.0.9
+</span></span><span class="line"><span class="cl">Server Hostname:        dornea.nu
+</span></span><span class="line"><span class="cl">Server Port:            <span class="m">80</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Document Path:          /
+</span></span><span class="line"><span class="cl">Document Length:        <span class="m">48216</span> bytes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Concurrency Level:      <span class="m">2</span>
+</span></span><span class="line"><span class="cl">Time taken <span class="k">for</span> tests:   133.533 seconds
+</span></span><span class="line"><span class="cl">Complete requests:      <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">Failed requests:        <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Write errors:           <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Total transferred:      <span class="m">48451000</span> bytes
+</span></span><span class="line"><span class="cl">HTML transferred:       <span class="m">48216000</span> bytes
+</span></span><span class="line"><span class="cl">Requests per second:    7.49 <span class="o">[</span><span class="c1">#/sec] (mean)</span>
+</span></span><span class="line"><span class="cl">Time per request:       267.065 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Time per request:       133.533 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Transfer rate:          354.34 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Connection Times <span class="o">(</span>ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
+</span></span><span class="line"><span class="cl">Connect:       <span class="m">36</span>   <span class="m">42</span>  18.5     <span class="m">39</span>     <span class="m">268</span>
+</span></span><span class="line"><span class="cl">Processing:   <span class="m">190</span>  <span class="m">225</span>  43.3    <span class="m">212</span>     <span class="m">483</span>
+</span></span><span class="line"><span class="cl">Waiting:       <span class="m">36</span>   <span class="m">43</span>  17.9     <span class="m">40</span>     <span class="m">270</span>
+</span></span><span class="line"><span class="cl">Total:        <span class="m">227</span>  <span class="m">267</span>  52.1    <span class="m">252</span>     <span class="m">713</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  50%    <span class="m">252</span>
+</span></span><span class="line"><span class="cl">  66%    <span class="m">259</span>
+</span></span><span class="line"><span class="cl">  75%    <span class="m">262</span>
+</span></span><span class="line"><span class="cl">  80%    <span class="m">269</span>
+</span></span><span class="line"><span class="cl">  90%    <span class="m">299</span>
+</span></span><span class="line"><span class="cl">  95%    <span class="m">371</span>
+</span></span><span class="line"><span class="cl">  98%    <span class="m">471</span>
+</span></span><span class="line"><span class="cl">  99%    <span class="m">481</span>
+</span></span><span class="line"><span class="cl"> 100%    <span class="m">713</span> <span class="o">(</span>longest request<span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="toolspingdomcom-benchmark">tools.pingdom.com benchmark</h3>
 <h4 id="lighttpd-1">lighttpd</h4>
@@ -912,7 +912,7 @@ Percentage of the requests served within a certain <span class="nb">time</span> 
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

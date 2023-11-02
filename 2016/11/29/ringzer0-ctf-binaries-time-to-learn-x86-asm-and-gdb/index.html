@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="This one was a quite easy one. Using radare let&rsquo;s find more information about the binary:
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29  $ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a [0x08048380]&gt; iI havecode true pic false canary false nx true crypto false va true intrp /lib/ld-linux.so.2 bintype elf class ELF32 lang c arch x86 bits 32 machine Intel 80386 os linux minopsz 1 maxopsz 16 pcalign 0 subsys linux endian little stripped false static false linenum true lsyms true relocs true rpath NONE binsz 7450   Ok, now let&rsquo;s have a look at the entry point:" />
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 $ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a [0x08048380]&gt; iI havecode true pic false canary false nx true crypto false va true intrp /lib/ld-linux.so.2 bintype elf class ELF32 lang c arch x86 bits 32 machine Intel 80386 os linux minopsz 1 maxopsz 16 pcalign 0 subsys linux endian little stripped false static false linenum true lsyms true relocs true rpath NONE binsz 7450 Ok, now let&rsquo;s have a look at the entry point:" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2016/11/29/ringzer0-ctf-binaries-time-to-learn-x86-asm-and-gdb/" />
 
@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -140,36 +140,36 @@ type="image/x-icon"/>
 </span><span class="lnt">29
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ r2 -AA 88eb31060c4abd0931878bf7d2dd8c1a
-
-[0x08048380]&gt; iI
-havecode true
-pic      false
-canary   false
-nx       true
-crypto   false
-va       true
-intrp    /lib/ld-linux.so.2
-bintype  elf
-class    ELF32
-lang     c
-arch     x86
-bits     32
-machine  Intel 80386
-os       linux
-minopsz  1
-maxopsz  16
-pcalign  0
-subsys   linux
-endian   little
-stripped false
-static   false
-linenum  true
-lsyms    true
-relocs   true
-rpath    NONE
-binsz    7450
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">$</span> <span class="n">r2</span> <span class="o">-</span><span class="n">AA</span> <span class="mi">88</span><span class="n">eb31060c4abd0931878bf7d2dd8c1a</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="mh">0x08048380</span><span class="p">]</span><span class="o">&gt;</span> <span class="n">iI</span>
+</span></span><span class="line"><span class="cl"><span class="n">havecode</span> <span class="bp">true</span>
+</span></span><span class="line"><span class="cl"><span class="n">pic</span>      <span class="bp">false</span>
+</span></span><span class="line"><span class="cl"><span class="n">canary</span>   <span class="bp">false</span>
+</span></span><span class="line"><span class="cl"><span class="n">nx</span>       <span class="bp">true</span>
+</span></span><span class="line"><span class="cl"><span class="n">crypto</span>   <span class="bp">false</span>
+</span></span><span class="line"><span class="cl"><span class="n">va</span>       <span class="bp">true</span>
+</span></span><span class="line"><span class="cl"><span class="n">intrp</span>    <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">ld</span><span class="o">-</span><span class="n">linux</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="n">bintype</span>  <span class="n">elf</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span>    <span class="n">ELF32</span>
+</span></span><span class="line"><span class="cl"><span class="n">lang</span>     <span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="n">arch</span>     <span class="n">x86</span>
+</span></span><span class="line"><span class="cl"><span class="n">bits</span>     <span class="mi">32</span>
+</span></span><span class="line"><span class="cl"><span class="n">machine</span>  <span class="n">Intel</span> <span class="mi">80386</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span>       <span class="n">linux</span>
+</span></span><span class="line"><span class="cl"><span class="n">minopsz</span>  <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">maxopsz</span>  <span class="mi">16</span>
+</span></span><span class="line"><span class="cl"><span class="n">pcalign</span>  <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">subsys</span>   <span class="n">linux</span>
+</span></span><span class="line"><span class="cl"><span class="n">endian</span>   <span class="n">little</span>
+</span></span><span class="line"><span class="cl"><span class="n">stripped</span> <span class="bp">false</span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span>   <span class="bp">false</span>
+</span></span><span class="line"><span class="cl"><span class="n">linenum</span>  <span class="bp">true</span>
+</span></span><span class="line"><span class="cl"><span class="n">lsyms</span>    <span class="bp">true</span>
+</span></span><span class="line"><span class="cl"><span class="n">relocs</span>   <span class="bp">true</span>
+</span></span><span class="line"><span class="cl"><span class="n">rpath</span>    <span class="n">NONE</span>
+</span></span><span class="line"><span class="cl"><span class="n">binsz</span>    <span class="mi">7450</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Ok, now let&rsquo;s have a look at the <strong>entry point</strong>:</p>
 <div class="highlight"><div class="chroma">
@@ -240,77 +240,75 @@ binsz    7450
 </span><span class="lnt">64
 </span><span class="lnt">65
 </span><span class="lnt">66
-</span><span class="lnt">67
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[0x08048380]&gt; pdf @ sym.main
-;-- main:
-/ (fcn) sym.main 231
-   sym.main ();
-           ; var int local_4h_2 @ ebp-0x4
-           ; var int local_4h @ esp+0x4
-           ; var int local_8h @ esp+0x8
-           ; var int local_1ch @ esp+0x1c
-           ; arg int arg_2ch @ esp+0x2c
-           ; JMP XREF from 0x08048397 (entry0)
-           ; DATA XREF from 0x08048397 (entry0)
-           0x0804846c      55             push ebp
-           0x0804846d      89e5           mov ebp, esp
-           0x0804846f      57             push edi
-           0x08048470      83e4f0         and esp, 0xfffffff0
-           0x08048473      83ec30         sub esp, 0x30               ; &#39;0&#39;
-           0x08048476      c744242c0000.  mov dword [esp + arg_2ch], 0
-           0x0804847e      c70424180000.  mov dword [esp], 0x18       ; [0x18:4]=0x8048380 sym._start
-           0x08048485      e8a6feffff     call sym.imp.malloc        ;  void *malloc(size_t size);
-           0x0804848a      8944242c       mov dword [esp + arg_2ch], eax
-           0x0804848e      c74424081800.  mov dword [esp + local_8h], 0x18 ; [0x18:4]=0x8048380 sym._start
-           0x08048496      c74424040000.  mov dword [esp + local_4h], 0
-           0x0804849e      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484a2      890424         mov dword [esp], eax
-           0x080484a5      e8c6feffff     call sym.imp.memset
-           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484ae      c700464c4147   mov dword [eax], 0x47414c46 ; [0x47414c46:4]=-1
-           0x080484b4      c740042d3430.  mov dword [eax + 4], 0x3930342d ; [0x3930342d:4]=-1
-           0x080484bb      66c740083200   mov word [eax + 8], 0x32    ; &#39;2&#39; ; [0x32:2]=27 ; &#39;2&#39;
-           0x080484c1      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484c5      c744241cffff.  mov dword [esp + local_1ch], 0xffffffff ; [0xffffffff:4]=-1 LEA edi ; edi
-           0x080484cd      89c2           mov edx, eax
-           0x080484cf      b800000000     mov eax, 0
-           0x080484d4      8b4c241c       mov ecx, dword [esp + local_1ch] ; [0x1c:4]=52
-           0x080484d8      89d7           mov edi, edx
-           0x080484da      f2ae           repne scasb al, byte es:[edi]
-           0x080484dc      89c8           mov eax, ecx
-           0x080484de      f7d0           not eax
-           0x080484e0      8d50ff         lea edx, [eax - 1]
-           0x080484e3      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484e7      01d0           add eax, edx
-           0x080484e9      c70038343975   mov dword [eax], 0x75393438 ; [0x75393438:4]=-1
-           0x080484ef      c74004696f32.  mov dword [eax + 4], 0x6a326f69 ; [0x6a326f69:4]=-1
-           0x080484f6      66c740086600   mov word [eax + 8], 0x66    ; &#39;f&#39; ; [0x66:2]=0 ; &#39;f&#39;
-           0x080484fc      c70424f88504.  mov dword [esp], str.Loading... ; [0x80485f8:4]=0x64616f4c LEA str.Loading... ; &#34;Loading...&#34; @ 0x80485f8
-           0x08048503      e838feffff     call sym.imp.puts
-           0x08048508      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x0804850c      c744241cffff.  mov dword [esp + local_1ch], 0xffffffff ; [0xffffffff:4]=-1 LEA edi ; edi
-           0x08048514      89c2           mov edx, eax
-           0x08048516      b800000000     mov eax, 0
-           0x0804851b      8b4c241c       mov ecx, dword [esp + local_1ch] ; [0x1c:4]=52
-           0x0804851f      89d7           mov edi, edx
-           0x08048521      f2ae           repne scasb al, byte es:[edi]
-           0x08048523      89c8           mov eax, ecx
-           0x08048525      f7d0           not eax
-           0x08048527      8d50ff         lea edx, [eax - 1]
-           0x0804852a      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x0804852e      01d0           add eax, edx
-           0x08048530      c7006b6c736a   mov dword [eax], 0x6a736c6b ; [0x6a736c6b:4]=-1
-           0x08048536      c74004346b6c.  mov dword [eax + 4], 0x6c6b34 ; [0x6c6b34:4]=-1
-           0x0804853d      c70424038604.  mov dword [esp], str.Where_is_the_flag_ ; [0x8048603:4]=0x72656857 LEA str.Where_is_the_flag_ ; &#34;Where is the flag?&#34; @ 0x8048603
-           0x08048544      e8f7fdffff     call sym.imp.puts
-           0x08048549      b800000000     mov eax, 0
-           0x0804854e      8b7dfc         mov edi, dword [ebp - local_4h_2]
-           0x08048551      c9             leave
-           0x08048552      c3             ret
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">[</span><span class="mh">0x08048380</span><span class="p">]</span><span class="o">&gt;</span> <span class="n">pdf</span> <span class="err">@</span> <span class="n">sym</span><span class="o">.</span><span class="n">main</span>
+</span></span><span class="line"><span class="cl"><span class="p">;</span><span class="o">--</span> <span class="n">main</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="o">/</span> <span class="p">(</span><span class="n">fcn</span><span class="p">)</span> <span class="n">sym</span><span class="o">.</span><span class="n">main</span> <span class="mi">231</span>
+</span></span><span class="line"><span class="cl">   <span class="n">sym</span><span class="o">.</span><span class="n">main</span> <span class="p">();</span>
+</span></span><span class="line"><span class="cl">           <span class="p">;</span> <span class="k">var</span> <span class="ne">int</span> <span class="n">local_4h_2</span> <span class="err">@</span> <span class="n">ebp</span><span class="o">-</span><span class="mh">0x4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">;</span> <span class="k">var</span> <span class="ne">int</span> <span class="n">local_4h</span> <span class="err">@</span> <span class="n">esp</span><span class="o">+</span><span class="mh">0x4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">;</span> <span class="k">var</span> <span class="ne">int</span> <span class="n">local_8h</span> <span class="err">@</span> <span class="n">esp</span><span class="o">+</span><span class="mh">0x8</span>
+</span></span><span class="line"><span class="cl">           <span class="p">;</span> <span class="k">var</span> <span class="ne">int</span> <span class="n">local_1ch</span> <span class="err">@</span> <span class="n">esp</span><span class="o">+</span><span class="mh">0x1c</span>
+</span></span><span class="line"><span class="cl">           <span class="p">;</span> <span class="n">arg</span> <span class="ne">int</span> <span class="n">arg_2ch</span> <span class="err">@</span> <span class="n">esp</span><span class="o">+</span><span class="mh">0x2c</span>
+</span></span><span class="line"><span class="cl">           <span class="p">;</span> <span class="n">JMP</span> <span class="n">XREF</span> <span class="n">from</span> <span class="mh">0x08048397</span> <span class="p">(</span><span class="n">entry0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">           <span class="p">;</span> <span class="n">DATA</span> <span class="n">XREF</span> <span class="n">from</span> <span class="mh">0x08048397</span> <span class="p">(</span><span class="n">entry0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804846c</span>      <span class="mi">55</span>             <span class="n">push</span> <span class="n">ebp</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804846d</span>      <span class="mf">89e5</span>           <span class="n">mov</span> <span class="n">ebp</span><span class="p">,</span> <span class="n">esp</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804846f</span>      <span class="mi">57</span>             <span class="n">push</span> <span class="n">edi</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048470</span>      <span class="mf">83e4</span><span class="n">f0</span>         <span class="ow">and</span> <span class="n">esp</span><span class="p">,</span> <span class="mh">0xfffffff0</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048473</span>      <span class="mi">83</span><span class="n">ec30</span>         <span class="n">sub</span> <span class="n">esp</span><span class="p">,</span> <span class="mh">0x30</span>               <span class="p">;</span> <span class="s1">&#39;0&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048476</span>      <span class="n">c744242c0000</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">],</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804847e</span>      <span class="n">c70424180000</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span><span class="p">],</span> <span class="mh">0x18</span>       <span class="p">;</span> <span class="p">[</span><span class="mh">0x18</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x8048380</span> <span class="n">sym</span><span class="o">.</span><span class="n">_start</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048485</span>      <span class="n">e8a6feffff</span>     <span class="n">call</span> <span class="n">sym</span><span class="o">.</span><span class="n">imp</span><span class="o">.</span><span class="n">malloc</span>        <span class="p">;</span>  <span class="n">void</span> <span class="o">*</span><span class="n">malloc</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804848a</span>      <span class="mi">8944242</span><span class="n">c</span>       <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">],</span> <span class="n">eax</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804848e</span>      <span class="n">c74424081800</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">local_8h</span><span class="p">],</span> <span class="mh">0x18</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x18</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x8048380</span> <span class="n">sym</span><span class="o">.</span><span class="n">_start</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048496</span>      <span class="n">c74424040000</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">local_4h</span><span class="p">],</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804849e</span>      <span class="mi">8</span><span class="n">b44242c</span>       <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x2c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x280009</span> <span class="p">;</span> <span class="s1">&#39;,&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484a2</span>      <span class="mi">890424</span>         <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span><span class="p">],</span> <span class="n">eax</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484a5</span>      <span class="n">e8c6feffff</span>     <span class="n">call</span> <span class="n">sym</span><span class="o">.</span><span class="n">imp</span><span class="o">.</span><span class="n">memset</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484aa</span>      <span class="mi">8</span><span class="n">b44242c</span>       <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x2c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x280009</span> <span class="p">;</span> <span class="s1">&#39;,&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484ae</span>      <span class="n">c700464c4147</span>   <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">eax</span><span class="p">],</span> <span class="mh">0x47414c46</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x47414c46</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484b4</span>      <span class="n">c740042d3430</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">eax</span> <span class="o">+</span> <span class="mi">4</span><span class="p">],</span> <span class="mh">0x3930342d</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x3930342d</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484bb</span>      <span class="mi">66</span><span class="n">c740083200</span>   <span class="n">mov</span> <span class="n">word</span> <span class="p">[</span><span class="n">eax</span> <span class="o">+</span> <span class="mi">8</span><span class="p">],</span> <span class="mh">0x32</span>    <span class="p">;</span> <span class="s1">&#39;2&#39;</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x32</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">27</span> <span class="p">;</span> <span class="s1">&#39;2&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484c1</span>      <span class="mi">8</span><span class="n">b44242c</span>       <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x2c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x280009</span> <span class="p">;</span> <span class="s1">&#39;,&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484c5</span>      <span class="n">c744241cffff</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">local_1ch</span><span class="p">],</span> <span class="mh">0xffffffff</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0xffffffff</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span> <span class="n">LEA</span> <span class="n">edi</span> <span class="p">;</span> <span class="n">edi</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484cd</span>      <span class="mi">89</span><span class="n">c2</span>           <span class="n">mov</span> <span class="n">edx</span><span class="p">,</span> <span class="n">eax</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484cf</span>      <span class="n">b800000000</span>     <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484d4</span>      <span class="mi">8</span><span class="n">b4c241c</span>       <span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">local_1ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x1c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mi">52</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484d8</span>      <span class="mi">89</span><span class="n">d7</span>           <span class="n">mov</span> <span class="n">edi</span><span class="p">,</span> <span class="n">edx</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484da</span>      <span class="n">f2ae</span>           <span class="n">repne</span> <span class="n">scasb</span> <span class="n">al</span><span class="p">,</span> <span class="n">byte</span> <span class="n">es</span><span class="p">:[</span><span class="n">edi</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484dc</span>      <span class="mi">89</span><span class="n">c8</span>           <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">ecx</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484de</span>      <span class="n">f7d0</span>           <span class="ow">not</span> <span class="n">eax</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484e0</span>      <span class="mi">8</span><span class="n">d50ff</span>         <span class="n">lea</span> <span class="n">edx</span><span class="p">,</span> <span class="p">[</span><span class="n">eax</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484e3</span>      <span class="mi">8</span><span class="n">b44242c</span>       <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x2c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x280009</span> <span class="p">;</span> <span class="s1">&#39;,&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484e7</span>      <span class="mi">01</span><span class="n">d0</span>           <span class="n">add</span> <span class="n">eax</span><span class="p">,</span> <span class="n">edx</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484e9</span>      <span class="n">c70038343975</span>   <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">eax</span><span class="p">],</span> <span class="mh">0x75393438</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x75393438</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484ef</span>      <span class="n">c74004696f32</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">eax</span> <span class="o">+</span> <span class="mi">4</span><span class="p">],</span> <span class="mh">0x6a326f69</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x6a326f69</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484f6</span>      <span class="mi">66</span><span class="n">c740086600</span>   <span class="n">mov</span> <span class="n">word</span> <span class="p">[</span><span class="n">eax</span> <span class="o">+</span> <span class="mi">8</span><span class="p">],</span> <span class="mh">0x66</span>    <span class="p">;</span> <span class="s1">&#39;f&#39;</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x66</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span> <span class="p">;</span> <span class="s1">&#39;f&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x080484fc</span>      <span class="n">c70424f88504</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span><span class="p">],</span> <span class="nb">str</span><span class="o">.</span><span class="n">Loading</span><span class="o">...</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x80485f8</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x64616f4c</span> <span class="n">LEA</span> <span class="nb">str</span><span class="o">.</span><span class="n">Loading</span><span class="o">...</span> <span class="p">;</span> <span class="s2">&#34;Loading...&#34;</span> <span class="err">@</span> <span class="mh">0x80485f8</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048503</span>      <span class="n">e838feffff</span>     <span class="n">call</span> <span class="n">sym</span><span class="o">.</span><span class="n">imp</span><span class="o">.</span><span class="n">puts</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048508</span>      <span class="mi">8</span><span class="n">b44242c</span>       <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x2c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x280009</span> <span class="p">;</span> <span class="s1">&#39;,&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804850c</span>      <span class="n">c744241cffff</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">local_1ch</span><span class="p">],</span> <span class="mh">0xffffffff</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0xffffffff</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span> <span class="n">LEA</span> <span class="n">edi</span> <span class="p">;</span> <span class="n">edi</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048514</span>      <span class="mi">89</span><span class="n">c2</span>           <span class="n">mov</span> <span class="n">edx</span><span class="p">,</span> <span class="n">eax</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048516</span>      <span class="n">b800000000</span>     <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804851b</span>      <span class="mi">8</span><span class="n">b4c241c</span>       <span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">local_1ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x1c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mi">52</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804851f</span>      <span class="mi">89</span><span class="n">d7</span>           <span class="n">mov</span> <span class="n">edi</span><span class="p">,</span> <span class="n">edx</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048521</span>      <span class="n">f2ae</span>           <span class="n">repne</span> <span class="n">scasb</span> <span class="n">al</span><span class="p">,</span> <span class="n">byte</span> <span class="n">es</span><span class="p">:[</span><span class="n">edi</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048523</span>      <span class="mi">89</span><span class="n">c8</span>           <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">ecx</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048525</span>      <span class="n">f7d0</span>           <span class="ow">not</span> <span class="n">eax</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048527</span>      <span class="mi">8</span><span class="n">d50ff</span>         <span class="n">lea</span> <span class="n">edx</span><span class="p">,</span> <span class="p">[</span><span class="n">eax</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804852a</span>      <span class="mi">8</span><span class="n">b44242c</span>       <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span> <span class="o">+</span> <span class="n">arg_2ch</span><span class="p">]</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x2c</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x280009</span> <span class="p">;</span> <span class="s1">&#39;,&#39;</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804852e</span>      <span class="mi">01</span><span class="n">d0</span>           <span class="n">add</span> <span class="n">eax</span><span class="p">,</span> <span class="n">edx</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048530</span>      <span class="n">c7006b6c736a</span>   <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">eax</span><span class="p">],</span> <span class="mh">0x6a736c6b</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x6a736c6b</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048536</span>      <span class="n">c74004346b6c</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">eax</span> <span class="o">+</span> <span class="mi">4</span><span class="p">],</span> <span class="mh">0x6c6b34</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x6c6b34</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804853d</span>      <span class="n">c70424038604</span><span class="o">.</span>  <span class="n">mov</span> <span class="n">dword</span> <span class="p">[</span><span class="n">esp</span><span class="p">],</span> <span class="nb">str</span><span class="o">.</span><span class="n">Where_is_the_flag_</span> <span class="p">;</span> <span class="p">[</span><span class="mh">0x8048603</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mh">0x72656857</span> <span class="n">LEA</span> <span class="nb">str</span><span class="o">.</span><span class="n">Where_is_the_flag_</span> <span class="p">;</span> <span class="s2">&#34;Where is the flag?&#34;</span> <span class="err">@</span> <span class="mh">0x8048603</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048544</span>      <span class="n">e8f7fdffff</span>     <span class="n">call</span> <span class="n">sym</span><span class="o">.</span><span class="n">imp</span><span class="o">.</span><span class="n">puts</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048549</span>      <span class="n">b800000000</span>     <span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x0804854e</span>      <span class="mi">8</span><span class="n">b7dfc</span>         <span class="n">mov</span> <span class="n">edi</span><span class="p">,</span> <span class="n">dword</span> <span class="p">[</span><span class="n">ebp</span> <span class="o">-</span> <span class="n">local_4h_2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048551</span>      <span class="n">c9</span>             <span class="n">leave</span>
+</span></span><span class="line"><span class="cl">           <span class="mh">0x08048552</span>      <span class="n">c3</span>             <span class="n">ret</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Indeed, this is a lot of information. Let&rsquo;s dissect the programm&rsquo;s flow:</p>
 <div class="highlight"><div class="chroma">
@@ -322,12 +320,12 @@ binsz    7450
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">           0x0804846c      55             push ebp
-           0x0804846d      89e5           mov ebp, esp
-           0x0804846f      57             push edi
-           0x08048470      83e4f0         and esp, 0xfffffff0
-           0x08048473      83ec30         sub esp, 0x30               ; &#39;0&#39;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">           0x0804846c      55             push ebp
+</span></span><span class="line"><span class="cl">           0x0804846d      89e5           mov ebp, esp
+</span></span><span class="line"><span class="cl">           0x0804846f      57             push edi
+</span></span><span class="line"><span class="cl">           0x08048470      83e4f0         and esp, 0xfffffff0
+</span></span><span class="line"><span class="cl">           0x08048473      83ec30         sub esp, 0x30               ; &#39;0&#39;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This looks like a function <strong>prologue</strong>: Save the <strong>stack base pointer</strong>, allocate additional stack place (0x30).</p>
 <div class="highlight"><div class="chroma">
@@ -337,10 +335,10 @@ binsz    7450
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">           0x08048476      c744242c0000.  mov dword [esp + arg_2ch], 0
-           0x0804847e      c70424180000.  mov dword [esp], 0x18       ; [0x18:4]=0x8048380 sym._start
-           0x08048485      e8a6feffff     call sym.imp.malloc        ;  void *malloc(size_t size);
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">           0x08048476      c744242c0000.  mov dword [esp + arg_2ch], 0
+</span></span><span class="line"><span class="cl">           0x0804847e      c70424180000.  mov dword [esp], 0x18       ; [0x18:4]=0x8048380 sym._start
+</span></span><span class="line"><span class="cl">           0x08048485      e8a6feffff     call sym.imp.malloc        ;  void *malloc(size_t size);
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Allocate some heap using <code>malloc</code> &hellip;</p>
 <div class="highlight"><div class="chroma">
@@ -353,13 +351,13 @@ binsz    7450
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">           0x0804848a      8944242c       mov dword [esp + arg_2ch], eax
-           0x0804848e      c74424081800.  mov dword [esp + local_8h], 0x18 ; [0x18:4]=0x8048380 sym._start
-           0x08048496      c74424040000.  mov dword [esp + local_4h], 0
-           0x0804849e      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484a2      890424         mov dword [esp], eax
-           0x080484a5      e8c6feffff     call sym.imp.memset
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">           0x0804848a      8944242c       mov dword [esp + arg_2ch], eax
+</span></span><span class="line"><span class="cl">           0x0804848e      c74424081800.  mov dword [esp + local_8h], 0x18 ; [0x18:4]=0x8048380 sym._start
+</span></span><span class="line"><span class="cl">           0x08048496      c74424040000.  mov dword [esp + local_4h], 0
+</span></span><span class="line"><span class="cl">           0x0804849e      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+</span></span><span class="line"><span class="cl">           0x080484a2      890424         mov dword [esp], eax
+</span></span><span class="line"><span class="cl">           0x080484a5      e8c6feffff     call sym.imp.memset
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The syntax for <code>memset</code> looks like this:</p>
 <div class="highlight"><div class="chroma">
@@ -374,15 +372,15 @@ binsz    7450
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="n">SYNOPSIS</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="nf">memset</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">n</span><span class="p">);</span>
-
-<span class="n">DESCRIPTION</span>
-   <span class="n">The</span> <span class="n">memset</span><span class="p">()</span> <span class="n">function</span> <span class="n">fills</span> <span class="n">the</span> <span class="n">first</span> <span class="n">n</span> <span class="n">bytes</span> <span class="n">of</span> <span class="n">the</span> <span class="n">memory</span> <span class="n">area</span> <span class="n">pointed</span> <span class="n">to</span> <span class="n">by</span> <span class="n">s</span> <span class="n">with</span> <span class="n">the</span> <span class="n">constant</span> <span class="n">byte</span> <span class="n">c</span><span class="p">.</span>
-
-<span class="n">RETURN</span> <span class="n">VALUE</span>
-  <span class="n">The</span> <span class="n">memset</span><span class="p">()</span> <span class="n">function</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">the</span> <span class="n">memory</span> <span class="n">area</span> <span class="n">s</span><span class="p">.</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.c" data-lang=".c"><span class="line"><span class="cl"><span class="n">SYNOPSIS</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="nf">memset</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">DESCRIPTION</span>
+</span></span><span class="line"><span class="cl">   <span class="n">The</span> <span class="nf">memset</span><span class="p">()</span> <span class="n">function</span> <span class="n">fills</span> <span class="n">the</span> <span class="n">first</span> <span class="n">n</span> <span class="n">bytes</span> <span class="n">of</span> <span class="n">the</span> <span class="n">memory</span> <span class="n">area</span> <span class="n">pointed</span> <span class="n">to</span> <span class="n">by</span> <span class="n">s</span> <span class="n">with</span> <span class="n">the</span> <span class="n">constant</span> <span class="n">byte</span> <span class="n">c</span><span class="p">.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">RETURN</span> <span class="n">VALUE</span>
+</span></span><span class="line"><span class="cl">  <span class="n">The</span> <span class="nf">memset</span><span class="p">()</span> <span class="n">function</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">the</span> <span class="n">memory</span> <span class="n">area</span> <span class="n">s</span><span class="p">.</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Since we&rsquo;re dealing with <code>x86</code> (<a href="http://wiki.osdev.org/Calling_Conventions">this site</a> is very good) the
 arguments for <code>memset</code> are being pushed into the stack:</p>
@@ -471,27 +469,27 @@ some values will be <code>mov</code>ed into the previously allocated memory rang
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484ae      c700464c4147   mov dword [eax], 0x47414c46 ; [0x47414c46:4]=-1
-           0x080484b4      c740042d3430.  mov dword [eax + 4], 0x3930342d ; [0x3930342d:4]=-1
-           0x080484bb      66c740083200   mov word [eax + 8], 0x32    ; &#39;2&#39; ; [0x32:2]=27 ; &#39;2&#39;
-           0x080484c1      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484c5      c744241cffff.  mov dword [esp + local_1ch], 0xffffffff ; [0xffffffff:4]=-1 LEA edi ; edi
-           0x080484cd      89c2           mov edx, eax
-           0x080484cf      b800000000     mov eax, 0
-           0x080484d4      8b4c241c       mov ecx, dword [esp + local_1ch] ; [0x1c:4]=52
-           0x080484d8      89d7           mov edi, edx
-           0x080484da      f2ae           repne scasb al, byte es:[edi]
-           0x080484dc      89c8           mov eax, ecx
-           0x080484de      f7d0           not eax
-           0x080484e0      8d50ff         lea edx, [eax - 1]
-           0x080484e3      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
-           0x080484e7      01d0           add eax, edx
-           0x080484e9      c70038343975   mov dword [eax], 0x75393438 ; [0x75393438:4]=-1
-           0x080484ef      c74004696f32.  mov dword [eax + 4], 0x6a326f69 ; [0x6a326f69:4]=-1
-           0x080484f6      66c740086600   mov word [eax + 8], 0x66    ; &#39;f&#39; ; [0x66:2]=0 ; &#39;f&#39;
-           0x080484fc      c70424f88504.  mov dword [esp], str.Loading... ; [0x80485f8:4]=0x64616f4c LEA str.Loading... ; &#34;Loading...&#34; @ 0x80485f8
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">           0x080484aa      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+</span></span><span class="line"><span class="cl">           0x080484ae      c700464c4147   mov dword [eax], 0x47414c46 ; [0x47414c46:4]=-1
+</span></span><span class="line"><span class="cl">           0x080484b4      c740042d3430.  mov dword [eax + 4], 0x3930342d ; [0x3930342d:4]=-1
+</span></span><span class="line"><span class="cl">           0x080484bb      66c740083200   mov word [eax + 8], 0x32    ; &#39;2&#39; ; [0x32:2]=27 ; &#39;2&#39;
+</span></span><span class="line"><span class="cl">           0x080484c1      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+</span></span><span class="line"><span class="cl">           0x080484c5      c744241cffff.  mov dword [esp + local_1ch], 0xffffffff ; [0xffffffff:4]=-1 LEA edi ; edi
+</span></span><span class="line"><span class="cl">           0x080484cd      89c2           mov edx, eax
+</span></span><span class="line"><span class="cl">           0x080484cf      b800000000     mov eax, 0
+</span></span><span class="line"><span class="cl">           0x080484d4      8b4c241c       mov ecx, dword [esp + local_1ch] ; [0x1c:4]=52
+</span></span><span class="line"><span class="cl">           0x080484d8      89d7           mov edi, edx
+</span></span><span class="line"><span class="cl">           0x080484da      f2ae           repne scasb al, byte es:[edi]
+</span></span><span class="line"><span class="cl">           0x080484dc      89c8           mov eax, ecx
+</span></span><span class="line"><span class="cl">           0x080484de      f7d0           not eax
+</span></span><span class="line"><span class="cl">           0x080484e0      8d50ff         lea edx, [eax - 1]
+</span></span><span class="line"><span class="cl">           0x080484e3      8b44242c       mov eax, dword [esp + arg_2ch] ; [0x2c:4]=0x280009 ; &#39;,&#39;
+</span></span><span class="line"><span class="cl">           0x080484e7      01d0           add eax, edx
+</span></span><span class="line"><span class="cl">           0x080484e9      c70038343975   mov dword [eax], 0x75393438 ; [0x75393438:4]=-1
+</span></span><span class="line"><span class="cl">           0x080484ef      c74004696f32.  mov dword [eax + 4], 0x6a326f69 ; [0x6a326f69:4]=-1
+</span></span><span class="line"><span class="cl">           0x080484f6      66c740086600   mov word [eax + 8], 0x66    ; &#39;f&#39; ; [0x66:2]=0 ; &#39;f&#39;
+</span></span><span class="line"><span class="cl">           0x080484fc      c70424f88504.  mov dword [esp], str.Loading... ; [0x80485f8:4]=0x64616f4c LEA str.Loading... ; &#34;Loading...&#34; @ 0x80485f8
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>At this point I&rsquo;ll switch to <strong>dynamic analysis</strong> and therefore <strong>run</strong> the code:</p>
 <div class="highlight"><div class="chroma">
@@ -502,11 +500,11 @@ some values will be <code>mov</code>ed into the previously allocated memory rang
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ gdb 88eb31060c4abd0931878bf7d2dd8c1a
-...
-gef&gt; b *0x080484aa
-gef&gt; r
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ gdb 88eb31060c4abd0931878bf7d2dd8c1a
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">gef&gt; b *0x080484aa
+</span></span><span class="line"><span class="cl">gef&gt; r
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now from <code>0x080484aa</code> through <code>0x080484fc</code> you can <code>s</code> (step) the opcodes. Then pay attention to the stack. You
 should have sth like:</p>
@@ -592,7 +590,7 @@ should have sth like:</p>
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

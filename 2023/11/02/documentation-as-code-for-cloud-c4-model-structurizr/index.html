@@ -1,0 +1,1961 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Documentation as Code for Cloud - C4 Model &amp; Structurizr - blog.dornea.nu</title>
+  <meta content='Documentation as Code for Cloud - C4 Model &amp; Structurizr - blog.dornea.nu' property='title' />
+  <meta content='Documentation as Code for Cloud - C4 Model &amp; Structurizr - blog.dornea.nu' property='og:title' />
+
+
+<meta property="og:description" content="Introduction In the last post, I&rsquo;ve used PlantUML to draw things like groups, accounts, and clusters. However, I didn&rsquo;t focus on how different parts inside the business layer interact (usually components related to the main application/system relevant for your business). Now, we&rsquo;ll use a DSL Domain-Specific Language specific for this use case to show these interactions between components, services, and systems. I&rsquo;ll use the C4 model to show the same system in different ways based on who we&rsquo;re showing it to." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2023/11/02/documentation-as-code-for-cloud-c4-model-structurizr/" />
+
+
+<meta property="article:published_time" content="2023-11-02T20:02:33&#43;01:00"/>
+<meta property="article:modified_time" content="2023-11-02T20:02:33&#43;01:00"/>
+
+
+
+
+
+  
+  
+
+
+
+
+
+<meta name="generator" content="Hugo 0.120.3">
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+
+
+<script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="b8a4b728-8eda-42fb-8376-10168c622160" async></script>
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Documentation as Code for Cloud - C4 Model &amp; Structurizr</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>02 Nov 2023</time> 
+     | 
+    
+
+    
+     ~
+  
+
+19 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/aws' class="link silver">aws</a> <a href='https://blog.dornea.nu/tags/c4' class="link silver">c4</a> <a href='https://blog.dornea.nu/tags/architecture' class="link silver">architecture</a> <a href='https://blog.dornea.nu/tags/documentation' class="link silver">documentation</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2023/07/18/documentation-as-code-for-cloud/">
+                        Part 1: Documentation as Code for Cloud
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2023/07/30/documentation-as-code-for-cloud-plantuml/">
+                        Part 2: Documentation as Code for Cloud - PlantUML
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item active">
+                    Part 3: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+      <h2 id="introduction">Introduction</h2>
+<p>In the <a href="https://blog.dornea.nu/2023/07/30/documentation-as-code-for-cloud-plantuml/">last post</a>, I&rsquo;ve used <a href="https://brainfck.org/t/plantuml">PlantUML</a> to draw things like <strong>groups</strong>, <strong>accounts</strong>, and <strong>clusters</strong>. However, I didn&rsquo;t focus on how
+different parts inside the business layer interact (usually components related to the main application/system relevant
+for your business). Now, we&rsquo;ll use a DSL
+<span class="sidenote-number"><small class="sidenote">
+Domain-Specific Language specific for this use case
+</small></span>
+to show these interactions between <em>components</em>, <em>services</em>, and <em>systems</em>. I&rsquo;ll use the <strong>C4 model</strong> to show the same system in <strong>different ways</strong> based on who we&rsquo;re showing it to. It allows us to adjust how much detail we include.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-LiveDeployment.png" class="glightbox" data-glightbox="title:To learn how this diagram was created, continue reading 👇; description: Deployment View; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-LiveDeployment.png" alt="image">
+        <div class="caption">To learn how this diagram was created, continue reading 👇</div>
+    </a>
+</div>
+
+<h2 id="c4-model">C4 Model</h2>
+<p>The C4 model was developed by <a href="https://simonbrown.je/">Simon Brown</a> as a means of providing a <strong>visual map</strong> of system components across <strong>four levels
+of abstraction</strong>, as suggested by its title. Each level of abstraction in the C4 model suits different <strong>audiences</strong>, from the
+non-technical management level to detailed developer perspectives, each level of abstraction is tailored to meet its
+observer&rsquo;s understanding. To maintain consistency when describing the system design, the C4 model uniformly applies the same terminology and abstractions across all its levels, effectively implementing ubiquitous language principles from Domain-Driven Design (<a href="https://brainfck.org/t/ddd">DDD</a>).</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-summary.png" class="glightbox" data-glightbox="title:The 4 perspectives in the C4 model; description: The 4 perspectives in the C4 model; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-summary.png" alt="image">
+        <div class="caption">The 4 perspectives in the C4 model</div>
+    </a>
+</div>
+
+<h3 id="abstractions">Abstractions</h3>
+<p>The C4 model uses <a href="https://c4model.com/#Abstractions">abstractions</a> to form an hierarchy of well-defined diagrams (at different levels). Currently these
+abstractions are available:</p>
+<ol>
+<li>
+<p><strong>Person</strong></p>
+<ul>
+<li>Represents human users interacting with the system (e.g., Administrator, End User, Customer).</li>
+</ul>
+</li>
+<li>
+<p><strong>System</strong></p>
+<ul>
+<li>A top-level view showing different people interacting with different software systems. (e.g., E-commerce Platform,
+Payment Gateway, our self-destructing email service 😎).</li>
+</ul>
+</li>
+<li>
+<p><strong>Container</strong></p>
+<ul>
+<li>Involves zooming into an individual system to reveal containers within. Examples include server-side applications, client-side applications, databases, etc.</li>
+<li>not to be confused with Docker containers</li>
+</ul>
+</li>
+<li>
+<p><strong>Component</strong></p>
+<ul>
+<li>Dives deeper into an individual container to expose its components, like classes, interfaces or objects in your code.</li>
+</ul>
+</li>
+</ol>
+<h3 id="diagram-types">Diagram types</h3>
+<h4 id="level-1-context-diagram">Level 1: Context diagram</h4>
+<p>Shows how your system fits into the larger system environment (<a href="#system-landscape">system landscape</a>). It basically shows <strong>interactions</strong>
+between users and systems:</p>
+<ul>
+<li>e.g. A payment system interacting with an user and a banking system</li>
+</ul>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-context-diagram.png" class="glightbox" data-glightbox="title:Context diagram; description: Context diagram; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-context-diagram.png" alt="image">
+        <div class="caption">Context diagram</div>
+    </a>
+</div>
+
+<h4 id="level-2-container-diagram">Level 2: Container diagram</h4>
+<p>Higher level view within a system itself. Shows software &ldquo;<a href="#containers">containers</a>&rdquo; like web servers,
+standalone apps, or databases. (e.g., An API server, a database, and a client app in a
+single system)</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-container-diagram.png" class="glightbox" data-glightbox="title:Container diagram; description: Container diagram; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-container-diagram.png" alt="image">
+        <div class="caption">Container diagram</div>
+    </a>
+</div>
+
+<h4 id="level-3-component-diagram">Level 3: Component diagram</h4>
+<p>Shows internal parts of a container. Mostly used with complex software. (e.g.,
+Controllers, services, repositories inside of a web application)</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-component-diagram.png" class="glightbox" data-glightbox="title:Component diagram; description: Component diagram; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-component-diagram.png" alt="image">
+        <div class="caption">Component diagram</div>
+    </a>
+</div>
+
+<h4 id="level-4-code-diagram">Level 4: Code diagram</h4>
+<p>A detailed view of the code level. For systems with little internal complexity, it can be
+skipped. (e.g., UML class diagrams)</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-code-diagram.png" class="glightbox" data-glightbox="title:Code diagram; description: Code diagram; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-code-diagram.png" alt="image">
+        <div class="caption">Code diagram</div>
+    </a>
+</div>
+
+<h2 id="structurizr-dsl">Structurizr DSL</h2>
+<p><a href="https://structurizr.com/">Structurizr</a> is used for <em>describing</em> and <em>visualizing</em> architecture using the C4 model. One of the main selling points is
+the fact you can define an entire (IT) architecture model using <em>text</em>. A typical model consists of:</p>
+<ul>
+<li>relationships between abstractions</li>
+<li>different <strong>views</strong></li>
+</ul>
+<p>Let&rsquo;s have a look at a simple example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">workspace {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    model {
+</span></span><span class="line"><span class="cl">        user = person &#34;User&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        webApp = softwareSystem &#34;Web Application&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;System&#34;
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        database = softwareSystem &#34;Database&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;Database&#34;
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        team = person &#34;Development Team&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        user -&gt; webApp &#34;Uses&#34;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    views {
+</span></span><span class="line"><span class="cl">        container webApp {
+</span></span><span class="line"><span class="cl">            include *
+</span></span><span class="line"><span class="cl">            autoLayout
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        styles {
+</span></span><span class="line"><span class="cl">            element &#34;Database&#34; {
+</span></span><span class="line"><span class="cl">                color &#34;#0000ff&#34;
+</span></span><span class="line"><span class="cl">            }
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Structurizr DSL: Basic structure
+</div>
+<p>What do we have?</p>
+<ul>
+<li><strong><strong>Entities</strong></strong>:
+<ul>
+<li>&ldquo;User&rdquo;: a person who uses the &ldquo;Web Application&rdquo;.</li>
+<li>&ldquo;Web Application&rdquo;: a software system tagged as &ldquo;System&rdquo;.</li>
+<li>&ldquo;Database&rdquo;: another software system tagged as &ldquo;Database&rdquo;.</li>
+<li>&ldquo;Development Team&rdquo;: a person representing the team that develops the &ldquo;Web Application&rdquo;.</li>
+</ul>
+</li>
+<li><strong><strong>Relationships</strong></strong>:
+<ul>
+<li>The &ldquo;User&rdquo; uses the &ldquo;Web Application&rdquo;.</li>
+</ul>
+</li>
+<li><strong><strong>Container View</strong></strong>:
+<ul>
+<li>Focused on &ldquo;Web Application&rdquo;.</li>
+<li>Includes all elements in the model.</li>
+<li>Uses automatic layout.</li>
+</ul>
+</li>
+<li><strong><strong>Styles</strong></strong>:
+<ul>
+<li>The &ldquo;Database&rdquo; elements are colored in blue (&quot;#0000ff&quot;).</li>
+</ul>
+</li>
+</ul>
+<p>Before we move on, let&rsquo;s briefly discuss the installation steps.</p>
+<h3 id="installation">Installation</h3>
+<p>I&rsquo;d suggest you use the <a href="https://hub.docker.com/r/structurizr/lite">Docker image</a> for a safe playground:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">docker run -it --rm -p 1337:8080 -v ./:/usr/local/structurizr structurizr/lite
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This will fetch the <code>structurizr/lite</code> Docker image from <a href="https://hub.docker.com/r/structurizr/lite">Dockerhub</a>, start the container, mount the current working
+directory to <code>/usr/local/structurizr</code> and setup a port forwarding from <code>localhost:1337</code> to <code>&lt;docker container&gt;:8000</code>.</p>
+
+
+
+<blockquote class="notice info">
+  👉 I&rsquo;ve setup a github repository with the code I&rsquo;ll be using in the next sections. Feel free to clone from
+<a href="https://github.com/dorneanu/ripmail">https://github.com/dorneanu/ripmail</a>.
+</blockquote>
+
+<h3 id="short-recap">Short recap</h3>
+<p>If you recall my <a href="https://blog.dornea.nu/2023/07/18/documentation-as-code-for-cloud/">initial post</a> the entire aim was to document a hypothetical self-destructing e-mail service.
+In my <a href="https://blog.dornea.nu/2023/07/30/documentation-as-code-for-cloud-plantuml/#sequence-diagrams">2nd blog post</a> (about PlantUML) I&rsquo;ve generated following <em>sequence diagram</em>:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-aws-logging.png" class="glightbox" data-glightbox="title:; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/plantuml-seq-send-aws-logging.png" alt="image">
+        <div class="caption"></div>
+    </a>
+</div>
+
+<center>👉 <a href="https://github.com/dorneanu/blog/blob/master/static/code/2023/documentation-as-code/plantuml//plantuml-seq-send-aws-logging.puml">Full PlantUML Code</a></center>
+<p>In the following I&rsquo;ll try to implement exactly this workflow using C4 and Structurizr DSL.</p>
+<h2 id="ripmail">ripmail</h2>
+<p>👉 Checkout the code at <a href="https://github.com/dorneanu/ripmail">https://github.com/dorneanu/ripmail</a>.</p>
+<h3 id="model">Model</h3>
+<p>Let&rsquo;s start with the basic construct:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">workspace {  ❶
+</span></span><span class="line"><span class="cl">  name &#34;Self-Destructing Email Service&#34;
+</span></span><span class="line"><span class="cl">  description &#34;The sofware architecture of the self-destructing email service&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  model {    ❷
+</span></span><span class="line"><span class="cl">    //  ...
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  views {    ➌
+</span></span><span class="line"><span class="cl">    // System Landscape
+</span></span><span class="line"><span class="cl"> ❺ systemlandscape &#34;SystemLandscape&#34; {
+</span></span><span class="line"><span class="cl">      include *
+</span></span><span class="line"><span class="cl">      # autoLayout
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    // Themes
+</span></span><span class="line"><span class="cl">    // You can combine multiple themes!
+</span></span><span class="line"><span class="cl"> ❻ theme https://static.structurizr.com/themes/amazon-web-services-2023.01.31/theme.json
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    styles { ❹
+</span></span><span class="line"><span class="cl">      element &#34;Person&#34; {
+</span></span><span class="line"><span class="cl">        color #ffffff
+</span></span><span class="line"><span class="cl">        fontSize 22
+</span></span><span class="line"><span class="cl">        shape Person
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">      element &#34;Sender&#34; {
+</span></span><span class="line"><span class="cl">        color #ffffff
+</span></span><span class="line"><span class="cl">        background #8FB5FE
+</span></span><span class="line"><span class="cl">        shape Person
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">      element &#34;Recipient&#34; {
+</span></span><span class="line"><span class="cl">        color #ffffff
+</span></span><span class="line"><span class="cl">        background #E97451
+</span></span><span class="line"><span class="cl">        shape Person
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  Basic Structurizr construct
+</div>
+<p>So, what do we have?</p>
+<ul>
+<li>❶ <code>workspace</code>
+<ul>
+<li>Defines the workspace for a self-destructing email service.</li>
+</ul>
+</li>
+<li>❷ <code>model</code>
+<ul>
+<li>This has to be implemented but basically it&rsquo;s a</li>
+<li>Placeholder section where you&rsquo;d define the elements (software systems, people, containers) and their relations.</li>
+</ul>
+</li>
+<li>➌ <code>views</code>
+<ul>
+<li>A <strong><a href="#system-landscape">System Landscape view</a></strong> ❺ that includes all elements defined in the model.</li>
+<li>The <a href="https://www.structurizr.com/help/themes">specified theme</a> ❻ comes from an external JSON file, allowing broad customization of the look-and-feel.</li>
+<li>Three styles are defined for different types of elements labeled as <em>Person</em>, <em>Sender</em>, and <em>Recipient</em>. These
+characters are all represented by the <em>Person</em> shape.</li>
+</ul>
+</li>
+</ul>
+<p>Let&rsquo;s focus more on the <code>model</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  model {
+</span></span><span class="line"><span class="cl"> ❶ sender = person &#34;Sender&#34; &#34;Sender creates self-destructing email&#34; {
+</span></span><span class="line"><span class="cl">      tags &#34;Sender&#34;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl"> ❷ recipient = person &#34;Recipient&#34; &#34;Recipient receives self-destructing email&#34; {
+</span></span><span class="line"><span class="cl">      tags &#34;Recipient&#34;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ➌ group &#34;Self-Destructing Email Service&#34; {
+</span></span><span class="line"><span class="cl">      // Logging keeps track of several events
+</span></span><span class="line"><span class="cl"> ❹   logging = softwaresystem &#34;Logging System&#34; &#34;Logs several events related to mail generation&#34; {
+</span></span><span class="line"><span class="cl">        tags &#34;Service API&#34;
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl"> ❺   storage = softwaresystem &#34;Storage System&#34; &#34;Stores encrypted mail content&#34; {
+</span></span><span class="line"><span class="cl">        tags &#34;Database&#34;
+</span></span><span class="line"><span class="cl">        storageBackend = container &#34;Storage Backend&#34;
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ❻   notification = softwaresystem &#34;Notification System&#34; &#34;Sends notification to recipient to view email&#34; {
+</span></span><span class="line"><span class="cl">        tags &#34;System&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // --- Notification Service
+</span></span><span class="line"><span class="cl">        notificationService = group &#34;Notification Service&#34; {
+</span></span><span class="line"><span class="cl">          notificationAPI = container &#34;Notification API&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;NotificationService&#34; &#34;Service API&#34;
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   ...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 3:</span>
+  Adding actors and different systems
+</div>
+<p>We have following <strong>elements</strong> and <strong>groups</strong>:</p>
+<ul>
+<li>❶ <em>Sender</em>: Person who creates the self-destructing email.</li>
+<li>❷ <em>Recipient</em>: Person who receives the self-destructing email.</li>
+<li>➌ <em>Self-Destructing Email Service</em>: Represents the overall service/system being described.</li>
+</ul>
+<p>Additionally we have these <strong>systems</strong> inside the group:</p>
+<ul>
+<li>❹ <em>Logging System</em>: Keeps track of events related to mail creation.</li>
+<li>❺ <em>Storage System</em>: Stored encrypted email content. Includes a <em>Storage Backend</em> container.</li>
+<li>❻ <em>Notification System</em>: Sends notification to recipient. Contains a <a href="#notification-service">Notification Service</a> group with a <em>Notification
+API</em> container.</li>
+</ul>
+<h4 id="main-backend-system">Main backend system</h4>
+<p>Now the <strong>backend system</strong> responsible for the business logic:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      // Backend system responsible for the business logic
+</span></span><span class="line"><span class="cl">❶    backend = softwaresystem &#34;Backend System&#34; &#34;Contains logic how self-destructing mails should be created and dispatched to the recipient.&#34; {
+</span></span><span class="line"><span class="cl">        tags &#34;BackendSystem&#34;
+</span></span><span class="line"><span class="cl">❷       webapplication = container &#34;Web Application&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // Services/
+</span></span><span class="line"><span class="cl">        // --- Authentication Service
+</span></span><span class="line"><span class="cl">➌      authService = group &#34;Authentication Service&#34; {
+</span></span><span class="line"><span class="cl">❹        authAPI = container &#34;Auth Service API&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;AuthService&#34; &#34;Service API&#34;
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">❺        authDB = container &#34;Auth Service Database&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;AuthService&#34; &#34;Database&#34;
+</span></span><span class="line"><span class="cl">❻          authAPI -&gt; this &#34;Checks if credentials match&#34;
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // --- Email Composition Service
+</span></span><span class="line"><span class="cl">❼      mailCompositionService = group &#34;Email Composition Service&#34; {
+</span></span><span class="line"><span class="cl">❽        mailCompositionAPI = container &#34;Email Composition API&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;EmailCompositionService&#34; &#34;Service API&#34;
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">❾        mailDB = container &#34;Email Composition Database&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;Emailcompositionservice&#34; &#34;Database&#34;
+</span></span><span class="line"><span class="cl">❿          mailCompositionAPI -&gt; this &#34;Stores metadata of mails&#34;
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // --- Email Composition Service
+</span></span><span class="line"><span class="cl">⓫      viewEmailService = group &#34;View Email Service&#34; {
+</span></span><span class="line"><span class="cl">⓬          viewEmailFrontend = container &#34;Email View Frontend&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;ViewEmailService&#34;
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 4:</span>
+  Main backend system and ther underlying services
+</div>
+<p>The <em>Backend System</em> is the core system, with business logic, for creating/dispatching self-destructing mails.
+of following <strong>containers</strong> and <strong>services</strong>:</p>
+<ul>
+<li>❷ <em>Web Application</em>: The <strong>frontend</strong> component within the backend system for <em>creating</em> mails.</li>
+<li>➌ <em>Authentication Service</em>: Group handling user credential verification.
+<ul>
+<li>❹ <em>Auth Service API</em>: Provides interface for authentication service.</li>
+<li>❺ <em>Auth Service Database</em>: Stores user credential data.</li>
+<li>❻ <em>Auth Service API-&gt;Auth Service Database</em>: Indicates API checks credentials against this database.</li>
+</ul>
+</li>
+<li>❼ <em>Email Composition Service</em>: Group handling creation/storage of emails.
+<ul>
+<li>❽ <em>Email Composition API</em>: Interface for the email composition service.</li>
+<li>❾ <em>Email Composition Database</em>: Stores meta-information of emails.</li>
+<li>❿ <em>Email Composition API -&gt; Email Composition Database</em>: Indicates API stores mail metadata in this database.</li>
+</ul>
+</li>
+<li>⓫ <em>View Email Service</em>: Group handling email display.
+<ul>
+<li>⓬ <em>Email View Frontend</em>: The <strong>frontend</strong> component withing the backend system for <em>viewing</em> emails.</li>
+</ul>
+</li>
+</ul>
+<h4 id="relationships">Relationships</h4>
+<p>And finally the <strong>relationships</strong> between different components:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">        // Store mail data and encrypted content
+</span></span><span class="line"><span class="cl">        mailCompositionAPI -&gt; storage &#34;Store mail metadata and content&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // Notify recipient
+</span></span><span class="line"><span class="cl">        mailCompositionAPI -&gt; notificationAPI &#34;Notify recipient&#34;
+</span></span><span class="line"><span class="cl">        notificationAPI -&gt; mailcompositionAPI &#34;Recipient notified&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // Log events
+</span></span><span class="line"><span class="cl">        notificationAPI -&gt; logging &#34;Log Email sent event&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // Sender creates new email
+</span></span><span class="line"><span class="cl">        sender -&gt; webapplication &#34;Create new mail&#34;
+</span></span><span class="line"><span class="cl">        webapplication -&gt; authAPI &#34;Authenticate user&#34;
+</span></span><span class="line"><span class="cl">        webapplication -&gt; mailCompositionAPI &#34;Create mails&#34;
+</span></span><span class="line"><span class="cl">        notification -&gt; recipient &#34;Send out notification&#34;
+</span></span><span class="line"><span class="cl">        backend -&gt; logging &#34;Create events&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        // Recipient receives new mail
+</span></span><span class="line"><span class="cl">        recipient -&gt; webapplication &#34;View self-destructing mail&#34;
+</span></span><span class="line"><span class="cl">        webapplication -&gt; viewEmailFrontend &#34;View email&#34;
+</span></span><span class="line"><span class="cl">        viewEmailFrontend -&gt; mailDB
+</span></span><span class="line"><span class="cl">        viewEmailFrontend -&gt; storage
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 5:</span>
+  Relationships between different components
+</div>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mail Composition API</td>
+<td>Storage</td>
+<td>Store mail metadata and encrypted content</td>
+</tr>
+<tr>
+<td>Mail Composition API</td>
+<td>Notification API</td>
+<td>Notify recipient</td>
+</tr>
+<tr>
+<td>Notification API</td>
+<td>Mail Composition API</td>
+<td>Recipient notified</td>
+</tr>
+<tr>
+<td>Notification API</td>
+<td>Logging</td>
+<td>Log Email sent event</td>
+</tr>
+<tr>
+<td>Sender</td>
+<td>Web Application</td>
+<td>Create new mail</td>
+</tr>
+<tr>
+<td>Web Application</td>
+<td>Auth API</td>
+<td>Authenticate user</td>
+</tr>
+<tr>
+<td>Web Application</td>
+<td>Mail Composition API</td>
+<td>Create mails</td>
+</tr>
+<tr>
+<td>Notification</td>
+<td>Recipient</td>
+<td>Send out notification</td>
+</tr>
+<tr>
+<td>Backend System</td>
+<td>Logging</td>
+<td>Create events</td>
+</tr>
+<tr>
+<td>Recipient</td>
+<td>Web Application</td>
+<td>View self-destructing mail</td>
+</tr>
+<tr>
+<td>Web Application</td>
+<td>View Email Frontend</td>
+<td>View email</td>
+</tr>
+<tr>
+<td>View Email Frontend</td>
+<td>MailDB</td>
+<td>Fetches email data for visualization</td>
+</tr>
+<tr>
+<td>View Email Frontend</td>
+<td>Storage</td>
+<td>Fetches email details for visualization</td>
+</tr>
+</tbody>
+</table>
+<h4 id="deployments">Deployments</h4>
+<p>Deployment components are required for the <a href="#deployment-live">deployment diagrams</a>. These illustrate how software systems are deployed onto
+infrastructure elements in an environment. They also enable you to visualize how containers within a system map onto the infrastructure.</p>
+<p>This kind of diagrams are very important as they provide important information regarding system runtime environment such
+as scaling, redundancy, network topology, and communication protocols. They are crucial to understanding the physical
+aspects and deployment context of a system.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">workspace {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  model {
+</span></span><span class="line"><span class="cl">  //  ...
+</span></span><span class="line"><span class="cl">  live = deploymentEnvironment &#34;Live&#34; { ❶
+</span></span><span class="line"><span class="cl">    // AWS
+</span></span><span class="line"><span class="cl">    deploymentNode &#34;Amazon Web Services&#34; { ❷
+</span></span><span class="line"><span class="cl">        tags &#34;Amazon Web Services - Cloud&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          // Which region
+</span></span><span class="line"><span class="cl">    ➌     deploymentNode &#34;eu-central-1&#34; {
+</span></span><span class="line"><span class="cl">            tags &#34;Amazon Web Services - Region&#34;
+</span></span><span class="line"><span class="cl">            ...
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  views {
+</span></span><span class="line"><span class="cl">  // ...
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 6:</span>
+  The live deployment environment
+</div>
+<p>We&rsquo;re still defining the <code>model</code>. Now we have defined a <code>deploymentEnvironment</code> <em>live</em> ❶ which should be deployed into the AWS
+Cloud ❷, namely in <code>eu-central-1</code> ➌. In this region we&rsquo;ll have different <em>organizational units</em> (OUs):</p>
+<ul>
+<li>
+<p>OU: Tech</p>
+<p>This will host the <strong>EKS cluster</strong> as well as the <strong>API Gateway</strong> which serves as the
+main entrypoint for API calls.</p>
+</li>
+<li>
+<p>OU: Security</p>
+<p>This is where <strong>alert &amp; monitoring</strong> will take place. Also here relevant data to
+the mail will be stored within <strong>S3 buckets</strong>. Finally we use <strong>IAM</strong> capabilities to
+make sure authentication and authorization works properly.</p>
+</li>
+<li>
+<p>OU: DevOps</p>
+<p>The <strong>CI/CD</strong> build pipeline and <strong>infrastructure provisioning</strong> will take place here.
+The software artefacts will be built here and deployed into the accounts
+inside &ldquo;OU: Tech&rdquo;.</p>
+</li>
+</ul>
+<!--listend-->
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       // Which region
+</span></span><span class="line"><span class="cl">       deploymentNode &#34;eu-central-1&#34; {
+</span></span><span class="line"><span class="cl">         tags &#34;Amazon Web Services - Region&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         // ------------------------------------------------
+</span></span><span class="line"><span class="cl">         // Organizational Unit: DevOps
+</span></span><span class="line"><span class="cl">         // ------------------------------------------------
+</span></span><span class="line"><span class="cl">         deploymentNode &#34;OU-DevOps&#34; {...}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         // ------------------------------------------------
+</span></span><span class="line"><span class="cl">         // Organizational Unit: Tech
+</span></span><span class="line"><span class="cl">         // ------------------------------------------------
+</span></span><span class="line"><span class="cl">         ou_tech = deploymentNode &#34;OU-Tech&#34; {...}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         // ------------------------------------------------
+</span></span><span class="line"><span class="cl">         // Organizational Unit: Security
+</span></span><span class="line"><span class="cl">         // ------------------------------------------------
+</span></span><span class="line"><span class="cl">         deploymentNode &#34;OU-Security&#34; {...}
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 7:</span>
+  Outline main organizational units (OUs)
+</div>
+<!--list-separator-->
+<ul>
+<li>
+<p>OU: DevOps</p>
+<p>But one thing at a time:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">      // --------------------------------------------
+</span></span><span class="line"><span class="cl">      // Organizational Unit: DevOps
+</span></span><span class="line"><span class="cl">      // --------------------------------------------
+</span></span><span class="line"><span class="cl">      deploymentNode &#34;OU-DevOps&#34; {
+</span></span><span class="line"><span class="cl">❶      tags &#34;Amazon Web Services - AWS Organizations Organizational Unit&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❷        deploymentNode &#34;acc-devops-prod&#34; {
+</span></span><span class="line"><span class="cl">➌          tags &#34;Amazon Web Services - AWS Organizations Account&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❹          vpc_management = deploymentNode &#34;VPC (management)&#34; {
+</span></span><span class="line"><span class="cl">❺            tags &#34;Amazon Web Services - VPC Virtual private cloud VPC&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❻            gitlab_server = infrastructureNode &#34;Gitlab Server&#34; {
+</span></span><span class="line"><span class="cl">❼              tags &#34;Amazon Web Services - EC2&#34;
+</span></span><span class="line"><span class="cl">            }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          }
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">      }
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 8:</span>
+   Deployment components for the OU DevOps
+ </div>
+<p>The DevOps OU deployment components are:</p>
+<ul>
+<li>Organizational Unit (<strong>OU-DevOps</strong>): Represents a unit in the organization.
+<ul>
+<li>❶ Tagged as an Amazon Web Services (AWS) Organizations Organizational Unit.</li>
+</ul>
+</li>
+<li>❷ <em>acc-devops-prod</em>: Represents an account within the <strong>OU-DevOps</strong> unit.
+<ul>
+<li>➌ Tagged as an AWS Organizations Account.</li>
+</ul>
+</li>
+<li>❹ VPC (<em>vpc_management</em>): A Virtual Private Cloud (VPC) within the <em>acc-devops-prod</em> account.
+<ul>
+<li>❺ Tagged as an AWS VPC Virtual private cloud VPC.</li>
+</ul>
+</li>
+<li>❻ Gitlab Server (<em>gitlab_server</em>): Infrastructure node within the VPC.
+<ul>
+<li>❼ Tagged as AWS EC2.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!--list-separator-->
+<ul>
+<li>
+<p>OU: Security</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">     // ---------------------------------------------
+</span></span><span class="line"><span class="cl">     // Organizational Unit: Security
+</span></span><span class="line"><span class="cl">     // ---------------------------------------------
+</span></span><span class="line"><span class="cl">❶    deploymentNode &#34;OU-Security&#34; {
+</span></span><span class="line"><span class="cl">❷      tags &#34;Amazon Web Services - AWS Organizations Organizational Unit&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">➌      deploymentNode &#34;acc-security-logging&#34; {
+</span></span><span class="line"><span class="cl">❹        tags &#34;Amazon Web Services - AWS Organizations Account&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❺        s3_logging = infrastructureNode &#34;S3 Bucket&#34; {
+</span></span><span class="line"><span class="cl">❻          tags &#34;Amazon Web Services - Simple Storage Service&#34;
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❼        infrastructureNode &#34;CloudWatch Logs&#34; {
+</span></span><span class="line"><span class="cl">❽          tags &#34;Amazon Web Services - CloudWatch Logs&#34;
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❾      deploymentNode &#34;acc-security-monitoring&#34; {
+</span></span><span class="line"><span class="cl">❿        tags &#34;Amazon Web Services - AWS Organizations Account&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">⓫        infrastructureNode &#34;CloudWatch&#34; {
+</span></span><span class="line"><span class="cl">⓬          tags &#34;Amazon Web Services - CloudWatch Alarm&#34;
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     }
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 9:</span>
+   Deployment components for the OU Security
+ </div>
+<p>The Security OU deployment components are:</p>
+<ul>
+<li>Organizational Unit (<strong>OU-Security</strong>): Represents a security unit in the organization.
+<ul>
+<li>❶ Tagged as an AWS Organizations Organizational Unit.</li>
+</ul>
+</li>
+<li>➌ <em>acc-security-logging</em>: Represents an account within the <strong>OU-Security</strong> unit for logging purposes.
+<ul>
+<li>❹ Tagged as an AWS Organizations Account.</li>
+<li>❺ Contains an &ldquo;S3 Bucket&rdquo; infrastructure node.
+<ul>
+<li>❻ Tagged as AWS Simple Storage Service.</li>
+</ul>
+</li>
+<li>❼ Contains a &ldquo;CloudWatch Logs&rdquo; infrastructure node.
+<ul>
+<li>❽ Tagged as AWS CloudWatch Logs.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>❾ <em>acc-security-monitoring</em>: Represents another account within the <strong>OU-Security</strong> unit for monitoring purposes.
+<ul>
+<li>❿ Tagged as an AWS Organizations Account.</li>
+<li>⓫ Contains a &ldquo;CloudWatch&rdquo; infrastructure node.
+<ul>
+<li>⓬ Tagged as AWS CloudWatch Alarm.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!--list-separator-->
+<ul>
+<li>
+<p>OU: TECH</p>
+<p>Now the most complicated one:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl">     <span class="o">//</span> <span class="o">--------------------------------------------</span>
+</span></span><span class="line"><span class="cl">     <span class="o">//</span> <span class="n">Organizational</span> <span class="n">Unit</span><span class="p">:</span> <span class="n">Tech</span>
+</span></span><span class="line"><span class="cl">     <span class="o">//</span> <span class="o">--------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="err">❶</span>    <span class="n">ou_tech</span> <span class="o">=</span> <span class="n">deploymentNode</span> <span class="s2">&#34;OU-Tech&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="n">tags</span> <span class="s2">&#34;Amazon Web Services - AWS Organizations Organizational Unit&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">❷</span>      <span class="n">deploymentNode</span> <span class="s2">&#34;acc-tech-prod&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="n">tags</span> <span class="s2">&#34;Amazon Web Services - AWS Organizations Account&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="o">//</span> <span class="n">EKS</span> <span class="n">control</span> <span class="n">plane</span>
+</span></span><span class="line"><span class="cl"><span class="err">➌</span>        <span class="n">eks_vpc</span> <span class="o">=</span> <span class="n">deploymentNode</span> <span class="s2">&#34;EKS VPC&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">           <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - VPC Virtual private cloud VPC&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">❹</span>          <span class="n">eks_control_plane</span> <span class="o">=</span> <span class="n">infrastructureNode</span> <span class="s2">&#34;EKS Control Plane&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">             <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - EKS Cloud&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="p">}</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="o">//</span> <span class="n">ECR</span>
+</span></span><span class="line"><span class="cl"><span class="err">❺</span>        <span class="n">ecr</span> <span class="o">=</span> <span class="n">infrastructureNode</span> <span class="s2">&#34;ECR&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">           <span class="n">tags</span> <span class="s2">&#34;Amazon Web Services - Elastic Container Registry&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="n">description</span> <span class="s2">&#34;Private ECR registry&#34;</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="o">//</span> <span class="n">EKS</span> <span class="n">cluster</span>
+</span></span><span class="line"><span class="cl"><span class="err">❻</span>        <span class="n">workload_vpc</span> <span class="o">=</span> <span class="n">deploymentNode</span> <span class="s2">&#34;Workload VPC&#34;</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="o">//</span> <span class="n">DynamoDB</span> <span class="n">instances</span>
+</span></span><span class="line"><span class="cl"><span class="err">❼</span>        <span class="n">dbs</span> <span class="o">=</span> <span class="n">group</span> <span class="s2">&#34;Databases&#34;</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="o">//</span> <span class="n">S3</span> <span class="p">(</span><span class="n">Storage</span> <span class="n">System</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">❽</span>        <span class="n">s3_storage</span> <span class="o">=</span> <span class="n">infrastructureNode</span> <span class="s2">&#34;S3 Bucket (storage)&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">           <span class="n">tags</span> <span class="s2">&#34;Amazon Web Services - Simple Storage Service&#34;</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       <span class="p">}</span>
+</span></span><span class="line"><span class="cl">     <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 10:</span>
+   Deployment components for the OU Tech
+ </div>
+<p>This will result in following components hierarchy:</p>
+<ul>
+<li>❶ Organizational Unit (OU-Tech): Represents a technology unit within the organization.</li>
+<li>❷ <em>acc-tech-prod</em>: Represents a production account within the &ldquo;<strong>OU-Tech</strong>&rdquo; unit.
+<ul>
+<li><strong>EKS control plane</strong> deployed within an EKS VPC.
+<ul>
+<li>➌ <em>EKS VPC</em>: VPC where the EKS control plane is deployed,</li>
+<li>❹ <em>EKS Control Plane</em>: infrastructure node within EKS VPC.</li>
+</ul>
+</li>
+<li>❺ <em>ECR</em>: Infrastructure node for the Elastic Container Registry with private ECR registry.</li>
+<li>❻ <em>Workload VPC</em>: Deployment node holding different workloads.</li>
+<li>❼ Databases group holds <em>DynamoDB</em> instances.</li>
+<li>❽ <em>S3 Bucket (storage)</em>: Infrastructure node for the storage system.</li>
+</ul>
+</li>
+</ul>
+<p>Let&rsquo;s have a look what&rsquo;s inside the <em>workload VPC</em>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl">  <span class="o">//</span> <span class="n">EKS</span> <span class="n">cluster</span>
+</span></span><span class="line"><span class="cl">  <span class="n">workload_vpc</span> <span class="o">=</span> <span class="n">deploymentNode</span> <span class="s2">&#34;Workload VPC&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - VPC Virtual private cloud VPC&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">//</span> <span class="n">AZ</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="err">❶</span>   <span class="n">deploymentNode</span> <span class="s2">&#34;Availability Zone 1&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - Region&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">❷</span>     <span class="n">deploymentNode</span> <span class="s2">&#34;Subnet 1&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - VPC VPN Gateway&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">➌</span>       <span class="n">eks_node_group1</span> <span class="o">=</span> <span class="n">deploymentNode</span> <span class="s2">&#34;EKS Managed Node Group&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - EKS Cloud&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">❹</span>         <span class="n">eks_node_group1_pod1</span> <span class="o">=</span> <span class="n">deploymentNode</span> <span class="s2">&#34;Pod 1&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Kubernetes - pod&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="err">❺</span>           <span class="n">pod1_authAPI</span> <span class="o">=</span> <span class="n">containerInstance</span> <span class="n">authAPI</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">❻</span>         <span class="n">eks_node_group1_pod2</span> <span class="o">=</span> <span class="n">deploymentNode</span> <span class="s2">&#34;Pod 2&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Kubernetes - pod&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="err">❼</span>           <span class="n">pod2_mailCompositionAPI</span> <span class="o">=</span> <span class="n">containerInstance</span> <span class="n">mailcompositionAPI</span>
+</span></span><span class="line"><span class="cl"><span class="err">❽</span>           <span class="n">pod2_notificationAPI</span> <span class="o">=</span> <span class="n">containerInstance</span> <span class="n">notificationAPI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">//</span> <span class="n">AZ</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="err">❾</span>   <span class="n">deploymentNode</span> <span class="s2">&#34;Availability Zone 2&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - Region&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">❿</span>     <span class="n">deploymentNode</span> <span class="s2">&#34;Subnet 1&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - VPC VPN Gateway&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">⓫</span>       <span class="n">eks_node_group2</span> <span class="o">=</span> <span class="n">infrastructureNode</span> <span class="s2">&#34;EKS Managed Node Group&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">tags</span> <span class="o">=</span> <span class="s2">&#34;Amazon Web Services - EKS Cloud&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 11:</span>
+   Components of the workload VPC
+ </div>
+<p>The workload VPC consists of 2 availability zones:</p>
+<ul>
+<li>❶ <strong>Availability Zone 1</strong>: A separate deployment node categorized as an AWS Region.
+<ul>
+<li>❷ <em>Subnet 1</em>: Deployment node within Availability Zone 1.</li>
+<li>➌ <em>EKS Managed Node Group</em>: Node group for managing EKS resources.</li>
+<li>❹ <em>Pod 1</em>: Deployment node within the <em>EKS Managed Node Group</em>.
+<ul>
+<li>❺ Houses instance of <em>authAPI</em> container.</li>
+</ul>
+</li>
+<li>❻ <em>Pod 2</em>: Another deployment node within the <em>EKS Managed Node Group</em>.
+<ul>
+<li>❼ Houses instance of <em>mailcompositionAPI</em> container.</li>
+<li>❽ Houses instance of <em>notificationAPI</em> container.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>❾ <em>Availability Zone 2</em>: Another separate deployment node categorized as an AWS Region.
+<ul>
+<li>❿ <em>Subnet 1</em>: Deployment node within Availability Zone 2.</li>
+<li>⓫ <em>EKS Managed Node Group</em>: Infrastructure node for managing EKS resources.</li>
+</ul>
+</li>
+</ul>
+<p>Let&rsquo;s also have a look how we can use <code>containerInstance</code> for the databases:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">	 // DynamoDB instances
+</span></span><span class="line"><span class="cl">❶	 dbs = group &#34;Databases&#34; {
+</span></span><span class="line"><span class="cl">	   deploymentNode &#34;DB VPC&#34; {
+</span></span><span class="line"><span class="cl">		 tags = &#34;Amazon Web Services - VPC Virtual private cloud VPC&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❷		 deploymentNode &#34;DynamoDB (Auth)&#34; {
+</span></span><span class="line"><span class="cl">		   tags &#34;Amazon Web Services - DynamoDB&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">➌		   liveUserDB = containerInstance authDB
+</span></span><span class="line"><span class="cl">		 }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❹		 deploymentNode &#34;DynamoDB (Mails)&#34; {
+</span></span><span class="line"><span class="cl">		   tags &#34;Amazon Web Services - DynamoDB&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❺		   liveMailDB = containerInstance mailDB
+</span></span><span class="line"><span class="cl">		 }
+</span></span><span class="line"><span class="cl">	   }
+</span></span><span class="line"><span class="cl">	 }
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 12:</span>
+   Components of the DB VPC
+ </div>
+<p>This will create:</p>
+<ul>
+<li>❶ <em>Databases</em>: A group of databases within a DB VPC deployment node.</li>
+<li>❷ <em>DynamoDB (Auth)</em>: DynamoDB instance for authentication.
+<ul>
+<li>➌ Contains a live instance of <em>authDB</em>.</li>
+</ul>
+</li>
+<li>❹ <em>DynamoDB (Mails)</em>: DynamoDB instance for mail metadata.
+<ul>
+<li>❺ Contains a live instance of <em>mailDB</em>.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="views">Views</h3>
+<p>Views in Structurizr are used to create <strong>visual</strong> diagrams of your software architecture model. They provide a way to
+communicate the different aspects of your system to <strong>various stakeholders</strong>. Views can be thought of as &lsquo;camera angles&rsquo; on
+your architecture model, each designed to present a certain perspective of the system.</p>
+<h4 id="system-landscape">System Landscape</h4>
+<p>The <em>System Landscape</em> view in Structurizr is the <strong>highest</strong> level view of a software system&rsquo;s architecture. It shows all
+users, software systems and external systems or services in scope. It informs about the overall system context and
+interaction among systems and users.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    // System Landscape
+</span></span><span class="line"><span class="cl">    systemlandscape &#34;SystemLandscape&#34; {
+</span></span><span class="line"><span class="cl">      include *
+</span></span><span class="line"><span class="cl">    }
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 13:</span>
+  The System Landscape where every component (*) is included in the diagram
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-SystemLandscape.png" class="glightbox" data-glightbox="title:System Landscape; description: System Landscape; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-SystemLandscape.png" alt="image">
+        <div class="caption">System Landscape</div>
+    </a>
+</div>
+
+<h4 id="deployment-live">Deployment Live</h4>
+<p>The <strong>Deployment View</strong> in Structurizr is a type of view that visualizes the <strong>mapping of software building blocks</strong> (like
+Containers or Components) to <strong>infrastructure elements</strong>, including servers, containers or cloud services. It gives a clear
+indication of how and where the software system runs in different environments (like development, staging, production).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    // Deployment live
+</span></span><span class="line"><span class="cl">    deployment backend live &#34;LiveDeployment&#34;  {
+</span></span><span class="line"><span class="cl">      include *
+</span></span><span class="line"><span class="cl">      description &#34;An example live deployment for the self-destructing email service&#34;
+</span></span><span class="line"><span class="cl">    }
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 14:</span>
+  The deployment view for live
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-LiveDeployment.png" class="glightbox" data-glightbox="title:Deployment View; description: Deployment View; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-LiveDeployment.png" alt="image">
+        <div class="caption">Deployment View</div>
+    </a>
+</div>
+
+<h4 id="containers">Containers</h4>
+<p>In Structurizr, a <em>Container</em> represents an <strong>executable unit</strong> (application, data store, microservice, etc.) that
+encapsulates a portion of your software system. Containers run inside software systems and have interfaces that let them
+interact with other containers and/or software systems. The Container view shows the internal layout of a software
+system, specifying contained components and their interactions. This level of abstraction is valuable for developers and
+others dealing with system implementation and operation.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    // Backend
+</span></span><span class="line"><span class="cl">    container backend &#34;Containers_All&#34; {
+</span></span><span class="line"><span class="cl">      include *
+</span></span><span class="line"><span class="cl">      # autolayout
+</span></span><span class="line"><span class="cl">    }
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 15:</span>
+  The container view for all resources
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_All.png" class="glightbox" data-glightbox="title:Containers (global); description: Containers (global); descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_All.png" alt="image">
+        <div class="caption">Containers (global)</div>
+    </a>
+</div>
+
+<p>And now for specific services:</p>
+<!--list-separator-->
+<ul>
+<li>
+<p>Notification Service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    container backend &#34;Containers_NotificationService&#34; {
+</span></span><span class="line"><span class="cl">      include -&gt;notificationService-&gt;
+</span></span><span class="line"><span class="cl">      autolayout
+</span></span><span class="line"><span class="cl">    }
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 16:</span>
+   Container view for the notification service
+ </div>
+
+        
+    
+    
+    <div class="img-container">
+        <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_NotificationService.png" class="glightbox" data-glightbox="title:Container view for the notification service; description: Container view for the Notification Service; descPosition: left">
+            <i class="fa fa-search-plus fa-2x"></i>
+            <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_NotificationService.png" alt="image">
+            <div class="caption">Container view for the notification service</div>
+        </a>
+    </div>
+
+</li>
+</ul>
+<!--list-separator-->
+<ul>
+<li>
+<p>Mail Composition Service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    container backend &#34;Containers_MailCompositionService&#34; {
+</span></span><span class="line"><span class="cl">      include -&gt;mailCompositionService-&gt;
+</span></span><span class="line"><span class="cl">      autolayout
+</span></span><span class="line"><span class="cl">    }
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 17:</span>
+   Container view for the email composition service
+ </div>
+
+        
+    
+    
+    <div class="img-container">
+        <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_MailCompositionService.png" class="glightbox" data-glightbox="title:Container view for the Mail Composition Service; description: Container view for the Mail Composition Service; descPosition: left">
+            <i class="fa fa-search-plus fa-2x"></i>
+            <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_MailCompositionService.png" alt="image">
+            <div class="caption">Container view for the Mail Composition Service</div>
+        </a>
+    </div>
+
+</li>
+</ul>
+<!--list-separator-->
+<ul>
+<li>
+<p>Authentication Service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    container backend &#34;Containers_AuthenticationService&#34; {
+</span></span><span class="line"><span class="cl">      include -&gt;authService-&gt;
+</span></span><span class="line"><span class="cl">      autolayout
+</span></span><span class="line"><span class="cl">    }
+</span></span></code></pre></td></tr></table>
+</div>
+</div> <div class="src-block-caption">
+   <span class="src-block-number">Code Snippet 18:</span>
+   Container view for the authentication service
+ </div>
+
+        
+    
+    
+    <div class="img-container">
+        <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_AuthenticationService.png" class="glightbox" data-glightbox="title:Container view for the Authentication Service; description: Container view for the Authentication Service; descPosition: left">
+            <i class="fa fa-search-plus fa-2x"></i>
+            <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/structurizr-Containers_AuthenticationService.png" alt="image">
+            <div class="caption">Container view for the Authentication Service</div>
+        </a>
+    </div>
+
+</li>
+</ul>
+<h2 id="extra-features">Extra features</h2>
+<p>With the <a href="https://www.structurizr.com/dsl">online version of Structurizr</a> you get access to diffeerent exporting features:</p>
+<ul>
+<li><strong>PlantUML</strong>: Export your model as PlantUML diagrams.</li>
+<li><strong>C4-PlantUML</strong>: Export your model as <a href="https://github.com/plantuml-stdlib/C4-PlantUML">C4-PlantUML diagrams</a>.</li>
+<li><strong>Mermaid</strong>: Generate Mermaid diagrams from your model.</li>
+<li><strong>DOT</strong>: Export containers and components as DOT graph description language.</li>
+<li><strong>ilograph</strong>: Export the model and the views for <a href="https://www.ilograph.com/">ilograph.com</a></li>
+</ul>
+<p>Among these I&rsquo;ve found <strong>ilograph</strong> to be the most interactive one.</p>
+<h3 id="ilograph">Ilograph</h3>
+<p>Once you&rsquo;ve exported your <em>workspace</em> in ilograph format, follow these steps:</p>
+<ul>
+<li><a href="https://app.ilograph.com/?createNew=1">Create a new ilograph diagram</a></li>
+<li>Paste in the exported ilograph code</li>
+</ul>
+<p>And this is what you get:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-ilograph.png" class="glightbox" data-glightbox="title:ilograph with code; description: ilograph with code; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-ilograph.png" alt="image">
+        <div class="caption">ilograph with code</div>
+    </a>
+</div>
+
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-ilograph.png" class="glightbox" data-glightbox="title:ilograph without code; description: ilograph without code; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2023/documentation-as-code/c4-ilograph.png" alt="image">
+        <div class="caption">ilograph without code</div>
+    </a>
+</div>
+
+<ul>
+<li>👉 Here&rsquo;s the <a href="https://github.com/dorneanu/ripmail/tree/main/docs/ilograph">ilograph code</a>.</li>
+<li>👉 Check out <a href="https://www.ilograph.com/architecture-center/index.html">other architecture diagrams</a> made with ilograph.</li>
+</ul>
+<h2 id="resources">Resources</h2>
+<p>The resources I&rsquo;ve consumed for generating the content and diagrams for this blog post:</p>
+<p><strong>Tools</strong>:</p>
+<ul>
+<li>
+<p>2023-10-05 ◦ <a href="https://icepanel.io/blog/2022-10-03-c4-model-for-system-architecture-design?utm_source=dev_to&amp;utm_medium=post&amp;utm_campaign=should_you_use_c4">IcePanel.io</a></p>
+<p>A <em>visual</em> modelling tool for C4</p>
+</li>
+<li>
+<p>2023-10-05 ◦ <a href="https://github.com/plantuml-stdlib/C4-PlantUML">C4-PlantUML</a></p>
+<blockquote>
+<p>C4-PlantUML combines the benefits of PlantUML and the C4 model for providing a simple way of describing and communicate software architectures</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>Articles</strong>:</p>
+<ul>
+<li>2023-10-08 ◦ <a href="https://www.dandoescode.com/blog/c4-models-with-structurizr">Software Diagrams - C4 Models with Structurizr</a></li>
+<li>2023-07-10 ◦ <a href="https://practical.li/engineering-playbook/architecture/structurizr/">Structurizr - Practicalli Engineering Playbook</a></li>
+<li>2022-10-31 ◦ <a href="https://dev.to/icepanel/c4-model-for-system-architecture-design-16dh">C4 model for system architecture design</a></li>
+<li>2022-10-10 ◦ <a href="https://dev.to/indrive_tech/c4-models-architecture-from-simple-to-complex-38fk">C4 Models: Architecture From Simple To Complex</a></li>
+</ul>
+<p><strong>Structurizr</strong>:</p>
+<ul>
+<li>2023-10-07 ◦ <a href="https://www.structurizr.com/help/themes">Structurizr - Help - Themes</a></li>
+</ul>
+<p><strong>Videos</strong>:</p>
+<ul>
+<li>2023-07-10 ◦ <a href="https://www.youtube.com/watch?v=f7i2wxQVffk&amp;list=PLEx5khR4g7PLf2kQn3nYaZJC2Zv2GPbnY&amp;ab_channel=GOTOConferences">C4 Models as Code • Simon Brown • YOW! 2022 - YouTube</a></li>
+</ul>
+<h2 id="outlook">Outlook</h2>
+<p>In the next post I&rsquo;ll deep-dive into the <a href="https://d2lang.com/">D2</a> language which also has a huge set of features. Stay tuned.</p>
+
+    
+<div>
+    <h4>This article is part of a series.</h4>
+    <hr/>
+    <ul class="list-pages">
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2023/07/18/documentation-as-code-for-cloud/">
+                        Part 1: Documentation as Code for Cloud
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item">
+                    <a href="https://blog.dornea.nu/2023/07/30/documentation-as-code-for-cloud-plantuml/">
+                        Part 2: Documentation as Code for Cloud - PlantUML
+                    </a>
+                </li>
+            
+        
+            
+                <li class="list-group-item active">
+                    Part 3: This Article
+                </li>
+            
+        
+    </ul>
+    <hr/>
+</div>
+<br/>
+
+
+  </div>
+  <div id="comments">
+      
+<div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "dorneanu" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2023/09/21/emacs-and-the-cybernetic-productivity/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2022 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>

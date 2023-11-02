@@ -9,7 +9,7 @@
   <meta content='Hands-On Software architecture with Golang - blog.dornea.nu' property='og:title' />
 
 
-<meta property="og:description" content="Summary  Hands-On Software Architecture with Golang starts with a brief introduction to architectural elements, Go, and a case study to demonstrate architectural principles. You&rsquo;ll then move on to look at code-level aspects such as modularity, class design, and constructs specific to Golang and implementation of design patterns. As you make your way through the chapters, you&rsquo;ll explore the core objectives of architecture such as effectively managing complexity, scalability, and reliability of software systems." />
+<meta property="og:description" content="Summary Hands-On Software Architecture with Golang starts with a brief introduction to architectural elements, Go, and a case study to demonstrate architectural principles. You&rsquo;ll then move on to look at code-level aspects such as modularity, class design, and constructs specific to Golang and implementation of design patterns. As you make your way through the chapters, you&rsquo;ll explore the core objectives of architecture such as effectively managing complexity, scalability, and reliability of software systems." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/notes/hands-on-software-architecture-with-golang/" />
 
@@ -24,7 +24,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -161,10 +161,10 @@ percentage of users</p>
 <li>
 <p><a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a></p>
 <figure><img src="https://blog.dornea.nu/notes/software-engineering-golang/clean-architecture.jpg"
-         alt="Figure 1: The Clean Architecture / (c) Robert C. Martin"/><figcaption>
-            <p>Figure 1: The Clean Architecture / (c) Robert C. Martin</p>
-        </figcaption>
-</figure>
+             alt="Figure 1: The Clean Architecture / (c) Robert C. Martin"/><figcaption>
+                <p>Figure 1: The Clean Architecture / (c) Robert C. Martin</p>
+            </figcaption>
+    </figure>
 
 <ul>
 <li>
@@ -343,49 +343,49 @@ have the Composition Over Inheritance principle</p>
 </span><span class="lnt">42
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">  <span class="kn">package</span> <span class="nx">main</span>
-
-  <span class="kn">import</span> <span class="p">(</span>
-      <span class="s">&#34;fmt&#34;</span>
-  <span class="p">)</span>
-
-  <span class="kd">type</span> <span class="nx">author</span> <span class="kd">struct</span> <span class="p">{</span>
-      <span class="nx">firstName</span> <span class="kt">string</span>
-      <span class="nx">lastName</span>  <span class="kt">string</span>
-      <span class="nx">bio</span>       <span class="kt">string</span>
-  <span class="p">}</span>
-
-  <span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="nx">author</span><span class="p">)</span> <span class="nf">fullName</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s %s&#34;</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">firstName</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">lastName</span><span class="p">)</span>
-  <span class="p">}</span>
-
-  <span class="kd">type</span> <span class="nx">post</span> <span class="kd">struct</span> <span class="p">{</span>
-      <span class="nx">title</span>   <span class="kt">string</span>
-      <span class="nx">content</span> <span class="kt">string</span>
-      <span class="nx">author</span>
-  <span class="p">}</span>
-
-  <span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">post</span><span class="p">)</span> <span class="nf">details</span><span class="p">()</span> <span class="p">{</span>
-      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Title: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span>
-      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Content: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">content</span><span class="p">)</span>
-      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Author: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nf">fullName</span><span class="p">())</span>
-      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Bio: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">bio</span><span class="p">)</span>
-  <span class="p">}</span>
-
-  <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-      <span class="nx">author1</span> <span class="o">:=</span> <span class="nx">author</span><span class="p">{</span>
-          <span class="s">&#34;Naveen&#34;</span><span class="p">,</span>
-          <span class="s">&#34;Ramanathan&#34;</span><span class="p">,</span>
-          <span class="s">&#34;Golang Enthusiast&#34;</span><span class="p">,</span>
-      <span class="p">}</span>
-      <span class="nx">post1</span> <span class="o">:=</span> <span class="nx">post</span><span class="p">{</span>
-          <span class="s">&#34;Inheritance in Go&#34;</span><span class="p">,</span>
-          <span class="s">&#34;Go supports composition instead of inheritance&#34;</span><span class="p">,</span>
-          <span class="nx">author1</span><span class="p">,</span>
-      <span class="p">}</span>
-      <span class="nx">post1</span><span class="p">.</span><span class="nf">details</span><span class="p">()</span>
-  <span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">  <span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">type</span> <span class="nx">author</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">firstName</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">lastName</span>  <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">bio</span>       <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="nx">author</span><span class="p">)</span> <span class="nf">fullName</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s %s&#34;</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">firstName</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">lastName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">type</span> <span class="nx">post</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">title</span>   <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">content</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">author</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">post</span><span class="p">)</span> <span class="nf">details</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Title: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Content: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Author: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nf">fullName</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Bio: &#34;</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">bio</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">author1</span> <span class="o">:=</span> <span class="nx">author</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s">&#34;Naveen&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="s">&#34;Ramanathan&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="s">&#34;Golang Enthusiast&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">post1</span> <span class="o">:=</span> <span class="nx">post</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s">&#34;Inheritance in Go&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="s">&#34;Go supports composition instead of inheritance&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">author1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">post1</span><span class="p">.</span><span class="nf">details</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Whenever one struct field is embedded in another, Go gives us the option to
@@ -501,11 +501,11 @@ and not concrete types</p>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">        <span class="kd">type</span> <span class="nx">Reader</span> <span class="kd">interface</span> <span class="p">{</span>
-        <span class="c1">// Read reads up to len(buf) bytes into buf.
-</span><span class="c1"></span>        <span class="nf">Read</span><span class="p">(</span><span class="nx">buf</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
-        <span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">        <span class="kd">type</span> <span class="nx">Reader</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read reads up to len(buf) bytes into buf.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">Read</span><span class="p">(</span><span class="nx">buf</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Because io.Reader‘s deal with anything that can be expressed as a stream of
@@ -541,9 +541,9 @@ they need</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">             <span class="c1">// Save writes the contents of doc to the supplied Writer.
-</span><span class="c1"></span>             <span class="kd">func</span> <span class="nf">Save</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">doc</span> <span class="o">*</span><span class="nx">Document</span><span class="p">)</span> <span class="kt">error</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl">             <span class="c1">// Save writes the contents of doc to the supplied Writer.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>             <span class="kd">func</span> <span class="nf">Save</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">doc</span> <span class="o">*</span><span class="nx">Document</span><span class="p">)</span> <span class="kt">error</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>By applying the interface segregation principle to our Save function, the
@@ -653,10 +653,10 @@ At the start of the 21st century, engineers ran into a scalability bottleneck: w
 <li>
 <p>X-axis scaling</p>
 <figure><img src="https://blog.dornea.nu/notes/software-engineering-golang/scalability-x.png"
-         alt="Figure 3: (c) Jyotiswarup Raiturkar"/><figcaption>
-            <p>Figure 3: (c) Jyotiswarup Raiturkar</p>
-        </figcaption>
-</figure>
+             alt="Figure 3: (c) Jyotiswarup Raiturkar"/><figcaption>
+                <p>Figure 3: (c) Jyotiswarup Raiturkar</p>
+            </figcaption>
+    </figure>
 
 <blockquote>
 <p>Scaling along the x-axis means running multiple copies (instances) of the
@@ -668,10 +668,10 @@ by throwing hardware at the problem</p>
 <li>
 <p>Y-axis scaling</p>
 <figure><img src="https://blog.dornea.nu/notes/software-engineering-golang/scalability-y.png"
-         alt="Figure 4: (c) Jyotiswarup Raiturkar"/><figcaption>
-            <p>Figure 4: (c) Jyotiswarup Raiturkar</p>
-        </figcaption>
-</figure>
+             alt="Figure 4: (c) Jyotiswarup Raiturkar"/><figcaption>
+                <p>Figure 4: (c) Jyotiswarup Raiturkar</p>
+            </figcaption>
+    </figure>
 
 <blockquote>
 <p>The objective of scaling along the y-axis is splitting the application into
@@ -688,10 +688,10 @@ communication between services to get the clients what they need</p>
 <li>
 <p>Z-axis scaling</p>
 <figure><img src="https://blog.dornea.nu/notes/software-engineering-golang/scalability-z.png"
-         alt="Figure 5: (c) Jyotiswarup Raiturkar"/><figcaption>
-            <p>Figure 5: (c) Jyotiswarup Raiturkar</p>
-        </figcaption>
-</figure>
+             alt="Figure 5: (c) Jyotiswarup Raiturkar"/><figcaption>
+                <p>Figure 5: (c) Jyotiswarup Raiturkar</p>
+            </figcaption>
+    </figure>
 
 <blockquote>
 <p>z-axis scaling mode, each instance runs the same code, but with a different
@@ -904,8 +904,8 @@ identifiers.</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">    GET /hotels/xyz
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    GET /hotels/xyz
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Response:</p>
 <div class="highlight"><div class="chroma">
@@ -927,22 +927,22 @@ identifiers.</p>
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">    {
-        &#34;city&#34;: &#34;Delhi&#34;,
-        &#34;display_name&#34;: &#34;Hotel Xyz&#34;,
-        &#34;star_rating&#34;: 4,
-        &#34;links&#34;: [
-            {
-                &#34;href&#34;: &#34;xyz/book&#34;,
-                &#34;rel&#34;: &#34;book&#34;,
-                &#34;type&#34;: &#34;POST&#34;
-            },
-           {
-                &#34;href&#34;: &#34;xyz/rooms&#34;,
-                &#34;rel&#34;: &#34;rooms&#34;,
-                &#34;type&#34;: &#34;GET&#34;
-    ...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        &#34;city&#34;: &#34;Delhi&#34;,
+</span></span><span class="line"><span class="cl">        &#34;display_name&#34;: &#34;Hotel Xyz&#34;,
+</span></span><span class="line"><span class="cl">        &#34;star_rating&#34;: 4,
+</span></span><span class="line"><span class="cl">        &#34;links&#34;: [
+</span></span><span class="line"><span class="cl">            {
+</span></span><span class="line"><span class="cl">                &#34;href&#34;: &#34;xyz/book&#34;,
+</span></span><span class="line"><span class="cl">                &#34;rel&#34;: &#34;book&#34;,
+</span></span><span class="line"><span class="cl">                &#34;type&#34;: &#34;POST&#34;
+</span></span><span class="line"><span class="cl">            },
+</span></span><span class="line"><span class="cl">           {
+</span></span><span class="line"><span class="cl">                &#34;href&#34;: &#34;xyz/rooms&#34;,
+</span></span><span class="line"><span class="cl">                &#34;rel&#34;: &#34;rooms&#34;,
+</span></span><span class="line"><span class="cl">                &#34;type&#34;: &#34;GET&#34;
+</span></span><span class="line"><span class="cl">    ...
+</span></span></code></pre></td></tr></table>
 </div>
 </div></li>
 </ul>
@@ -964,7 +964,7 @@ identifiers.</p>
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

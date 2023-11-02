@@ -11,7 +11,7 @@
 
 <meta property="og:description" content="Since last post many things have changed. No more NetBSD on my laptop (this has to do with several things, I&rsquo;ll write about in a future post): I had to fall in love with Gentoo! I&rsquo;ll try to give you some quick overview related to this posts title: Encryption under Gentoo using Luks.
 There are serveral (good!) tutorials out there. Among these I&rsquo;ve used:
-  http://en.gentoo-wiki.com/wiki/DM-Crypt_with_LUKS  &lt;td&gt; There you&#39;ll get a lot of information related to the topic." />
+http://en.gentoo-wiki.com/wiki/DM-Crypt_with_LUKS &lt;td&gt; There you&#39;ll get a lot of information related to the topic." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2011/03/07/howto-full-encrypt-data-using-gentooluks-and-initramfs/" />
 
@@ -27,7 +27,7 @@ There are serveral (good!) tutorials out there. Among these I&rsquo;ve used:
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -180,33 +180,33 @@ type="image/x-icon"/>
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ tree
-.
-â”œâ”€â”€ bin
-â”‚   â”œâ”€â”€ busybox
-â”‚   â”œâ”€â”€ gpg
-â”‚   â””â”€â”€ gpg-error
-â”œâ”€â”€ dev
-â”œâ”€â”€ etc
-â”œâ”€â”€ init
-â”œâ”€â”€ lib
-â”‚   â””â”€â”€ modules
-â”œâ”€â”€ mnt
-â”‚   â””â”€â”€ root
-â”œâ”€â”€ new-root
-â”œâ”€â”€ proc
-â”œâ”€â”€ README
-â”œâ”€â”€ root
-â”‚   â””â”€â”€ keys
-â”œâ”€â”€ sbin
-â”‚   â”œâ”€â”€ cryptsetup
-â”‚   â””â”€â”€ mdev
-â”œâ”€â”€ sys
-â””â”€â”€ usr
-    â””â”€â”€ bin
-
-15 directories, 7 files
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ tree
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ bin
+</span></span><span class="line"><span class="cl">â”‚   â”œâ”€â”€ busybox
+</span></span><span class="line"><span class="cl">â”‚   â”œâ”€â”€ gpg
+</span></span><span class="line"><span class="cl">â”‚   â””â”€â”€ gpg-error
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ dev
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ etc
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ init
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ lib
+</span></span><span class="line"><span class="cl">â”‚   â””â”€â”€ modules
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ mnt
+</span></span><span class="line"><span class="cl">â”‚   â””â”€â”€ root
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ new-root
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ proc
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ README
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ root
+</span></span><span class="line"><span class="cl">â”‚   â””â”€â”€ keys
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ sbin
+</span></span><span class="line"><span class="cl">â”‚   â”œâ”€â”€ cryptsetup
+</span></span><span class="line"><span class="cl">â”‚   â””â”€â”€ mdev
+</span></span><span class="line"><span class="cl">â”œâ”€â”€ sys
+</span></span><span class="line"><span class="cl">â””â”€â”€ usr
+</span></span><span class="line"><span class="cl">    â””â”€â”€ bin
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">15 directories, 7 files
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Make sure all <strong>binaries</strong> are <strong>statically</strong> linked. And this is my <strong>init script</strong>:</p>
 <div class="highlight"><div class="chroma">
@@ -257,51 +257,51 @@ type="image/x-icon"/>
 </span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ cat init 
-#!/bin/busybox sh
-
-# Some useful functions
-rescue_shell() {
-    echo &#34;Something went wrong. Dropping you to a shell.&#34;
-    busybox --install -s
-    exec /bin/busybox sh
-}
-
-# GPG workaround
-cp -a /dev/console /dev/tty
-
-# Mount the /proc and /sys filesystems.
-mount -t proc none /proc
-mount -t sysfs none /sys
-
-busybox --install -s
-mdev -s 
-echo /bin/mdev &gt; /proc/sys/kernel/hotplug
-
-# Decrypt root
-while [ ! -e /root/keys/sda1_key ] ; do
-   sleep 2
-   echo &#34;&gt; Decrypt root ...&#34;
-   gpg -o /root/keys/sda1_key -d /root/keys/sda1_key.gpg 2&gt; /dev/null
-done
-
-# Unlock partition
-cryptsetup -d /root/keys/sda1_key luksOpen /dev/sda1 root
-
-# Mount new root 
-mount /dev/mapper/root /new-root
-
-# Create swap device
-cryptsetup -c twofish -h sha256 -d /dev/urandom create swap /dev/sda6
-mkswap /dev/mapper/swap
-
-# Unmount old root
-umount -l /proc
-umount -l /sys
-
-# Start new system
-exec switch_root /new-root /sbin/init || rescue_shell
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ cat init 
+</span></span><span class="line"><span class="cl">#!/bin/busybox sh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Some useful functions
+</span></span><span class="line"><span class="cl">rescue_shell() {
+</span></span><span class="line"><span class="cl">    echo &#34;Something went wrong. Dropping you to a shell.&#34;
+</span></span><span class="line"><span class="cl">    busybox --install -s
+</span></span><span class="line"><span class="cl">    exec /bin/busybox sh
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># GPG workaround
+</span></span><span class="line"><span class="cl">cp -a /dev/console /dev/tty
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Mount the /proc and /sys filesystems.
+</span></span><span class="line"><span class="cl">mount -t proc none /proc
+</span></span><span class="line"><span class="cl">mount -t sysfs none /sys
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">busybox --install -s
+</span></span><span class="line"><span class="cl">mdev -s 
+</span></span><span class="line"><span class="cl">echo /bin/mdev &gt; /proc/sys/kernel/hotplug
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Decrypt root
+</span></span><span class="line"><span class="cl">while [ ! -e /root/keys/sda1_key ] ; do
+</span></span><span class="line"><span class="cl">   sleep 2
+</span></span><span class="line"><span class="cl">   echo &#34;&gt; Decrypt root ...&#34;
+</span></span><span class="line"><span class="cl">   gpg -o /root/keys/sda1_key -d /root/keys/sda1_key.gpg 2&gt; /dev/null
+</span></span><span class="line"><span class="cl">done
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Unlock partition
+</span></span><span class="line"><span class="cl">cryptsetup -d /root/keys/sda1_key luksOpen /dev/sda1 root
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Mount new root 
+</span></span><span class="line"><span class="cl">mount /dev/mapper/root /new-root
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Create swap device
+</span></span><span class="line"><span class="cl">cryptsetup -c twofish -h sha256 -d /dev/urandom create swap /dev/sda6
+</span></span><span class="line"><span class="cl">mkswap /dev/mapper/swap
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Unmount old root
+</span></span><span class="line"><span class="cl">umount -l /proc
+</span></span><span class="line"><span class="cl">umount -l /sys
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Start new system
+</span></span><span class="line"><span class="cl">exec switch_root /new-root /sbin/init || rescue_shell
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Don&rsquo;t forget to copy your <strong>keys</strong> to */root/keys/ *and rename them properly. Afterwards all you have to do is to create the initramfs file:</p>
 <div class="highlight"><div class="chroma">
@@ -310,9 +310,9 @@ exec switch_root /new-root /sbin/init || rescue_shell
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ cd /usr/src/initramfs
-$ find . -print0 | cpio --null -ov --format=newc | gzip -9 &gt; /boot/initramfs.cpio.gz
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ cd /usr/src/initramfs
+</span></span><span class="line"><span class="cl">$ find . -print0 | cpio --null -ov --format=newc | gzip -9 &gt; /boot/initramfs.cpio.gz
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That&rsquo;s all!</p>
 
@@ -323,7 +323,7 @@ $ find . -print0 | cpio --null -ov --format=newc | gzip -9 &gt; /boot/initramfs.
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

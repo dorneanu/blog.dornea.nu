@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="Introducing my TP-Link TL-WR1043ND:
-Summary  OS: Linux OpenWrt 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Linux CPU: system type : Atheros AR9132 rev 2 machine : TP-LINK TL-WR1043ND processor : 0 cpu model : MIPS 24Kc V7.4  Filesystems 1 2 3 4 5 6 7  root@OpenWrt:~# df -Ph Filesystem Size Used Available Capacity Mounted on /dev/root 2.1M 2.1M 0 100% /rom tmpfs 14.4M 232.0K 14.2M 2% /tmp tmpfs 512." />
+Summary OS: Linux OpenWrt 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Linux CPU: system type : Atheros AR9132 rev 2 machine : TP-LINK TL-WR1043ND processor : 0 cpu model : MIPS 24Kc V7.4 Filesystems 1 2 3 4 5 6 7 root@OpenWrt:~# df -Ph Filesystem Size Used Available Capacity Mounted on /dev/root 2.1M 2.1M 0 100% /rom tmpfs 14.4M 232.0K 14.2M 2% /tmp tmpfs 512." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2011/03/19/my-own-cheap-nas-the-openwrt-way/" />
 
@@ -26,7 +26,7 @@ Summary  OS: Linux OpenWrt 2.6.32.25 #1 Fri Nov 19 20:27:50 PST 2010 mips GNU/Li
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -128,14 +128,14 @@ cpu model               : MIPS 24Kc V7.4</pre></li>
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# df -Ph
-Filesystem                Size      Used Available Capacity Mounted on
-/dev/root                 2.1M      2.1M         0 100% /rom
-tmpfs                    14.4M    232.0K     14.2M   2% /tmp
-tmpfs                   512.0K         0    512.0K   0% /dev
-/dev/sda1                 1.8G     64.6M      1.8G   3% /overlay
-mini_fo:/overlay          2.1M      2.1M         0 100% /
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">root@OpenWrt:~# df -Ph
+</span></span><span class="line"><span class="cl">Filesystem                Size      Used Available Capacity Mounted on
+</span></span><span class="line"><span class="cl">/dev/root                 2.1M      2.1M         0 100% /rom
+</span></span><span class="line"><span class="cl">tmpfs                    14.4M    232.0K     14.2M   2% /tmp
+</span></span><span class="line"><span class="cl">tmpfs                   512.0K         0    512.0K   0% /dev
+</span></span><span class="line"><span class="cl">/dev/sda1                 1.8G     64.6M      1.8G   3% /overlay
+</span></span><span class="line"><span class="cl">mini_fo:/overlay          2.1M      2.1M         0 100% /
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see a USB-Hub is attached along with a 2GB USB-Stick. I used it to store my rootfs on external storage [1]. Additionally my 2TB external hard drived is attached to the device so I can access the data per NFS [2].</p>
 <p><img src="https://blog.dornea.nu/posts/img/2011/236/tp-link-TL-WR1043ND_1.jpg" alt="TP Link"></p>
@@ -167,29 +167,29 @@ mini_fo:/overlay          2.1M      2.1M         0 100% /
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">root@OpenWrt:~# cat /etc/firewall.user 
-# This file is interpreted as shell script.
-# Put your custom iptables rules here, they will
-# be executed with each firewall (re-)start.
-IPT=iptables
-NET_LAN=192.168.0.0/16
-
-# ssh from outside
-$IPT -I input -j ACCEPT -i eth0.2 -s xxx -p tcp --dport 22
-$IPT -I input -j ACCEPT -i eth0.2 -s xxx -p udp --dport 22
-
-# portmap
-$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p tcp --dport 111
-$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 111
-
-# nfsd
-$IPT -I INPUT -j ACCEPT -i eth0.1 -s $NET_LAN -p tcp --dport 32777:32780
-$IPT -I INPUT -j ACCEPT -i eth0.1 -s $NET_LAN -p udp --dport 32777:32780
-
-# minidlna
-$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p tcp --dport 8200
-$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 8200
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">root@OpenWrt:~# cat /etc/firewall.user 
+</span></span><span class="line"><span class="cl"># This file is interpreted as shell script.
+</span></span><span class="line"><span class="cl"># Put your custom iptables rules here, they will
+</span></span><span class="line"><span class="cl"># be executed with each firewall (re-)start.
+</span></span><span class="line"><span class="cl">IPT=iptables
+</span></span><span class="line"><span class="cl">NET_LAN=192.168.0.0/16
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># ssh from outside
+</span></span><span class="line"><span class="cl">$IPT -I input -j ACCEPT -i eth0.2 -s xxx -p tcp --dport 22
+</span></span><span class="line"><span class="cl">$IPT -I input -j ACCEPT -i eth0.2 -s xxx -p udp --dport 22
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># portmap
+</span></span><span class="line"><span class="cl">$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p tcp --dport 111
+</span></span><span class="line"><span class="cl">$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 111
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># nfsd
+</span></span><span class="line"><span class="cl">$IPT -I INPUT -j ACCEPT -i eth0.1 -s $NET_LAN -p tcp --dport 32777:32780
+</span></span><span class="line"><span class="cl">$IPT -I INPUT -j ACCEPT -i eth0.1 -s $NET_LAN -p udp --dport 32777:32780
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># minidlna
+</span></span><span class="line"><span class="cl">$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p tcp --dport 8200
+</span></span><span class="line"><span class="cl">$IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 8200
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="what-about-speed">What about speed?</h2>
 <p><img src="https://blog.dornea.nu/posts/img/2011/236/tp-link_speed-test.png" alt="TP Link speed"></p>
@@ -209,7 +209,7 @@ $IPT -I INPUT -j ACCEPT -i eth0.2 -s $NET_LAN -p udp --dport 8200
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

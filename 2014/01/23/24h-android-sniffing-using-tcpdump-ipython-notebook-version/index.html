@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -149,8 +149,8 @@ root@debian-on-android:~#
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ mergecap -F libpcap -a output-* -w merged.pcap
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ mergecap -F libpcap -a output-* -w merged.pcap
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h1 id="convert-pcap-to-sqlite3-db">Convert pcap to SQLite3 DB</h1>
 <div class="highlight"><div class="chroma">
@@ -163,21 +163,19 @@ root@debian-on-android:~#
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
-
-# Tshark generated files
-DNS_QUERIES  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/dns_queries.csv&#34;
-CONNECTIONS  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/connections.csv&#34;
-HTTP_TRAFFIC = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/http_traffic.csv&#34;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Tshark generated files
+</span></span><span class="line"><span class="cl">DNS_QUERIES  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/dns_queries.csv&#34;
+</span></span><span class="line"><span class="cl">CONNECTIONS  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/connections.csv&#34;
+</span></span><span class="line"><span class="cl">HTTP_TRAFFIC = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/http_traffic.csv&#34;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h1 id="extract-valuable-information-from-pcap-file">Extract valuable information from pcap file</h1>
 <div class="highlight"><div class="chroma">
@@ -193,24 +191,22 @@ HTTP_TRAFFIC = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/http_
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
-              -T fields  -e frame.number -e frame.time -e dns.qry.name -e dns.resp.addr &gt; $DNS_QUERIES
-    
-connections = !tshark -r $PCAP_FILE -E header=y -E separator=\; -T fields -e frame.number \
-              -e frame.time -e ip.src -e ip.dst -e tcp.dstport -e frame.protocols &gt; $CONNECTIONS
-
-http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fields \
-              -e frame.number -e frame.time -e ip.dst -e http.request.method -e http.request.uri -e http.user_agent \
-              -e http.response.code  -e http.response.phrase -e http.content_length -e data -e text &gt; $HTTP_TRAFFIC
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
+</span></span><span class="line"><span class="cl">              -T fields  -e frame.number -e frame.time -e dns.qry.name -e dns.resp.addr &gt; $DNS_QUERIES
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">connections = !tshark -r $PCAP_FILE -E header=y -E separator=\; -T fields -e frame.number \
+</span></span><span class="line"><span class="cl">              -e frame.time -e ip.src -e ip.dst -e tcp.dstport -e frame.protocols &gt; $CONNECTIONS
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fields \
+</span></span><span class="line"><span class="cl">              -e frame.number -e frame.time -e ip.dst -e http.request.method -e http.request.uri -e http.user_agent \
+</span></span><span class="line"><span class="cl">              -e http.response.code  -e http.response.phrase -e http.content_length -e data -e text &gt; $HTTP_TRAFFIC
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -219,18 +215,16 @@ http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fi
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import sqlite3 as sql
-con = sql.connect(&#34;:memory:&#34;)
-cur = con.cursor()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import sqlite3 as sql
+</span></span><span class="line"><span class="cl">con = sql.connect(&#34;:memory:&#34;)
+</span></span><span class="line"><span class="cl">cur = con.cursor()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -287,58 +281,58 @@ cur = con.cursor()
 </span><span class="lnt">51
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import binascii
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import pandas.io.sql as pdsql 
-
-# Pandas settings
-pd.set_option(&#39;display.height&#39;, 500)
-pd.set_option(&#39;display.max_rows&#39;, 500)
-pd.set_option(&#39;display.max_columns&#39;, 500)
-pd.set_option(&#39;display.width&#39;, 500)
-pd.set_option(&#39;display.max_colwidth&#39;, 1000)
-
-# Useful functions
-def hex2str(s):
-    if str(s) == &#39;nan&#39;:
-        return None
-    else:
-        return bytes.fromhex(str(s)).decode(&#39;utf-8&#39;)
-    
-# Import DNS queries
-dns_df = pd.read_table(DNS_QUERIES)
-dns_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;dns_query&#39;, &#39;dns_response&#39;]
-
-# Import connections
-con_df = pd.read_table(CONNECTIONS, sep=&#34;;&#34;)
-con_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;src&#39;, &#39;dst&#39;, &#39;dstport&#39;, &#39;frame_protocols&#39;]
-
-# Import http traffic
-http_df = pd.read_table(HTTP_TRAFFIC)
-http_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;ip_dst&#39;,&#39;request_method&#39;, &#39;request_uri&#39;, &#39;user_agent&#39;,&#39;response_code&#39;, &#39;response_phrase&#39;,&#39;content_length&#39;, &#39;data&#39;, &#39;text&#39;]
-
-# Convert data (hex) to ascii
-convert_data = lambda x: hex2str(x)
-http_df[&#39;data&#39;] = http_df[&#39;data&#39;].apply(convert_data)
-
-
-# Write to SQLite
-pdsql.write_frame(dns_df, name=&#34;dns&#34;, con=con, if_exists=&#34;delete&#34;)
-pdsql.write_frame(con_df, name=&#34;connection&#34;, con=con, if_exists=&#34;delete&#34;)
-pdsql.write_frame(http_df, name=&#34;http&#34;, con=con, if_exists=&#34;delete&#34;)
-
-dns_df.head(5)
-
-#p2 = pdsql.read_frame(&#34;&#34;&#34;SELECT COUNT(dns_response), dns_query FROM dns&#34;&#34;&#34;, cnx)
-#p2
-
-# Count unique values
-#unique_dns = dns_df.groupby(&#39;DNS Query&#39;)[&#39;DNS Response&#39;].nunique().reset_index()
-#unique_dns.columns = [&#39;DNS&#39;, &#39;# DNS Queries&#39;]
-#unique_dns.sort([&#39;# DNS Queries&#39;], ascending=False).head(10)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import binascii
+</span></span><span class="line"><span class="cl">import numpy as np
+</span></span><span class="line"><span class="cl">import pandas as pd
+</span></span><span class="line"><span class="cl">import matplotlib.pyplot as plt
+</span></span><span class="line"><span class="cl">import pandas.io.sql as pdsql 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Pandas settings
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.height&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_rows&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_columns&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.width&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_colwidth&#39;, 1000)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Useful functions
+</span></span><span class="line"><span class="cl">def hex2str(s):
+</span></span><span class="line"><span class="cl">    if str(s) == &#39;nan&#39;:
+</span></span><span class="line"><span class="cl">        return None
+</span></span><span class="line"><span class="cl">    else:
+</span></span><span class="line"><span class="cl">        return bytes.fromhex(str(s)).decode(&#39;utf-8&#39;)
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"># Import DNS queries
+</span></span><span class="line"><span class="cl">dns_df = pd.read_table(DNS_QUERIES)
+</span></span><span class="line"><span class="cl">dns_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;dns_query&#39;, &#39;dns_response&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Import connections
+</span></span><span class="line"><span class="cl">con_df = pd.read_table(CONNECTIONS, sep=&#34;;&#34;)
+</span></span><span class="line"><span class="cl">con_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;src&#39;, &#39;dst&#39;, &#39;dstport&#39;, &#39;frame_protocols&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Import http traffic
+</span></span><span class="line"><span class="cl">http_df = pd.read_table(HTTP_TRAFFIC)
+</span></span><span class="line"><span class="cl">http_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;ip_dst&#39;,&#39;request_method&#39;, &#39;request_uri&#39;, &#39;user_agent&#39;,&#39;response_code&#39;, &#39;response_phrase&#39;,&#39;content_length&#39;, &#39;data&#39;, &#39;text&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Convert data (hex) to ascii
+</span></span><span class="line"><span class="cl">convert_data = lambda x: hex2str(x)
+</span></span><span class="line"><span class="cl">http_df[&#39;data&#39;] = http_df[&#39;data&#39;].apply(convert_data)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Write to SQLite
+</span></span><span class="line"><span class="cl">pdsql.write_frame(dns_df, name=&#34;dns&#34;, con=con, if_exists=&#34;delete&#34;)
+</span></span><span class="line"><span class="cl">pdsql.write_frame(con_df, name=&#34;connection&#34;, con=con, if_exists=&#34;delete&#34;)
+</span></span><span class="line"><span class="cl">pdsql.write_frame(http_df, name=&#34;http&#34;, con=con, if_exists=&#34;delete&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dns_df.head(5)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">#p2 = pdsql.read_frame(&#34;&#34;&#34;SELECT COUNT(dns_response), dns_query FROM dns&#34;&#34;&#34;, cnx)
+</span></span><span class="line"><span class="cl">#p2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Count unique values
+</span></span><span class="line"><span class="cl">#unique_dns = dns_df.groupby(&#39;DNS Query&#39;)[&#39;DNS Response&#39;].nunique().reset_index()
+</span></span><span class="line"><span class="cl">#unique_dns.columns = [&#39;DNS&#39;, &#39;# DNS Queries&#39;]
+</span></span><span class="line"><span class="cl">#unique_dns.sort([&#39;# DNS Queries&#39;], ascending=False).head(10)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -392,19 +386,15 @@ dns_df.head(5)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h1 id="top-dns-queries">Top DNS queries</h1>
 <div class="highlight"><div class="chroma">
@@ -418,14 +408,14 @@ dns_df.head(5)
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p1 = pdsql.read_frame(&#34;&#34;&#34;
-    SELECT COUNT(dns_response) AS &#39;# DNS Responses&#39;, dns_query AS &#39;DNS to lookup&#39; 
-    FROM dns GROUP BY dns_query 
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-#print(p1.head(100).to_string())
-p1.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p1 = pdsql.read_frame(&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    SELECT COUNT(dns_response) AS &#39;# DNS Responses&#39;, dns_query AS &#39;DNS to lookup&#39; 
+</span></span><span class="line"><span class="cl">    FROM dns GROUP BY dns_query 
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">#print(p1.head(100).to_string())
+</span></span><span class="line"><span class="cl">p1.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -959,22 +949,22 @@ p1.head(100)
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT COUNT(c.dst),c.dst, c.dstport, c.frame_protocols FROM connection AS c 
-    JOIN dns AS d ON c.dst=d.dns_response
-    WHERE c.dst == &#34;173.194.70.95&#34; AND c.dst NOT LIKE &#34;10.%&#34;
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-#p_testing.head(100)
-
-p_testing = pdsql.read_frame(&#34;&#34;&#34;
-    SELECT COUNT(*), (SELECT dns_query FROM dns WHERE dns_response=c.dst LIMIT 1) as DNS, c.dstport, c.frame_protocols FROM connection AS c
-    WHERE c.dst NOT LIKE &#34;10.%&#34;
-    GROUP by 2
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-p_testing.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT COUNT(c.dst),c.dst, c.dstport, c.frame_protocols FROM connection AS c 
+</span></span><span class="line"><span class="cl">    JOIN dns AS d ON c.dst=d.dns_response
+</span></span><span class="line"><span class="cl">    WHERE c.dst == &#34;173.194.70.95&#34; AND c.dst NOT LIKE &#34;10.%&#34;
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">#p_testing.head(100)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">p_testing = pdsql.read_frame(&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    SELECT COUNT(*), (SELECT dns_query FROM dns WHERE dns_response=c.dst LIMIT 1) as DNS, c.dstport, c.frame_protocols FROM connection AS c
+</span></span><span class="line"><span class="cl">    WHERE c.dst NOT LIKE &#34;10.%&#34;
+</span></span><span class="line"><span class="cl">    GROUP by 2
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">p_testing.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -1693,11 +1683,9 @@ p_testing.head(100)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h1 id="top-connections">Top connections</h1>
 <div class="highlight"><div class="chroma">
@@ -1712,15 +1700,15 @@ p_testing.head(100)
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p2 = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT COUNT(c.dst), d.dns_query, c.dstport, c.frame_protocols FROM connection AS c 
-    JOIN dns AS d ON c.dst=d.dns_response
-    WHERE c.frame_protocols LIKE &#34;sll:ip:tcp:%&#34;
-    GROUP by c.dst
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-p2.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p2 = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT COUNT(c.dst), d.dns_query, c.dstport, c.frame_protocols FROM connection AS c 
+</span></span><span class="line"><span class="cl">    JOIN dns AS d ON c.dst=d.dns_response
+</span></span><span class="line"><span class="cl">    WHERE c.frame_protocols LIKE &#34;sll:ip:tcp:%&#34;
+</span></span><span class="line"><span class="cl">    GROUP by c.dst
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">p2.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -2439,11 +2427,9 @@ p2.head(100)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2458,16 +2444,16 @@ p2.head(100)
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT  frame_number, frame_protocols
-    FROM connection
-    WHERE frame_protocols LIKE &#39;sll:ip:tcp%xml%&#39;
-    GROUP by frame_protocols
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-#print(p1.head(100).to_string())
-p_testing.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p_testing = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT  frame_number, frame_protocols
+</span></span><span class="line"><span class="cl">    FROM connection
+</span></span><span class="line"><span class="cl">    WHERE frame_protocols LIKE &#39;sll:ip:tcp%xml%&#39;
+</span></span><span class="line"><span class="cl">    GROUP by frame_protocols
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">#print(p1.head(100).to_string())
+</span></span><span class="line"><span class="cl">p_testing.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -2504,11 +2490,9 @@ p_testing.head(100)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h1 id="used-protocols">Used protocols</h1>
 <div class="highlight"><div class="chroma">
@@ -2522,14 +2506,14 @@ p_testing.head(100)
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p_proto = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT COUNT(frame_protocols), frame_protocols
-    FROM connection
-    GROUP by frame_protocols
-    ORDER BY 1 DESC
-&#34;&#34;&#34;, con)
-p_proto.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p_proto = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT COUNT(frame_protocols), frame_protocols
+</span></span><span class="line"><span class="cl">    FROM connection
+</span></span><span class="line"><span class="cl">    GROUP by frame_protocols
+</span></span><span class="line"><span class="cl">    ORDER BY 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">p_proto.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -2881,11 +2865,9 @@ p_proto.head(100)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h1 id="used-destination-ports">Used destination ports</h1>
 <div class="highlight"><div class="chroma">
@@ -2901,16 +2883,16 @@ p_proto.head(100)
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p_ports = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT COUNT(c.dstport), c.dstport
-    FROM connection AS c
-    JOIN dns AS d ON c.dst = d.dns_response
-    GROUP by c.dstport
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-#print(p1.head(100).to_string())
-p_ports.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p_ports = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT COUNT(c.dstport), c.dstport
+</span></span><span class="line"><span class="cl">    FROM connection AS c
+</span></span><span class="line"><span class="cl">    JOIN dns AS d ON c.dst = d.dns_response
+</span></span><span class="line"><span class="cl">    GROUP by c.dstport
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">#print(p1.head(100).to_string())
+</span></span><span class="line"><span class="cl">p_ports.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -2977,11 +2959,9 @@ p_ports.head(100)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h1 id="http-connections">HTTP Connections</h1>
 <h2 id="http-methods">HTTP Methods</h2>
@@ -2997,15 +2977,15 @@ p_ports.head(100)
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p_http_methods = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT COUNT(request_method), request_method
-    FROM http
-    GROUP by request_method
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-#print(p1.head(100).to_string())
-p_http_methods.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p_http_methods = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT COUNT(request_method), request_method
+</span></span><span class="line"><span class="cl">    FROM http
+</span></span><span class="line"><span class="cl">    GROUP by request_method
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">#print(p1.head(100).to_string())
+</span></span><span class="line"><span class="cl">p_http_methods.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -3043,15 +3023,15 @@ p_http_methods.head(100)
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p_user_agents = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT COUNT(user_agent), user_agent
-    FROM http
-    GROUP by user_agent
-    ORDER by 1 DESC
-&#34;&#34;&#34;, con)
-#print(p1.head(100).to_string())
-p_user_agents.head(100)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p_user_agents = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT COUNT(user_agent), user_agent
+</span></span><span class="line"><span class="cl">    FROM http
+</span></span><span class="line"><span class="cl">    GROUP by user_agent
+</span></span><span class="line"><span class="cl">    ORDER by 1 DESC
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">#print(p1.head(100).to_string())
+</span></span><span class="line"><span class="cl">p_user_agents.head(100)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -3173,11 +3153,9 @@ p_user_agents.head(100)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h2 id="get-requests">GET Requests</h2>
 <div class="highlight"><div class="chroma">
@@ -3209,32 +3187,32 @@ p_user_agents.head(100)
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT h.frame_number, h.ip_dst, d.dns_query, h.request_method, h.request_uri, h.user_agent FROM http AS  h
-    JOIN dns AS d ON h.ip_dst = d.dns_response
-    WHERE lower(h.request_method) == &#39;get&#39; AND
-        -- Filter all rubish
-        (h.request_uri NOT LIKE &#39;%.gif&#39;  AND 
-         h.request_uri NOT LIKE &#39;%.jpg&#39;  AND
-         h.request_uri NOT LIKE &#39;%.jpeg&#39; AND
-         h.request_uri NOT LIKE &#39;%.png&#39;  AND
-         h.request_uri NOT LIKE &#39;%.gif&#39;  AND
-         h.request_uri NOT LIKE &#39;%.css&#39;  AND 
-         h.request_uri NOT LIKE &#39;%.html&#39; AND
-         h.request_uri NOT LIKE &#39;%.js&#39;) 
-    AND
-        (d.dns_query NOT LIKE &#39;%amazon%&#39;   AND
-         d.dns_query NOT LIKE &#39;%fahrinfo%&#39; AND
-         d.dns_query NOT LIKE &#39;%faz.net%&#39;  AND
-         d.dns_query NOT LIKE &#39;%heute.de%&#39; AND
-         d.dns_query NOT LIKE &#39;%twitter%&#39;  AND
-         d.dns_query NOT LIKE &#39;%sueddeutsche%&#39;)
-    
-    GROUP by h.request_uri
-    ORDER by d.dns_query
-&#34;&#34;&#34;, con)
-p3.head(500)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p3 = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT h.frame_number, h.ip_dst, d.dns_query, h.request_method, h.request_uri, h.user_agent FROM http AS  h
+</span></span><span class="line"><span class="cl">    JOIN dns AS d ON h.ip_dst = d.dns_response
+</span></span><span class="line"><span class="cl">    WHERE lower(h.request_method) == &#39;get&#39; AND
+</span></span><span class="line"><span class="cl">        -- Filter all rubish
+</span></span><span class="line"><span class="cl">        (h.request_uri NOT LIKE &#39;%.gif&#39;  AND 
+</span></span><span class="line"><span class="cl">         h.request_uri NOT LIKE &#39;%.jpg&#39;  AND
+</span></span><span class="line"><span class="cl">         h.request_uri NOT LIKE &#39;%.jpeg&#39; AND
+</span></span><span class="line"><span class="cl">         h.request_uri NOT LIKE &#39;%.png&#39;  AND
+</span></span><span class="line"><span class="cl">         h.request_uri NOT LIKE &#39;%.gif&#39;  AND
+</span></span><span class="line"><span class="cl">         h.request_uri NOT LIKE &#39;%.css&#39;  AND 
+</span></span><span class="line"><span class="cl">         h.request_uri NOT LIKE &#39;%.html&#39; AND
+</span></span><span class="line"><span class="cl">         h.request_uri NOT LIKE &#39;%.js&#39;) 
+</span></span><span class="line"><span class="cl">    AND
+</span></span><span class="line"><span class="cl">        (d.dns_query NOT LIKE &#39;%amazon%&#39;   AND
+</span></span><span class="line"><span class="cl">         d.dns_query NOT LIKE &#39;%fahrinfo%&#39; AND
+</span></span><span class="line"><span class="cl">         d.dns_query NOT LIKE &#39;%faz.net%&#39;  AND
+</span></span><span class="line"><span class="cl">         d.dns_query NOT LIKE &#39;%heute.de%&#39; AND
+</span></span><span class="line"><span class="cl">         d.dns_query NOT LIKE &#39;%twitter%&#39;  AND
+</span></span><span class="line"><span class="cl">         d.dns_query NOT LIKE &#39;%sueddeutsche%&#39;)
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    GROUP by h.request_uri
+</span></span><span class="line"><span class="cl">    ORDER by d.dns_query
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">p3.head(500)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -5172,19 +5150,15 @@ p3.head(500)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><h2 id="post-requests">POST Requests</h2>
 <div class="highlight"><div class="chroma">
@@ -5198,14 +5172,14 @@ p3.head(500)
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">p3 = pdsql.read_frame(&#34;&#34;&#34; 
-    SELECT h.frame_number, d.dns_query, h.request_uri, h.data, h.text FROM http AS  h
-    JOIN dns AS d ON h.ip_dst = d.dns_response
-    WHERE lower(h.request_method) == &#39;post&#39;
-    ORDER by h.ip_dst    
-&#34;&#34;&#34;, con)
-p3.head(500)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p3 = pdsql.read_frame(&#34;&#34;&#34; 
+</span></span><span class="line"><span class="cl">    SELECT h.frame_number, d.dns_query, h.request_uri, h.data, h.text FROM http AS  h
+</span></span><span class="line"><span class="cl">    JOIN dns AS d ON h.ip_dst = d.dns_response
+</span></span><span class="line"><span class="cl">    WHERE lower(h.request_method) == &#39;post&#39;
+</span></span><span class="line"><span class="cl">    ORDER by h.ip_dst    
+</span></span><span class="line"><span class="cl">&#34;&#34;&#34;, con)
+</span></span><span class="line"><span class="cl">p3.head(500)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -6761,11 +6735,9 @@ p3.head(500)
 </div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div>
     
@@ -6775,7 +6747,7 @@ p3.head(500)
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -124,15 +124,15 @@ ways to decode <em>AMF</em> encoded data.</p>
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html">...
-Content-Type: application/x-amf
-Content-Length: 1373
-...
-^@^C^@^@^@^A^@^Dnull^@^C/46^@^@^K<span class="p">&lt;</span><span class="nt">C6</span><span class="p">&gt;</span>
-^@^@^@^A^Q
-<span class="p">&lt;</span><span class="nt">81</span><span class="p">&gt;</span>^SOflex.messaging.messages.RemotingMessage^Msource^Soperation       body^QclientId^SmessageId^Oheaders^UtimeToLive^Stimestamp^Wdestination^A^F^]generateReport      ^K^A    ^M^A
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">Content-Type: application/x-amf
+</span></span><span class="line"><span class="cl">Content-Length: 1373
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">^@^C^@^@^@^A^@^Dnull^@^C/46^@^@^K<span class="p">&lt;</span><span class="nt">C6</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">^@^@^@^A^Q
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">81</span><span class="p">&gt;</span>^SOflex.messaging.messages.RemotingMessage^Msource^Soperation       body^QclientId^SmessageId^Oheaders^UtimeToLive^Stimestamp^Wdestination^A^F^]generateReport      ^K^A    ^M^A
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Well you can save the response body to some file and then analyze the contents. Using <a href="https://github.com/hydralabs/pyamf">pyamf</a>
 I was able to decode the AMF data in way I could easily understand its inner structure. First <em>install</em> pyamf:</p>
@@ -148,12 +148,12 @@ I was able to decode the AMF data in way I could easily understand its inner str
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">pyamf</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/victor/tmp/neu.req&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-       <span class="o">...</span><span class="p">:</span> 
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">pyamf</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/victor/tmp/neu.req&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">       <span class="o">...</span><span class="p">:</span> 
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And finally decode that data:</p>
 <div class="highlight"><div class="chroma">
@@ -172,19 +172,19 @@ I was able to decode the AMF data in way I could easily understand its inner str
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">pyamf</span> <span class="kn">import</span> <span class="n">remoting</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">decoded</span> <span class="o">=</span> <span class="n">remoting</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="nb">type</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">pyamf</span><span class="o">.</span><span class="n">remoting</span><span class="o">.</span><span class="n">Envelope</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="n">decoded</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">11</span><span class="p">]:</span> 
-<span class="o">&lt;</span><span class="n">Envelope</span> <span class="n">amfVersion</span><span class="o">=</span><span class="mi">3</span><span class="o">&gt;</span>
- <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;/46&#39;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Request</span> <span class="n">target</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;null&#39;</span><span class="o">&gt;</span><span class="p">[</span><span class="o">&lt;</span><span class="n">RemotingMessage</span>  <span class="n">body</span><span class="o">=</span><span class="p">[[{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;ExternalListGUID&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SINGLE_SELECT_DEFAULT&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Options&#39;</span><span class="p">},</span> <span class="p">{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;projectversionid&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SINGLE_PROJECT&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Project Version&#39;</span><span class="p">},</span> <span class="p">{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SecurityIssueDetails&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Detailed Report&#39;</span><span class="p">}</span>
- <span class="o">...</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">pyamf</span> <span class="kn">import</span> <span class="n">remoting</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">decoded</span> <span class="o">=</span> <span class="n">remoting</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="nb">type</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">Out</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">pyamf</span><span class="o">.</span><span class="n">remoting</span><span class="o">.</span><span class="n">Envelope</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">In</span> <span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="n">decoded</span>
+</span></span><span class="line"><span class="cl"><span class="n">Out</span><span class="p">[</span><span class="mi">11</span><span class="p">]:</span> 
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="n">Envelope</span> <span class="n">amfVersion</span><span class="o">=</span><span class="mi">3</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="sa">u</span><span class="s1">&#39;/46&#39;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Request</span> <span class="n">target</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;null&#39;</span><span class="o">&gt;</span><span class="p">[</span><span class="o">&lt;</span><span class="n">RemotingMessage</span>  <span class="n">body</span><span class="o">=</span><span class="p">[[{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;1A2B4C7E-93B0-4502-878A-9BE40D2A25C4&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;ExternalListGUID&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SINGLE_SELECT_DEFAULT&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Options&#39;</span><span class="p">},</span> <span class="p">{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;projectversionid&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SINGLE_PROJECT&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Project Version&#39;</span><span class="p">},</span> <span class="p">{</span><span class="sa">u</span><span class="s1">&#39;paramValue&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;SecurityIssueDetails&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;BOOLEAN&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;Detailed Report&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"> <span class="o">...</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>I hope that helped!</p>
 
@@ -195,7 +195,7 @@ I was able to decode the AMF data in way I could easily understand its inner str
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="I thought this might be interesting enough to share with you. Every time I&rsquo;m working with DataFrames I somehow miss the search feature: I&rsquo;d like to search for certain patterns inside the columns and rows. I used to use JQuery DataTables for netgrafio. But I couldn&rsquo;t find any simple way to integrate it with IPython. Well it was easier than I thought.
-Extensions 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44  # &lt;!" />
+Extensions 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 # &lt;!" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/08/28/using-jquery-datatables-with-ipython/" />
 
@@ -26,7 +26,7 @@ Extensions 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -156,51 +156,51 @@ type="image/x-icon"/>
 </span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-from IPython import display
-from IPython.core.magic import register_cell_magic, Magics, magics_class, cell_magic
-import jinja2
-
-# Create jinja cell magic (http://nbviewer.ipython.org/urls/gist.github.com/bj0/5343292/raw/23a0845ee874827e3635edb0bf5701710a537bfc/jinja2.ipynb)
-@magics_class
-class JinjaMagics(Magics):
-    &#39;&#39;&#39;Magics class containing the jinja2 magic and state&#39;&#39;&#39;
-    
-    def __init__(self, shell):
-        super(JinjaMagics, self).__init__(shell)
-        
-        # create a jinja2 environment to use for rendering
-        # this can be modified for desired effects (ie: using different variable syntax)
-        self.env = jinja2.Environment(loader=jinja2.FileSystemLoader(&#39;.&#39;))
-        
-        # possible output types
-        self.display_functions = dict(html=display.HTML, 
-                                      latex=display.Latex,
-                                      json=display.JSON,
-                                      pretty=display.Pretty,
-                                      display=display.display)
-
-    
-    @cell_magic
-    def jinja(self, line, cell):
-        &#39;&#39;&#39;
-        jinja2 cell magic function.  Contents of cell are rendered by jinja2, and 
-        the line can be used to specify output type.
-
-        ie: &#34;%%jinja html&#34; will return the rendered cell wrapped in an HTML object.
-        &#39;&#39;&#39;
-        f = self.display_functions.get(line.lower().strip(), display.display)
-        
-        tmp = self.env.from_string(cell)
-        rend = tmp.render(dict((k,v) for (k,v) in self.shell.user_ns.items() 
-                                        if not k.startswith(&#39;_&#39;) and k not in self.shell.user_ns_hidden))
-        
-        return f(rend)
-        
-    
-ip = get_ipython()
-ip.register_magics(JinjaMagics)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># &lt;!-- collapse=True --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">IPython</span> <span class="n">import</span> <span class="n">display</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">IPython</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">magic</span> <span class="n">import</span> <span class="n">register_cell_magic</span><span class="p">,</span> <span class="n">Magics</span><span class="p">,</span> <span class="n">magics_class</span><span class="p">,</span> <span class="n">cell_magic</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">jinja2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create jinja cell magic (http://nbviewer.ipython.org/urls/gist.github.com/bj0/5343292/raw/23a0845ee874827e3635edb0bf5701710a537bfc/jinja2.ipynb)</span>
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">magics_class</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">JinjaMagics</span><span class="p">(</span><span class="n">Magics</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;&#39;&#39;Magics class containing the jinja2 magic and state&#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">super</span><span class="p">(</span><span class="n">JinjaMagics</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># create a jinja2 environment to use for rendering</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># this can be modified for desired effects (ie: using different variable syntax)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">jinja2</span><span class="o">.</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># possible output types</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">display_functions</span> <span class="o">=</span> <span class="n">dict</span><span class="p">(</span><span class="n">html</span><span class="o">=</span><span class="n">display</span><span class="o">.</span><span class="n">HTML</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                                      <span class="n">latex</span><span class="o">=</span><span class="n">display</span><span class="o">.</span><span class="n">Latex</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                      <span class="n">json</span><span class="o">=</span><span class="n">display</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                      <span class="n">pretty</span><span class="o">=</span><span class="n">display</span><span class="o">.</span><span class="n">Pretty</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                      <span class="n">display</span><span class="o">=</span><span class="n">display</span><span class="o">.</span><span class="n">display</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="n">cell_magic</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">jinja</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">        jinja2 cell magic function.  Contents of cell are rendered by jinja2, and 
+</span></span></span><span class="line"><span class="cl"><span class="s1">        the line can be used to specify output type.
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">        ie: &#34;</span><span class="si">%%</span><span class="s1">jinja html&#34; will return the rendered cell wrapped in an HTML object.
+</span></span></span><span class="line"><span class="cl"><span class="s1">        &#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_functions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">display</span><span class="o">.</span><span class="n">display</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rend</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell</span><span class="o">.</span><span class="n">user_ns</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl">                                        <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell</span><span class="o">.</span><span class="n">user_ns_hidden</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">rend</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="n">ip</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">ip</span><span class="o">.</span><span class="n">register_magics</span><span class="p">(</span><span class="n">JinjaMagics</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="datatable-function">DataTable function</h2>
 <div class="highlight"><div class="chroma">
@@ -239,47 +239,45 @@ ip.register_magics(JinjaMagics)
 </span><span class="lnt">32
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-import uuid
-
-def DataTable(df):
-    &#34;&#34;&#34; Prints a pandas.DataFrame as JQuery DataTables &#34;&#34;&#34;
-    from IPython.display import HTML
-    # Generate random container name
-    id_container = uuid.uuid1()
-    output = &#34;&#34;&#34;
-        &lt;div id=&#34;datatable-container-%s&#34;&gt;
-            &lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css&#34;&gt;
-            &lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css&#34;&gt;
-            &lt;script type=&#34;text/javascript&#34; charset=&#34;utf8&#34; src=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js&#34;&gt;&lt;/script&gt;
-
-            &lt;script type=&#34;text/javascript&#34;&gt;
-                var url = window.location.href;
-                
-                if(url.indexOf(&#34;localhost:9999&#34;) != -1){
-                    $(&#39;#datatable-container-%s table.datatable&#39;).dataTable();
-                } else {
-                    $.getScript(&#34;http://code.jquery.com/jquery-1.11.1.min.js&#34;);
-                    $(document).ready(function() {
-                        $(&#39;#datatable-container-%s table.datatable&#39;).dataTable();
-                    });
-                }
-                
-            &lt;/script&gt;
-            &lt;!-- Insert table below --&gt;
-            %s
-        &lt;/div&gt;
-    &#34;&#34;&#34; % (id_container, id_container, id_container, df.to_html(index=False, classes=&#34;datatable dataframe&#34;))
-    return HTML(output)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># &lt;!-- collapse=True --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">uuid</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">DataTable</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Prints a pandas.DataFrame as JQuery DataTables &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">from</span> <span class="n">IPython</span><span class="o">.</span><span class="n">display</span> <span class="n">import</span> <span class="n">HTML</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Generate random container name</span>
+</span></span><span class="line"><span class="cl">    <span class="n">id_container</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">output</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &lt;div id=&#34;datatable-container-</span><span class="si">%s</span><span class="s2">&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables_themeroller.css&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &lt;script type=&#34;text/javascript&#34; charset=&#34;utf8&#34; src=&#34;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js&#34;&gt;&lt;/script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &lt;script type=&#34;text/javascript&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">                var url = window.location.href;
+</span></span></span><span class="line"><span class="cl"><span class="s2">                
+</span></span></span><span class="line"><span class="cl"><span class="s2">                if(url.indexOf(&#34;localhost:9999&#34;) != -1){
+</span></span></span><span class="line"><span class="cl"><span class="s2">                    $(&#39;#datatable-container-</span><span class="si">%s</span><span class="s2"> table.datatable&#39;).dataTable();
+</span></span></span><span class="line"><span class="cl"><span class="s2">                } else {
+</span></span></span><span class="line"><span class="cl"><span class="s2">                    $.getScript(&#34;http://code.jquery.com/jquery-1.11.1.min.js&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="s2">                    $(document).ready(function() {
+</span></span></span><span class="line"><span class="cl"><span class="s2">                        $(&#39;#datatable-container-</span><span class="si">%s</span><span class="s2"> table.datatable&#39;).dataTable();
+</span></span></span><span class="line"><span class="cl"><span class="s2">                    });
+</span></span></span><span class="line"><span class="cl"><span class="s2">                }
+</span></span></span><span class="line"><span class="cl"><span class="s2">                
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &lt;/script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &lt;!-- Insert table below --&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            </span><span class="si">%s</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">id_container</span><span class="p">,</span> <span class="n">id_container</span><span class="p">,</span> <span class="n">id_container</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">False</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="s2">&#34;datatable dataframe&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">HTML</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
+<pre tabindex="0" class="chroma"><code></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
 </div>
 </div><p>I know the code is not perfect, but at least it works for me. Now let&rsquo;s create some random DataFrame:</p>
 <div class="highlight"><div class="chroma">
@@ -306,27 +304,27 @@ def DataTable(df):
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import pandas as pd
-import urllib2
-from yurl import URL
-
-
-# Fetch list of random URLs (found using Google)
-response = urllib2.urlopen(&#39;http://files.ianonavy.com/urls.txt&#39;)
-targets_row = response.read()
-
-# Create DataFrame
-targets = pd.DataFrame([t for t in targets_row.splitlines()], columns=[&#34;Target&#34;])
-
-# Join root domain + suffix
-extract_root_domain =  lambda x: &#39;.&#39;.join(tldextract.extract(x)[1:3])
-
-target_columns = [&#39;scheme&#39;, &#39;userinfo&#39;, &#39;host&#39;, &#39;port&#39;, &#39;path&#39;, &#39;query&#39;, &#39;fragment&#39;, &#39;decoded&#39;]
-target_component = [list(URL(t)) for t in targets[&#39;Target&#39;]]
-
-# Create data frame
-df_targets = pd.DataFrame(target_component, columns=target_columns)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pandas as pd
+</span></span><span class="line"><span class="cl">import urllib2
+</span></span><span class="line"><span class="cl">from yurl import URL
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Fetch list of random URLs (found using Google)
+</span></span><span class="line"><span class="cl">response = urllib2.urlopen(&#39;http://files.ianonavy.com/urls.txt&#39;)
+</span></span><span class="line"><span class="cl">targets_row = response.read()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Create DataFrame
+</span></span><span class="line"><span class="cl">targets = pd.DataFrame([t for t in targets_row.splitlines()], columns=[&#34;Target&#34;])
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Join root domain + suffix
+</span></span><span class="line"><span class="cl">extract_root_domain =  lambda x: &#39;.&#39;.join(tldextract.extract(x)[1:3])
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">target_columns = [&#39;scheme&#39;, &#39;userinfo&#39;, &#39;host&#39;, &#39;port&#39;, &#39;path&#39;, &#39;query&#39;, &#39;fragment&#39;, &#39;decoded&#39;]
+</span></span><span class="line"><span class="cl">target_component = [list(URL(t)) for t in targets[&#39;Target&#39;]]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Create data frame
+</span></span><span class="line"><span class="cl">df_targets = pd.DataFrame(target_component, columns=target_columns)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="classic-html-output">Classic HTML output</h3>
 <div class="highlight"><div class="chroma">
@@ -334,8 +332,8 @@ df_targets = pd.DataFrame(target_component, columns=target_columns)
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_targets[:20]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_targets[:20]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -582,8 +580,8 @@ df_targets = pd.DataFrame(target_component, columns=target_columns)
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">DataTable(df_targets[:20])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">DataTable(df_targets[:20])
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    &lt;div id=&quot;datatable-container-aab341ae-2f8d-11e4-95d5-52540086692e&quot;&gt;
         &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css&quot;&gt;
@@ -828,8 +826,8 @@ df_targets = pd.DataFrame(target_component, columns=target_columns)
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">html_output = DataTable(df_targets[:20])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">html_output = DataTable(df_targets[:20])
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -839,11 +837,11 @@ df_targets = pd.DataFrame(target_component, columns=target_columns)
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">%%jinja html
-&lt;div id=&#34;table-container&#34;&gt;
-    {{ html_output }}
-&lt;/div&gt;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">%%jinja html
+</span></span><span class="line"><span class="cl">&lt;div id=&#34;table-container&#34;&gt;
+</span></span><span class="line"><span class="cl">    {{ html_output }}
+</span></span><span class="line"><span class="cl">&lt;/div&gt;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div id="table-container">
     <IPython.core.display.HTML object at 0x7f042eaa02d0>
@@ -853,8 +851,8 @@ df_targets = pd.DataFrame(target_component, columns=target_columns)
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">html_output
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">html_output
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>    &lt;div id=&quot;datatable-container-3b6a2692-2f8c-11e4-95d5-52540086692e&quot;&gt;
         &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css&quot;&gt;
@@ -1092,7 +1090,7 @@ df_targets = pd.DataFrame(target_component, columns=target_columns)
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

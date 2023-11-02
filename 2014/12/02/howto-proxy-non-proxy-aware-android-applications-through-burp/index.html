@@ -10,8 +10,9 @@
 
 
 <meta property="og:description" content="Proxying HTTP(s) traffic from Android devices through Burp should be actually no magic. Nevertheless you&rsquo;ll have to take some important steps into consideration:
-  Install Burps CA cert on the device
- I usually access Burp directly and download the cert file (cacert.crt) If Burp is listening on 192.168.1.1:8080, just go to http://192.168.1.1:8080/cert to download the cert Push this file to your device and install the certificate    Install ProxyDroid on Android" />
+Install Burps CA cert on the device
+I usually access Burp directly and download the cert file (cacert.crt) If Burp is listening on 192.168.1.1:8080, just go to http://192.168.1.1:8080/cert to download the cert Push this file to your device and install the certificate Install ProxyDroid on Android
+Set proxy setting globally or only for certain applications In theory that&rsquo;s all!" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/12/02/howto-proxy-non-proxy-aware-android-applications-through-burp/" />
 
@@ -27,7 +28,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -277,23 +278,21 @@ type="image/x-icon"/>
 </span><span class="lnt">10
 </span><span class="lnt">11
 </span><span class="lnt">12
-</span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client-# iptables -t nat -L                                              
-
-[...]
-
-Chain OUTPUT (policy ACCEPT)
-target     prot opt source               destination         
-RETURN     tcp  --  anywhere             192.168.1.2
-REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:www redir ports 8123
-REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:https redir ports 8124
-REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:5228 redir ports 8124
-
-[...]
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client-# iptables -t nat -L                                              
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Chain OUTPUT (policy ACCEPT)
+</span></span><span class="line"><span class="cl">target     prot opt source               destination         
+</span></span><span class="line"><span class="cl">RETURN     tcp  --  anywhere             192.168.1.2
+</span></span><span class="line"><span class="cl">REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:www redir ports 8123
+</span></span><span class="line"><span class="cl">REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:https redir ports 8124
+</span></span><span class="line"><span class="cl">REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:5228 redir ports 8124
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[...]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We can see that:</p>
 <ul>
@@ -315,21 +314,19 @@ REDIRECT   tcp  --  anywhere             anywhere             tcp dpt:5228 redir
 </span><span class="lnt"> 8
 </span><span class="lnt"> 9
 </span><span class="lnt">10
-</span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -L
-
-[...]
-
-Chain OUTPUT (policy ACCEPT)
-target     prot opt source               destination         
-RETURN     tcp  --  anywhere             192.168.1.2
-REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
-
-[...]
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# iptables -t nat -L
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Chain OUTPUT (policy ACCEPT)
+</span></span><span class="line"><span class="cl">target     prot opt source               destination         
+</span></span><span class="line"><span class="cl">RETURN     tcp  --  anywhere             192.168.1.2
+</span></span><span class="line"><span class="cl">REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[...]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Regardless of the port all connection will be redirected first to <code>localhost:8123</code> (ProxyDroid) and then to the specified <code>&lt;host&gt;:&lt;port&gt;</code> pair.</p>
 <h4 id="socks5">SOCKS5</h4>
@@ -346,21 +343,19 @@ REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
 </span><span class="lnt"> 8
 </span><span class="lnt"> 9
 </span><span class="lnt">10
-</span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -L
-
-[...]
-
-Chain OUTPUT (policy ACCEPT)
-target     prot opt source               destination         
-RETURN     tcp  --  anywhere             192.168.1.2
-REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
-
-[...]
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# iptables -t nat -L
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[...]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Chain OUTPUT (policy ACCEPT)
+</span></span><span class="line"><span class="cl">target     prot opt source               destination         
+</span></span><span class="line"><span class="cl">RETURN     tcp  --  anywhere             192.168.1.2
+</span></span><span class="line"><span class="cl">REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[...]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In other words the <em>connection flow</em> looks like this:</p>
 <details>
@@ -403,23 +398,23 @@ REDIRECT   tcp  --  anywhere             anywhere             redir ports 8123
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://www.spiegel.de/
-HTTP/1.0 200 OK
-Date: Sat, 29 Nov 2014 13:09:13 GMT
-Cache-Control: max-age=90
-Expires: Sat, 29 Nov 2014 13:10:43 GMT
-X-SP-TE: 6150
-X-Robots-Tag: index, follow, noarchive
-Content-Type: text/html;charset=ISO-8859-1
-Content-Length: 208782
-X-SP-PR: 3958
-Vary: Accept-Encoding
-Age: 47
-X-Cache: HIT from lnxp-3958.srv.mediaways.net
-X-Cache-Lookup: HIT from lnxp-3958.srv.mediaways.net:101
-Via: 1.1 www.spiegel.de, 1.0 lnxp-3958.srv.mediaways.net (squid/3.1.4)
-Connection: close
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# curl -I http://www.spiegel.de/
+</span></span><span class="line"><span class="cl">HTTP/1.0 200 OK
+</span></span><span class="line"><span class="cl">Date: Sat, 29 Nov 2014 13:09:13 GMT
+</span></span><span class="line"><span class="cl">Cache-Control: max-age=90
+</span></span><span class="line"><span class="cl">Expires: Sat, 29 Nov 2014 13:10:43 GMT
+</span></span><span class="line"><span class="cl">X-SP-TE: 6150
+</span></span><span class="line"><span class="cl">X-Robots-Tag: index, follow, noarchive
+</span></span><span class="line"><span class="cl">Content-Type: text/html;charset=ISO-8859-1
+</span></span><span class="line"><span class="cl">Content-Length: 208782
+</span></span><span class="line"><span class="cl">X-SP-PR: 3958
+</span></span><span class="line"><span class="cl">Vary: Accept-Encoding
+</span></span><span class="line"><span class="cl">Age: 47
+</span></span><span class="line"><span class="cl">X-Cache: HIT from lnxp-3958.srv.mediaways.net
+</span></span><span class="line"><span class="cl">X-Cache-Lookup: HIT from lnxp-3958.srv.mediaways.net:101
+</span></span><span class="line"><span class="cl">Via: 1.1 www.spiegel.de, 1.0 lnxp-3958.srv.mediaways.net (squid/3.1.4)
+</span></span><span class="line"><span class="cl">Connection: close
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>On <strong>burp</strong> I can see the request:</p>
 <div class="highlight"><div class="chroma">
@@ -432,13 +427,13 @@ Connection: close
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">HEAD / HTTP/1.1
-User-Agent: curl/7.21.0 (arm-unknown-linux-gnueabi) libcurl/7.21.0 OpenSSL/0.9.8o zlib/1.2.3.4 libidn/1.15 libssh2/1.2.6
-Host: www.spiegel.de
-Accept: */*
-Proxy-Connection: close
-Connection: close
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">HEAD / HTTP/1.1
+</span></span><span class="line"><span class="cl">User-Agent: curl/7.21.0 (arm-unknown-linux-gnueabi) libcurl/7.21.0 OpenSSL/0.9.8o zlib/1.2.3.4 libidn/1.15 libssh2/1.2.6
+</span></span><span class="line"><span class="cl">Host: www.spiegel.de
+</span></span><span class="line"><span class="cl">Accept: */*
+</span></span><span class="line"><span class="cl">Proxy-Connection: close
+</span></span><span class="line"><span class="cl">Connection: close
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So everything is ok, for now. But that&rsquo;s not the purpose of this post. Let&rsquo;s have a look at another text-based protocol we&rsquo;d like to sniff using <strong>burp</strong>.</p>
 <h3 id="ssdp">SSDP</h3>
@@ -452,12 +447,12 @@ Connection: close
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">M-SEARCH * HTTP/1.1
-HOST: 239.255.255.250:1900
-MX: 5
-Man: “ssdp:discover”
-ST: urn:schemas-upnp-org:device:MediaRenderer:1
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">M-SEARCH * HTTP/1.1
+</span></span><span class="line"><span class="cl">HOST: 239.255.255.250:1900
+</span></span><span class="line"><span class="cl">MX: 5
+</span></span><span class="line"><span class="cl">Man: “ssdp:discover”
+</span></span><span class="line"><span class="cl">ST: urn:schemas-upnp-org:device:MediaRenderer:1
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Usually you can use <code>netcat</code> to send the request. In that case you should use:</p>
 <div class="highlight"><div class="chroma">
@@ -473,16 +468,16 @@ ST: urn:schemas-upnp-org:device:MediaRenderer:1
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# cat m-search.txt
-M-SEARCH * HTTP/1.1
-HOST: 239.255.255.250:1900
-MX: 5
-Man: “ssdp:discover”
-ST: urn:schemas-upnp-org:device:MediaRenderer:1
-
-android-client# netcat 239.255.255.250 1900 &lt; m-search.txt
-(UNKNOWN) [239.255.255.250] 1900 (?) : Network is unreachable 
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# cat m-search.txt
+</span></span><span class="line"><span class="cl">M-SEARCH * HTTP/1.1
+</span></span><span class="line"><span class="cl">HOST: 239.255.255.250:1900
+</span></span><span class="line"><span class="cl">MX: 5
+</span></span><span class="line"><span class="cl">Man: “ssdp:discover”
+</span></span><span class="line"><span class="cl">ST: urn:schemas-upnp-org:device:MediaRenderer:1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">android-client# netcat 239.255.255.250 1900 &lt; m-search.txt
+</span></span><span class="line"><span class="cl">(UNKNOWN) [239.255.255.250] 1900 (?) : Network is unreachable 
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Hmm&hellip;That&rsquo;s bad! Let&rsquo;s use another <a href="https://gist.github.com/provegard/1435555">SSDP client</a>:</p>
 <div class="highlight"><div class="chroma">
@@ -500,18 +495,18 @@ android-client# netcat 239.255.255.250 1900 &lt; m-search.txt
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# python ssdp-test.py client 192.168.1.3
-Received M-SEARCH * HTTP/1.1 from (&#39;192.168.1.49&#39;, 62861)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
-Received M-SEARCH * HTTP/1.1 from (&#39;192.168.1.49&#39;, 62861)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# python ssdp-test.py client 192.168.1.3
+</span></span><span class="line"><span class="cl">Received M-SEARCH * HTTP/1.1 from (&#39;192.168.1.49&#39;, 62861)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received NOTIFY * HTTP/1.1 from (&#39;192.168.1.254&#39;, 34682)
+</span></span><span class="line"><span class="cl">Received M-SEARCH * HTTP/1.1 from (&#39;192.168.1.49&#39;, 62861)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Obviously we have found some devices. And because the requests were sent on <code>destination-port = 1900</code> you won&rsquo;t see them on <strong>burp</strong>. This is where <em>ProxyDroid</em> shows its first weakness. In general you&rsquo;re going to run into troubles if your requests are sent to a port different from <code>80</code> or <code>443</code>. So we need a more <em>generic</em> solution.</p>
 <h3 id="port-forwarding">Port forwarding</h3>
@@ -613,8 +608,8 @@ node[shape=record];</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# iptables -t nat -A OUTPUT -p tcp --dport 8000 -j DNAT --to-destination 192.168.1.2:8080
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# iptables -t nat -A OUTPUT -p tcp --dport 8000 -j DNAT --to-destination 192.168.1.2:8080
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This will &ldquo;forward&rdquo; all host generated traffic destinated at port 1900 to <code>192.168.1.2:8080</code> (Burp instance). Recall iptables packet traversal scheme: The rule is being added to the <em>OUTPUT</em> chain before the packet reaches the <em>POSTROUTING</em> chain.</p>
 <h4 id="server-listening-">Server listening &hellip;</h4>
@@ -623,13 +618,11 @@ node[shape=record];</p>
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">server$ python3 -m http.server
-Serving HTTP on 0.0.0.0 port 8000 ...
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">server$ python3 -m http.server
+</span></span><span class="line"><span class="cl">Serving HTTP on 0.0.0.0 port 8000 ...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="client---server">Client -&gt; Server</h4>
 <p>On the Client we&rsquo;ll use curl to access the Server:</p>
@@ -641,19 +634,15 @@ Serving HTTP on 0.0.0.0 port 8000 ...
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://dornea.nu:8000/
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/3.1.3
-Date: Sat, 29 Nov 2014 12:56:37 GMT
-Content-type: text/html; charset=ascii
-Content-Length: 2952
-
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# curl -I http://dornea.nu:8000/
+</span></span><span class="line"><span class="cl">HTTP/1.0 200 OK
+</span></span><span class="line"><span class="cl">Server: SimpleHTTP/0.6 Python/3.1.3
+</span></span><span class="line"><span class="cl">Date: Sat, 29 Nov 2014 12:56:37 GMT
+</span></span><span class="line"><span class="cl">Content-type: text/html; charset=ascii
+</span></span><span class="line"><span class="cl">Content-Length: 2952
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So obviously the packet reached its destination.</p>
 <h4 id="dude-wheres-my-packet">Dude, where&rsquo;s my packet?</h4>
@@ -662,15 +651,11 @@ Content-Length: 2952
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# tshark port 8000
-Capturing on wlan0
-
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# tshark port 8000
+</span></span><span class="line"><span class="cl">Capturing on wlan0
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>While triggering the <code>curl</code> command you won&rsquo;t be able to see the outgoing packets destinated to <code>http://dornea.nu:8000</code>. While rewriting the IP packet destination, the packet is <strong>not</strong> passed to the interface the address belongs to. It is handled by the network stack directly (<a href="http://serverfault.com/questions/502003/tcpdump-not-picking-up-traffic-redirected-by-iptables">SE answer</a>).</p>
 <h4 id="what-about-burp">What about Burp?</h4>
@@ -687,17 +672,15 @@ Capturing on wlan0
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span><span class="lnt">6
-</span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">android-client# curl -I http://dornea.nu:8000/
-HTTP/1.0 200 OK
-Server: SimpleHTTP/0.6 Python/3.1.3
-Date: Sat, 29 Nov 2014 13:43:56 GMT
-Content-type: text/html; charset=ascii
-Content-Length: 2952
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">android-client# curl -I http://dornea.nu:8000/
+</span></span><span class="line"><span class="cl">HTTP/1.0 200 OK
+</span></span><span class="line"><span class="cl">Server: SimpleHTTP/0.6 Python/3.1.3
+</span></span><span class="line"><span class="cl">Date: Sat, 29 Nov 2014 13:43:56 GMT
+</span></span><span class="line"><span class="cl">Content-type: text/html; charset=ascii
+</span></span><span class="line"><span class="cl">Content-Length: 2952
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>On <strong>burp</strong> I&rsquo;ve seen:</p>
 <div class="highlight"><div class="chroma">
@@ -708,11 +691,11 @@ Content-Length: 2952
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">HEAD / HTTP/1.1
-User-Agent: curl/7.21.0 (arm-unknown-linux-gnueabi) libcurl/7.21.0 OpenSSL/0.9.8o zlib/1.2.3.4 libidn/1.15 libssh2/1.2.6
-Host: dornea.nu:8000
-Accept: */*
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">HEAD / HTTP/1.1
+</span></span><span class="line"><span class="cl">User-Agent: curl/7.21.0 (arm-unknown-linux-gnueabi) libcurl/7.21.0 OpenSSL/0.9.8o zlib/1.2.3.4 libidn/1.15 libssh2/1.2.6
+</span></span><span class="line"><span class="cl">Host: dornea.nu:8000
+</span></span><span class="line"><span class="cl">Accept: */*
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Perfect!</p>
 <h2 id="no-iptables">No iptables?!</h2>
@@ -725,7 +708,7 @@ Accept: */*
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

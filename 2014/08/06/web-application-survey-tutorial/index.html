@@ -26,7 +26,7 @@ Well in today&rsquo;s post I&rsquo;ll show you how I&rsquo;ve managed it to mini
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -147,41 +147,41 @@ type="image/x-icon"/>
 </span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">%pylab inline
-# &lt;!-- collapse=True --&gt;
-import binascii
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import networkx as nx
-import datetime as dt
-import time
-import ipy_table
-import dnslib
-import pythonwhois
-import urlparse
-import tldextract
-import json
-import os
-import sys
-import urllib2
-
-
-from yurl import URL
-from urlparse import urlparse
-from IPython.display import display_pretty, display_html, display_jpeg, display_png, display_json, display_latex, display_svg
-
-# Ipython settings
-pd.set_option(&#39;display.height&#39;, 1000)
-pd.set_option(&#39;display.max_rows&#39;, 500)
-pd.set_option(&#39;display.max_columns&#39;, 500)
-pd.set_option(&#39;display.max_colwidth&#39;, 100)
-pd.set_option(&#39;display.width&#39;, 3000)
-pd.set_option(&#39;display.column_space&#39;, 1000)
-
-# Change working directory
-os.chdir(&#34;/root/work/appsurvey&#34;)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">%pylab inline
+</span></span><span class="line"><span class="cl"># &lt;!-- collapse=True --&gt;
+</span></span><span class="line"><span class="cl">import binascii
+</span></span><span class="line"><span class="cl">import pandas as pd
+</span></span><span class="line"><span class="cl">import numpy as np
+</span></span><span class="line"><span class="cl">import matplotlib.pyplot as plt
+</span></span><span class="line"><span class="cl">import networkx as nx
+</span></span><span class="line"><span class="cl">import datetime as dt
+</span></span><span class="line"><span class="cl">import time
+</span></span><span class="line"><span class="cl">import ipy_table
+</span></span><span class="line"><span class="cl">import dnslib
+</span></span><span class="line"><span class="cl">import pythonwhois
+</span></span><span class="line"><span class="cl">import urlparse
+</span></span><span class="line"><span class="cl">import tldextract
+</span></span><span class="line"><span class="cl">import json
+</span></span><span class="line"><span class="cl">import os
+</span></span><span class="line"><span class="cl">import sys
+</span></span><span class="line"><span class="cl">import urllib2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">from yurl import URL
+</span></span><span class="line"><span class="cl">from urlparse import urlparse
+</span></span><span class="line"><span class="cl">from IPython.display import display_pretty, display_html, display_jpeg, display_png, display_json, display_latex, display_svg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Ipython settings
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.height&#39;, 1000)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_rows&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_columns&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_colwidth&#39;, 100)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.width&#39;, 3000)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.column_space&#39;, 1000)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Change working directory
+</span></span><span class="line"><span class="cl">os.chdir(&#34;/root/work/appsurvey&#34;)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Populating the interactive namespace from numpy and matplotlib
 height has been deprecated.
@@ -199,15 +199,15 @@ height has been deprecated.
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Fetch list of random URLs (found using Google)
-response = urllib2.urlopen(&#39;http://files.ianonavy.com/urls.txt&#39;)
-targets_row = response.read()
-
-# Create DataFrame
-targets = pd.DataFrame([t for t in targets_row.splitlines()], columns=[&#34;Target&#34;])
-print(&#34;First 20 entries in the targets list&#34;)
-targets[:20]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Fetch list of random URLs (found using Google)
+</span></span><span class="line"><span class="cl">response = urllib2.urlopen(&#39;http://files.ianonavy.com/urls.txt&#39;)
+</span></span><span class="line"><span class="cl">targets_row = response.read()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Create DataFrame
+</span></span><span class="line"><span class="cl">targets = pd.DataFrame([t for t in targets_row.splitlines()], columns=[&#34;Target&#34;])
+</span></span><span class="line"><span class="cl">print(&#34;First 20 entries in the targets list&#34;)
+</span></span><span class="line"><span class="cl">targets[:20]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>First 20 entries in the targets list
 </code></pre>
@@ -341,33 +341,33 @@ targets[:20]
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-# Join root domain + suffix
-extract_root_domain =  lambda x: &#39;.&#39;.join(tldextract.extract(x)[1:3])
-
-target_columns = [&#39;scheme&#39;, &#39;userinfo&#39;, &#39;host&#39;, &#39;port&#39;, &#39;path&#39;, &#39;query&#39;, &#39;fragment&#39;, &#39;decoded&#39;]
-target_component = [list(URL(t)) for t in targets[&#39;Target&#39;]]
-
-df_targets = pd.DataFrame(target_component, columns=target_columns)
-empty_hosts = df_targets[df_targets[&#39;host&#39;] == &#39;&#39;]
-
-# Copy path information to host
-for index,row in empty_hosts.iterrows():
-    df_targets.ix[index:index][&#39;host&#39;] = df_targets.ix[index:index][&#39;path&#39;]
-    df_targets.ix[index:index][&#39;path&#39;] = &#39;&#39;
-    
-# Extract root tld
-df_targets[&#39;root_domain&#39;] = df_targets[&#39;host&#39;].apply(extract_root_domain)
-
-# Drop unnecessary columns
-df_targets.drop([&#39;query&#39;, &#39;fragment&#39;, &#39;decoded&#39;], axis=1, inplace=True)
-
-# Write df to file (for later use)
-df_targets.to_csv(&#34;targets_df.csv&#34;, sep=&#34;\t&#34;)
-
-print(&#34;First 20 Entries&#34;)
-df_targets[:20]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># &lt;!-- collapse=True --&gt;
+</span></span><span class="line"><span class="cl"># Join root domain + suffix
+</span></span><span class="line"><span class="cl">extract_root_domain =  lambda x: &#39;.&#39;.join(tldextract.extract(x)[1:3])
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">target_columns = [&#39;scheme&#39;, &#39;userinfo&#39;, &#39;host&#39;, &#39;port&#39;, &#39;path&#39;, &#39;query&#39;, &#39;fragment&#39;, &#39;decoded&#39;]
+</span></span><span class="line"><span class="cl">target_component = [list(URL(t)) for t in targets[&#39;Target&#39;]]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">df_targets = pd.DataFrame(target_component, columns=target_columns)
+</span></span><span class="line"><span class="cl">empty_hosts = df_targets[df_targets[&#39;host&#39;] == &#39;&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Copy path information to host
+</span></span><span class="line"><span class="cl">for index,row in empty_hosts.iterrows():
+</span></span><span class="line"><span class="cl">    df_targets.ix[index:index][&#39;host&#39;] = df_targets.ix[index:index][&#39;path&#39;]
+</span></span><span class="line"><span class="cl">    df_targets.ix[index:index][&#39;path&#39;] = &#39;&#39;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"># Extract root tld
+</span></span><span class="line"><span class="cl">df_targets[&#39;root_domain&#39;] = df_targets[&#39;host&#39;].apply(extract_root_domain)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Drop unnecessary columns
+</span></span><span class="line"><span class="cl">df_targets.drop([&#39;query&#39;, &#39;fragment&#39;, &#39;decoded&#39;], axis=1, inplace=True)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Write df to file (for later use)
+</span></span><span class="line"><span class="cl">df_targets.to_csv(&#34;targets_df.csv&#34;, sep=&#34;\t&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">print(&#34;First 20 Entries&#34;)
+</span></span><span class="line"><span class="cl">df_targets[:20]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>First 20 Entries
 </code></pre>
@@ -578,11 +578,11 @@ df_targets[:20]
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&#34;WHOIS&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-    mkdir WHOIS
-<span class="k">fi</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&#34;WHOIS&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    mkdir WHOIS
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -591,10 +591,10 @@ df_targets[:20]
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Get unique values
-uniq_roots = df_targets[&#39;root_domain&#39;].unique()
-uniq_subdomains = df_targets[&#39;host&#39;].unique()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Get unique values
+</span></span><span class="line"><span class="cl">uniq_roots = df_targets[&#39;root_domain&#39;].unique()
+</span></span><span class="line"><span class="cl">uniq_subdomains = df_targets[&#39;host&#39;].unique()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -638,45 +638,45 @@ uniq_subdomains = df_targets[&#39;host&#39;].unique()
 </span><span class="lnt">38
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-
-def date_handler(obj):
-    return obj.isoformat() if hasattr(obj, &#39;isoformat&#39;) else obj
-
-target_whois = {}
-
-def fetch_whois(domains):
-    &#34;&#34;&#34; Fetch WHOIS information for specified domains (list) &#34;&#34;&#34;
-    for d in domains:
-        print(&#34;Get WHOIS for\t %s ...&#34; % d)
-
-        # Check if file already exists
-        if os.path.isfile(&#34;WHOIS/%s.json&#34; % d):
-            print(&#34;File exists already. Aborting.&#34;)
-            continue
-
-        try:
-            # Get whois information
-            whois_data = pythonwhois.get_whois(d)
-
-            # Convert to JSON$
-            json_data = json.dumps(whois_data, default=date_handler)
-
-            # Write contents to file
-            with open(&#39;WHOIS/%s.json&#39; % d, &#39;w&#39;) as outfile:
-              json.dump(json_data, outfile)
-
-            # Sleep for 20s    
-            time.sleep(20)
-        except:
-            print(&#34;[ERROR] Couldn&#39;t retrieve WHOIS for\t %s&#34; % d)
-            
-# I&#39;ll only fetch the root domains and only the first 20. Feel free to uncomment this
-# and adapt it to your needs.
-#fetch_whois(uniq_subdomains)
-fetch_whois(uniq_roots[:20])
-    
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># &lt;!-- collapse=True --&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def date_handler(obj):
+</span></span><span class="line"><span class="cl">    return obj.isoformat() if hasattr(obj, &#39;isoformat&#39;) else obj
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">target_whois = {}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def fetch_whois(domains):
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34; Fetch WHOIS information for specified domains (list) &#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    for d in domains:
+</span></span><span class="line"><span class="cl">        print(&#34;Get WHOIS for\t %s ...&#34; % d)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        # Check if file already exists
+</span></span><span class="line"><span class="cl">        if os.path.isfile(&#34;WHOIS/%s.json&#34; % d):
+</span></span><span class="line"><span class="cl">            print(&#34;File exists already. Aborting.&#34;)
+</span></span><span class="line"><span class="cl">            continue
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        try:
+</span></span><span class="line"><span class="cl">            # Get whois information
+</span></span><span class="line"><span class="cl">            whois_data = pythonwhois.get_whois(d)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            # Convert to JSON$
+</span></span><span class="line"><span class="cl">            json_data = json.dumps(whois_data, default=date_handler)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            # Write contents to file
+</span></span><span class="line"><span class="cl">            with open(&#39;WHOIS/%s.json&#39; % d, &#39;w&#39;) as outfile:
+</span></span><span class="line"><span class="cl">              json.dump(json_data, outfile)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            # Sleep for 20s    
+</span></span><span class="line"><span class="cl">            time.sleep(20)
+</span></span><span class="line"><span class="cl">        except:
+</span></span><span class="line"><span class="cl">            print(&#34;[ERROR] Couldn&#39;t retrieve WHOIS for\t %s&#34; % d)
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl"># I&#39;ll only fetch the root domains and only the first 20. Feel free to uncomment this
+</span></span><span class="line"><span class="cl"># and adapt it to your needs.
+</span></span><span class="line"><span class="cl">#fetch_whois(uniq_subdomains)
+</span></span><span class="line"><span class="cl">fetch_whois(uniq_roots[:20])
+</span></span><span class="line"><span class="cl">    
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Get WHOIS for	 altpress.org ...
 Get WHOIS for	 nzfortress.co.nz ...
@@ -708,11 +708,11 @@ Get WHOIS for	 voicesofsafety.com ...
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">%%bash
-<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&#34;DNS&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-    mkdir DNS
-<span class="k">fi</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">%%bash
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&#34;DNS&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    mkdir DNS
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -744,33 +744,33 @@ Get WHOIS for	 voicesofsafety.com ...
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-def fetch_dns(domains):
-    &#34;&#34;&#34; Fetch all DNS records for specified domains (list) &#34;&#34;&#34;
-    for d in domains:
-        print(&#34;Dig DNS records for\t %s ...&#34; % d)
-
-        # Check if file already exists
-        if os.path.isfile(&#34;DNS/%s.txt&#34; % d):
-            print(&#34;File exists already. Aborting.&#34;)
-            continue
-            
-        # Get DNS info
-        dig_data = !dig +nocmd $d any +multiline +noall +answer
-        dig_output = &#34;\n&#34;.join(dig_data)
-        
-        # Write contents to file
-        with open(&#39;DNS/%s.txt&#39; % d, &#39;w&#39;) as outfile:
-            outfile.write(dig_output)
-            outfile.close()
-        
-        time.sleep(5)
-        
-# I&#39;ll only fetch the root domains and only the first 20. Feel free to uncomment this
-# and adapt it to your needs.
-#fetch_dns(uniq_subdomains)
-fetch_dns(uniq_roots[:20])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># &lt;!-- collapse=True --&gt;
+</span></span><span class="line"><span class="cl">def fetch_dns(domains):
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34; Fetch all DNS records for specified domains (list) &#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    for d in domains:
+</span></span><span class="line"><span class="cl">        print(&#34;Dig DNS records for\t %s ...&#34; % d)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        # Check if file already exists
+</span></span><span class="line"><span class="cl">        if os.path.isfile(&#34;DNS/%s.txt&#34; % d):
+</span></span><span class="line"><span class="cl">            print(&#34;File exists already. Aborting.&#34;)
+</span></span><span class="line"><span class="cl">            continue
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        # Get DNS info
+</span></span><span class="line"><span class="cl">        dig_data = !dig +nocmd $d any +multiline +noall +answer
+</span></span><span class="line"><span class="cl">        dig_output = &#34;\n&#34;.join(dig_data)
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        # Write contents to file
+</span></span><span class="line"><span class="cl">        with open(&#39;DNS/%s.txt&#39; % d, &#39;w&#39;) as outfile:
+</span></span><span class="line"><span class="cl">            outfile.write(dig_output)
+</span></span><span class="line"><span class="cl">            outfile.close()
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        time.sleep(5)
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl"># I&#39;ll only fetch the root domains and only the first 20. Feel free to uncomment this
+</span></span><span class="line"><span class="cl"># and adapt it to your needs.
+</span></span><span class="line"><span class="cl">#fetch_dns(uniq_subdomains)
+</span></span><span class="line"><span class="cl">fetch_dns(uniq_roots[:20])
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Dig DNS records for	 altpress.org ...
 Dig DNS records for	 nzfortress.co.nz ...
@@ -845,53 +845,53 @@ Dig DNS records for	 voicesofsafety.com ...
 </span><span class="lnt">46
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-from pprint import pprint
-
-# Global DF frames
-frames = []
-
-def read_whois(domains):
-    for d in domains:
-        print(&#34;Reading WHOIS for\t %s&#34; % d)
-        
-        try:
-            with open(&#39;WHOIS/%s.json&#39; % d, &#39;r&#39;) as inputfile:
-                whois = json.loads(json.load(inputfile))
-
-                # Delete raw record
-                whois.pop(&#39;raw&#39;, None)
-
-                data = []
-                
-                # Iterate contacts -&gt; tech
-                if whois[&#39;contacts&#39;][&#39;tech&#39;]:
-                    for i in whois[&#39;contacts&#39;][&#39;tech&#39;]:
-                        data.append([d, &#39;contacts&#39;, &#39;tech&#39;, i, whois[&#39;contacts&#39;][&#39;tech&#39;][i]])
-
-                # Iterate contacts -&gt; admin
-                if whois[&#39;contacts&#39;][&#39;admin&#39;]:
-                    for i in whois[&#39;contacts&#39;][&#39;admin&#39;]:
-                        data.append([d, &#39;contacts&#39;, &#39;admin&#39;, i, whois[&#39;contacts&#39;][&#39;admin&#39;][i]])
-
-                # Nameservers
-                if &#34;nameservers&#34; in whois:
-                    for i in whois[&#39;nameservers&#39;]:
-                        data.append([d, &#39;nameservers&#39;, &#39;&#39;, &#39;&#39;, i])
-
-                # Create DF only if data is not empty
-                if data:
-                    df = pd.DataFrame(data, columns=[&#39;domain&#39;, &#39;element&#39;, &#39;type&#39;, &#39;field&#39;, &#39;value&#39;])
-                    frames.append(df)
-
-                # Close file
-                inputfile.close()
-        except:
-            print(&#34;[ERROR] Couldn&#39;t read WHOIS for\t %s&#34; % d)
-
-#read_whois(uniq_subdomains)
-read_whois(uniq_roots[:20])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># &lt;!-- collapse=True --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">pprint</span> <span class="n">import</span> <span class="n">pprint</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Global DF frames</span>
+</span></span><span class="line"><span class="cl"><span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">read_whois</span><span class="p">(</span><span class="n">domains</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">domains</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Reading WHOIS for</span><span class="se">\t</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="n">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="s1">&#39;WHOIS/</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="n">d</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="n">as</span> <span class="n">inputfile</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">whois</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputfile</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Delete raw record</span>
+</span></span><span class="line"><span class="cl">                <span class="n">whois</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="n">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="c1"># Iterate contacts -&gt; tech</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">whois</span><span class="p">[</span><span class="s1">&#39;contacts&#39;</span><span class="p">][</span><span class="s1">&#39;tech&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">whois</span><span class="p">[</span><span class="s1">&#39;contacts&#39;</span><span class="p">][</span><span class="s1">&#39;tech&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;contacts&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">whois</span><span class="p">[</span><span class="s1">&#39;contacts&#39;</span><span class="p">][</span><span class="s1">&#39;tech&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Iterate contacts -&gt; admin</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">whois</span><span class="p">[</span><span class="s1">&#39;contacts&#39;</span><span class="p">][</span><span class="s1">&#39;admin&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">whois</span><span class="p">[</span><span class="s1">&#39;contacts&#39;</span><span class="p">][</span><span class="s1">&#39;admin&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;contacts&#39;</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">whois</span><span class="p">[</span><span class="s1">&#39;contacts&#39;</span><span class="p">][</span><span class="s1">&#39;admin&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Nameservers</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="s2">&#34;nameservers&#34;</span> <span class="ow">in</span> <span class="n">whois</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">whois</span><span class="p">[</span><span class="s1">&#39;nameservers&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;nameservers&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Create DF only if data is not empty</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="s1">&#39;element&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Close file</span>
+</span></span><span class="line"><span class="cl">                <span class="n">inputfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">except</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;[ERROR] Couldn&#39;t read WHOIS for</span><span class="se">\t</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="n">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#read_whois(uniq_subdomains)</span>
+</span></span><span class="line"><span class="cl"><span class="n">read_whois</span><span class="p">(</span><span class="n">uniq_roots</span><span class="p">[:</span><span class="mi">20</span><span class="p">])</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Reading WHOIS for	 altpress.org
 Reading WHOIS for	 nzfortress.co.nz
@@ -919,16 +919,16 @@ Reading WHOIS for	 voicesofsafety.com
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_whois = pd.concat(frames)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_whois = pd.concat(frames)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_whois.set_index([&#39;domain&#39;, &#39;element&#39;, &#39;type&#39;, &#39;field&#39;])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_whois.set_index([&#39;domain&#39;, &#39;element&#39;, &#39;type&#39;, &#39;field&#39;])
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -2582,46 +2582,46 @@ Reading WHOIS for	 voicesofsafety.com
 </span><span class="lnt">39
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-from pprint import pprint
-import re
-import traceback
-
-# Global DF frames
-frames = []
-
-def read_dns(domains):
-    for d in domains:
-        print(&#34;Reading WHOIS for\t %s&#34; % d)
-        data = []
-        try:
-            with open(&#39;DNS/%s.txt&#39; % d, &#39;r&#39;) as inputfile:
-                dns = inputfile.read()
-                
-                for l in dns.splitlines():
-                    records = l.split()
-                    
-                    # Check only for NS, MX, A, CNAME, TXT
-                    a = re.compile(&#34;^(NS|MX|A|CNAME|TXT)$&#34;)
-                    if len(records) &gt;= 4:
-                        if a.match(records[3]):
-                            data.append([d, records[3], records[4]])
-                
-                # Create DF only if data is not empty
-                if data:
-                    df = pd.DataFrame(data, columns=[&#39;domain&#39;, &#39;dns_record&#39;, &#39;value&#39;])
-                    frames.append(df)      
-                    
-                # Close file
-                inputfile.close()
-                
-        except Exception, err:
-            print(&#34;[ERROR] Couldn&#39;t read WHOIS for\t %s&#34; % d)
-            traceback.print_exc()
-
-#read_dns(uniq_subdomains)            
-read_dns(uniq_roots[:20])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># &lt;!-- collapse=True --&gt;
+</span></span><span class="line"><span class="cl">from pprint import pprint
+</span></span><span class="line"><span class="cl">import re
+</span></span><span class="line"><span class="cl">import traceback
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Global DF frames
+</span></span><span class="line"><span class="cl">frames = []
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def read_dns(domains):
+</span></span><span class="line"><span class="cl">    for d in domains:
+</span></span><span class="line"><span class="cl">        print(&#34;Reading WHOIS for\t %s&#34; % d)
+</span></span><span class="line"><span class="cl">        data = []
+</span></span><span class="line"><span class="cl">        try:
+</span></span><span class="line"><span class="cl">            with open(&#39;DNS/%s.txt&#39; % d, &#39;r&#39;) as inputfile:
+</span></span><span class="line"><span class="cl">                dns = inputfile.read()
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                for l in dns.splitlines():
+</span></span><span class="line"><span class="cl">                    records = l.split()
+</span></span><span class="line"><span class="cl">                    
+</span></span><span class="line"><span class="cl">                    # Check only for NS, MX, A, CNAME, TXT
+</span></span><span class="line"><span class="cl">                    a = re.compile(&#34;^(NS|MX|A|CNAME|TXT)$&#34;)
+</span></span><span class="line"><span class="cl">                    if len(records) &gt;= 4:
+</span></span><span class="line"><span class="cl">                        if a.match(records[3]):
+</span></span><span class="line"><span class="cl">                            data.append([d, records[3], records[4]])
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                # Create DF only if data is not empty
+</span></span><span class="line"><span class="cl">                if data:
+</span></span><span class="line"><span class="cl">                    df = pd.DataFrame(data, columns=[&#39;domain&#39;, &#39;dns_record&#39;, &#39;value&#39;])
+</span></span><span class="line"><span class="cl">                    frames.append(df)      
+</span></span><span class="line"><span class="cl">                    
+</span></span><span class="line"><span class="cl">                # Close file
+</span></span><span class="line"><span class="cl">                inputfile.close()
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">        except Exception, err:
+</span></span><span class="line"><span class="cl">            print(&#34;[ERROR] Couldn&#39;t read WHOIS for\t %s&#34; % d)
+</span></span><span class="line"><span class="cl">            traceback.print_exc()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">#read_dns(uniq_subdomains)            
+</span></span><span class="line"><span class="cl">read_dns(uniq_roots[:20])
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Reading WHOIS for	 altpress.org
 Reading WHOIS for	 nzfortress.co.nz
@@ -2649,16 +2649,16 @@ Reading WHOIS for	 voicesofsafety.com
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_dns = pd.concat(frames)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_dns = pd.concat(frames)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_dns.set_index([&#39;domain&#39;, &#39;dns_record&#39;])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_dns.set_index([&#39;domain&#39;, &#39;dns_record&#39;])
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -3111,86 +3111,86 @@ Reading WHOIS for	 voicesofsafety.com
 </span><span class="lnt">79
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># &lt;!-- collapse=True --&gt;
-import urllib2
-import httplib
-
-
-c_targets = [t for t in targets[&#39;Target&#39;][:20]]
-frames = []
-
-# Collect here all URLs failed to connect to
-error_urls = []
-
-def send_request(target, data):
-    &#34;&#34;&#34; Sends a single request to the target &#34;&#34;&#34;            
-    
-    # Set own headers
-    headers = {&#39;User-Agent&#39; : &#39;Mozilla 5.10&#39;}
-
-    # Create request
-    request = urllib2.Request(target, None, headers)
-    
-    # Default response
-    response = None
-        
-    try:
-        # Send request
-        response = urllib2.urlopen(request, timeout=5)
-        
-        # Add headers
-        for h in response.info():
-            data.append([target, response.code, h, response.info()[h]])
-        
-    except urllib2.HTTPError, e:
-        print(&#39;[ERROR] HTTPError = &#39; + str(e.code))
-        data.append([target, e.code, &#39;&#39;, &#39;&#39;])
-            
-    except urllib2.URLError, e:
-        print(&#39;[ERROR] URLError = &#39; + str(e.reason))
-        data.append([target, e.reason, &#39;&#39;, &#39;&#39;])
-            
-    except ValueError, e:
-        # Most probably the target didn&#39;t have any schema
-        # So send the request again with HTTP
-        error_urls.append(target)
-        print(&#39;[ERROR] ValueError = &#39; + e.message)
-            
-    except httplib.HTTPException, e:
-        print(&#39;[ERROR] HTTPException&#39;)
-            
-    except Exception:
-        import traceback
-        print(&#39;[ERROR] Exception: &#39; + traceback.format_exc())
-        
-    finally:
-        return response
-        
-
-    
-    
-def open_connection(targets):
-    &#34;&#34;&#34; Iterate through targets and send requests &#34;&#34;&#34;
-    data = []
-    for t in targets:
-        print(&#34;Connecting to\t %s&#34; % t)
-        
-        response = send_request(t, data)
-        
-    # Create DF only if data is not empty
-    if data:
-        df = pd.DataFrame(data, columns=[&#39;url&#39;, &#39;response&#39;, &#39;header&#39;, &#39;value&#39;])
-        frames.append(df)    
-        
-
-# Open connection to targets and collect information
-open_connection(c_targets)
-
-# If there are any urls not having been tested, then
-# prepend http:// to &lt;target&gt; and run again
-new_targets =  [&#34;http://&#34;+u for u in error_urls]
-open_connection(new_targets)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># &lt;!-- collapse=True --&gt;
+</span></span><span class="line"><span class="cl">import urllib2
+</span></span><span class="line"><span class="cl">import httplib
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">c_targets = [t for t in targets[&#39;Target&#39;][:20]]
+</span></span><span class="line"><span class="cl">frames = []
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Collect here all URLs failed to connect to
+</span></span><span class="line"><span class="cl">error_urls = []
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def send_request(target, data):
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34; Sends a single request to the target &#34;&#34;&#34;            
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    # Set own headers
+</span></span><span class="line"><span class="cl">    headers = {&#39;User-Agent&#39; : &#39;Mozilla 5.10&#39;}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    # Create request
+</span></span><span class="line"><span class="cl">    request = urllib2.Request(target, None, headers)
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    # Default response
+</span></span><span class="line"><span class="cl">    response = None
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    try:
+</span></span><span class="line"><span class="cl">        # Send request
+</span></span><span class="line"><span class="cl">        response = urllib2.urlopen(request, timeout=5)
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        # Add headers
+</span></span><span class="line"><span class="cl">        for h in response.info():
+</span></span><span class="line"><span class="cl">            data.append([target, response.code, h, response.info()[h]])
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    except urllib2.HTTPError, e:
+</span></span><span class="line"><span class="cl">        print(&#39;[ERROR] HTTPError = &#39; + str(e.code))
+</span></span><span class="line"><span class="cl">        data.append([target, e.code, &#39;&#39;, &#39;&#39;])
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">    except urllib2.URLError, e:
+</span></span><span class="line"><span class="cl">        print(&#39;[ERROR] URLError = &#39; + str(e.reason))
+</span></span><span class="line"><span class="cl">        data.append([target, e.reason, &#39;&#39;, &#39;&#39;])
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">    except ValueError, e:
+</span></span><span class="line"><span class="cl">        # Most probably the target didn&#39;t have any schema
+</span></span><span class="line"><span class="cl">        # So send the request again with HTTP
+</span></span><span class="line"><span class="cl">        error_urls.append(target)
+</span></span><span class="line"><span class="cl">        print(&#39;[ERROR] ValueError = &#39; + e.message)
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">    except httplib.HTTPException, e:
+</span></span><span class="line"><span class="cl">        print(&#39;[ERROR] HTTPException&#39;)
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">    except Exception:
+</span></span><span class="line"><span class="cl">        import traceback
+</span></span><span class="line"><span class="cl">        print(&#39;[ERROR] Exception: &#39; + traceback.format_exc())
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    finally:
+</span></span><span class="line"><span class="cl">        return response
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">def open_connection(targets):
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34; Iterate through targets and send requests &#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    data = []
+</span></span><span class="line"><span class="cl">    for t in targets:
+</span></span><span class="line"><span class="cl">        print(&#34;Connecting to\t %s&#34; % t)
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        response = send_request(t, data)
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    # Create DF only if data is not empty
+</span></span><span class="line"><span class="cl">    if data:
+</span></span><span class="line"><span class="cl">        df = pd.DataFrame(data, columns=[&#39;url&#39;, &#39;response&#39;, &#39;header&#39;, &#39;value&#39;])
+</span></span><span class="line"><span class="cl">        frames.append(df)    
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Open connection to targets and collect information
+</span></span><span class="line"><span class="cl">open_connection(c_targets)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># If there are any urls not having been tested, then
+</span></span><span class="line"><span class="cl"># prepend http:// to &lt;target&gt; and run again
+</span></span><span class="line"><span class="cl">new_targets =  [&#34;http://&#34;+u for u in error_urls]
+</span></span><span class="line"><span class="cl">open_connection(new_targets)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><pre><code>Connecting to	 http://www.altpress.org/
 Connecting to	 http://www.nzfortress.co.nz
@@ -3244,16 +3244,16 @@ Connecting to	 http://www.voicesofsafety.com
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_connection = pd.concat(frames)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_connection = pd.concat(frames)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_connection.set_index([&#39;url&#39;, &#39;response&#39;, &#39;header&#39;])
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_connection.set_index([&#39;url&#39;, &#39;response&#39;, &#39;header&#39;])
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div style="max-height:1000px;max-width:1500px;overflow:auto;">
 <table border="1" class="dataframe">
@@ -4032,12 +4032,12 @@ Connecting to	 http://www.voicesofsafety.com
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">from pandas import ExcelWriter
-writer = ExcelWriter(&#39;Excel/output.xls&#39;)
-df_whois.to_excel(writer, &#34;Sheet - WHOIS&#34;)
-df_dns.to_excel(writer, &#34;Sheet - DNS&#34;)
-#df_connection.to_excel(writer, &#34;Sheet - Connections&#34;)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">from pandas import ExcelWriter
+</span></span><span class="line"><span class="cl">writer = ExcelWriter(&#39;Excel/output.xls&#39;)
+</span></span><span class="line"><span class="cl">df_whois.to_excel(writer, &#34;Sheet - WHOIS&#34;)
+</span></span><span class="line"><span class="cl">df_dns.to_excel(writer, &#34;Sheet - DNS&#34;)
+</span></span><span class="line"><span class="cl">#df_connection.to_excel(writer, &#34;Sheet - Connections&#34;)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Since I wasn&rsquo;t able to export the <code>df_connection</code> to Excel (<code>Exception: Unexpected data type &lt;class 'socket.timeout'&gt;</code>) I had to export it to CSV:</p>
 <div class="highlight"><div class="chroma">
@@ -4045,8 +4045,8 @@ df_dns.to_excel(writer, &#34;Sheet - DNS&#34;)
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">df_connection.to_csv(&#34;Excel/connection.csv&#34;, sep=&#34;\t&#34;, header=True)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">df_connection.to_csv(&#34;Excel/connection.csv&#34;, sep=&#34;\t&#34;, header=True)
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     
@@ -4056,7 +4056,7 @@ df_dns.to_excel(writer, &#34;Sheet - DNS&#34;)
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

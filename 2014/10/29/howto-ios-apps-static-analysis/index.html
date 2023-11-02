@@ -11,7 +11,7 @@
 
 <meta property="og:description" content="In this short article I&rsquo;ll try to explain what are the main steps to analyze an iOS app. Since I&rsquo;ve writen similar posts related to Android I thought I could devote some of spare time writing about the steps required to analyze iOS apps/binaries. But first of all let&rsquo;s start with:
 What&rsquo;s an iOS app? In a nutshell here are the main characteristics:
- Objective-C / C / C&#43;&#43; compiled (ARM) executable mostly encrypted using Apple&rsquo;s Fairplay DRM it runs in a sandbox it&rsquo;s installed by the user mobile apps come as an IPA file which is the counterpart to Android&rsquo;s APK  Now that you roughly know what an iOS app is let&rsquo;s have a look at the most common blackbox pentesting tools out there." />
+Objective-C / C / C&#43;&#43; compiled (ARM) executable mostly encrypted using Apple&rsquo;s Fairplay DRM it runs in a sandbox it&rsquo;s installed by the user mobile apps come as an IPA file which is the counterpart to Android&rsquo;s APK Now that you roughly know what an iOS app is let&rsquo;s have a look at the most common blackbox pentesting tools out there." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/10/29/howto-ios-apps-static-analysis/" />
 
@@ -27,7 +27,7 @@ What&rsquo;s an iOS app? In a nutshell here are the main characteristics:
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -144,9 +144,9 @@ type="image/x-icon"/>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># ipainstaller &lt;ipa file&gt;
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># ipainstaller &lt;ipa file&gt;
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This will install your app under <code>/var/mobile/Applications</code>. Just do a <code>grep</code> to find out to which folder your app was copied to.</p>
 <h2 id="mach-o">Mach-O</h2>
@@ -163,12 +163,12 @@ type="image/x-icon"/>
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -h BINARY
-BINARY:
-Mach header
-      magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
- 0xfeedfacf 16777228          0  0x00          2    29       3832 0x00200085
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -h BINARY</span>
+</span></span><span class="line"><span class="cl"><span class="n">BINARY</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="n">Mach</span> <span class="n">header</span>
+</span></span><span class="line"><span class="cl">      <span class="n">magic</span> <span class="n">cputype</span> <span class="n">cpusubtype</span>  <span class="n">caps</span>    <span class="n">filetype</span> <span class="n">ncmds</span> <span class="n">sizeofcmds</span>      <span class="n">flags</span>
+</span></span><span class="line"><span class="cl"> <span class="mh">0xfeedfacf</span> <span class="mi">16777228</span>          <span class="mi">0</span>  <span class="mh">0x00</span>          <span class="mi">2</span>    <span class="mi">29</span>       <span class="mi">3832</span> <span class="mh">0x00200085</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Sometimes you&rsquo;ll get an application that is built for multiple architectures. These applications then consist of multiple Mach-O files and are called <strong>fat</strong> or <strong>universal</strong> binaries. Mach-O fat binaries not only group completely different CPU architectures (PowerPC, Intel) but also 32- or 64-bit versions of an architecture. Besides that you&rsquo;ll also get different CPU subtypes bundled in one binary. The device running the binary will choose the &ldquo;part&rdquo; of the binary it can best support. Also have a look at this great <a href="http://wanderingcoder.net/2010/07/19/ought-arm/">article</a>.</p>
 <p>Here is an example of a fat binary:</p>
@@ -185,16 +185,16 @@ Mach header
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -arch all -h PewPew 
-PewPew (architecture cputype (12) cpusubtype (9)):
-Mach header
-      magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
- 0xfeedface      12          9  0x00          2    29       3544 0x00210085
-PewPew (architecture cputype (12) cpusubtype (11)):
-Mach header
-      magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
- 0xfeedface      12         11  0x00          2    29       3544 0x00210085
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -arch all -h PewPew </span>
+</span></span><span class="line"><span class="cl"><span class="n">PewPew</span> <span class="p">(</span><span class="n">architecture</span> <span class="n">cputype</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span> <span class="n">cpusubtype</span> <span class="p">(</span><span class="mi">9</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl"><span class="n">Mach</span> <span class="n">header</span>
+</span></span><span class="line"><span class="cl">      <span class="n">magic</span> <span class="n">cputype</span> <span class="n">cpusubtype</span>  <span class="n">caps</span>    <span class="n">filetype</span> <span class="n">ncmds</span> <span class="n">sizeofcmds</span>      <span class="n">flags</span>
+</span></span><span class="line"><span class="cl"> <span class="mh">0xfeedface</span>      <span class="mi">12</span>          <span class="mi">9</span>  <span class="mh">0x00</span>          <span class="mi">2</span>    <span class="mi">29</span>       <span class="mi">3544</span> <span class="mh">0x00210085</span>
+</span></span><span class="line"><span class="cl"><span class="n">PewPew</span> <span class="p">(</span><span class="n">architecture</span> <span class="n">cputype</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span> <span class="n">cpusubtype</span> <span class="p">(</span><span class="mi">11</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl"><span class="n">Mach</span> <span class="n">header</span>
+</span></span><span class="line"><span class="cl">      <span class="n">magic</span> <span class="n">cputype</span> <span class="n">cpusubtype</span>  <span class="n">caps</span>    <span class="n">filetype</span> <span class="n">ncmds</span> <span class="n">sizeofcmds</span>      <span class="n">flags</span>
+</span></span><span class="line"><span class="cl"> <span class="mh">0xfeedface</span>      <span class="mi">12</span>         <span class="mi">11</span>  <span class="mh">0x00</span>          <span class="mi">2</span>    <span class="mi">29</span>       <span class="mi">3544</span> <span class="mh">0x00210085</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="load-commands">Load commands</h4>
 <p>The <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachORuntime/index.html#//apple_ref/doc/uid/20001298-89026">load commands</a> are located directly after the header and specify the logical structure of the binary (as a file) and it&rsquo;s representation in the virtual memory (using offsets). Besides that you&rsquo;ll be able to get:</p>
@@ -211,9 +211,9 @@ Mach header
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -Vl BINARY
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -Vl BINARY</span>
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="raw-segment-data">Raw segment data</h4>
 <p>In the Mach-O file you&rsquo;ll also have <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachOTopics/0-Introduction/introduction.html">raw data</a> for the segments specified in the load commands. One segment can consist of multiple sections.</p>
@@ -283,25 +283,25 @@ Mach header
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -f BINARY                                                                                              
-Fat headers
-fat_magic 0xcafebabe
-nfat_arch 2
-architecture 0
-    cputype 12
-    cpusubtype 9
-    capabilities 0x0
-    offset 16384
-    size 2712496
-    align 2^14 (16384)
-architecture 1
-    cputype 16777228
-    cpusubtype 0
-    capabilities 0x0
-    offset 2736128
-    size 3213664
-    align 2^14 (16384)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -f BINARY                                                                                              </span>
+</span></span><span class="line"><span class="cl"><span class="n">Fat</span> <span class="n">headers</span>
+</span></span><span class="line"><span class="cl"><span class="n">fat_magic</span> <span class="mh">0xcafebabe</span>
+</span></span><span class="line"><span class="cl"><span class="n">nfat_arch</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="n">architecture</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cputype</span> <span class="mi">12</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpusubtype</span> <span class="mi">9</span>
+</span></span><span class="line"><span class="cl">    <span class="n">capabilities</span> <span class="mh">0x0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">offset</span> <span class="mi">16384</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size</span> <span class="mi">2712496</span>
+</span></span><span class="line"><span class="cl">    <span class="n">align</span> <span class="mi">2</span><span class="o">^</span><span class="mi">14</span> <span class="p">(</span><span class="mi">16384</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">architecture</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cputype</span> <span class="mi">16777228</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpusubtype</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">capabilities</span> <span class="mh">0x0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">offset</span> <span class="mi">2736128</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size</span> <span class="mi">3213664</span>
+</span></span><span class="line"><span class="cl">    <span class="n">align</span> <span class="mi">2</span><span class="o">^</span><span class="mi">14</span> <span class="p">(</span><span class="mi">16384</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Or using old-school <code>file</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -310,9 +310,9 @@ architecture 1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># file BINARY
-PM: Mach-O fat file with 2 architectures
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># file BINARY
+</span></span><span class="line"><span class="cl">PM: Mach-O fat file with 2 architectures
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Also have a look at this cool <a href="http://blakespot.com/ios_device_specifications_grid.html">list</a>.</p>
 <h4 id="encryption">Encryption</h4>
@@ -322,8 +322,8 @@ PM: Mach-O fat file with 2 architectures
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -l BINARY | grep -A 4 LC_ENCRYPTION_INFO
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -l BINARY | grep -A 4 LC_ENCRYPTION_INFO</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In this case the binary file is <strong>not</strong> encrypted. Let me show an example where the binary <strong>is</strong> encrypted:</p>
 <div class="highlight"><div class="chroma">
@@ -336,13 +336,13 @@ PM: Mach-O fat file with 2 architectures
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -l OTHER_BINARY | grep -A 4 LC_ENCRYPTION_INFO                            
-          cmd LC_ENCRYPTION_INFO
-      cmdsize 20
- cryptoff  16384
- cryptsize 10502144
- cryptid   1
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -l OTHER_BINARY | grep -A 4 LC_ENCRYPTION_INFO                            </span>
+</span></span><span class="line"><span class="cl">          <span class="n">cmd</span> <span class="n">LC_ENCRYPTION_INFO</span>
+</span></span><span class="line"><span class="cl">      <span class="n">cmdsize</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl"> <span class="n">cryptoff</span>  <span class="mi">16384</span>
+</span></span><span class="line"><span class="cl"> <span class="n">cryptsize</span> <span class="mi">10502144</span>
+</span></span><span class="line"><span class="cl"> <span class="n">cryptid</span>   <span class="mi">1</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="runtime-protections-mechanisms">Runtime protections mechanisms</h3>
 <p>This time I&rsquo;ll show you how to extract some valuable information from the binary itself regarding some runtime protection mechanisms:</p>
@@ -362,12 +362,12 @@ PM: Mach-O fat file with 2 architectures
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -Vh BINARY 
-WH Quest:
-Mach header
-      magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
-   MH_MAGIC     ARM          9  0x00     EXECUTE    45       4684   NOUNDEFS DYLDLINK TWOLEVEL BINDS_TO_WEAK PIE
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -Vh BINARY </span>
+</span></span><span class="line"><span class="cl"><span class="n">WH</span> <span class="n">Quest</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="n">Mach</span> <span class="n">header</span>
+</span></span><span class="line"><span class="cl">      <span class="n">magic</span> <span class="n">cputype</span> <span class="n">cpusubtype</span>  <span class="n">caps</span>    <span class="n">filetype</span> <span class="n">ncmds</span> <span class="n">sizeofcmds</span>      <span class="n">flags</span>
+</span></span><span class="line"><span class="cl">   <span class="n">MH_MAGIC</span>     <span class="n">ARM</span>          <span class="mi">9</span>  <span class="mh">0x00</span>     <span class="n">EXECUTE</span>    <span class="mi">45</span>       <span class="mi">4684</span>   <span class="n">NOUNDEFS</span> <span class="n">DYLDLINK</span> <span class="n">TWOLEVEL</span> <span class="n">BINDS_TO_WEAK</span> <span class="n">PIE</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Have you noticed the <code>PIE</code> flag at the end of the list?</p>
 <ul>
@@ -384,9 +384,9 @@ Mach header
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -v -l BINARY | grep stack
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -v -l BINARY | grep stack</span>
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li><strong>Automatic Reference Couting</strong>
@@ -424,31 +424,31 @@ Mach header
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -v -I BINARY  | grep release
-0x008b8ce4 241789 _objc_autorelease
-0x008b8cf4 241790 _objc_autoreleasePoolPop
-0x008b8d04 241791 _objc_autoreleasePoolPush
-0x008b8d14 241792 _objc_autoreleaseReturnValue
-0x008b8ea4 241817 _objc_release
-0x008b8ed4 241820 _objc_retainAutorelease
-0x008b8ee4 241821 _objc_retainAutoreleaseReturnValue
-0x008b8ef4 241822 _objc_retainAutoreleasedReturnValue
-0x008b9504 241439 ___cxa_guard_release
-0x008b9674 241341 __Block_release
-0x008b9ab4 241551 _dispatch_release
-0x00a0c3f4 229369 __ZN11GPASWrapperI6GPHashE7releaseEv
-0x00a12e8c 241789 _objc_autorelease
-0x00a12e90 241790 _objc_autoreleasePoolPop
-0x00a12e94 241791 _objc_autoreleasePoolPush
-0x00a12e98 241792 _objc_autoreleaseReturnValue
-0x00a12efc 241817 _objc_release
-0x00a12f08 241820 _objc_retainAutorelease
-0x00a12f0c 241821 _objc_retainAutoreleaseReturnValue
-0x00a12f10 241822 _objc_retainAutoreleasedReturnValue
-0x00a13094 241439 ___cxa_guard_release
-0x00a130f0 241341 __Block_release
-0x00a13200 241551 _dispatch_release
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -v -I BINARY  | grep release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8ce4</span> <span class="mi">241789</span> <span class="n">_objc_autorelease</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8cf4</span> <span class="mi">241790</span> <span class="n">_objc_autoreleasePoolPop</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8d04</span> <span class="mi">241791</span> <span class="n">_objc_autoreleasePoolPush</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8d14</span> <span class="mi">241792</span> <span class="n">_objc_autoreleaseReturnValue</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8ea4</span> <span class="mi">241817</span> <span class="n">_objc_release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8ed4</span> <span class="mi">241820</span> <span class="n">_objc_retainAutorelease</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8ee4</span> <span class="mi">241821</span> <span class="n">_objc_retainAutoreleaseReturnValue</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b8ef4</span> <span class="mi">241822</span> <span class="n">_objc_retainAutoreleasedReturnValue</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b9504</span> <span class="mi">241439</span> <span class="n">___cxa_guard_release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b9674</span> <span class="mi">241341</span> <span class="n">__Block_release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b9ab4</span> <span class="mi">241551</span> <span class="n">_dispatch_release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a0c3f4</span> <span class="mi">229369</span> <span class="n">__ZN11GPASWrapperI6GPHashE7releaseEv</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12e8c</span> <span class="mi">241789</span> <span class="n">_objc_autorelease</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12e90</span> <span class="mi">241790</span> <span class="n">_objc_autoreleasePoolPop</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12e94</span> <span class="mi">241791</span> <span class="n">_objc_autoreleasePoolPush</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12e98</span> <span class="mi">241792</span> <span class="n">_objc_autoreleaseReturnValue</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12efc</span> <span class="mi">241817</span> <span class="n">_objc_release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12f08</span> <span class="mi">241820</span> <span class="n">_objc_retainAutorelease</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12f0c</span> <span class="mi">241821</span> <span class="n">_objc_retainAutoreleaseReturnValue</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a12f10</span> <span class="mi">241822</span> <span class="n">_objc_retainAutoreleasedReturnValue</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a13094</span> <span class="mi">241439</span> <span class="n">___cxa_guard_release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a130f0</span> <span class="mi">241341</span> <span class="n">__Block_release</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a13200</span> <span class="mi">241551</span> <span class="n">_dispatch_release</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="dangerous-functions">Dangerous functions</h4>
 <p>Beside the previosly mentioned symbols we can also seek for symbols aimed at (classical) memory management mechanisms like <code>malloc</code> and <code>free</code>. Their presence indicate that the application has its own memory management which is the opposite to <strong>ARC</strong>. While this is not always a bad thing it could easily lead to some memory related vulnerabilities if not handled properly.</p>
@@ -465,16 +465,16 @@ Mach header
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># otool -v -I BINARY  | grep malloc
-0x008b9f64 241776 _malloc
-0x00a1332c 241776 _malloc
-
-# otool -v -I BINARY  | grep free  
-0x008b9cb4 241583 _free
-0x008b9cc4 241584 _freeifaddrs
-0x00a13280 241583 _free
-0x00a13284 241584 _freeifaddrs
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># otool -v -I BINARY  | grep malloc</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b9f64</span> <span class="mi">241776</span> <span class="n">_malloc</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a1332c</span> <span class="mi">241776</span> <span class="n">_malloc</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># otool -v -I BINARY  | grep free  </span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b9cb4</span> <span class="mi">241583</span> <span class="n">_free</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x008b9cc4</span> <span class="mi">241584</span> <span class="n">_freeifaddrs</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a13280</span> <span class="mi">241583</span> <span class="n">_free</span>
+</span></span><span class="line"><span class="cl"><span class="mh">0x00a13284</span> <span class="mi">241584</span> <span class="n">_freeifaddrs</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Sometimes you&rsquo;ll find goodies like <code>strcpy</code> :)</p>
@@ -506,33 +506,31 @@ Mach header
 </span><span class="lnt">20
 </span><span class="lnt">21
 </span><span class="lnt">22
-</span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># class-dump-z BINARY | head -20
-Warning: Part of this binary is encrypted. Usually, the result will be not meaningful. Try to provide an unencrypted version instead.
-/**
- * This header is generated by class-dump-z 0.2-0.
- * class-dump-z is Copyright (C) 2009 by KennyTM~, licensed under GPLv3.
- *
- * Source: (null)
- */
-
-@protocol XXEncryptedProtocol_aff088
-@property(assign) ? XXEncryptedProperty_8bd3a0;
-@property(assign) ? XXEncryptedProperty_8bd383;
-@property(assign) ? XXEncryptedProperty_8bd373;
-@property(assign) ? XXEncryptedProperty_8bd369;
--(?)XXEncryptedMethod_93d1ce;
--(?)XXEncryptedMethod_93d1c3;
--(?)XXEncryptedMethod_93d1be;
--(?)XXEncryptedMethod_93d1b9;
--(?)XXEncryptedMethod_93d1ad;
--(?)XXEncryptedMethod_93c8e5;
--(?)XXEncryptedMethod_93c784;
--(?)XXEncryptedMethod_93c697;
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># class-dump-z BINARY | head -20
+</span></span><span class="line"><span class="cl">Warning: Part of this binary is encrypted. Usually, the result will be not meaningful. Try to provide an unencrypted version instead.
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * This header is generated by class-dump-z 0.2-0.
+</span></span><span class="line"><span class="cl"> * class-dump-z is Copyright (C) 2009 by KennyTM~, licensed under GPLv3.
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * Source: (null)
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@protocol XXEncryptedProtocol_aff088
+</span></span><span class="line"><span class="cl">@property(assign) ? XXEncryptedProperty_8bd3a0;
+</span></span><span class="line"><span class="cl">@property(assign) ? XXEncryptedProperty_8bd383;
+</span></span><span class="line"><span class="cl">@property(assign) ? XXEncryptedProperty_8bd373;
+</span></span><span class="line"><span class="cl">@property(assign) ? XXEncryptedProperty_8bd369;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93d1ce;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93d1c3;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93d1be;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93d1b9;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93d1ad;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93c8e5;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93c784;
+</span></span><span class="line"><span class="cl">-(?)XXEncryptedMethod_93c697;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Every class name seems to be encrypted. That&rsquo;s a good hint you should decrypt the binary in case you haven&rsquo;t done so yet.</p>
 <h3 id="decrypt-binary">Decrypt binary</h3>
@@ -568,34 +566,34 @@ Warning: Part of this binary is encrypted. Usually, the result will be not meani
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Clutch MyAPP
-Cracking MyAPP...
-Creating working directory...
-Performing initial analysis...
-Performing cracking preflight...
-yolofat magic 4277009102
-Application is a thin binary, cracking single architecture...
-dumping binary: analyzing load commands
-found vmaddr
-found LC_ENCRYPTION
-found LC_CODE_SIGNATURE
-dumping binary: obtaining ptrace handle
-dumping binary: forking to begin tracing
-dumping binary: obtaining mach port
-dumping binary: preparing code resign
-dumping binary: preparing to dump
-dumping binary: ASLR enabled, identifying dump location dynamically
-dumping binary: performing dump
-dumping binary: patched cryptid
-dumping binary: writing new checksum
-Censoring iTunesMetadata.plist...
-warning: iTunesMetadata.plist item named &#39;asset-info&#39; is unrecognized
-warning: iTunesMetadata.plist item named &#39;product-type&#39; is unrecognized
-warning: iTunesMetadata.plist item named &#39;bundleDisplayName&#39; is unrecognized
-Packaging IPA file...
-Compressing second stage payload (2/2)...
-    /var/root/Documents/Cracked/MyAPP.ipa
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># Clutch MyAPP</span>
+</span></span><span class="line"><span class="cl"><span class="n">Cracking</span> <span class="n">MyAPP</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">Creating</span> <span class="n">working</span> <span class="n">directory</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">Performing</span> <span class="n">initial</span> <span class="n">analysis</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">Performing</span> <span class="n">cracking</span> <span class="n">preflight</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">yolofat</span> <span class="n">magic</span> <span class="mi">4277009102</span>
+</span></span><span class="line"><span class="cl"><span class="n">Application</span> <span class="n">is</span> <span class="n">a</span> <span class="n">thin</span> <span class="n">binary</span><span class="p">,</span> <span class="n">cracking</span> <span class="n">single</span> <span class="n">architecture</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">analyzing</span> <span class="nb">load</span> <span class="n">commands</span>
+</span></span><span class="line"><span class="cl"><span class="n">found</span> <span class="n">vmaddr</span>
+</span></span><span class="line"><span class="cl"><span class="n">found</span> <span class="n">LC_ENCRYPTION</span>
+</span></span><span class="line"><span class="cl"><span class="n">found</span> <span class="n">LC_CODE_SIGNATURE</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">obtaining</span> <span class="n">ptrace</span> <span class="n">handle</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">forking</span> <span class="n">to</span> <span class="n">begin</span> <span class="n">tracing</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">obtaining</span> <span class="n">mach</span> <span class="n">port</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">preparing</span> <span class="n">code</span> <span class="n">resign</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">preparing</span> <span class="n">to</span> <span class="n">dump</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">ASLR</span> <span class="n">enabled</span><span class="p">,</span> <span class="n">identifying</span> <span class="n">dump</span> <span class="n">location</span> <span class="n">dynamically</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">performing</span> <span class="n">dump</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">patched</span> <span class="n">cryptid</span>
+</span></span><span class="line"><span class="cl"><span class="n">dumping</span> <span class="n">binary</span><span class="p">:</span> <span class="n">writing</span> <span class="n">new</span> <span class="n">checksum</span>
+</span></span><span class="line"><span class="cl"><span class="n">Censoring</span> <span class="n">iTunesMetadata</span><span class="o">.</span><span class="n">plist</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">warning</span><span class="p">:</span> <span class="n">iTunesMetadata</span><span class="o">.</span><span class="n">plist</span> <span class="n">item</span> <span class="n">named</span> <span class="s1">&#39;asset-info&#39;</span> <span class="n">is</span> <span class="n">unrecognized</span>
+</span></span><span class="line"><span class="cl"><span class="n">warning</span><span class="p">:</span> <span class="n">iTunesMetadata</span><span class="o">.</span><span class="n">plist</span> <span class="n">item</span> <span class="n">named</span> <span class="s1">&#39;product-type&#39;</span> <span class="n">is</span> <span class="n">unrecognized</span>
+</span></span><span class="line"><span class="cl"><span class="n">warning</span><span class="p">:</span> <span class="n">iTunesMetadata</span><span class="o">.</span><span class="n">plist</span> <span class="n">item</span> <span class="n">named</span> <span class="s1">&#39;bundleDisplayName&#39;</span> <span class="n">is</span> <span class="n">unrecognized</span>
+</span></span><span class="line"><span class="cl"><span class="n">Packaging</span> <span class="n">IPA</span> <span class="n">file</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="n">Compressing</span> <span class="n">second</span> <span class="n">stage</span> <span class="n">payload</span> <span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">...</span>
+</span></span><span class="line"><span class="cl">    <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">Cracked</span><span class="o">/</span><span class="n">MyAPP</span><span class="o">.</span><span class="n">ipa</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now that you have decrypted to binary and got a fresh new IPA file, you&rsquo;re ready to unpack it:</p>
 <div class="highlight"><div class="chroma">
@@ -604,9 +602,9 @@ Compressing second stage payload (2/2)...
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># unzip -d MyAPP MyAPP.ipa
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># unzip -d MyAPP MyAPP.ipa
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Afterwards you can have a look at the new binary using <code>class-dump-z</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -632,32 +630,30 @@ Compressing second stage payload (2/2)...
 </span><span class="lnt">19
 </span><span class="lnt">20
 </span><span class="lnt">21
-</span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># class-dump-z BINARY  | head -n 20
-/**
- * This header is generated by class-dump-z 0.2-0.
- * class-dump-z is Copyright (C) 2009 by KennyTM~, licensed under GPLv3.
- *
- * Source: (null)
- */
-
-typedef struct _NSZone NSZone;
-
-typedef struct CGPoint {
-    float x;
-    float y;
-} CGPoint;
-
-typedef struct CGSize {
-    float width;
-    float height;
-} CGSize;
-
-typedef struct CGRect {
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># class-dump-z BINARY  | head -n 20
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * This header is generated by class-dump-z 0.2-0.
+</span></span><span class="line"><span class="cl"> * class-dump-z is Copyright (C) 2009 by KennyTM~, licensed under GPLv3.
+</span></span><span class="line"><span class="cl"> *
+</span></span><span class="line"><span class="cl"> * Source: (null)
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">typedef struct _NSZone NSZone;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">typedef struct CGPoint {
+</span></span><span class="line"><span class="cl">    float x;
+</span></span><span class="line"><span class="cl">    float y;
+</span></span><span class="line"><span class="cl">} CGPoint;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">typedef struct CGSize {
+</span></span><span class="line"><span class="cl">    float width;
+</span></span><span class="line"><span class="cl">    float height;
+</span></span><span class="line"><span class="cl">} CGSize;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">typedef struct CGRect {
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Much better, isn&rsquo;t it? :)</p>
 <h3 id="disassemble-binary">Disassemble binary</h3>
@@ -680,7 +676,7 @@ typedef struct CGRect {
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

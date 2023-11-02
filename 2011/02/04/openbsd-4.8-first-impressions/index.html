@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -138,31 +138,31 @@ type="image/x-icon"/>
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Set network interfaces
-ext_if=sk0 #internet
-int_if=sk1  #LAN
-# Allowed  icmp type
-icmp_types=echoreq
-
-# Skip all loopback traffic
-set skip on lo
-
-# Scrub all traffic
-scrub in
-
-# Perform NAT on external interface
-nat on $ext_if from $int_if:network -&gt; ($ext_if:0)
-
-# Define default behavior: block IN, pass OUT
-block in
-pass out keep state
-
-# Allow inbound traffic on internal interface
-pass quick on $int_if
-
-# No spoofing
-antispoof quick for { lo $int_if }
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Set network interfaces
+</span></span><span class="line"><span class="cl">ext_if=sk0 #internet
+</span></span><span class="line"><span class="cl">int_if=sk1  #LAN
+</span></span><span class="line"><span class="cl"># Allowed  icmp type
+</span></span><span class="line"><span class="cl">icmp_types=echoreq
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Skip all loopback traffic
+</span></span><span class="line"><span class="cl">set skip on lo
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Scrub all traffic
+</span></span><span class="line"><span class="cl">scrub in
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Perform NAT on external interface
+</span></span><span class="line"><span class="cl">nat on $ext_if from $int_if:network -&gt; ($ext_if:0)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Define default behavior: block IN, pass OUT
+</span></span><span class="line"><span class="cl">block in
+</span></span><span class="line"><span class="cl">pass out keep state
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Allow inbound traffic on internal interface
+</span></span><span class="line"><span class="cl">pass quick on $int_if
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># No spoofing
+</span></span><span class="line"><span class="cl">antispoof quick for { lo $int_if }
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Quite easy, isn&rsquo;t it?</p>
 <p><strong>[Update: 2011-02-17]</strong></p>
@@ -173,9 +173,9 @@ antispoof quick for { lo $int_if }
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Perform NAT on external interface
-nat on $ext_if from $int_if:network -&gt; ($ext_if:0)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Perform NAT on external interface
+</span></span><span class="line"><span class="cl">nat on $ext_if from $int_if:network -&gt; ($ext_if:0)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>should be changed to</p>
 <div class="highlight"><div class="chroma">
@@ -185,10 +185,10 @@ nat on $ext_if from $int_if:network -&gt; ($ext_if:0)
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">..
-match out on $ext_if from $int_if nat-to ($ext_if)
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">..
+</span></span><span class="line"><span class="cl">match out on $ext_if from $int_if nat-to ($ext_if)
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     
@@ -198,7 +198,7 @@ match out on $ext_if from $int_if nat-to ($ext_if)
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

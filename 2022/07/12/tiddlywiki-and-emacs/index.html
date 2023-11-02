@@ -9,9 +9,8 @@
   <meta content='TiddlyWiki and Emacs - blog.dornea.nu' property='og:title' />
 
 
-<meta property="og:description" content="Since my last post on reddit asking for some help regarding Emacs and TiddlyWikis REST API I gained some elisp knowledge I&rsquo;d like to share. Maybe you want to go directly to the Emacs configuration. 
-TiddlyWiki 5 For those of you who haven&rsquo;t heard of TiddlyWiki yet:
- TiddlyWiki is a personal wiki and a non-linear notebook for organising and sharing complex information. It is an open-source single page application wiki in the form of a single HTML file that includes CSS, JavaScript, and the content." />
+<meta property="og:description" content="Since my last post on reddit asking for some help regarding Emacs and TiddlyWikis REST API I gained some elisp knowledge I&rsquo;d like to share. Maybe you want to go directly to the Emacs configuration. TiddlyWiki 5 For those of you who haven&rsquo;t heard of TiddlyWiki yet:
+TiddlyWiki is a personal wiki and a non-linear notebook for organising and sharing complex information. It is an open-source single page application wiki in the form of a single HTML file that includes CSS, JavaScript, and the content." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2022/07/12/tiddlywiki-and-emacs/" />
 
@@ -27,7 +26,7 @@ TiddlyWiki 5 For those of you who haven&rsquo;t heard of TiddlyWiki yet:
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -145,12 +144,12 @@ the ease with which it can be re-used.&rdquo;</p>
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-	<span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;HelloThere&#34;</span><span class="p">,</span>
-	<span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;FirstTag [[Second Tag]]&#34;</span><span class="p">,</span>
-	<span class="nt">&#34;my-custom-field&#34;</span><span class="p">:</span> <span class="s2">&#34;Field value&#34;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;HelloThere&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;FirstTag [[Second Tag]]&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;my-custom-field&#34;</span><span class="p">:</span> <span class="s2">&#34;Field value&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number">Code Snippet 1:</span>
@@ -200,36 +199,36 @@ For isolation reasons I use <code>Docker</code> to run it. Here is my <code>Dock
 </span><span class="lnt">29
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-docker" data-lang="docker"><span class="k">FROM</span><span class="s"> mhart/alpine-node</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="c"># Create a group and user</span><span class="err">
-</span><span class="err"></span><span class="k">RUN</span> addgroup -g <span class="m">984</span> -S appgroup<span class="err">
-</span><span class="err"></span><span class="k">RUN</span> adduser -h /DATA/wiki -u <span class="m">1000</span> -S appuser -G appgroup<span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="c"># Tell docker that all future commands should run as the appuser user</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="k">ENV</span> <span class="nv">TW_BASE</span><span class="o">=</span>/DATA <span class="nv">TW_NAME</span><span class="o">=</span>wiki <span class="nv">TW_USER</span><span class="o">=</span><span class="s2">&#34;xxx&#34;</span> <span class="nv">TW_PASSWORD</span><span class="o">=</span><span class="s2">&#34;xxx&#34;</span> <span class="nv">TW_LAZY</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="err">
-</span><span class="err"></span><span class="k">ENV</span> TW_PATH <span class="si">${</span><span class="nv">TW_BASE</span><span class="si">}</span>/<span class="si">${</span><span class="nv">TW_NAME</span><span class="si">}</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="k">WORKDIR</span><span class="s"> ${TW_BASE}</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="k">RUN</span> npm install -g npm@8.10.0<span class="err">
-</span><span class="err"></span><span class="k">RUN</span> npm install -g tiddlywiki http-server<span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="c"># COPY plugins/felixhayashi /usr/lib/node_modules/tiddlywiki/plugins/felixhayashi</span><span class="err">
-</span><span class="err"></span><span class="c"># RUN ls -la /usr/lib/node_modules/tiddlywiki/plugins</span><span class="err">
-</span><span class="err"></span><span class="k">COPY</span> start.sh <span class="si">${</span><span class="nv">TW_BASE</span><span class="si">}</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="c"># Change ownership</span><span class="err">
-</span><span class="err"></span><span class="k">RUN</span> chown appuser:appgroup /DATA/start.sh<span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 8181</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="k">USER</span><span class="s"> appuser</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;/DATA/start.sh&#34;</span><span class="p">]</span><span class="err">
-</span><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;/DATA/start.sh&#34;</span><span class="p">]</span><span class="err">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-docker" data-lang="docker"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> mhart/alpine-node</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># Create a group and user</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> addgroup -g <span class="m">984</span> -S appgroup<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> adduser -h /DATA/wiki -u <span class="m">1000</span> -S appuser -G appgroup<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># Tell docker that all future commands should run as the appuser user</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">TW_BASE</span><span class="o">=</span>/DATA <span class="nv">TW_NAME</span><span class="o">=</span>wiki <span class="nv">TW_USER</span><span class="o">=</span><span class="s2">&#34;xxx&#34;</span> <span class="nv">TW_PASSWORD</span><span class="o">=</span><span class="s2">&#34;xxx&#34;</span> <span class="nv">TW_LAZY</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> TW_PATH <span class="si">${</span><span class="nv">TW_BASE</span><span class="si">}</span>/<span class="si">${</span><span class="nv">TW_NAME</span><span class="si">}</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> ${TW_BASE}</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> npm install -g npm@8.10.0<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> npm install -g tiddlywiki http-server<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># COPY plugins/felixhayashi /usr/lib/node_modules/tiddlywiki/plugins/felixhayashi</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># RUN ls -la /usr/lib/node_modules/tiddlywiki/plugins</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> start.sh <span class="si">${</span><span class="nv">TW_BASE</span><span class="si">}</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># Change ownership</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> chown appuser:appgroup /DATA/start.sh<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 8181</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">USER</span><span class="s"> appuser</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;/DATA/start.sh&#34;</span><span class="p">]</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;/DATA/start.sh&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--tw5-dockerfile">Code Snippet 2</a>:</span>
@@ -248,14 +247,14 @@ For isolation reasons I use <code>Docker</code> to run it. Here is my <code>Dock
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="cp">#!/usr/bin/env sh
-</span><span class="cp"></span>
-<span class="c1"># Start image server</span>
-http-server -p <span class="m">82</span> /DATA/wiki/images <span class="p">&amp;</span>
-
-<span class="c1"># Start tiddlywiki server</span>
-tiddlywiki /DATA/wiki --listen <span class="nv">port</span><span class="o">=</span><span class="m">8181</span> <span class="nv">host</span><span class="o">=</span>0.0.0.0 csrf-disable<span class="o">=</span>yes
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Start image server</span>
+</span></span><span class="line"><span class="cl">http-server -p <span class="m">82</span> /DATA/wiki/images <span class="p">&amp;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Start tiddlywiki server</span>
+</span></span><span class="line"><span class="cl">tiddlywiki /DATA/wiki --listen <span class="nv">port</span><span class="o">=</span><span class="m">8181</span> <span class="nv">host</span><span class="o">=</span>0.0.0.0 csrf-disable<span class="o">=</span>yes
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--tw5-docker-start-sh">Code Snippet 3</a>:</span>
@@ -268,8 +267,8 @@ tiddlywiki /DATA/wiki --listen <span class="nv">port</span><span class="o">=</sp
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://127.0.0.1:8181/recipes/default/tiddlers/Emacs <span class="p">|</span> jq
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://127.0.0.1:8181/recipes/default/tiddlers/Emacs <span class="p">|</span> jq
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--tw5-get-tiddler-emacs">Code Snippet 4</a>:</span>
@@ -289,16 +288,16 @@ tiddlywiki /DATA/wiki --listen <span class="nv">port</span><span class="o">=</sp
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="o">{</span>
-  <span class="s2">&#34;title&#34;</span>: <span class="s2">&#34;Emacs&#34;</span>,
-  <span class="s2">&#34;created&#34;</span>: <span class="s2">&#34;20210623082136326&#34;</span>,
-  <span class="s2">&#34;modified&#34;</span>: <span class="s2">&#34;20210623082138258&#34;</span>,
-  <span class="s2">&#34;tags&#34;</span>: <span class="s2">&#34;Topics&#34;</span>,
-  <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span>,
-  <span class="s2">&#34;revision&#34;</span>: 0,
-  <span class="s2">&#34;bag&#34;</span>: <span class="s2">&#34;default&#34;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;title&#34;</span>: <span class="s2">&#34;Emacs&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;created&#34;</span>: <span class="s2">&#34;20210623082136326&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;modified&#34;</span>: <span class="s2">&#34;20210623082138258&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;tags&#34;</span>: <span class="s2">&#34;Topics&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;revision&#34;</span>: 0,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;bag&#34;</span>: <span class="s2">&#34;default&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--tw5-get-tiddler-emacs-response">Code Snippet 5</a>:</span>
@@ -339,21 +338,21 @@ giving richer experience for users who have curl. &ndash; <a href="https://tkf.g
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">let*</span>
-    <span class="p">((</span><span class="nv">httpRequest</span>
-      <span class="p">(</span><span class="nv">request</span> <span class="s">&#34;https://api.chucknorris.io/jokes/random&#34;</span>
-        <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
-        <span class="nb">:sync</span> <span class="no">t</span>
-        <span class="nb">:success</span> <span class="p">(</span><span class="nb">cl-function</span>
-                  <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
-                    <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="nv">data</span><span class="p">)))))</span>
-
-     <span class="p">(</span><span class="nv">data</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">httpRequest</span><span class="p">)))</span>
-
-  <span class="c1">;; Print information</span>
- <span class="p">(</span><span class="nb">cl-loop</span> <span class="nv">for</span> <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="nv">value</span><span class="p">)</span> <span class="nv">in</span> <span class="nv">data</span>
-      <span class="nv">collect</span> <span class="p">(</span><span class="nf">cons</span> <span class="nv">key</span> <span class="nv">value</span><span class="p">)))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">let*</span>
+</span></span><span class="line"><span class="cl">    <span class="p">((</span><span class="nv">httpRequest</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nv">request</span> <span class="s">&#34;https://api.chucknorris.io/jokes/random&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:sync</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:success</span> <span class="p">(</span><span class="nb">cl-function</span>
+</span></span><span class="line"><span class="cl">                  <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="nv">data</span><span class="p">)))))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     <span class="p">(</span><span class="nv">data</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">httpRequest</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">;; Print information</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nb">cl-loop</span> <span class="nv">for</span> <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="nv">value</span><span class="p">)</span> <span class="nv">in</span> <span class="nv">data</span>
+</span></span><span class="line"><span class="cl">      <span class="nv">collect</span> <span class="p">(</span><span class="nf">cons</span> <span class="nv">key</span> <span class="nv">value</span><span class="p">)))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--request-get-chuck-norris">Code Snippet 6</a>:</span>
@@ -371,15 +370,15 @@ giving richer experience for users who have curl. &ndash; <a href="https://tkf.g
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">((</span><span class="nv">categories</span> <span class="o">.</span>
-             <span class="p">[])</span>
- <span class="p">(</span><span class="nv">created_at</span> <span class="o">.</span> <span class="s">&#34;2020-01-05 13:42:19.576875&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">icon_url</span> <span class="o">.</span> <span class="s">&#34;https://assets.chucknorris.host/img/avatar/chuck-norris.png&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">id</span> <span class="o">.</span> <span class="s">&#34;YNmylryESKCeA5-TJKm_9g&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">updated_at</span> <span class="o">.</span> <span class="s">&#34;2020-01-05 13:42:19.576875&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">url</span> <span class="o">.</span> <span class="s">&#34;https://api.chucknorris.io/jokes/YNmylryESKCeA5-TJKm_9g&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">value</span> <span class="o">.</span> <span class="s">&#34;The descendents of Chuck Norris have divided into two widely known cultures: New Jersey and New York.&#34;</span><span class="p">))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">((</span><span class="nv">categories</span> <span class="o">.</span>
+</span></span><span class="line"><span class="cl">             <span class="p">[])</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">created_at</span> <span class="o">.</span> <span class="s">&#34;2020-01-05 13:42:19.576875&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">icon_url</span> <span class="o">.</span> <span class="s">&#34;https://assets.chucknorris.host/img/avatar/chuck-norris.png&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">id</span> <span class="o">.</span> <span class="s">&#34;YNmylryESKCeA5-TJKm_9g&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">updated_at</span> <span class="o">.</span> <span class="s">&#34;2020-01-05 13:42:19.576875&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">url</span> <span class="o">.</span> <span class="s">&#34;https://api.chucknorris.io/jokes/YNmylryESKCeA5-TJKm_9g&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">value</span> <span class="o">.</span> <span class="s">&#34;The descendents of Chuck Norris have divided into two widely known cultures: New Jersey and New York.&#34;</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="post">POST</h3>
 <p>Sending a <code>POST</code> request is also an easy task:</p>
@@ -406,25 +405,25 @@ giving richer experience for users who have curl. &ndash; <a href="https://tkf.g
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">let*</span>
-    <span class="p">((</span><span class="nv">httpRequest</span>
-      <span class="p">(</span><span class="nv">request</span> <span class="s">&#34;http://httpbin.org/post&#34;</span>
-        <span class="nb">:type</span> <span class="s">&#34;POST&#34;</span>
-        <span class="nb">:data</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;key&#34;</span> <span class="o">.</span> <span class="s">&#34;value&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;key2&#34;</span> <span class="o">.</span> <span class="s">&#34;value2&#34;</span><span class="p">))</span>
-        <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
-        <span class="nb">:sync</span> <span class="no">t</span>
-        <span class="nb">:success</span> <span class="p">(</span><span class="nb">cl-function</span>
-                  <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
-                    <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="nv">data</span><span class="p">)))))</span>
-
-     <span class="p">(</span><span class="nv">data</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">httpRequest</span><span class="p">))</span>
-     <span class="p">(</span><span class="nv">err</span> <span class="p">(</span><span class="nv">request-response-error-thrown</span> <span class="nv">httpRequest</span><span class="p">))</span>
-     <span class="p">(</span><span class="nv">status</span> <span class="p">(</span><span class="nv">request-response-status-code</span> <span class="nv">httpRequest</span><span class="p">)))</span>
-
-  <span class="c1">;; Print information</span>
- <span class="p">(</span><span class="nb">cl-loop</span> <span class="nv">for</span> <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="nv">value</span><span class="p">)</span> <span class="nv">in</span> <span class="nv">data</span>
-      <span class="nv">collect</span> <span class="p">(</span><span class="nf">cons</span> <span class="nv">key</span> <span class="nv">value</span><span class="p">)))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">let*</span>
+</span></span><span class="line"><span class="cl">    <span class="p">((</span><span class="nv">httpRequest</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nv">request</span> <span class="s">&#34;http://httpbin.org/post&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:type</span> <span class="s">&#34;POST&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:data</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;key&#34;</span> <span class="o">.</span> <span class="s">&#34;value&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;key2&#34;</span> <span class="o">.</span> <span class="s">&#34;value2&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:sync</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:success</span> <span class="p">(</span><span class="nb">cl-function</span>
+</span></span><span class="line"><span class="cl">                  <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="nv">data</span><span class="p">)))))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     <span class="p">(</span><span class="nv">data</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">httpRequest</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">     <span class="p">(</span><span class="nv">err</span> <span class="p">(</span><span class="nv">request-response-error-thrown</span> <span class="nv">httpRequest</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">     <span class="p">(</span><span class="nv">status</span> <span class="p">(</span><span class="nv">request-response-status-code</span> <span class="nv">httpRequest</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">;; Print information</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nb">cl-loop</span> <span class="nv">for</span> <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="nv">value</span><span class="p">)</span> <span class="nv">in</span> <span class="nv">data</span>
+</span></span><span class="line"><span class="cl">      <span class="nv">collect</span> <span class="p">(</span><span class="nf">cons</span> <span class="nv">key</span> <span class="nv">value</span><span class="p">)))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--request-post-request-httpbin">Code Snippet 7</a>:</span>
@@ -453,24 +452,24 @@ giving richer experience for users who have curl. &ndash; <a href="https://tkf.g
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">((</span><span class="nv">args</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">data</span> <span class="o">.</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">files</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">form</span>
-  <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="s">&#34;value&#34;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">key2</span> <span class="o">.</span> <span class="s">&#34;value2&#34;</span><span class="p">))</span>
- <span class="p">(</span><span class="nv">headers</span>
-  <span class="p">(</span><span class="nv">Accept</span> <span class="o">.</span> <span class="s">&#34;*/*&#34;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">Accept-Encoding</span> <span class="o">.</span> <span class="s">&#34;deflate, gzip, br, zstd&#34;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">Content-Length</span> <span class="o">.</span> <span class="s">&#34;21&#34;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">Content-Type</span> <span class="o">.</span> <span class="s">&#34;application/x-www-form-urlencoded&#34;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">Host</span> <span class="o">.</span> <span class="s">&#34;httpbin.org&#34;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">User-Agent</span> <span class="o">.</span> <span class="s">&#34;curl/7.83.1&#34;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">X-Amzn-Trace-Id</span> <span class="o">.</span> <span class="s">&#34;Root=1-62cdbc5c-52d3ad32436c1cb8778808e5&#34;</span><span class="p">))</span>
- <span class="p">(</span><span class="nv">json</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">origin</span> <span class="o">.</span> <span class="s">&#34;127.0.0.1&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">url</span> <span class="o">.</span> <span class="s">&#34;http://httpbin.org/post&#34;</span><span class="p">))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">((</span><span class="nv">args</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">data</span> <span class="o">.</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">files</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">form</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="s">&#34;value&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">key2</span> <span class="o">.</span> <span class="s">&#34;value2&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">headers</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">Accept</span> <span class="o">.</span> <span class="s">&#34;*/*&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">Accept-Encoding</span> <span class="o">.</span> <span class="s">&#34;deflate, gzip, br, zstd&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">Content-Length</span> <span class="o">.</span> <span class="s">&#34;21&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">Content-Type</span> <span class="o">.</span> <span class="s">&#34;application/x-www-form-urlencoded&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">Host</span> <span class="o">.</span> <span class="s">&#34;httpbin.org&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">User-Agent</span> <span class="o">.</span> <span class="s">&#34;curl/7.83.1&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">X-Amzn-Trace-Id</span> <span class="o">.</span> <span class="s">&#34;Root=1-62cdbc5c-52d3ad32436c1cb8778808e5&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">json</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">origin</span> <span class="o">.</span> <span class="s">&#34;127.0.0.1&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">url</span> <span class="o">.</span> <span class="s">&#34;http://httpbin.org/post&#34;</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--request-post-request-httpbin-response">Code Snippet 8</a>:</span>
@@ -483,9 +482,9 @@ giving richer experience for users who have curl. &ndash; <a href="https://tkf.g
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-lisp" data-lang="lisp"><span class="c1">;; default tiddlywiki base path</span>
-<span class="p">(</span><span class="k">setq</span> <span class="nv">tiddlywiki-base-path</span> <span class="s">&#34;http://127.0.0.1:8181/recipes/default/tiddlers/&#34;</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-lisp" data-lang="lisp"><span class="line"><span class="cl"><span class="c1">;; default tiddlywiki base path</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="k">setq</span> <span class="nv">tiddlywiki-base-path</span> <span class="s">&#34;http://127.0.0.1:8181/recipes/default/tiddlers/&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="get-tiddler">GET tiddler</h3>
 <p>Let&rsquo;s <a href="https://tiddlywiki.com/prerelease/static/WebServer%2520API%253A%2520Get%2520Tiddler.html">GET</a> a tiddler:</p>
@@ -510,23 +509,23 @@ giving richer experience for users who have curl. &ndash; <a href="https://tkf.g
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">let*</span>
-    <span class="p">((</span><span class="nv">httpRequest</span>
-      <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="s">&#34;Emacs&#34;</span><span class="p">)</span>
-        <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
-        <span class="nb">:sync</span> <span class="no">t</span>
-        <span class="nb">:success</span> <span class="p">(</span><span class="nb">cl-function</span>
-                  <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
-                    <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="nv">data</span><span class="p">)))))</span>
-
-     <span class="p">(</span><span class="nv">data</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">httpRequest</span><span class="p">))</span>
-     <span class="p">(</span><span class="nv">err</span> <span class="p">(</span><span class="nv">request-response-error-thrown</span> <span class="nv">httpRequest</span><span class="p">))</span>
-     <span class="p">(</span><span class="nv">status</span> <span class="p">(</span><span class="nv">request-response-status-code</span> <span class="nv">httpRequest</span><span class="p">)))</span>
-
-  <span class="c1">;; Print information</span>
- <span class="p">(</span><span class="nb">cl-loop</span> <span class="nv">for</span> <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="nv">value</span><span class="p">)</span> <span class="nv">in</span> <span class="nv">data</span>
-      <span class="nv">collect</span> <span class="p">(</span><span class="nf">cons</span> <span class="nv">key</span> <span class="nv">value</span><span class="p">)))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">let*</span>
+</span></span><span class="line"><span class="cl">    <span class="p">((</span><span class="nv">httpRequest</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="s">&#34;Emacs&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:sync</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">:success</span> <span class="p">(</span><span class="nb">cl-function</span>
+</span></span><span class="line"><span class="cl">                  <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="nv">data</span><span class="p">)))))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     <span class="p">(</span><span class="nv">data</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">httpRequest</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">     <span class="p">(</span><span class="nv">err</span> <span class="p">(</span><span class="nv">request-response-error-thrown</span> <span class="nv">httpRequest</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">     <span class="p">(</span><span class="nv">status</span> <span class="p">(</span><span class="nv">request-response-status-code</span> <span class="nv">httpRequest</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">;; Print information</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nb">cl-loop</span> <span class="nv">for</span> <span class="p">(</span><span class="nv">key</span> <span class="o">.</span> <span class="nv">value</span><span class="p">)</span> <span class="nv">in</span> <span class="nv">data</span>
+</span></span><span class="line"><span class="cl">      <span class="nv">collect</span> <span class="p">(</span><span class="nf">cons</span> <span class="nv">key</span> <span class="nv">value</span><span class="p">)))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--request-get-tiddler-emacs">Code Snippet 9</a>:</span>
@@ -544,14 +543,14 @@ giving richer experience for users who have curl. &ndash; <a href="https://tkf.g
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">((</span><span class="nv">title</span> <span class="o">.</span> <span class="s">&#34;Emacs&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">created</span> <span class="o">.</span> <span class="s">&#34;20210623082136326&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">modified</span> <span class="o">.</span> <span class="s">&#34;20210623082138258&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">tags</span> <span class="o">.</span> <span class="s">&#34;Topics&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">type</span> <span class="o">.</span> <span class="s">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">revision</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">bag</span> <span class="o">.</span> <span class="s">&#34;default&#34;</span><span class="p">))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">((</span><span class="nv">title</span> <span class="o">.</span> <span class="s">&#34;Emacs&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">created</span> <span class="o">.</span> <span class="s">&#34;20210623082136326&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">modified</span> <span class="o">.</span> <span class="s">&#34;20210623082138258&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">tags</span> <span class="o">.</span> <span class="s">&#34;Topics&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">type</span> <span class="o">.</span> <span class="s">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">revision</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="p">(</span><span class="nv">bag</span> <span class="o">.</span> <span class="s">&#34;default&#34;</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--request-get-tiddler-emacs-response">Code Snippet 10</a>:</span>
@@ -578,17 +577,17 @@ let&rsquo;s add a <code>PUT</code> request to the API:</p>
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">PUT http://127.0.0.1:8181/recipes/default/tiddlers/I%20love%20Elisp
-x-requested-with: TiddlyWiki
-Content-Type: application/json; charset=utf-8
-
-{
-    &#34;title&#34;: &#34;I love Elisp&#34;,
-    &#34;tags&#34;: &#34;Emacs [[I Love]]&#34;,
-    &#34;send-with&#34;: &#34;verb&#34;,
-    &#34;text&#34;: &#34;This rocks!&#34;
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">PUT http://127.0.0.1:8181/recipes/default/tiddlers/I%20love%20Elisp
+</span></span><span class="line"><span class="cl">x-requested-with: TiddlyWiki
+</span></span><span class="line"><span class="cl">Content-Type: application/json; charset=utf-8
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    &#34;title&#34;: &#34;I love Elisp&#34;,
+</span></span><span class="line"><span class="cl">    &#34;tags&#34;: &#34;Emacs [[I Love]]&#34;,
+</span></span><span class="line"><span class="cl">    &#34;send-with&#34;: &#34;verb&#34;,
+</span></span><span class="line"><span class="cl">    &#34;text&#34;: &#34;This rocks!&#34;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--put-new-tiddler-pseudo">Code Snippet 11</a>:</span>
@@ -603,10 +602,10 @@ Content-Type: application/json; charset=utf-8
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">GET http://127.0.0.1:8181/recipes/default/tiddlers/I%20love%20Elisp
-x-requested-with: TiddlyWiki
-Accept: application/json; charset=utf-8
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">GET http://127.0.0.1:8181/recipes/default/tiddlers/I%20love%20Elisp
+</span></span><span class="line"><span class="cl">x-requested-with: TiddlyWiki
+</span></span><span class="line"><span class="cl">Accept: application/json; charset=utf-8
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--get-tiddler-verb">Code Snippet 12</a>:</span>
@@ -635,25 +634,25 @@ Accept: application/json; charset=utf-8
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
-<span class="n">Date</span><span class="o">:</span> <span class="l">Wed, 13 Jul 2022 10:03:27 GMT</span>
-<span class="n">Connection</span><span class="o">:</span> <span class="l">keep-alive</span>
-<span class="n">Keep-Alive</span><span class="o">:</span> <span class="l">timeout=5</span>
-<span class="n">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
-
-<span class="p">{</span>
-  <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;I love Elisp&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;Emacs [[I Love]]&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;fields&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;send-with&#34;</span><span class="p">:</span> <span class="s2">&#34;verb&#34;</span>
-  <span class="p">},</span>
-  <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;This rocks!&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;revision&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="nt">&#34;bag&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span></span><span class="line"><span class="cl"><span class="n">Date</span><span class="o">:</span> <span class="l">Wed, 13 Jul 2022 10:03:27 GMT</span>
+</span></span><span class="line"><span class="cl"><span class="n">Connection</span><span class="o">:</span> <span class="l">keep-alive</span>
+</span></span><span class="line"><span class="cl"><span class="n">Keep-Alive</span><span class="o">:</span> <span class="l">timeout=5</span>
+</span></span><span class="line"><span class="cl"><span class="n">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;I love Elisp&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;Emacs [[I Love]]&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;fields&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;send-with&#34;</span><span class="p">:</span> <span class="s2">&#34;verb&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;This rocks!&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;revision&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;bag&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--put-new-tiddler-pseudo-response">Code Snippet 13</a>:</span>
@@ -713,54 +712,54 @@ a function (<code>defun</code>) to <code>PUT</code> a new tiddler for us, where 
 </span><span class="lnt">47
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="c1">;; Define function for inserting new tiddlers</span>
-<span class="p">(</span><span class="nb">defun</span> <span class="nv">insert-tiddler</span><span class="p">(</span><span class="nv">name</span> <span class="nv">tags</span> <span class="nv">body</span><span class="p">)</span>
-  <span class="p">(</span><span class="nb">let*</span>
-  <span class="p">(</span>
-   <span class="p">(</span><span class="nv">tiddler-title</span> <span class="nv">name</span><span class="p">)</span>
-<span class="hl">   <span class="p">(</span><span class="nv">url-path</span> <span class="p">(</span><span class="nv">url-hexify-string</span> <span class="nv">tiddler-title</span><span class="p">))</span>
-</span>   <span class="p">(</span><span class="nv">tiddler-tags</span> <span class="nv">tags</span><span class="p">)</span>
-   <span class="p">(</span><span class="nv">tiddler-body</span> <span class="nv">body</span><span class="p">)</span>
-
-   <span class="p">(</span><span class="nv">httpRequest</span>
-    <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="nv">url-path</span><span class="p">)</span>
-      <span class="nb">:type</span> <span class="s">&#34;PUT&#34;</span>
-<span class="hl">      <span class="nb">:data</span> <span class="p">(</span><span class="nv">json-encode</span>
-</span>             <span class="o">`</span><span class="p">(</span>
-               <span class="p">(</span><span class="s">&#34;title&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">tiddler-title</span><span class="p">)</span>
-               <span class="p">(</span><span class="s">&#34;created&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
-               <span class="p">(</span><span class="s">&#34;modified&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
-               <span class="p">(</span><span class="s">&#34;tags&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">tiddler-tags</span><span class="p">)</span>
-               <span class="p">(</span><span class="s">&#34;text&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">tiddler-body</span><span class="p">)</span>
-               <span class="p">(</span><span class="s">&#34;type&#34;</span> <span class="o">.</span> <span class="s">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">)))</span>
-<span class="hl">      <span class="nb">:headers</span> <span class="o">&#39;</span><span class="p">(</span>
-</span>                 <span class="p">(</span><span class="s">&#34;Content-Type&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span>
-                 <span class="p">(</span><span class="s">&#34;X-Requested-With&#34;</span> <span class="o">.</span> <span class="s">&#34;Tiddlywiki&#34;</span><span class="p">)</span>
-                 <span class="p">(</span><span class="s">&#34;Accept&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">))</span>
-      <span class="nb">:encoding</span> <span class="ss">&#39;utf-8</span>
-      <span class="nb">:sync</span> <span class="no">t</span>
-      <span class="nb">:complete</span>
-      <span class="p">(</span><span class="nv">function*</span>
-       <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
-         <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Inside function: %s&#34;</span> <span class="nv">data</span><span class="p">)</span>
-         <span class="p">(</span><span class="nb">when</span> <span class="nv">data</span>
-           <span class="p">(</span><span class="nb">with-current-buffer</span> <span class="p">(</span><span class="nf">get-buffer-create</span> <span class="s">&#34;*request demo*&#34;</span><span class="p">)</span>
-             <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
-             <span class="p">(</span><span class="nf">insert</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">data</span><span class="p">))</span>
-             <span class="p">(</span><span class="nv">pop-to-buffer</span> <span class="p">(</span><span class="nf">current-buffer</span><span class="p">))))))</span>
-      <span class="nb">:error</span>
-      <span class="p">(</span><span class="nv">function*</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">error-thrown</span> <span class="nv">&amp;allow-other-keys&amp;rest</span> <span class="nv">_</span><span class="p">)</span>
-                   <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got error: %S&#34;</span> <span class="nv">error-thrown</span><span class="p">)))</span>
-      <span class="p">)))</span>
-
-  <span class="p">(</span><span class="nf">format</span> <span class="s">&#34;%s:%s&#34;</span>
-          <span class="p">(</span><span class="nv">request-response-headers</span> <span class="nv">httpRequest</span><span class="p">)</span>
-          <span class="p">(</span><span class="nv">request-response-status-code</span> <span class="nv">httpRequest</span><span class="p">)</span>
-          <span class="p">)))</span>
-
-<span class="c1">;; Insert 2 tiddlers</span>
-<span class="p">(</span><span class="nv">insert-tiddler</span> <span class="s">&#34;I love Elisp&#34;</span> <span class="s">&#34;Elisp [[I Love]]&#34;</span> <span class="s">&#34;This rocks!&#34;</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Define function for inserting new tiddlers</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">defun</span> <span class="nv">insert-tiddler</span><span class="p">(</span><span class="nv">name</span> <span class="nv">tags</span> <span class="nv">body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nb">let*</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span>
+</span></span><span class="line"><span class="cl">   <span class="p">(</span><span class="nv">tiddler-title</span> <span class="nv">name</span><span class="p">)</span>
+</span></span><span class="line hl"><span class="cl">   <span class="p">(</span><span class="nv">url-path</span> <span class="p">(</span><span class="nv">url-hexify-string</span> <span class="nv">tiddler-title</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">   <span class="p">(</span><span class="nv">tiddler-tags</span> <span class="nv">tags</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="p">(</span><span class="nv">tiddler-body</span> <span class="nv">body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="p">(</span><span class="nv">httpRequest</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="nv">url-path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:type</span> <span class="s">&#34;PUT&#34;</span>
+</span></span><span class="line hl"><span class="cl">      <span class="nb">:data</span> <span class="p">(</span><span class="nv">json-encode</span>
+</span></span><span class="line"><span class="cl">             <span class="o">`</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">               <span class="p">(</span><span class="s">&#34;title&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">tiddler-title</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">               <span class="p">(</span><span class="s">&#34;created&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">               <span class="p">(</span><span class="s">&#34;modified&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">               <span class="p">(</span><span class="s">&#34;tags&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">tiddler-tags</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">               <span class="p">(</span><span class="s">&#34;text&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">tiddler-body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">               <span class="p">(</span><span class="s">&#34;type&#34;</span> <span class="o">.</span> <span class="s">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">)))</span>
+</span></span><span class="line hl"><span class="cl">      <span class="nb">:headers</span> <span class="o">&#39;</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                 <span class="p">(</span><span class="s">&#34;Content-Type&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                 <span class="p">(</span><span class="s">&#34;X-Requested-With&#34;</span> <span class="o">.</span> <span class="s">&#34;Tiddlywiki&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                 <span class="p">(</span><span class="s">&#34;Accept&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:encoding</span> <span class="ss">&#39;utf-8</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:sync</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:complete</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nv">function*</span>
+</span></span><span class="line"><span class="cl">       <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Inside function: %s&#34;</span> <span class="nv">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="p">(</span><span class="nb">when</span> <span class="nv">data</span>
+</span></span><span class="line"><span class="cl">           <span class="p">(</span><span class="nb">with-current-buffer</span> <span class="p">(</span><span class="nf">get-buffer-create</span> <span class="s">&#34;*request demo*&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">             <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">             <span class="p">(</span><span class="nf">insert</span> <span class="p">(</span><span class="nv">request-response-data</span> <span class="nv">data</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">             <span class="p">(</span><span class="nv">pop-to-buffer</span> <span class="p">(</span><span class="nf">current-buffer</span><span class="p">))))))</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:error</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nv">function*</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">error-thrown</span> <span class="nv">&amp;allow-other-keys&amp;rest</span> <span class="nv">_</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                   <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got error: %S&#34;</span> <span class="nv">error-thrown</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nf">format</span> <span class="s">&#34;%s:%s&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">(</span><span class="nv">request-response-headers</span> <span class="nv">httpRequest</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">(</span><span class="nv">request-response-status-code</span> <span class="nv">httpRequest</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">;; Insert 2 tiddlers</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">insert-tiddler</span> <span class="s">&#34;I love Elisp&#34;</span> <span class="s">&#34;Elisp [[I Love]]&#34;</span> <span class="s">&#34;This rocks!&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--request-insert-function">Code Snippet 14</a>:</span>
@@ -772,8 +771,8 @@ a function (<code>defun</code>) to <code>PUT</code> a new tiddler for us, where 
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="s">&#34;((etag . \&#34;default/I%20love%20Elisp/61:\&#34;) (content-type . text/plain) (date . Wed, 13 Jul 2022 12:30:33 GMT) (connection . keep-alive) (keep-alive . timeout=5)):204&#34;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="s">&#34;((etag . \&#34;default/I%20love%20Elisp/61:\&#34;) (content-type . text/plain) (date . Wed, 13 Jul 2022 12:30:33 GMT) (connection . keep-alive) (keep-alive . timeout=5)):204&#34;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--request-insert-function-created">Code Snippet 15</a>:</span>
@@ -809,10 +808,10 @@ a function (<code>defun</code>) to <code>PUT</code> a new tiddler for us, where 
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">GET http://127.0.0.1:8181/recipes/default/tiddlers/I%20love%20Elisp
-x-requested-with: TiddlyWiki
-Accept: application/json; charset=utf-8
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">GET http://127.0.0.1:8181/recipes/default/tiddlers/I%20love%20Elisp
+</span></span><span class="line"><span class="cl">x-requested-with: TiddlyWiki
+</span></span><span class="line"><span class="cl">Accept: application/json; charset=utf-8
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--get-tiddler-verb-new-tiddler">Code Snippet 16</a>:</span>
@@ -840,24 +839,24 @@ Accept: application/json; charset=utf-8
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
-<span class="n">Date</span><span class="o">:</span> <span class="l">Wed, 13 Jul 2022 12:40:22 GMT</span>
-<span class="n">Connection</span><span class="o">:</span> <span class="l">keep-alive</span>
-<span class="n">Keep-Alive</span><span class="o">:</span> <span class="l">timeout=5</span>
-<span class="n">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
-
-<span class="p">{</span>
-  <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;I love Elisp&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;created&#34;</span><span class="p">:</span> <span class="s2">&#34;20220713143033566&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;modified&#34;</span><span class="p">:</span> <span class="s2">&#34;20220713143033566&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;Elisp [[I Love]]&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;This rocks!&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;revision&#34;</span><span class="p">:</span> <span class="mi">61</span><span class="p">,</span>
-  <span class="nt">&#34;bag&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span></span><span class="line"><span class="cl"><span class="n">Date</span><span class="o">:</span> <span class="l">Wed, 13 Jul 2022 12:40:22 GMT</span>
+</span></span><span class="line"><span class="cl"><span class="n">Connection</span><span class="o">:</span> <span class="l">keep-alive</span>
+</span></span><span class="line"><span class="cl"><span class="n">Keep-Alive</span><span class="o">:</span> <span class="l">timeout=5</span>
+</span></span><span class="line"><span class="cl"><span class="n">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;I love Elisp&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;created&#34;</span><span class="p">:</span> <span class="s2">&#34;20220713143033566&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;modified&#34;</span><span class="p">:</span> <span class="s2">&#34;20220713143033566&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;Elisp [[I Love]]&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="s2">&#34;This rocks!&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;revision&#34;</span><span class="p">:</span> <span class="mi">61</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;bag&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--get-tiddler-verb-new-tiddler-response">Code Snippet 17</a>:</span>
@@ -873,9 +872,9 @@ Accept: application/json; charset=utf-8
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">GET http://127.0.0.1:8181/recipes/default/tiddlers/chashell
-Accept: application/json; charset=utf-8
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">GET http://127.0.0.1:8181/recipes/default/tiddlers/chashell
+</span></span><span class="line"><span class="cl">Accept: application/json; charset=utf-8
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -902,28 +901,28 @@ Accept: application/json; charset=utf-8
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
-<span class="n">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
-<span class="n">Date</span><span class="o">:</span> <span class="l">Wed, 13 Jul 2022 12:49:58 GMT</span>
-<span class="n">Connection</span><span class="o">:</span> <span class="l">keep-alive</span>
-<span class="n">Keep-Alive</span><span class="o">:</span> <span class="l">timeout=5</span>
-<span class="n">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
-
-<span class="p">{</span>
-  <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;chashell&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;created&#34;</span><span class="p">:</span> <span class="s2">&#34;20210519103441485&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;modified&#34;</span><span class="p">:</span> <span class="s2">&#34;20210519103528982&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;fields&#34;</span><span class="p">:</span> <span class="p">{</span>
-<span class="hl">    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;chashell&#34;</span><span class="p">,</span>
-</span><span class="hl">    <span class="nt">&#34;note&#34;</span><span class="p">:</span> <span class="s2">&#34;Chashell is a Go reverse shell that communicates over DNS. It can be used to bypass firewalls or tightly restricted networks.&#34;</span><span class="p">,</span>
-</span><span class="hl">    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://github.com/sysdream/chashell&#34;</span>
-</span>  <span class="p">},</span>
-<span class="hl">  <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;Golang Security Tool Bookmark&#34;</span><span class="p">,</span>
-</span>  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;revision&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="nt">&#34;bag&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="line"><span class="cl"><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+</span></span><span class="line"><span class="cl"><span class="n">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span></span><span class="line"><span class="cl"><span class="n">Date</span><span class="o">:</span> <span class="l">Wed, 13 Jul 2022 12:49:58 GMT</span>
+</span></span><span class="line"><span class="cl"><span class="n">Connection</span><span class="o">:</span> <span class="l">keep-alive</span>
+</span></span><span class="line"><span class="cl"><span class="n">Keep-Alive</span><span class="o">:</span> <span class="l">timeout=5</span>
+</span></span><span class="line"><span class="cl"><span class="n">Transfer-Encoding</span><span class="o">:</span> <span class="l">chunked</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;chashell&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;created&#34;</span><span class="p">:</span> <span class="s2">&#34;20210519103441485&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;modified&#34;</span><span class="p">:</span> <span class="s2">&#34;20210519103528982&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;fields&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;chashell&#34;</span><span class="p">,</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nt">&#34;note&#34;</span><span class="p">:</span> <span class="s2">&#34;Chashell is a Go reverse shell that communicates over DNS. It can be used to bypass firewalls or tightly restricted networks.&#34;</span><span class="p">,</span>
+</span></span><span class="line hl"><span class="cl">    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://github.com/sysdream/chashell&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line hl"><span class="cl">  <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="s2">&#34;Golang Security Tool Bookmark&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;revision&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;bag&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Every bookmarks consists of a <strong>name</strong>, a <strong>note</strong> and an <strong>url</strong>. Every tiddler supposed to be a bookmark is tagged by <code>Bookmark</code>. In this <code>chashell</code> is
 a tiddler and at the same time a bookmark in my wiki.
@@ -954,25 +953,25 @@ for the getpocket major mode:</p>
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">pocket-reader-mode-map</span>
-      <span class="nb">:after</span> <span class="nv">pocket-reader</span>
-      <span class="nb">:nm</span> <span class="s">&#34;d&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-delete</span>
-      <span class="nb">:nm</span> <span class="s">&#34;SD&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/pocket-reader-send-to-dropbox</span>
-      <span class="nb">:nm</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-toggle-archived</span>
-      <span class="nb">:nm</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-open-in-external-browser</span>
-      <span class="nb">:nm</span> <span class="s">&#34;e&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-excerpt</span>
-      <span class="nb">:nm</span> <span class="s">&#34;G&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-more</span>
-      <span class="nb">:nm</span> <span class="s">&#34;TAB&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-open-url</span>
-      <span class="nb">:nm</span> <span class="s">&#34;tr&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-remove-tags</span>
-      <span class="nb">:nm</span> <span class="s">&#34;tN&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/pocket-reader-remove-next</span>
-<span class="hl">      <span class="nb">:nm</span> <span class="s">&#34;C-b&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/tiddlywiki-add-bookmark</span>
-</span>      <span class="nb">:nm</span> <span class="s">&#34;ta&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-add-tags</span>
-      <span class="nb">:nm</span> <span class="s">&#34;gr&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-refresh</span>
-      <span class="nb">:nm</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-search</span>
-      <span class="nb">:nm</span> <span class="s">&#34;U&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-unmark-all</span>
-      <span class="nb">:nm</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-copy-url</span>
-      <span class="nb">:nm</span> <span class="s">&#34;Y&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/pocket-reader-copy-to-scratch</span><span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nv">map!</span> <span class="nb">:map</span> <span class="nv">pocket-reader-mode-map</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:after</span> <span class="nv">pocket-reader</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;d&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-delete</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;SD&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/pocket-reader-send-to-dropbox</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;a&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-toggle-archived</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;B&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-open-in-external-browser</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;e&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-excerpt</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;G&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-more</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;TAB&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-open-url</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;tr&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-remove-tags</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;tN&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/pocket-reader-remove-next</span>
+</span></span><span class="line hl"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;C-b&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/tiddlywiki-add-bookmark</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;ta&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-add-tags</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;gr&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-refresh</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;p&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-search</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;U&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-unmark-all</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;y&#34;</span> <span class="nf">#&#39;</span><span class="nv">pocket-reader-copy-url</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">:nm</span> <span class="s">&#34;Y&#34;</span> <span class="nf">#&#39;</span><span class="nv">dorneanu/pocket-reader-copy-to-scratch</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let&rsquo;s have a look at <code>dorneanu/tiddlywiki-add-bookmark</code>:
 <span class="sidenote-number"><small class="sidenote">
@@ -1013,37 +1012,37 @@ Again: You can find all my customized functions in my <a href="https://github.co
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">dorneanu/tiddlywiki-add-bookmark</span> <span class="p">()</span>
-  <span class="s">&#34;Adds a new bookmark to tiddlywiki. The URL is fetched from clipboard or killring&#34;</span>
-    <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;url-util</span><span class="p">)</span>
-    <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
-    <span class="p">(</span><span class="nv">pocket-reader-copy-url</span><span class="p">)</span>
-
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">my-url</span> <span class="p">(</span><span class="nv">org-web-tools--get-first-url</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-html</span> <span class="p">(</span><span class="nv">org-web-tools--get-url</span> <span class="nv">my-url</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-title</span> <span class="p">(</span><span class="nv">org-web-tools--html-title</span> <span class="nv">url-html</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-title-mod</span> <span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Title: &#34;</span> <span class="nv">url-title</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-path</span> <span class="p">(</span><span class="nv">url-hexify-string</span> <span class="nv">url-title-mod</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-note</span> <span class="p">(</span><span class="nf">read-string</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Note for &#34;</span> <span class="nv">my-url</span> <span class="s">&#34;:&#34;</span><span class="p">)))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-tags</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Bookmark &#34;</span><span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Additional tags: &#34;</span><span class="p">)))</span>
-
-    <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="nv">url-path</span><span class="p">)</span>
-    <span class="nb">:type</span> <span class="s">&#34;PUT&#34;</span>
-    <span class="nb">:data</span> <span class="p">(</span><span class="nv">json-encode</span> <span class="o">`</span><span class="p">((</span><span class="s">&#34;name&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">url-title-mod</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;note&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">url-note</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;url&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">my-url</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;tags&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">url-tags</span><span class="p">)))</span>
-    <span class="nb">:headers</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;Content-Type&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;X-Requested-With&#34;</span> <span class="o">.</span> <span class="s">&#34;TiddlyWiki&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;Accept&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">))</span>
-    <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
-    <span class="nb">:success</span>
-    <span class="p">(</span><span class="nb">cl-function</span>
-            <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
-                <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="p">(</span><span class="nv">assoc-default</span> <span class="ss">&#39;args</span> <span class="nv">data</span><span class="p">))))</span>
-    <span class="nb">:complete</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Added %s&#34;</span> <span class="p">(</span><span class="nf">symbol-value</span> <span class="ss">&#39;url-title-mod</span><span class="p">)))</span>
-    <span class="nb">:error</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Some error&#34;</span><span class="p">))</span>
-    <span class="nb">:status-code</span> <span class="o">&#39;</span><span class="p">((</span><span class="mi">400</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 400.&#34;</span><span class="p">)))</span>
-                    <span class="p">(</span><span class="mi">418</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 418.&#34;</span><span class="p">)))</span>
-                    <span class="p">(</span><span class="mi">204</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 202.&#34;</span><span class="p">))))</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">defun</span> <span class="nv">dorneanu/tiddlywiki-add-bookmark</span> <span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Adds a new bookmark to tiddlywiki. The URL is fetched from clipboard or killring&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;url-util</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nv">pocket-reader-copy-url</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">my-url</span> <span class="p">(</span><span class="nv">org-web-tools--get-first-url</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-html</span> <span class="p">(</span><span class="nv">org-web-tools--get-url</span> <span class="nv">my-url</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-title</span> <span class="p">(</span><span class="nv">org-web-tools--html-title</span> <span class="nv">url-html</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-title-mod</span> <span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Title: &#34;</span> <span class="nv">url-title</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-path</span> <span class="p">(</span><span class="nv">url-hexify-string</span> <span class="nv">url-title-mod</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-note</span> <span class="p">(</span><span class="nf">read-string</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Note for &#34;</span> <span class="nv">my-url</span> <span class="s">&#34;:&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-tags</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Bookmark &#34;</span><span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Additional tags: &#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="nv">url-path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:type</span> <span class="s">&#34;PUT&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:data</span> <span class="p">(</span><span class="nv">json-encode</span> <span class="o">`</span><span class="p">((</span><span class="s">&#34;name&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">url-title-mod</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;note&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">url-note</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;url&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">my-url</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;tags&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">url-tags</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:headers</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;Content-Type&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;X-Requested-With&#34;</span> <span class="o">.</span> <span class="s">&#34;TiddlyWiki&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;Accept&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:success</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">cl-function</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="p">(</span><span class="nv">assoc-default</span> <span class="ss">&#39;args</span> <span class="nv">data</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:complete</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Added %s&#34;</span> <span class="p">(</span><span class="nf">symbol-value</span> <span class="ss">&#39;url-title-mod</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:error</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Some error&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:status-code</span> <span class="o">&#39;</span><span class="p">((</span><span class="mi">400</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 400.&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="mi">418</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 418.&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="mi">204</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 202.&#34;</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--function-tiddlywiki-add-bookmark-getpocket">Code Snippet 18</a>:</span>
@@ -1091,40 +1090,40 @@ Tiddlywiki web interface to add new tiddlers, I&rsquo;d rather do it from Emacs 
 </span><span class="lnt">33
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">dorneanu/tiddlywiki-add-quote</span> <span class="p">()</span>
-  <span class="s">&#34;Adds a new quote&#34;</span>
-    <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
-
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-title</span> <span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Quote title: &#34;</span> <span class="nv">quote-title</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-path</span> <span class="p">(</span><span class="nv">url-hexify-string</span> <span class="nv">quote-title</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-source</span> <span class="p">(</span><span class="nf">read-string</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Source for &#34;</span> <span class="nv">quote-title</span> <span class="s">&#34;: &#34;</span><span class="p">)</span> <span class="nv">quote-source</span><span class="p">))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-body</span> <span class="p">(</span><span class="nf">read-string</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Text for &#34;</span> <span class="nv">quote-title</span> <span class="s">&#34;: &#34;</span><span class="p">)))</span>
-    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-tags</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;quote &#34;</span><span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Additional tags: &#34;</span><span class="p">)))</span>
-
-    <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="nv">url-path</span><span class="p">)</span>
-    <span class="nb">:type</span> <span class="s">&#34;PUT&#34;</span>
-    <span class="nb">:data</span> <span class="p">(</span><span class="nv">json-encode</span> <span class="o">`</span><span class="p">(</span>
-        <span class="p">(</span><span class="s">&#34;title&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-title</span><span class="p">)</span>
-        <span class="p">(</span><span class="s">&#34;created&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
-        <span class="p">(</span><span class="s">&#34;modified&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
-        <span class="p">(</span><span class="s">&#34;source&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-source</span><span class="p">)</span>
-        <span class="p">(</span><span class="s">&#34;tags&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-tags</span><span class="p">)</span>
-        <span class="p">(</span><span class="s">&#34;text&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-body</span><span class="p">)</span>
-        <span class="p">(</span><span class="s">&#34;type&#34;</span> <span class="o">.</span> <span class="s">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">)))</span>
-    <span class="nb">:headers</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;Content-Type&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;X-Requested-With&#34;</span> <span class="o">.</span> <span class="s">&#34;TiddlyWiki&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;Accept&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">))</span>
-    <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
-    <span class="nb">:success</span>
-    <span class="p">(</span><span class="nb">cl-function</span>
-            <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
-                <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="p">(</span><span class="nv">assoc-default</span> <span class="ss">&#39;args</span> <span class="nv">data</span><span class="p">))))</span>
-    <span class="nb">:complete</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Added quote &lt;%s&gt;&#34;</span> <span class="p">(</span><span class="nf">symbol-value</span> <span class="ss">&#39;quote-title</span><span class="p">)))</span>
-    <span class="nb">:error</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Some error&#34;</span><span class="p">))</span>
-    <span class="nb">:status-code</span> <span class="o">&#39;</span><span class="p">((</span><span class="mi">400</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 400.&#34;</span><span class="p">)))</span>
-                    <span class="p">(</span><span class="mi">418</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 418.&#34;</span><span class="p">)))</span>
-                    <span class="p">(</span><span class="mi">204</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 202.&#34;</span><span class="p">))))</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">defun</span> <span class="nv">dorneanu/tiddlywiki-add-quote</span> <span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Adds a new quote&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-title</span> <span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Quote title: &#34;</span> <span class="nv">quote-title</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">url-path</span> <span class="p">(</span><span class="nv">url-hexify-string</span> <span class="nv">quote-title</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-source</span> <span class="p">(</span><span class="nf">read-string</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Source for &#34;</span> <span class="nv">quote-title</span> <span class="s">&#34;: &#34;</span><span class="p">)</span> <span class="nv">quote-source</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-body</span> <span class="p">(</span><span class="nf">read-string</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;Text for &#34;</span> <span class="nv">quote-title</span> <span class="s">&#34;: &#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">setq</span> <span class="nv">quote-tags</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&#34;quote &#34;</span><span class="p">(</span><span class="nf">read-string</span> <span class="s">&#34;Additional tags: &#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nv">request</span> <span class="p">(</span><span class="nf">concat</span> <span class="nv">tiddlywiki-base-path</span> <span class="nv">url-path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:type</span> <span class="s">&#34;PUT&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:data</span> <span class="p">(</span><span class="nv">json-encode</span> <span class="o">`</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s">&#34;title&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-title</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s">&#34;created&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s">&#34;modified&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="p">(</span><span class="nf">format-time-string</span> <span class="s">&#34;%Y%m%d%H%M%S%3N&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s">&#34;source&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-source</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s">&#34;tags&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-tags</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s">&#34;text&#34;</span> <span class="o">.</span> <span class="o">,</span><span class="nv">quote-body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="s">&#34;type&#34;</span> <span class="o">.</span> <span class="s">&#34;text/vnd.tiddlywiki&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:headers</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&#34;Content-Type&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;X-Requested-With&#34;</span> <span class="o">.</span> <span class="s">&#34;TiddlyWiki&#34;</span><span class="p">)</span> <span class="p">(</span><span class="s">&#34;Accept&#34;</span> <span class="o">.</span> <span class="s">&#34;application/json&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:parser</span> <span class="ss">&#39;json-read</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:success</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">cl-function</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;key</span> <span class="nv">data</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;I sent: %S&#34;</span> <span class="p">(</span><span class="nv">assoc-default</span> <span class="ss">&#39;args</span> <span class="nv">data</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:complete</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Added quote &lt;%s&gt;&#34;</span> <span class="p">(</span><span class="nf">symbol-value</span> <span class="ss">&#39;quote-title</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:error</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Some error&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">:status-code</span> <span class="o">&#39;</span><span class="p">((</span><span class="mi">400</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 400.&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="mi">418</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 418.&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">(</span><span class="mi">204</span> <span class="o">.</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Got 202.&#34;</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--function-tiddlywiki-add-quote">Code Snippet 19</a>:</span>
@@ -1159,27 +1158,27 @@ and of course the actual text.</p>
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="p">(</span><span class="nv">defhydra</span> <span class="nv">hydra-tiddlywiki</span> <span class="p">(</span><span class="nb">:color</span> <span class="nv">blue</span> <span class="nb">:hint</span> <span class="no">nil</span><span class="p">)</span>
-<span class="s">&#34;
-</span><span class="s">Tiddlywiki commands^
-</span><span class="s">---------------------------------------------------------
-</span><span class="s">_b_ Add new bookmark
-</span><span class="s">_j_ Add new journal entry
-</span><span class="s">_t_ Add new tiddler
-</span><span class="s">_q_ Add new quote
-</span><span class="s">&#34;</span>
-  <span class="p">(</span><span class="s">&#34;b&#34;</span> <span class="nv">dorneanu/tiddlywiki-add-bookmark</span><span class="p">)</span>
-  <span class="p">(</span><span class="s">&#34;j&#34;</span> <span class="nv">vd/tw5-journal-file-by-date</span><span class="p">)</span>
-  <span class="p">(</span><span class="s">&#34;q&#34;</span> <span class="nv">dorneanu/tiddlywiki-add-quote</span><span class="p">)</span>
-  <span class="p">(</span><span class="s">&#34;t&#34;</span> <span class="nv">dorneanu/tiddlywiki-add-tiddler</span><span class="p">))</span>
-
-<span class="c1">;; Keybindings</span>
-<span class="p">(</span><span class="nv">my-leader-def</span>
-  <span class="nb">:infix</span> <span class="s">&#34;m w&#34;</span>
-  <span class="s">&#34;h&#34;</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">hydra-tiddlywiki/body</span> <span class="nb">:which-key</span> <span class="s">&#34;Open Tiddlywiki hydra&#34;</span><span class="p">)</span>
-  <span class="s">&#34;j&#34;</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">vd/tw5-journal-file-by-date</span> <span class="nb">:which-key</span> <span class="s">&#34;Create/Open TW5 Journal file&#34;</span><span class="p">)</span>
-  <span class="s">&#34;s&#34;</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">my/rg-tiddlywiki-directory</span> <span class="nb">:which-key</span> <span class="s">&#34;Search in TW5 directory&#34;</span><span class="p">))</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nv">defhydra</span> <span class="nv">hydra-tiddlywiki</span> <span class="p">(</span><span class="nb">:color</span> <span class="nv">blue</span> <span class="nb">:hint</span> <span class="no">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="s">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">Tiddlywiki commands^
+</span></span></span><span class="line"><span class="cl"><span class="s">---------------------------------------------------------
+</span></span></span><span class="line"><span class="cl"><span class="s">_b_ Add new bookmark
+</span></span></span><span class="line"><span class="cl"><span class="s">_j_ Add new journal entry
+</span></span></span><span class="line"><span class="cl"><span class="s">_t_ Add new tiddler
+</span></span></span><span class="line"><span class="cl"><span class="s">_q_ Add new quote
+</span></span></span><span class="line"><span class="cl"><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="s">&#34;b&#34;</span> <span class="nv">dorneanu/tiddlywiki-add-bookmark</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="s">&#34;j&#34;</span> <span class="nv">vd/tw5-journal-file-by-date</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="s">&#34;q&#34;</span> <span class="nv">dorneanu/tiddlywiki-add-quote</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="s">&#34;t&#34;</span> <span class="nv">dorneanu/tiddlywiki-add-tiddler</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">;; Keybindings</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">my-leader-def</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:infix</span> <span class="s">&#34;m w&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;h&#34;</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">hydra-tiddlywiki/body</span> <span class="nb">:which-key</span> <span class="s">&#34;Open Tiddlywiki hydra&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;j&#34;</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">vd/tw5-journal-file-by-date</span> <span class="nb">:which-key</span> <span class="s">&#34;Create/Open TW5 Journal file&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;s&#34;</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">my/rg-tiddlywiki-directory</span> <span class="nb">:which-key</span> <span class="s">&#34;Search in TW5 directory&#34;</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="src-block-caption">
   <span class="src-block-number"><a href="#code-snippet--tiddlywiki-customized-hydra">Code Snippet 20</a>:</span>
@@ -1197,7 +1196,7 @@ functionalities/ideas mentioned here. If you have anything to add/share, please 
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

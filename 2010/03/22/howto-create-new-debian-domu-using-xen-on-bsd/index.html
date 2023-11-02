@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -114,9 +114,9 @@ type="image/x-icon"/>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ uname -a
-NetBSD BlackTiny 5.0_STABLE NetBSD 5.0_STABLE (XEN3_DOM0)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ uname -a
+</span></span><span class="line"><span class="cl">NetBSD BlackTiny 5.0_STABLE NetBSD 5.0_STABLE (XEN3_DOM0)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Some technical details:</p>
 <ul>
@@ -135,10 +135,10 @@ NetBSD BlackTiny 5.0_STABLE NetBSD 5.0_STABLE (XEN3_DOM0)
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig bridge0 create
-$ ifconfig bridge0
-bridge0: flags=0 mtu 1500
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig bridge0 create
+</span></span><span class="line"><span class="cl">$ ifconfig bridge0
+</span></span><span class="line"><span class="cl">bridge0: flags=0 mtu 1500
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Make sure you use an Intenet connection based on Ethernet (IEEE 802.3) since the Debian installer provides no WiFi modules (?). There have been several problems when using WiFi due to some data encapsulation issues. So be sure you have an active Internet connection based on Ethernet. Now you should add your Ethernet interface (wm0 on my system) to the network bridge we&rsquo;ve created:</p>
 <div class="highlight"><div class="chroma">
@@ -163,25 +163,25 @@ bridge0: flags=0 mtu 1500
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ brconfig -a
-bridge0: flags=0
-        Configuration:
-                priority 32768 hellotime 2 fwddelay 15 maxage 20
-                ipfilter disabled flags 0x0
-        Interfaces:
-        Address cache (max cache: 100, timeout: 1200):
-
-$ brconfig bridge0 add wm0 stp wm0 up
-$ brconfig bridge0
-bridge0: flags=41 UP,RUNNING
-        Configuration:
-                priority 32768 hellotime 2 fwddelay 15 maxage 20
-                ipfilter disabled flags 0x0
-        Interfaces:
-                wm0 flags=7 LEARNING,DISCOVER,STP
-                        port 1 priority 128 path cost 55 listening
-        Address cache (max cache: 100, timeout: 1200):
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ brconfig -a
+</span></span><span class="line"><span class="cl">bridge0: flags=0
+</span></span><span class="line"><span class="cl">        Configuration:
+</span></span><span class="line"><span class="cl">                priority 32768 hellotime 2 fwddelay 15 maxage 20
+</span></span><span class="line"><span class="cl">                ipfilter disabled flags 0x0
+</span></span><span class="line"><span class="cl">        Interfaces:
+</span></span><span class="line"><span class="cl">        Address cache (max cache: 100, timeout: 1200):
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ brconfig bridge0 add wm0 stp wm0 up
+</span></span><span class="line"><span class="cl">$ brconfig bridge0
+</span></span><span class="line"><span class="cl">bridge0: flags=41 UP,RUNNING
+</span></span><span class="line"><span class="cl">        Configuration:
+</span></span><span class="line"><span class="cl">                priority 32768 hellotime 2 fwddelay 15 maxage 20
+</span></span><span class="line"><span class="cl">                ipfilter disabled flags 0x0
+</span></span><span class="line"><span class="cl">        Interfaces:
+</span></span><span class="line"><span class="cl">                wm0 flags=7 LEARNING,DISCOVER,STP
+</span></span><span class="line"><span class="cl">                        port 1 priority 128 path cost 55 listening
+</span></span><span class="line"><span class="cl">        Address cache (max cache: 100, timeout: 1200):
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This whole configuration stuff will be gone after reboot in case you don&rsquo;t save it to some file. If you want your system to automaticallly create the bridge, then you&rsquo;ll have to create <code>/etc/ifconfig.bridge0</code> and add these lines to it:</p>
 <div class="highlight"><div class="chroma">
@@ -189,8 +189,8 @@ bridge0: flags=41 UP,RUNNING
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">create!brconfig $int add [your LAN interface]up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">create!brconfig $int add [your LAN interface]up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Be sure to replace <code>[your LAN interface]</code> with the interface identifier on your system (in my case it would be wm0).</p>
 <h2 id="create-disk-container">Create disk container</h2>
@@ -200,8 +200,8 @@ bridge0: flags=41 UP,RUNNING
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ dd if=/dev/zero of=Debian-Lenny.img bs=1m count=2048
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ dd if=/dev/zero of=Debian-Lenny.img bs=1m count=2048
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="step-3-get-debian-kernel-and-ramdisk-file">Step 3: Get Debian kernel and ramdisk file</h2>
 <p>In order to have a fully functionable Debian installation <strong>DON&rsquo;T</strong> use <a href="http://people.debian.org/%7Ejoeyh/d-i/images/daily/">these</a> files. You&rsquo;ll run into several problems which will keep you busy searching the Internet for the solutions. Instead you should use the i386-current Xen netboot installer from this<a href="ftp://ftp.debian.org/debian/dists/lenny/main/installer-i386/current/images/netboot/xen/"> link</a>. You should at least download:</p>
@@ -225,16 +225,16 @@ bridge0: flags=41 UP,RUNNING
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Initial memory allocation (in megabytes) for the new domain.
-memory = 128
-
-# A name for your domain. All domains must have different names.
-name = &#34;debianinstall&#34;
-
-# Define network interfaces
-vif = [&#39;bridge=bridge0&#39;]
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Initial memory allocation (in megabytes) for the new domain.
+</span></span><span class="line"><span class="cl">memory = 128
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># A name for your domain. All domains must have different names.
+</span></span><span class="line"><span class="cl">name = &#34;debianinstall&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Define network interfaces
+</span></span><span class="line"><span class="cl">vif = [&#39;bridge=bridge0&#39;]
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="step-5-start-xen-services">Step 5: Start Xen services</h2>
 <p>First be sure you have following entries in your <code>/etc/rc.conf</code>:</p>
@@ -245,10 +245,10 @@ vif = [&#39;bridge=bridge0&#39;]
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">xend=YES
-xendomains=YES
-xenbackendd=YES
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">xend=YES
+</span></span><span class="line"><span class="cl">xendomains=YES
+</span></span><span class="line"><span class="cl">xenbackendd=YES
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Additionally you can add:</p>
 <div class="highlight"><div class="chroma">
@@ -256,8 +256,8 @@ xenbackendd=YES
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">xendomains=&#34;domain.foo domain.bar&#34;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">xendomains=&#34;domain.foo domain.bar&#34;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>where <code>domain.foo</code> and <code>domain.bar</code> are your Xen configs for these domains,<br>
 i.e $LOCALBASE/etc/xen/domain.foo.In my case $LOCALBASE is defined as /usr/pkg.This will bring Xen to automatically start your DomUs. (thanks Marcin M. Jessa for this hint)</p>
@@ -269,10 +269,10 @@ i.e $LOCALBASE/etc/xen/domain.foo.In my case $LOCALBASE is defined as /usr/pkg.T
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ /usr/pkg/share/examples/rc.d/xend start
-$ /usr/pkg/share/examples/rc.d/xenbackendd start
-$ /usr/pkg/share/examples/rc.d/xendomains start
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ /usr/pkg/share/examples/rc.d/xend start
+</span></span><span class="line"><span class="cl">$ /usr/pkg/share/examples/rc.d/xenbackendd start
+</span></span><span class="line"><span class="cl">$ /usr/pkg/share/examples/rc.d/xendomains start
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="step-6-install-debian">Step 6: Install Debian</h2>
 <p>Now you should be able to start the Debian installation process.</p>
@@ -289,16 +289,16 @@ $ /usr/pkg/share/examples/rc.d/xendomains start
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ls -l
--rw-r--r--  1 root  wheel  13796958 Mar  3 18:13 initrd.gz
--rw-r--r--  1 root  wheel   1548496 Mar  3 18:13 vmlinuz
--rw-r--r--  1 root  wheel      7733 Mar 21 18:46 xm-debian.cfg
-
-$ $ sha1 vmlinuz 
-SHA1 (vmlinuz) = becfb0b127c083b1444f896011564b1822423152
-$ sha1 initrd.gz 
-SHA1 (initrd.gz) = 11bc2711f08ed8a0863169c506ab88d69cf9f3cf
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ls -l
+</span></span><span class="line"><span class="cl">-rw-r--r--  1 root  wheel  13796958 Mar  3 18:13 initrd.gz
+</span></span><span class="line"><span class="cl">-rw-r--r--  1 root  wheel   1548496 Mar  3 18:13 vmlinuz
+</span></span><span class="line"><span class="cl">-rw-r--r--  1 root  wheel      7733 Mar 21 18:46 xm-debian.cfg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ $ sha1 vmlinuz 
+</span></span><span class="line"><span class="cl">SHA1 (vmlinuz) = becfb0b127c083b1444f896011564b1822423152
+</span></span><span class="line"><span class="cl">$ sha1 initrd.gz 
+</span></span><span class="line"><span class="cl">SHA1 (initrd.gz) = 11bc2711f08ed8a0863169c506ab88d69cf9f3cf
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You should now launch your Xen domU:</p>
 <div class="highlight"><div class="chroma">
@@ -306,8 +306,8 @@ SHA1 (initrd.gz) = 11bc2711f08ed8a0863169c506ab88d69cf9f3cf
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ xm create xm-debian.cfg install=true install-kernel=./vmlinuz install-ramdisk=./initrd.gz
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ xm create xm-debian.cfg install=true install-kernel=./vmlinuz install-ramdisk=./initrd.gz
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Since we use no framebuffer you should now switch to your console (by pressing CTRL+ALT + Fx, where X = 1 .. 8), login as root, cd to the previously listed directory and type:</p>
 <div class="highlight"><div class="chroma">
@@ -315,8 +315,8 @@ SHA1 (initrd.gz) = 11bc2711f08ed8a0863169c506ab88d69cf9f3cf
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ xm console debianinstall
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ xm console debianinstall
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You should now have an attached console to Debian&rsquo;s installer.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/147/11ae9eb.jpg" alt="debian installer"></p>
@@ -364,35 +364,35 @@ SHA1 (initrd.gz) = 11bc2711f08ed8a0863169c506ab88d69cf9f3cf
 </span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ vnconfig vnd0 Debian-Lenny.img
-$ disklabel /dev/vnd0
-# /dev/vnd0d:
-type: vnd
-disk: vnd
-label: fictitious
-flags:
-bytes/sector: 512
-sectors/track: 32
-tracks/cylinder: 64
-sectors/cylinder: 2048
-cylinders: 1024
-total sectors: 2097152
-rpm: 3600
-interleave: 1
-trackskew: 0
-cylinderskew: 0
-headswitch: 0 # microseconds
-track-to-track seek: 0 # microseconds
-drivedata: 0
-
-9 partitions:
-# size offset fstype [fsize bsize cpg/sgs]
-d: 2097152 0 unused 0 0 # (Cyl. 0 - 1023)
-e: 1863477 63 Linux Ext2 0 0 # (Cyl. 0*- 909*)
-i: 224847 1863603 swap # (Cyl. 909*- 1019*)
-disklabel: boot block size 0
-disklabel: super block size 0
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ vnconfig vnd0 Debian-Lenny.img
+</span></span><span class="line"><span class="cl">$ disklabel /dev/vnd0
+</span></span><span class="line"><span class="cl"># /dev/vnd0d:
+</span></span><span class="line"><span class="cl">type: vnd
+</span></span><span class="line"><span class="cl">disk: vnd
+</span></span><span class="line"><span class="cl">label: fictitious
+</span></span><span class="line"><span class="cl">flags:
+</span></span><span class="line"><span class="cl">bytes/sector: 512
+</span></span><span class="line"><span class="cl">sectors/track: 32
+</span></span><span class="line"><span class="cl">tracks/cylinder: 64
+</span></span><span class="line"><span class="cl">sectors/cylinder: 2048
+</span></span><span class="line"><span class="cl">cylinders: 1024
+</span></span><span class="line"><span class="cl">total sectors: 2097152
+</span></span><span class="line"><span class="cl">rpm: 3600
+</span></span><span class="line"><span class="cl">interleave: 1
+</span></span><span class="line"><span class="cl">trackskew: 0
+</span></span><span class="line"><span class="cl">cylinderskew: 0
+</span></span><span class="line"><span class="cl">headswitch: 0 # microseconds
+</span></span><span class="line"><span class="cl">track-to-track seek: 0 # microseconds
+</span></span><span class="line"><span class="cl">drivedata: 0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">9 partitions:
+</span></span><span class="line"><span class="cl"># size offset fstype [fsize bsize cpg/sgs]
+</span></span><span class="line"><span class="cl">d: 2097152 0 unused 0 0 # (Cyl. 0 - 1023)
+</span></span><span class="line"><span class="cl">e: 1863477 63 Linux Ext2 0 0 # (Cyl. 0*- 909*)
+</span></span><span class="line"><span class="cl">i: 224847 1863603 swap # (Cyl. 909*- 1019*)
+</span></span><span class="line"><span class="cl">disklabel: boot block size 0
+</span></span><span class="line"><span class="cl">disklabel: super block size 0
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As expected we have a swap partition and a ext2 (!!!) file system. We&rsquo;ll try now to mount it in order to extract the previously mentioned files:</p>
 <div class="highlight"><div class="chroma">
@@ -402,10 +402,10 @@ disklabel: super block size 0
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ mount -t ext2fs /dev/vnd0e /mnt
-$ file /mnt/vmlinuz /mnt/vmlinuz: symbolic link to `boot/vmlinuz-2.6.26-2-686-bigmem&#39;
-$ file /mnt/initrd.img /mnt/initrd.img: symbolic link to `boot/initrd.img-2.6.26-2-686-bigmem&#39;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ mount -t ext2fs /dev/vnd0e /mnt
+</span></span><span class="line"><span class="cl">$ file /mnt/vmlinuz /mnt/vmlinuz: symbolic link to `boot/vmlinuz-2.6.26-2-686-bigmem&#39;
+</span></span><span class="line"><span class="cl">$ file /mnt/initrd.img /mnt/initrd.img: symbolic link to `boot/initrd.img-2.6.26-2-686-bigmem&#39;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now all you&rsquo;ll have to do is to copy these files to your local partition and use them in your domU configuration. On my laptop I&rsquo;ve created /home/xen:</p>
 <div class="highlight"><div class="chroma">
@@ -433,28 +433,28 @@ $ file /mnt/initrd.img /mnt/initrd.img: symbolic link to `boot/initrd.img-2.6.26
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ls -lR total 16
-drwxr-xr-x 2 root wheel 512 Mar 22 17:04 conf
-drwxr-xr-x 2 root wheel 512 Mar 6 22:07 container
-drwxr-xr-x 2 root wheel 512 Mar 6 22:08 kernel
-drwxr-xr-x 2 root wheel 512 Mar 6 22:06 ramdisk
-
-./conf:
-total 32
--rw-r--r-- 1 root wheel 2676 Mar 6 22:08 Debian-Lenny.conf
-
-./container:
-total 4195360
--rw-r--r-- 1 root users 2147483648 Mar 6 21:38 Debian-Lenny.img
-
-./kernel:
-total 3072
--rw-r--r-- 1 root wheel 1548304 Mar 5 18:03 Debian-Lenny-vmlinuz-2.6.26-2-686-bigmem
-
-./ramdisk:
-total 12192
--rw-r--r-- 1 root wheel 6214259 Mar 5 18:03 Debian-Lenny-initrd.img-2.6.26-2-686-bigmem
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ls -lR total 16
+</span></span><span class="line"><span class="cl">drwxr-xr-x 2 root wheel 512 Mar 22 17:04 conf
+</span></span><span class="line"><span class="cl">drwxr-xr-x 2 root wheel 512 Mar 6 22:07 container
+</span></span><span class="line"><span class="cl">drwxr-xr-x 2 root wheel 512 Mar 6 22:08 kernel
+</span></span><span class="line"><span class="cl">drwxr-xr-x 2 root wheel 512 Mar 6 22:06 ramdisk
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./conf:
+</span></span><span class="line"><span class="cl">total 32
+</span></span><span class="line"><span class="cl">-rw-r--r-- 1 root wheel 2676 Mar 6 22:08 Debian-Lenny.conf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./container:
+</span></span><span class="line"><span class="cl">total 4195360
+</span></span><span class="line"><span class="cl">-rw-r--r-- 1 root users 2147483648 Mar 6 21:38 Debian-Lenny.img
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./kernel:
+</span></span><span class="line"><span class="cl">total 3072
+</span></span><span class="line"><span class="cl">-rw-r--r-- 1 root wheel 1548304 Mar 5 18:03 Debian-Lenny-vmlinuz-2.6.26-2-686-bigmem
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./ramdisk:
+</span></span><span class="line"><span class="cl">total 12192
+</span></span><span class="line"><span class="cl">-rw-r--r-- 1 root wheel 6214259 Mar 5 18:03 Debian-Lenny-initrd.img-2.6.26-2-686-bigmem
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Debian-Lenny.conf in *conf *contains:</p>
 <div class="highlight"><div class="chroma">
@@ -479,25 +479,25 @@ total 12192
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Kernel image file. This kernel will be loaded in the new domain.
-kernel = &#34;/home/xen/kernel/Debian-Lenny-vmlinuz-2.6.26-2-686-bigmem&#34;
-ramdisk = &#34;/home/xen/ramdisk/Debian-Lenny-initrd.img-2.6.26-2-686-bigmem&#34;
-
-# Memory allocation (in megabytes) for the new domain.
-memory = 156
-
-# A handy name for your new domain. This will appear in &#39;xm list&#39;,
-# and you can use this as parameters for xm in place of the domain
-# number. All domains must have different names.
-
-name = &#34;Debian-Lenny&#34;
-vif = [ &#39;mac=00:16:3e:2e:32:5f, bridge=bridge0&#39; ]
-
-disk = [ &#39;file:/home/xen/container/Debian-Lenny.img,xvda,w&#39;]
-
-# Set root device.
-root = &#34;/dev/xvda&#34;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># Kernel image file. This kernel will be loaded in the new domain.</span>
+</span></span><span class="line"><span class="cl"><span class="n">kernel</span> <span class="o">=</span> <span class="s2">&#34;/home/xen/kernel/Debian-Lenny-vmlinuz-2.6.26-2-686-bigmem&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">ramdisk</span> <span class="o">=</span> <span class="s2">&#34;/home/xen/ramdisk/Debian-Lenny-initrd.img-2.6.26-2-686-bigmem&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Memory allocation (in megabytes) for the new domain.</span>
+</span></span><span class="line"><span class="cl"><span class="n">memory</span> <span class="o">=</span> <span class="mi">156</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># A handy name for your new domain. This will appear in &#39;xm list&#39;,</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># and you can use this as parameters for xm in place of the domain</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># number. All domains must have different names.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">name</span> <span class="o">=</span> <span class="s2">&#34;Debian-Lenny&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">vif</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;mac=00:16:3e:2e:32:5f, bridge=bridge0&#39;</span> <span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">disk</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;file:/home/xen/container/Debian-Lenny.img,xvda,w&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Set root device.</span>
+</span></span><span class="line"><span class="cl"><span class="n">root</span> <span class="o">=</span> <span class="s2">&#34;/dev/xvda&#34;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now for the final step, launch your Debian domU using:</p>
 <div class="highlight"><div class="chroma">
@@ -507,10 +507,10 @@ root = &#34;/dev/xvda&#34;
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ cd conf
-$ pwd/home/xen/conf
-$ xen create -c Debian-Lenny.conf
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ cd conf
+</span></span><span class="line"><span class="cl">$ pwd/home/xen/conf
+</span></span><span class="line"><span class="cl">$ xen create -c Debian-Lenny.conf
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Thats it! I hope you enjoyed this HowTo and if you have any questions/unsolved issues, just drop me a mail and I&rsquo;ll try to help.</p>
 
@@ -521,7 +521,7 @@ $ xen create -c Debian-Lenny.conf
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

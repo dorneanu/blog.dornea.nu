@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="In this tutorial I&rsquo;d like to give you some useful examples how to configure network when using Qemu as virtualization machine. The videos in this HowTo were taken on a NetBSD-5_STABLE/amd64 machine using Qemu 0.11.1. **Attention: **On my system I&rsquo;ve used a patched version of Qemu as reported here. However you can use the fd= option to specify an open socket to be used. Example:
-1  $ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0   Using this example `tap0″ should be created before the qemu command." />
+1 $ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0 Using this example `tap0″ should be created before the qemu command." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2010/03/01/howto-qemu-networking-on-netbsd/" />
 
@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -112,8 +112,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu -cdrom [iso file] -net nic -net tap,fd=3 3&lt;&gt;/dev/tap0
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Using this example `tap0″ should be created before the qemu command. The shown examples might work on other platforms too. Be sure to have TUN/TAP device support built-in and the Qemu suite installed. Check out <strong>References</strong> for further information.</p>
 <h2 id="usermode-network-stack">Usermode network stack</h2>
@@ -133,8 +133,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ qemu -net nic -net user -cdrom [iso file]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu -net nic -net user -cdrom [iso file]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ol start="2">
 <li>[ guest system] Get an IP address:</li>
@@ -144,8 +144,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ dhclient [interface]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ dhclient [interface]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><ol start="3">
 <li>[ guest system] Check settings and Internet connectivity:</li>
@@ -156,9 +156,9 @@ type="image/x-icon"/>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface]
-$ ftp [ftp site]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface]
+</span></span><span class="line"><span class="cl">$ ftp [ftp site]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>On my system the firewall was blocking any ICMP packets so ping might not work. But don&rsquo;t get disoriented (like I did). Try to ssh or ftp any known host to check the connection.</p>
 <h2 id="connecting-vlans">Connecting VLANs</h2>
@@ -176,9 +176,9 @@ $ ftp [ftp site]
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,macaddr=52:54:00:12:34:57 -net socket,listen=:8010  
-      -cdrom [iso file]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu  -net nic,macaddr=52:54:00:12:34:57 -net socket,listen=:8010  
+</span></span><span class="line"><span class="cl">      -cdrom [iso file]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="create-host-b">Create host B</h3>
 <div class="highlight"><div class="chroma">
@@ -188,10 +188,10 @@ $ ftp [ftp site]
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,vlan=2,macaddr=52:54:00:12:34:56 
-      -net socket,vlan=2,connect=127.0.0.1:8010 
-      -cdrom [iso file]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu  -net nic,vlan=2,macaddr=52:54:00:12:34:56 
+</span></span><span class="line"><span class="cl">      -net socket,vlan=2,connect=127.0.0.1:8010 
+</span></span><span class="line"><span class="cl">      -cdrom [iso file]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="configure-host-a">Configure host A</h3>
 <div class="highlight"><div class="chroma">
@@ -199,8 +199,8 @@ $ ftp [ftp site]
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.100 netmask 255.255.255.0 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface] 10.0.2.100 netmask 255.255.255.0 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="configure-host-b">Configure host B</h3>
 <div class="highlight"><div class="chroma">
@@ -208,8 +208,8 @@ $ ftp [ftp site]
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Using this configuration you should be able to access host <strong>B</strong> from host <strong>A</strong> and vice versa.</p>
 <h2 id="connecting-vlans-to-tap-device-1-host">Connecting VLANs to TAP device (1 host)</h2>
@@ -226,13 +226,13 @@ $ ftp [ftp site]
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 create
-$ ifconfig tap0
-tap0: flags=8802  mtu 1500
-        address: f2:0b:a4:86:42:08
-        media: Ethernet autoselect
-$ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig tap0 create
+</span></span><span class="line"><span class="cl">$ ifconfig tap0
+</span></span><span class="line"><span class="cl">tap0: flags=8802  mtu 1500
+</span></span><span class="line"><span class="cl">        address: f2:0b:a4:86:42:08
+</span></span><span class="line"><span class="cl">        media: Ethernet autoselect
+</span></span><span class="line"><span class="cl">$ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="launch-qemu-process">Launch Qemu process:</h3>
 <div class="highlight"><div class="chroma">
@@ -240,8 +240,8 @@ $ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ qemu -net nic,vlan=0 -net tap,vlan=0,ifname=tap0 -cdrom  [iso file]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu -net nic,vlan=0 -net tap,vlan=0,ifname=tap0 -cdrom  [iso file]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="configure-virtual-host">Configure virtual host:</h3>
 <div class="highlight"><div class="chroma">
@@ -249,8 +249,8 @@ $ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface] 10.0.2.101 netmask 255.255.255.0 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You should now be able to access your Qemu host from your guest host (ping 10.0.2.101). 10.0.100 (guest system) should be also accessible from your Qemu process.</p>
 <h2 id="connecting-vlans-to-tap-devices-2-hosts">Connecting VLANs to TAP devices (2 hosts)</h2>
@@ -269,17 +269,17 @@ $ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 create
-$ ifconfig tap1 create
-$ ifconfig tap0
-tap0: flags=8802 mtu 1500
-        address: f2:0b:a4:86:42:08
-        media: Ethernet autoselect
-$ ifconfig tap1
-tap1: flags=8802 mtu 1500
-        address: f2:0b:a4:86:61:01
-        media: Ethernet autoselect
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig tap0 create
+</span></span><span class="line"><span class="cl">$ ifconfig tap1 create
+</span></span><span class="line"><span class="cl">$ ifconfig tap0
+</span></span><span class="line"><span class="cl">tap0: flags=8802 mtu 1500
+</span></span><span class="line"><span class="cl">        address: f2:0b:a4:86:42:08
+</span></span><span class="line"><span class="cl">        media: Ethernet autoselect
+</span></span><span class="line"><span class="cl">$ ifconfig tap1
+</span></span><span class="line"><span class="cl">tap1: flags=8802 mtu 1500
+</span></span><span class="line"><span class="cl">        address: f2:0b:a4:86:61:01
+</span></span><span class="line"><span class="cl">        media: Ethernet autoselect
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="launch-guest-a">Launch guest A</h3>
 <div class="highlight"><div class="chroma">
@@ -287,8 +287,8 @@ tap1: flags=8802 mtu 1500
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ qemu  -net nic,macaddr=52:54:00:12:34:56 -net tap,ifname=tap0 -cdrom [iso file]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu  -net nic,macaddr=52:54:00:12:34:56 -net tap,ifname=tap0 -cdrom [iso file]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="launch-guest-b">Launch guest B</h3>
 <div class="highlight"><div class="chroma">
@@ -296,8 +296,8 @@ tap1: flags=8802 mtu 1500
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"> $ qemu  -net nic,macaddr=52:54:00:12:34:57 -net tap,ifname=tap1 -cdrom [iso file]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"> $ qemu  -net nic,macaddr=52:54:00:12:34:57 -net tap,ifname=tap1 -cdrom [iso file]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="setup-tap-devices-networking-settings">Setup TAP devices networking settings:</h3>
 <div class="highlight"><div class="chroma">
@@ -306,9 +306,9 @@ tap1: flags=8802 mtu 1500
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
-$ ifconfig tap1 10.0.3.100 netmask 255.255.255.0 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
+</span></span><span class="line"><span class="cl">$ ifconfig tap1 10.0.3.100 netmask 255.255.255.0 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="create-bridge-interface">Create bridge interface:</h3>
 <div class="highlight"><div class="chroma">
@@ -317,9 +317,9 @@ $ ifconfig tap1 10.0.3.100 netmask 255.255.255.0 up
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig bridge0 create
-$ brconfig bridge0 add tap0 add tap1 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig bridge0 create
+</span></span><span class="line"><span class="cl">$ brconfig bridge0 add tap0 add tap1 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="setup-network-settings-for-guest-a">Setup network settings for guest A</h3>
 <div class="highlight"><div class="chroma">
@@ -327,8 +327,8 @@ $ brconfig bridge0 add tap0 add tap1 up
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.2.101 netmask 255.255.0.0 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface] 10.0.2.101 netmask 255.255.0.0 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="setup-network-settings-for-guest-b">Setup network settings for guest B</h3>
 <div class="highlight"><div class="chroma">
@@ -336,8 +336,8 @@ $ brconfig bridge0 add tap0 add tap1 up
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ifconfig [interface] 10.0.3.101 netmask 255.255.0.0 up
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface] 10.0.3.101 netmask 255.255.0.0 up
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now try following:</p>
 <ol>
@@ -351,8 +351,8 @@ $ brconfig bridge0 add tap0 add tap1 up
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ sysctl -w net.inet.ip.forwarding=1
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ sysctl -w net.inet.ip.forwarding=1
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In all cases you should be able to ping/access any system no matter what system you operate on. </p>
 <h2 id="references">References</h2>
@@ -368,7 +368,7 @@ $ brconfig bridge0 add tap0 add tap1 up
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -121,16 +121,16 @@ type="image/x-icon"/>
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">~/icmpknock/v0.2.r9# ls -l
-total 32
--rw-r--r-- 1 root root   35 Sep  9 13:45 AUTHORS
--rw-r--r-- 1 root root  340 Sep  9 14:19 CHANGELOG
--rw-r--r-- 1 root root 1074 Sep 13 13:54 README
-drwxr-xr-x 2 root root 4096 Sep 30 16:33 conf
--rwxr-xr-x 1 root root 4575 Sep  9 13:45 icmpKNOCK.py
-drwxr-xr-x 2 root root 4096 Sep 30 16:11 modules
-drwxr-xr-x 2 root root 4096 Sep 30 16:11 scripts
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">~/icmpknock/v0.2.r9# ls -l
+</span></span><span class="line"><span class="cl">total 32
+</span></span><span class="line"><span class="cl">-rw-r--r-- 1 root root   35 Sep  9 13:45 AUTHORS
+</span></span><span class="line"><span class="cl">-rw-r--r-- 1 root root  340 Sep  9 14:19 CHANGELOG
+</span></span><span class="line"><span class="cl">-rw-r--r-- 1 root root 1074 Sep 13 13:54 README
+</span></span><span class="line"><span class="cl">drwxr-xr-x 2 root root 4096 Sep 30 16:33 conf
+</span></span><span class="line"><span class="cl">-rwxr-xr-x 1 root root 4575 Sep  9 13:45 icmpKNOCK.py
+</span></span><span class="line"><span class="cl">drwxr-xr-x 2 root root 4096 Sep 30 16:11 modules
+</span></span><span class="line"><span class="cl">drwxr-xr-x 2 root root 4096 Sep 30 16:11 scripts
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="generate-hex-sequences">Generate hex sequences</h2>
 <p>Now you&rsquo;ll have to generate your keys. You could use MD4, MD5, SHA-1 etc hashes. This is what I did:</p>
@@ -151,20 +151,20 @@ drwxr-xr-x 2 root root 4096 Sep 30 16:11 scripts
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ for i in `seq 1 10`; 
-do pwgen 20 1 | md5; 
-done        
-bf6e1e0c0ce8fedb43146e50d1b281f9                                                
-d3ed14fb017c3b0afb8b2329fb010756
-2ab616e0b85ff5e80a8bd274745d530f
-c2a565c9132b4931f1c5cd20c1498604
-57abd2bb3cc26413050b90cd7509c677
-26ef6c1dede976ba48c1c4adbdf4ceae
-cfdff084e3442c5b8613ac75aa5147ad
-d047732f4c0b083f8f322437f0071bb9
-56bb53f69f701975db0977f316cd6402
-b124d903a6c510fbba2b1ccb23a11f2d
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ for i in `seq 1 10`; 
+</span></span><span class="line"><span class="cl">do pwgen 20 1 | md5; 
+</span></span><span class="line"><span class="cl">done        
+</span></span><span class="line"><span class="cl">bf6e1e0c0ce8fedb43146e50d1b281f9                                                
+</span></span><span class="line"><span class="cl">d3ed14fb017c3b0afb8b2329fb010756
+</span></span><span class="line"><span class="cl">2ab616e0b85ff5e80a8bd274745d530f
+</span></span><span class="line"><span class="cl">c2a565c9132b4931f1c5cd20c1498604
+</span></span><span class="line"><span class="cl">57abd2bb3cc26413050b90cd7509c677
+</span></span><span class="line"><span class="cl">26ef6c1dede976ba48c1c4adbdf4ceae
+</span></span><span class="line"><span class="cl">cfdff084e3442c5b8613ac75aa5147ad
+</span></span><span class="line"><span class="cl">d047732f4c0b083f8f322437f0071bb9
+</span></span><span class="line"><span class="cl">56bb53f69f701975db0977f316cd6402
+</span></span><span class="line"><span class="cl">b124d903a6c510fbba2b1ccb23a11f2d
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That should do the work. Now you&rsquo;ll have to edit your actions file (conf/actions.conf) and copy these values to it. Please have a look at the descriptive text inside the file for further information.</p>
 <h2 id="define-actions">Define actions</h2>
@@ -177,10 +177,10 @@ b124d903a6c510fbba2b1ccb23a11f2d
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[stop_ssh]
-keys = &lt;your secret keys here&gt;
-payload = iptables -A INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">[</span><span class="n">stop_ssh</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">keys</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">your</span> <span class="n">secret</span> <span class="n">keys</span> <span class="n">here</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="n">payload</span> <span class="o">=</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">A</span> <span class="n">INPUT</span> <span class="o">-</span><span class="n">p</span> <span class="n">tcp</span> <span class="o">--</span><span class="n">dport</span> <span class="mi">22</span> <span class="o">-</span><span class="n">j</span> <span class="n">REJECT</span> <span class="o">--</span><span class="n">reject</span><span class="o">-</span><span class="n">with</span> <span class="n">tcp</span><span class="o">-</span><span class="n">reset</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Everytime the server receives the secret hex sequences it will close port 22 to block any external connections. What about opening it?</p>
 <div class="highlight"><div class="chroma">
@@ -190,10 +190,10 @@ payload = iptables -A INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[start_ssh]
-keys = &lt;your secret keys here&gt;
-payload = iptables -D INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">[</span><span class="n">start_ssh</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">keys</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">your</span> <span class="n">secret</span> <span class="n">keys</span> <span class="n">here</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="n">payload</span> <span class="o">=</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">D</span> <span class="n">INPUT</span> <span class="o">-</span><span class="n">p</span> <span class="n">tcp</span> <span class="o">--</span><span class="n">dport</span> <span class="mi">22</span> <span class="o">-</span><span class="n">j</span> <span class="n">REJECT</span> <span class="o">--</span><span class="n">reject</span><span class="o">-</span><span class="n">with</span> <span class="n">tcp</span><span class="o">-</span><span class="n">reset</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In that case you simply delete the previously created rule. Afterwards port 22 should be open again.</p>
 <p>Of course: There are lot of other possible configurations. Perhaps it is a better idea to define only 1 action which allows you to connect to port 22 within 20 seconds, close the port again after 20 seconds and keep the established connections. Feel free to use your brain.</p>
@@ -212,16 +212,16 @@ payload = iptables -D INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/sh
-</span><span class="cp"></span>
-<span class="nv">HOST</span><span class="o">=</span>&lt;your host here&gt;
-<span class="nv">keys</span><span class="o">=</span>&lt;your keys here&gt;<span class="err">&#39;</span>
-
-<span class="k">for</span> k in <span class="nv">$keys</span>
-<span class="k">do</span>
-   ping -c <span class="m">1</span> -p <span class="nv">$k</span> <span class="nv">$HOST</span>
-<span class="k">done</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">HOST</span><span class="o">=</span>&lt;your host here&gt;
+</span></span><span class="line"><span class="cl"><span class="nv">keys</span><span class="o">=</span>&lt;your keys here&gt;<span class="err">&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> k in <span class="nv">$keys</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">   ping -c <span class="m">1</span> -p <span class="nv">$k</span> <span class="nv">$HOST</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That&rsquo;s all. Just name your script something like <code>start_ssh.sh</code> and run it every time you you&rsquo;ll connect to the server. The same applies to <code>cllosing the port</code>.</p>
 <p>For any comments, new features or simply feedback, please use the comment functionality or drop me a mail.</p>
@@ -233,7 +233,7 @@ payload = iptables -D INPUT -p tcp --dport 22 -j REJECT --reject-with tcp-reset
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

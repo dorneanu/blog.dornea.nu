@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -111,8 +111,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ./build.sh -u distribution install=/
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ./build.sh -u distribution install=/
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>and hoped for the best. Finally the installation was done and I did a fresh reboot. And then it happened: BOOM!</p>
 <div class="highlight"><div class="chroma">
@@ -120,8 +120,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">...panic: init died (signal 0, exit 12)Stopped in pid 1.1 (init) at netbsd:cpu_Debugger+0x4: bx r14
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">...</span><span class="n">panic</span><span class="p">:</span> <span class="n">init</span> <span class="n">died</span> <span class="p">(</span><span class="k">signal</span> <span class="mi">0</span><span class="p">,</span> <span class="n">exit</span> <span class="mi">12</span><span class="p">)</span><span class="n">Stopped</span> <span class="ow">in</span> <span class="n">pid</span> <span class="mf">1.1</span> <span class="p">(</span><span class="n">init</span><span class="p">)</span> <span class="n">at</span> <span class="n">netbsd</span><span class="p">:</span><span class="n">cpu_Debugger</span><span class="o">+</span><span class="mh">0x4</span><span class="p">:</span> <span class="n">bx</span> <span class="n">r14</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>(for more details read <a href="http://mail-index.netbsd.org/tech-kern/2009/03/18/msg004607.html">this</a>). At that moment I knew I&rsquo;ve screwed it up. Apparently the init process couldn&rsquo;t create the devices, since there was no MAKEDEV in /dev. I don&rsquo;t have a clue how that happened. So I booted Linux, mounted the UFS partition and looked up for the MAKEDEV file. I found it in <code>/mnt//usr/obj/destdir.amd64/dev</code>. I tried to copy it to <code>/mnt/dev/</code> but then BAM! The partition was mounted read-only. Ok, I ran</p>
 <div class="highlight"><div class="chroma">
@@ -129,8 +129,8 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ mount -o rw /mnt
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ mount -o rw /mnt
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>and the kernel said there was no write support for UFS. My second <code>F\*** YOU!</code> was just about to enter /dev/stdout but then I tried to stay calm and search for the solution. The solution: Recompile Linux kernel with UFS write suppport enabled. I found this <a href="http://ghantoos.org/2009/04/04/mounting-ufs-in-readwrite-under-linux/">short tutorial</a> (BTW: Really great howto!) and was able to enable write support for UFS. I rebooted, mounted the NetBSD partition with write support, copied MAKEDEV into <code>/dev</code> and rebooted again. No kernel panic anymore! I was on cloud nine!</p>
 <p>So what did I learned during this adventure?! <strong>Think before you type!</strong> That should apply to all of us.</p>
@@ -142,7 +142,7 @@ type="image/x-icon"/>
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

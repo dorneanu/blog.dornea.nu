@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -119,14 +119,14 @@ type="image/x-icon"/>
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">Host *
-HashKnownHosts yes
-StrictHostKeyChecking no
-Host [your host]
-User [your user]
-Port [hosts port]
-...
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Host *
+</span></span><span class="line"><span class="cl">HashKnownHosts yes
+</span></span><span class="line"><span class="cl">StrictHostKeyChecking no
+</span></span><span class="line"><span class="cl">Host [your host]
+</span></span><span class="line"><span class="cl">User [your user]
+</span></span><span class="line"><span class="cl">Port [hosts port]
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Since the SSH client itself is not able to make connections over proxies, a 3rd party tool is required. Of course you could use the <code>-D</code> flag to create a SOCKS proxy. If so, all localhost connections using that proxy will be made first through the host you just connected by SSH. Indeed, you might use SOCKS 4/5 proxies but this is far behind the scope of this paper. I&rsquo;ll focus now only on HTTP/HTTPS proxies.</p>
 <h2 id="b-ssh-over-corkscrew-">b) SSH over CorkScrew &hellip;</h2>
@@ -137,9 +137,9 @@ Port [hosts port]
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">corkscrew 2.0 (agroman@agroman.net)
-usage: corkscrew &amp;lt; proxyhost &amp;gt; &amp;lt; proxyport &amp;gt; &amp;lt; desthost &amp;gt; &amp;lt; destport &amp;gt; [authfile]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">corkscrew 2.0 (agroman@agroman.net)
+</span></span><span class="line"><span class="cl">usage: corkscrew &amp;lt; proxyhost &amp;gt; &amp;lt; proxyport &amp;gt; &amp;lt; desthost &amp;gt; &amp;lt; destport &amp;gt; [authfile]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>At this point you can add following line to your SSH config file:</p>
 <div class="highlight"><div class="chroma">
@@ -147,8 +147,8 @@ usage: corkscrew &amp;lt; proxyhost &amp;gt; &amp;lt; proxyport &amp;gt; &amp;lt
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">ProxyCommand [path/to/corkscrew] [proxy host] [proxy port] %h %p
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ProxyCommand [path/to/corkscrew] [proxy host] [proxy port] %h %p
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The &ldquo;%h&rdquo; (host) and &ldquo;%p&rdquo; (port) options will automatically be replaced by SSH with the actual destination host and port. There is no magic behind that line. It just tells the SSH client to make the connection using an external application, in our case CorkScrew. Afterwards you should be able to connect to your host by running:</p>
 <div class="highlight"><div class="chroma">
@@ -156,8 +156,8 @@ usage: corkscrew &amp;lt; proxyhost &amp;gt; &amp;lt; proxyport &amp;gt; &amp;lt
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ ssh [your host]
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ssh [your host]
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>If no error messages arise, then you successfully connected to your host using an external HTTP/HTTPS proxy!</p>
 <h2 id="c-ssh-over-corkscrew-using-tor">c) SSH over CorkScrew using Tor!</h2>
@@ -167,8 +167,8 @@ usage: corkscrew &amp;lt; proxyhost &amp;gt; &amp;lt; proxyport &amp;gt; &amp;lt
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">ProxyCommand [path/to/corkscrew] localhost 8118 %h %p
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ProxyCommand [path/to/corkscrew] localhost 8118 %h %p
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That&rsquo;s all! I hope you enjoyed this one. Cya next time and enjoy your privacy!</p>
 
@@ -179,7 +179,7 @@ usage: corkscrew &amp;lt; proxyhost &amp;gt; &amp;lt; proxyport &amp;gt; &amp;lt
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

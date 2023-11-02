@@ -9,7 +9,7 @@
   <meta content='24h Android sniffing using tcpdump - blog.dornea.nu' property='og:title' />
 
 
-<meta property="og:description" content="For better display results you can also have a look at the 24h Android Monitoring Jupyter Notebook.  Motivation I&rsquo;ve started this little project since I was mainly interested in the data my smartphone is ending all the time without my knowledge. I have a bunch of apps installed on my phone and I have absolutely no ideea which (kind of) data is beeing transfered to the Internet all day long." />
+<meta property="og:description" content="For better display results you can also have a look at the 24h Android Monitoring Jupyter Notebook. Motivation I&rsquo;ve started this little project since I was mainly interested in the data my smartphone is ending all the time without my knowledge. I have a bunch of apps installed on my phone and I have absolutely no ideea which (kind of) data is beeing transfered to the Internet all day long." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2014/01/23/24h-android-sniffing-using-tcpdump/" />
 
@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -177,19 +177,19 @@ type="image/x-icon"/>
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">u0_a99@android:/ $ deb
-e2fsck 1.41.11 (14-Mar-2010)
-/storage/sdcard1/debian-kit/debian.img: recovering journal
-/storage/sdcard1/debian-kit/debian.img: clean, 55210/170752 files, 426942/512000 blocks
-root@debian-on-android:/# ifconfig -a
-...
-rmnet0 Link encap:Point-to-Point Protocol
-POINTOPOINT NOARP MULTICAST MTU:1500 Metric:1
-RX packets:37490 errors:0 dropped:0 overruns:0 frame:0
-TX packets:30841 errors:0 dropped:0 overruns:0 carrier:0
-collisions:0 txqueuelen:1000
-RX bytes:34233580 (32.6 MiB) TX bytes:5906191 (5.6 MiB)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">u0_a99@android:/ $ deb
+</span></span><span class="line"><span class="cl">e2fsck 1.41.11 (14-Mar-2010)
+</span></span><span class="line"><span class="cl">/storage/sdcard1/debian-kit/debian.img: recovering journal
+</span></span><span class="line"><span class="cl">/storage/sdcard1/debian-kit/debian.img: clean, 55210/170752 files, 426942/512000 blocks
+</span></span><span class="line"><span class="cl">root@debian-on-android:/# ifconfig -a
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">rmnet0 Link encap:Point-to-Point Protocol
+</span></span><span class="line"><span class="cl">POINTOPOINT NOARP MULTICAST MTU:1500 Metric:1
+</span></span><span class="line"><span class="cl">RX packets:37490 errors:0 dropped:0 overruns:0 frame:0
+</span></span><span class="line"><span class="cl">TX packets:30841 errors:0 dropped:0 overruns:0 carrier:0
+</span></span><span class="line"><span class="cl">collisions:0 txqueuelen:1000
+</span></span><span class="line"><span class="cl">RX bytes:34233580 (32.6 MiB) TX bytes:5906191 (5.6 MiB)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Initially I wanted to use tshark for the sniffing part but it didn&rsquo;t work quite well. So I came back to old school tcpdump. Since my data interface was going done all the time I had to make sure that tcpdump was restarted as soon as the data interface was online again. I used the following script:</p>
 <div class="highlight"><div class="chroma">
@@ -205,16 +205,16 @@ RX bytes:34233580 (32.6 MiB) TX bytes:5906191 (5.6 MiB)
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">root@debian-on-android:~# cat monitor.sh
-<span class="c1">#!/bin/bash</span>
-
-<span class="nv">DATE</span><span class="o">=</span><span class="sb">`</span>date +<span class="s2">&#34;%Y-%m-%d-%s&#34;</span><span class="sb">`</span>
-
-<span class="k">while</span> true<span class="p">;</span>
-<span class="k">do</span>
-tcpdump -i rmnet0 -np -w output-<span class="sb">`</span>date +<span class="s2">&#34;%Y-%m-%d-%s&#34;</span><span class="sb">`</span>.pcap<span class="p">;</span> sleep <span class="m">10</span>
-<span class="k">done</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@debian-on-android:~# cat monitor.sh
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/bash</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">DATE</span><span class="o">=</span><span class="sb">`</span>date +<span class="s2">&#34;%Y-%m-%d-%s&#34;</span><span class="sb">`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> true<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">tcpdump -i rmnet0 -np -w output-<span class="sb">`</span>date +<span class="s2">&#34;%Y-%m-%d-%s&#34;</span><span class="sb">`</span>.pcap<span class="p">;</span> sleep <span class="m">10</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>I&rsquo;ve fired up my script and after 24 hours I had these outputs:</p>
 <div class="highlight"><div class="chroma">
@@ -228,14 +228,14 @@ tcpdump -i rmnet0 -np -w output-<span class="sb">`</span>date +<span class="s2">
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">root@debian-on-android:~# ls -l output-2014-01-1*
--rw-r--r--. 1 root root 24907 Jan 18 12:53 output-2014-01-18-1390049466.pcap
--rw-r--r--. 1 root root 2881 Jan 18 12:55 output-2014-01-18-1390049736.pcap
--rw-r--r--. 1 root root 14963016 Jan 18 14:02 output-2014-01-18-1390049777.pcap
--rw-r--r--. 1 root root 54695690 Jan 19 14:03 output-2014-01-18-1390053867.pcap
--rw-r--r--. 1 root root 12492822 Jan 19 16:27 output-2014-01-19-1390140216.pcap
-root@debian-on-android:~#
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">root@debian-on-android:~# ls -l output-2014-01-1*
+</span></span><span class="line"><span class="cl">-rw-r--r--. 1 root root 24907 Jan 18 12:53 output-2014-01-18-1390049466.pcap
+</span></span><span class="line"><span class="cl">-rw-r--r--. 1 root root 2881 Jan 18 12:55 output-2014-01-18-1390049736.pcap
+</span></span><span class="line"><span class="cl">-rw-r--r--. 1 root root 14963016 Jan 18 14:02 output-2014-01-18-1390049777.pcap
+</span></span><span class="line"><span class="cl">-rw-r--r--. 1 root root 54695690 Jan 19 14:03 output-2014-01-18-1390053867.pcap
+</span></span><span class="line"><span class="cl">-rw-r--r--. 1 root root 12492822 Jan 19 16:27 output-2014-01-19-1390140216.pcap
+</span></span><span class="line"><span class="cl">root@debian-on-android:~#
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="extract-information-from-pcap-files">Extract information from pcap files</h2>
 <p>I did this analysis using <a href="ttp://ipython.org/notebook.html">IPython Notebook</a>. This tool is everything worth mentioning. I was fascinated by the simplicity and the Pythonic way to handle/manipulate data. You should defnitely also have look at <a href="http://pandas.pydata.org/">Pandas</a>. Ok, back to sniffing and First I had to merge the pcap files to one piece:</p>
@@ -244,8 +244,8 @@ root@debian-on-android:~#
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ mergecap -F libpcap -a output-* -w merged.pcap
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ mergecap -F libpcap -a output-* -w merged.pcap
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Next step was to extract valuable information from the merged pcap file. I thought following information would be from interest:</p>
 <ul>
@@ -274,24 +274,24 @@ root@debian-on-android:~#
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
-
-# Tshark generated files
-DNS_QUERIES  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/dns_queries.csv&#34;
-CONNECTIONS  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/connections.csv&#34;
-HTTP_TRAFFIC = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/http_traffic.csv&#34;
-
-# Use tshark to generate some files
-dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
-              -T fields  -e frame.number -e frame.time -e dns.qry.name -e dns.resp.addr &gt; $DNS_QUERIES
-
-connections = !tshark -r $PCAP_FILE -E header=y -T fields -e frame.number \
-              -e frame.time -e ip.src -e ip.dst -e tcp.dstport -e frame.protocols &gt; $CONNECTIONS
-
-http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fields \
-              -e frame.number -e frame.time -e ip.dst -e http.request.method -e http.request.uri -e http.user_agent \
-              -e http.response.code  -e http.response.phrase -e http.content_length -e data -e text &gt; $HTTP_TRAFFIC
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">PCAP_FILE = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/merged.pcap&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Tshark generated files
+</span></span><span class="line"><span class="cl">DNS_QUERIES  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/dns_queries.csv&#34;
+</span></span><span class="line"><span class="cl">CONNECTIONS  = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/connections.csv&#34;
+</span></span><span class="line"><span class="cl">HTTP_TRAFFIC = &#34;/home/victor/work/Projects/24h-Android-Monitoring/pcap/http_traffic.csv&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Use tshark to generate some files
+</span></span><span class="line"><span class="cl">dns_queries = !tshark -r $PCAP_FILE  -R &#34;dns.flags.response == 1&#34;  -E occurrence=f -E header=y \
+</span></span><span class="line"><span class="cl">              -T fields  -e frame.number -e frame.time -e dns.qry.name -e dns.resp.addr &gt; $DNS_QUERIES
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">connections = !tshark -r $PCAP_FILE -E header=y -T fields -e frame.number \
+</span></span><span class="line"><span class="cl">              -e frame.time -e ip.src -e ip.dst -e tcp.dstport -e frame.protocols &gt; $CONNECTIONS
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fields \
+</span></span><span class="line"><span class="cl">              -e frame.number -e frame.time -e ip.dst -e http.request.method -e http.request.uri -e http.user_agent \
+</span></span><span class="line"><span class="cl">              -e http.response.code  -e http.response.phrase -e http.content_length -e data -e text &gt; $HTTP_TRAFFIC
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h1 id="import-data-into-sqlite3-db">Import data into SQLite3 DB</h1>
 <p>Now that we have all necessary data, all we have to do is to import it into some RDMS so we can analyze it.</p>
@@ -302,10 +302,10 @@ http_traffic = !tshark -r $PCAP_FILE -Y &#34;http.request&#34; -E header=y -T fi
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import sqlite3 as sql
-con = sql.connect(&#34;:memory:&#34;)
-cur = con.cursor()
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import sqlite3 as sql
+</span></span><span class="line"><span class="cl">con = sql.connect(&#34;:memory:&#34;)
+</span></span><span class="line"><span class="cl">cur = con.cursor()
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In the next step the CSV data would be read into some Pandas DataFrames and then exported to our newly created DB. </p>
 <div class="highlight"><div class="chroma">
@@ -353,48 +353,48 @@ cur = con.cursor()
 </span><span class="lnt">41
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">import binascii
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import pandas.io.sql as pdsql
-
-# Pandas settings
-pd.set_option(&#39;display.height&#39;, 500)
-pd.set_option(&#39;display.max_rows&#39;, 500)
-pd.set_option(&#39;display.max_columns&#39;, 500)
-pd.set_option(&#39;display.width&#39;, 500)
-pd.set_option(&#39;display.max_colwidth&#39;, 1000)
-
-# Useful functions
-def hex2str(s):
-    if str(s) == &#39;nan&#39;:
-        return None
-    else:
-        return bytes.fromhex(str(s)).decode(&#39;utf-8&#39;)
-
-# Import DNS queries
-dns_df = pd.read_table(DNS_QUERIES)
-dns_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;dns_query&#39;, &#39;dns_response&#39;]
-
-# Import connections
-con_df = pd.read_table(CONNECTIONS)
-con_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;src&#39;, &#39;dst&#39;, &#39;dstport&#39;, &#39;frame_protocols&#39;]
-
-# Import http traffic
-http_df = pd.read_table(HTTP_TRAFFIC)
-http_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;ip_dst&#39;,&#39;request_method&#39;, &#39;request_uri&#39;, &#39;user_agent&#39;,&#39;response_code&#39;, &#39;response_phrase&#39;,&#39;content_length&#39;, &#39;data&#39;, &#39;text&#39;]
-
-# Convert data (hex) to ascii
-convert_data = lambda x: hex2str(x)
-http_df[&#39;data&#39;] = http_df[&#39;data&#39;].apply(convert_data)
-
-
-# Write to SQLite
-pdsql.write_frame(dns_df, name=&#34;dns&#34;, con=con, if_exists=&#34;delete&#34;)
-pdsql.write_frame(con_df, name=&#34;connection&#34;, con=con, if_exists=&#34;delete&#34;)
-pdsql.write_frame(http_df, name=&#34;http&#34;, con=con, if_exists=&#34;delete&#34;)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import binascii
+</span></span><span class="line"><span class="cl">import numpy as np
+</span></span><span class="line"><span class="cl">import pandas as pd
+</span></span><span class="line"><span class="cl">import matplotlib.pyplot as plt
+</span></span><span class="line"><span class="cl">import pandas.io.sql as pdsql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Pandas settings
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.height&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_rows&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_columns&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.width&#39;, 500)
+</span></span><span class="line"><span class="cl">pd.set_option(&#39;display.max_colwidth&#39;, 1000)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Useful functions
+</span></span><span class="line"><span class="cl">def hex2str(s):
+</span></span><span class="line"><span class="cl">    if str(s) == &#39;nan&#39;:
+</span></span><span class="line"><span class="cl">        return None
+</span></span><span class="line"><span class="cl">    else:
+</span></span><span class="line"><span class="cl">        return bytes.fromhex(str(s)).decode(&#39;utf-8&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Import DNS queries
+</span></span><span class="line"><span class="cl">dns_df = pd.read_table(DNS_QUERIES)
+</span></span><span class="line"><span class="cl">dns_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;dns_query&#39;, &#39;dns_response&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Import connections
+</span></span><span class="line"><span class="cl">con_df = pd.read_table(CONNECTIONS)
+</span></span><span class="line"><span class="cl">con_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;src&#39;, &#39;dst&#39;, &#39;dstport&#39;, &#39;frame_protocols&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Import http traffic
+</span></span><span class="line"><span class="cl">http_df = pd.read_table(HTTP_TRAFFIC)
+</span></span><span class="line"><span class="cl">http_df.columns = [&#39;frame_number&#39;, &#39;frame_time&#39;, &#39;ip_dst&#39;,&#39;request_method&#39;, &#39;request_uri&#39;, &#39;user_agent&#39;,&#39;response_code&#39;, &#39;response_phrase&#39;,&#39;content_length&#39;, &#39;data&#39;, &#39;text&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Convert data (hex) to ascii
+</span></span><span class="line"><span class="cl">convert_data = lambda x: hex2str(x)
+</span></span><span class="line"><span class="cl">http_df[&#39;data&#39;] = http_df[&#39;data&#39;].apply(convert_data)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Write to SQLite
+</span></span><span class="line"><span class="cl">pdsql.write_frame(dns_df, name=&#34;dns&#34;, con=con, if_exists=&#34;delete&#34;)
+</span></span><span class="line"><span class="cl">pdsql.write_frame(con_df, name=&#34;connection&#34;, con=con, if_exists=&#34;delete&#34;)
+</span></span><span class="line"><span class="cl">pdsql.write_frame(http_df, name=&#34;http&#34;, con=con, if_exists=&#34;delete&#34;)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now we&rsquo;re ready to do the analysis.</p>
 <h2 id="results">Results</h2>
@@ -459,13 +459,13 @@ pdsql.write_frame(http_df, name=&#34;http&#34;, con=con, if_exists=&#34;delete&#
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT COUNT(dns_response) AS &#39;# DNS Responses&#39;, dns_query AS &#39;DNS to lookup&#39;
-</span><span class="s2">    FROM dns GROUP BY dns_query
-</span><span class="s2">    ORDER by 1 DESC
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p1</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT COUNT(dns_response) AS &#39;# DNS Responses&#39;, dns_query AS &#39;DNS to lookup&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    FROM dns GROUP BY dns_query
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by 1 DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p1</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table" border="1">
@@ -1894,12 +1894,12 @@ pdsql.write_frame(http_df, name=&#34;http&#34;, con=con, if_exists=&#34;delete&#
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ dig googleapis.com
-....
-$ tshark -r merged.pcap -Y &#34;ip.dst==173.194.113.147/24&#34; -E header=y &gt;&gt; googleapis.csv
-$ wc -l googleapis.csv
-3017 googleapis.csv
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ dig googleapis.com
+</span></span><span class="line"><span class="cl">....
+</span></span><span class="line"><span class="cl">$ tshark -r merged.pcap -Y &#34;ip.dst==173.194.113.147/24&#34; -E header=y &gt;&gt; googleapis.csv
+</span></span><span class="line"><span class="cl">$ wc -l googleapis.csv
+</span></span><span class="line"><span class="cl">3017 googleapis.csv
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So there were only 3016 packets for the domain <code>googleapis.com</code> and <strong>not</strong> 5 Mil. </p>
 <p><strong>EDIT [2014-02-02]:</strong> The SQL query has been updated. There was some mistake during the JOIN between the &lsquo;dns&rsquo; and &lsquo;connection&rsquo; tables. Below is the new query:</p>
@@ -1914,14 +1914,14 @@ $ wc -l googleapis.csv
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p_testing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT COUNT(*), (SELECT dns_query FROM dns WHERE dns_response=c.dst LIMIT 1) as DNS, c.dstport, c.frame_protocols FROM connection AS c
-</span><span class="s2">    WHERE c.dst NOT LIKE &#34;</span><span class="mi">10</span><span class="p">.</span><span class="o">%</span><span class="s2">&#34;
-</span><span class="s2">    GROUP by 2
-</span><span class="s2">    ORDER by 1 DESC
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p_testing</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p_testing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT COUNT(*), (SELECT dns_query FROM dns WHERE dns_response=c.dst LIMIT 1) as DNS, c.dstport, c.frame_protocols FROM connection AS c
+</span></span></span><span class="line"><span class="cl"><span class="s2">    WHERE c.dst NOT LIKE &#34;</span><span class="mi">10</span><span class="p">.</span><span class="o">%</span><span class="s2">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    GROUP by 2
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by 1 DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p_testing</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>Old</strong> query:</p>
 <div class="highlight"><div class="chroma">
@@ -1936,15 +1936,15 @@ $ wc -l googleapis.csv
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT COUNT(c.dst), d.dns_query, c.dstport, c.frame_protocols FROM connection AS c
-</span><span class="s2">    JOIN dns AS d ON c.dst=d.dns_response
-</span><span class="s2">    WHERE c.frame_protocols LIKE &#34;</span><span class="n">sll</span><span class="p">:</span><span class="n">ip</span><span class="p">:</span><span class="n">tcp</span><span class="p">:</span><span class="o">%</span><span class="s2">&#34;
-</span><span class="s2">    GROUP by c.dst
-</span><span class="s2">    ORDER by 1 DESC
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p2</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT COUNT(c.dst), d.dns_query, c.dstport, c.frame_protocols FROM connection AS c
+</span></span></span><span class="line"><span class="cl"><span class="s2">    JOIN dns AS d ON c.dst=d.dns_response
+</span></span></span><span class="line"><span class="cl"><span class="s2">    WHERE c.frame_protocols LIKE &#34;</span><span class="n">sll</span><span class="p">:</span><span class="n">ip</span><span class="p">:</span><span class="n">tcp</span><span class="p">:</span><span class="o">%</span><span class="s2">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    GROUP by c.dst
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by 1 DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p2</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table">
@@ -4182,14 +4182,14 @@ $ wc -l googleapis.csv
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p_proto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT COUNT(frame_protocols), frame_protocols
-</span><span class="s2">    FROM connection
-</span><span class="s2">    GROUP by frame_protocols
-</span><span class="s2">    ORDER BY 1 DESC
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p_proto</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p_proto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT COUNT(frame_protocols), frame_protocols
+</span></span></span><span class="line"><span class="cl"><span class="s2">    FROM connection
+</span></span></span><span class="line"><span class="cl"><span class="s2">    GROUP by frame_protocols
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER BY 1 DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p_proto</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table" border="1">
@@ -5158,15 +5158,15 @@ $ wc -l googleapis.csv
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p_ports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT COUNT(c.dstport), c.dstport
-</span><span class="s2">    FROM connection AS c
-</span><span class="s2">    JOIN dns AS d ON c.dst = d.dns_response
-</span><span class="s2">    GROUP by c.dstport
-</span><span class="s2">    ORDER by 1 DESC
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p_ports</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p_ports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT COUNT(c.dstport), c.dstport
+</span></span></span><span class="line"><span class="cl"><span class="s2">    FROM connection AS c
+</span></span></span><span class="line"><span class="cl"><span class="s2">    JOIN dns AS d ON c.dst = d.dns_response
+</span></span></span><span class="line"><span class="cl"><span class="s2">    GROUP by c.dstport
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by 1 DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p_ports</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table">
@@ -5336,14 +5336,14 @@ $ wc -l googleapis.csv
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p_http_methods</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT COUNT(request_method), request_method
-</span><span class="s2">    FROM http
-</span><span class="s2">    GROUP by request_method
-</span><span class="s2">    ORDER by 1 DESC
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p_http_methods</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p_http_methods</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT COUNT(request_method), request_method
+</span></span></span><span class="line"><span class="cl"><span class="s2">    FROM http
+</span></span></span><span class="line"><span class="cl"><span class="s2">    GROUP by request_method
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by 1 DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p_http_methods</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table">
@@ -5401,14 +5401,14 @@ $ wc -l googleapis.csv
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p_user_agents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT COUNT(user_agent), user_agent
-</span><span class="s2">    FROM http
-</span><span class="s2">    GROUP by user_agent
-</span><span class="s2">    ORDER by 1 DESC
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p_user_agents</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p_user_agents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT COUNT(user_agent), user_agent
+</span></span></span><span class="line"><span class="cl"><span class="s2">    FROM http
+</span></span></span><span class="line"><span class="cl"><span class="s2">    GROUP by user_agent
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by 1 DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p_user_agents</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table">
@@ -5749,32 +5749,32 @@ $ wc -l googleapis.csv
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT h.frame_number, h.ip_dst, d.dns_query, h.request_method, h.request_uri, h.user_agent FROM http AS  h
-</span><span class="s2">    JOIN dns AS d ON h.ip_dst = d.dns_response
-</span><span class="s2">    WHERE lower(h.request_method) == &#39;get&#39; AND
-</span><span class="s2">        -- Filter all rubish
-</span><span class="s2">        (h.request_uri NOT LIKE &#39;%.gif&#39;  AND
-</span><span class="s2">         h.request_uri NOT LIKE &#39;%.jpg&#39;  AND
-</span><span class="s2">         h.request_uri NOT LIKE &#39;%.jpeg&#39; AND
-</span><span class="s2">         h.request_uri NOT LIKE &#39;%.png&#39;  AND
-</span><span class="s2">         h.request_uri NOT LIKE &#39;%.gif&#39;  AND
-</span><span class="s2">         h.request_uri NOT LIKE &#39;%.css&#39;  AND
-</span><span class="s2">         h.request_uri NOT LIKE &#39;%.html&#39; AND
-</span><span class="s2">         h.request_uri NOT LIKE &#39;%.js&#39;)
-</span><span class="s2">    AND
-</span><span class="s2">        (d.dns_query NOT LIKE &#39;%amazon%&#39;   AND
-</span><span class="s2">         d.dns_query NOT LIKE &#39;%fahrinfo%&#39; AND
-</span><span class="s2">         d.dns_query NOT LIKE &#39;%faz.net%&#39;  AND
-</span><span class="s2">         d.dns_query NOT LIKE &#39;%heute.de%&#39; AND
-</span><span class="s2">         d.dns_query NOT LIKE &#39;%twitter%&#39;  AND
-</span><span class="s2">         d.dns_query NOT LIKE &#39;%sueddeutsche%&#39;)
-</span><span class="s2">
-</span><span class="s2">    GROUP by h.request_uri
-</span><span class="s2">    ORDER by d.dns_query
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p3</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT h.frame_number, h.ip_dst, d.dns_query, h.request_method, h.request_uri, h.user_agent FROM http AS  h
+</span></span></span><span class="line"><span class="cl"><span class="s2">    JOIN dns AS d ON h.ip_dst = d.dns_response
+</span></span></span><span class="line"><span class="cl"><span class="s2">    WHERE lower(h.request_method) == &#39;get&#39; AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">        -- Filter all rubish
+</span></span></span><span class="line"><span class="cl"><span class="s2">        (h.request_uri NOT LIKE &#39;%.gif&#39;  AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         h.request_uri NOT LIKE &#39;%.jpg&#39;  AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         h.request_uri NOT LIKE &#39;%.jpeg&#39; AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         h.request_uri NOT LIKE &#39;%.png&#39;  AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         h.request_uri NOT LIKE &#39;%.gif&#39;  AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         h.request_uri NOT LIKE &#39;%.css&#39;  AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         h.request_uri NOT LIKE &#39;%.html&#39; AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         h.request_uri NOT LIKE &#39;%.js&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">        (d.dns_query NOT LIKE &#39;%amazon%&#39;   AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         d.dns_query NOT LIKE &#39;%fahrinfo%&#39; AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         d.dns_query NOT LIKE &#39;%faz.net%&#39;  AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         d.dns_query NOT LIKE &#39;%heute.de%&#39; AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         d.dns_query NOT LIKE &#39;%twitter%&#39;  AND
+</span></span></span><span class="line"><span class="cl"><span class="s2">         d.dns_query NOT LIKE &#39;%sueddeutsche%&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    GROUP by h.request_uri
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by d.dns_query
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p3</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table">
@@ -8786,14 +8786,14 @@ $ wc -l googleapis.csv
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    SELECT h.frame_number, d.dns_query, h.request_uri, h.data, h.text FROM http AS  h
-</span><span class="s2">    JOIN dns AS d ON h.ip_dst = d.dns_response
-</span><span class="s2">    WHERE lower(h.request_method) == &#39;post&#39;
-</span><span class="s2">    ORDER by h.ip_dst
-</span><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="n">p3</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-.sql" data-lang=".sql"><span class="line"><span class="cl"><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pdsql</span><span class="p">.</span><span class="nf">read_frame</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT h.frame_number, d.dns_query, h.request_uri, h.data, h.text FROM http AS  h
+</span></span></span><span class="line"><span class="cl"><span class="s2">    JOIN dns AS d ON h.ip_dst = d.dns_response
+</span></span></span><span class="line"><span class="cl"><span class="s2">    WHERE lower(h.request_method) == &#39;post&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ORDER by h.ip_dst
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">p3</span><span class="p">.</span><span class="nf">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-responsive">
 <table class="table">
@@ -12279,7 +12279,7 @@ $ wc -l googleapis.csv
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

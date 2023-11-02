@@ -10,7 +10,7 @@
 
 
 <meta property="og:description" content="After started coding in C again I&rsquo;ve had a look at some basic network stuff like: socket(), connect() etc. In order to resolve domain names, one was used to use gethostbyname(). I&rsquo;ve used this function in all my previous C projects but this one seems to be out-dated as the main page states:
-The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are obsolete. Applications should use getaddrinfo(3), getnameinfo(3), and gai_strerror(3) instead.  The really bad thing about gethostbyname is the fact that it doesn&rsquo;t support IPv6." />
+The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are obsolete. Applications should use getaddrinfo(3), getnameinfo(3), and gai_strerror(3) instead. The really bad thing about gethostbyname is the fact that it doesn&rsquo;t support IPv6." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2015/04/30/gethostbyname-vs.-getaddrinfo/" />
 
@@ -26,7 +26,7 @@ The gethostbyname*(), gethostbyaddr*(), herror(), and hstrerror() functions are 
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -125,11 +125,11 @@ supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. P
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">status</span><span class="p">;</span>
-<span class="kt">char</span> <span class="n">ip_addr</span><span class="p">[</span><span class="n">INET6_ADDRSTRLEN</span><span class="p">];</span>
-<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="n">remote</span><span class="p">;</span>
-<span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span><span class="p">,</span> <span class="o">*</span><span class="n">res</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">status</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">ip_addr</span><span class="p">[</span><span class="n">INET6_ADDRSTRLEN</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="n">remote</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span><span class="p">,</span> <span class="o">*</span><span class="n">res</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And then the call:</p>
 <div class="highlight"><div class="chroma">
@@ -138,15 +138,13 @@ supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. P
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
-</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">((</span><span class="n">status</span><span class="o">=</span><span class="n">getaddrinfo</span><span class="p">(</span><span class="n">server_hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">res</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">log_err</span><span class="p">(</span><span class="s">&#34;getaddrinfo failed: %s&#34;</span><span class="p">,</span> <span class="n">gai_strerror</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
-    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-<span class="p">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">status</span><span class="o">=</span><span class="nf">getaddrinfo</span><span class="p">(</span><span class="n">server_hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">res</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">log_err</span><span class="p">(</span><span class="s">&#34;getaddrinfo failed: %s&#34;</span><span class="p">,</span> <span class="nf">gai_strerror</span><span class="p">(</span><span class="n">status</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>res</code> is a linked list which has to be looped to fetch the results:</p>
 <div class="highlight"><div class="chroma">
@@ -163,17 +161,17 @@ supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. P
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">while</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">res</span><span class="p">;</span> <span class="n">p</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_next</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">;</span>
-    <span class="n">remote</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">;</span>
-    <span class="n">addr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">remote</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">);</span>
-
-    <span class="c1">// Convert IP to string
-</span><span class="c1"></span>    <span class="n">inet_ntop</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">));</span>
-
-    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">res</span><span class="p">;</span> <span class="n">p</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_next</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">remote</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">addr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">remote</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Convert IP to string
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">inet_ntop</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now you could create your socket, connect to the host, read data and so on:</p>
 <div class="highlight"><div class="chroma">
@@ -183,10 +181,10 @@ supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. P
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">((</span><span class="n">socketfd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_socktype</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_protocol</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">log_err</span><span class="p">(</span><span class="s">&#34;Failed creating socket!&#34;</span><span class="p">);</span>
-    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">socketfd</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_socktype</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_protocol</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">log_err</span><span class="p">(</span><span class="s">&#34;Failed creating socket!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     
@@ -196,7 +194,7 @@ supports IPv4 and IPv6 as well, does the DNS lookup and fills your structures. P
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     

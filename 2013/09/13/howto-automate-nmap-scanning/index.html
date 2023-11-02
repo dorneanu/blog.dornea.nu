@@ -11,7 +11,7 @@
 
 <meta property="og:description" content="Recently a colleague of mine at nullsecurity.net released a new scanning tool called wnmap. Basically it&rsquo;s a wrapper around nmap which helps automating the scanning process by using simple configuration files. Let&rsquo;s have a look at it..
 Configuration Make sure you you have downloaded the archive and open src/core/wnmap.conf in order to edit:
- the wnmap path editor preferences global parameters (to use in every scan)  Running the tool Now the obligatory -help message:" />
+the wnmap path editor preferences global parameters (to use in every scan) Running the tool Now the obligatory -help message:" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2013/09/13/howto-automate-nmap-scanning/" />
 
@@ -27,7 +27,7 @@ Configuration Make sure you you have downloaded the archive and open src/core/wn
 
 
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.120.3">
 
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
 <link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
@@ -147,33 +147,33 @@ type="image/x-icon"/>
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">-==[ wnmap by nrz@nullsecurity.net ]==--
-Usage: wnmap [options] &lt;target specification&gt; | &lt;misc&gt;
-TARGET SPECIFICATION:
-    Can pass hostname or IP address.
-OPTIONS:
-    SCANNING - USER MODE:
-    -F: &#39;fast&#39; scan - nmap args: -F
-    -K: &#39;ack&#39; scan - nmap args: -PA
-    -V: &#39;version&#39; scan - nmap args: -sV -version-trace
-    -O: &#39;os&#39; scan - nmap args: -O --osscan-guess
-    -M: &#39;script_malware&#39; scan - nmap args: -script malware
-    -H: &#39;http-methods&#39; scan - nmap args: -P0 --script=http-methods.nse -p 80,443
-    SCANNING - STANDARD MODE:
-    -C: chain all modes
-    LOAD NEW SCAN:
-    -a {wnmap_arg;mode_name;nmap_args;need_sudo?[true,false]}: add new scan to user mode
-MISC:
-    -r: rescan host by default
-    -e: edit wmodes.conf
-    -v: print version of wnmap and exit
-    -h: print this help and exit
-EXAMPLES:
-    wnmap -F 8.8.8.8 -r # scan again
-    wnmap -C scanme.nmap.org # give it all you got
-    wnmap -a &#34;-I;iddle-scan;-P0 -p- -sI sweet.host.com;true&#34;
-    wnmap -e # edit modes
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">-==[ wnmap by nrz@nullsecurity.net ]==--
+</span></span><span class="line"><span class="cl">Usage: wnmap [options] &lt;target specification&gt; | &lt;misc&gt;
+</span></span><span class="line"><span class="cl">TARGET SPECIFICATION:
+</span></span><span class="line"><span class="cl">    Can pass hostname or IP address.
+</span></span><span class="line"><span class="cl">OPTIONS:
+</span></span><span class="line"><span class="cl">    SCANNING - USER MODE:
+</span></span><span class="line"><span class="cl">    -F: &#39;fast&#39; scan - nmap args: -F
+</span></span><span class="line"><span class="cl">    -K: &#39;ack&#39; scan - nmap args: -PA
+</span></span><span class="line"><span class="cl">    -V: &#39;version&#39; scan - nmap args: -sV -version-trace
+</span></span><span class="line"><span class="cl">    -O: &#39;os&#39; scan - nmap args: -O --osscan-guess
+</span></span><span class="line"><span class="cl">    -M: &#39;script_malware&#39; scan - nmap args: -script malware
+</span></span><span class="line"><span class="cl">    -H: &#39;http-methods&#39; scan - nmap args: -P0 --script=http-methods.nse -p 80,443
+</span></span><span class="line"><span class="cl">    SCANNING - STANDARD MODE:
+</span></span><span class="line"><span class="cl">    -C: chain all modes
+</span></span><span class="line"><span class="cl">    LOAD NEW SCAN:
+</span></span><span class="line"><span class="cl">    -a {wnmap_arg;mode_name;nmap_args;need_sudo?[true,false]}: add new scan to user mode
+</span></span><span class="line"><span class="cl">MISC:
+</span></span><span class="line"><span class="cl">    -r: rescan host by default
+</span></span><span class="line"><span class="cl">    -e: edit wmodes.conf
+</span></span><span class="line"><span class="cl">    -v: print version of wnmap and exit
+</span></span><span class="line"><span class="cl">    -h: print this help and exit
+</span></span><span class="line"><span class="cl">EXAMPLES:
+</span></span><span class="line"><span class="cl">    wnmap -F 8.8.8.8 -r # scan again
+</span></span><span class="line"><span class="cl">    wnmap -C scanme.nmap.org # give it all you got
+</span></span><span class="line"><span class="cl">    wnmap -a &#34;-I;iddle-scan;-P0 -p- -sI sweet.host.com;true&#34;
+</span></span><span class="line"><span class="cl">    wnmap -e # edit modes
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see the tool comes along with several **predefined **running modes. You can easily edit them at <strong>src/core/wmodes.conf:</strong></p>
 <div class="highlight"><div class="chroma">
@@ -188,15 +188,15 @@ EXAMPLES:
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% cat src/core/wmodes.conf
-# SAMPLE FILE !!! DEFINE YOUR OWN MAGIC !!!
-# wnmap_arg; mode_name; nmap_args; sudo?
--F;fast;-F;false
--K;ack;-PA;false
--V;version;-sV -version-trace;false
--O;os;-O --osscan-guess;true
--M;script_malware;-script malware;false
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">% cat src/core/wmodes.conf
+</span></span><span class="line"><span class="cl"># SAMPLE FILE !!! DEFINE YOUR OWN MAGIC !!!
+</span></span><span class="line"><span class="cl"># wnmap_arg; mode_name; nmap_args; sudo?
+</span></span><span class="line"><span class="cl">-F;fast;-F;false
+</span></span><span class="line"><span class="cl">-K;ack;-PA;false
+</span></span><span class="line"><span class="cl">-V;version;-sV -version-trace;false
+</span></span><span class="line"><span class="cl">-O;os;-O --osscan-guess;true
+</span></span><span class="line"><span class="cl">-M;script_malware;-script malware;false
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Quite handy, isn&rsquo;t it? You can <strong>chain</strong> the modes using **-C. **</p>
 <h2 id="add-new-mode">Add new mode</h2>
@@ -209,10 +209,10 @@ You can easily use the command line to insert the new mode:</p>
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% ./wnmap -a &#34;-H;http-methods;-P0 --script=http-methods.nse -p 80,443;false&#34;
---==[ wnmap by nrz@nullsecurity.net ]==--
-[+] New mode added!
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">% ./wnmap -a &#34;-H;http-methods;-P0 --script=http-methods.nse -p 80,443;false&#34;
+</span></span><span class="line"><span class="cl">--==[ wnmap by nrz@nullsecurity.net ]==--
+</span></span><span class="line"><span class="cl">[+] New mode added!
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>or edit **src/core/wmodes.conf **directly.Now let&rsquo;s scan a host using the newly inserted mode:</p>
 <div class="highlight"><div class="chroma">
@@ -232,20 +232,20 @@ You can easily use the command line to insert the new mode:</p>
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% ./wnmap -H scanme.nmap.org
---==[ wnmap by nrz@nullsecurity.net ]==--
-[+] Creating scanme.nmap.org/http-methods
-[+] Scanning scanme.nmap.org
-[*] cmd: /usr/bin/nmap -P0 --script=http-methods.nse -p 80,443 --reason -oX scanme.nmap.org/http-methods/scanme.nmap.org.xml -oN scanme.nmap.org/http-methods/scanme.nmap.org.nmap scanme.nmap.org
-Starting Nmap 6.25 ( http://nmap.org ) at 2013-09-11 15:32 CEST
-Nmap scan report for scanme.nmap.org (74.207.244.221)
-Host is up, received user-set (0.18s latency).
-PORT    STATE  SERVICE REASON
-80/tcp  open   http    syn-ack
-|_http-methods: GET HEAD POST OPTIONS
-443/tcp closed https   conn-refused
-Nmap done: 1 IP address (1 host up) scanned in 0.69 seconds
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">% ./wnmap -H scanme.nmap.org
+</span></span><span class="line"><span class="cl">--==[ wnmap by nrz@nullsecurity.net ]==--
+</span></span><span class="line"><span class="cl">[+] Creating scanme.nmap.org/http-methods
+</span></span><span class="line"><span class="cl">[+] Scanning scanme.nmap.org
+</span></span><span class="line"><span class="cl">[*] cmd: /usr/bin/nmap -P0 --script=http-methods.nse -p 80,443 --reason -oX scanme.nmap.org/http-methods/scanme.nmap.org.xml -oN scanme.nmap.org/http-methods/scanme.nmap.org.nmap scanme.nmap.org
+</span></span><span class="line"><span class="cl">Starting Nmap 6.25 ( http://nmap.org ) at 2013-09-11 15:32 CEST
+</span></span><span class="line"><span class="cl">Nmap scan report for scanme.nmap.org (74.207.244.221)
+</span></span><span class="line"><span class="cl">Host is up, received user-set (0.18s latency).
+</span></span><span class="line"><span class="cl">PORT    STATE  SERVICE REASON
+</span></span><span class="line"><span class="cl">80/tcp  open   http    syn-ack
+</span></span><span class="line"><span class="cl">|_http-methods: GET HEAD POST OPTIONS
+</span></span><span class="line"><span class="cl">443/tcp closed https   conn-refused
+</span></span><span class="line"><span class="cl">Nmap done: 1 IP address (1 host up) scanned in 0.69 seconds
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now you should see a directory called <strong>scanme.nmap.org</strong> inside your working directory. The output of the scan was saved as a regular nmap file and as XML.</p>
 <div class="highlight"><div class="chroma">
@@ -257,12 +257,12 @@ Nmap done: 1 IP address (1 host up) scanned in 0.69 seconds
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org
-scanme.nmap.org
-`-- http-methods
-    |-- scanme.nmap.org.nmap
-    `-- scanme.nmap.org.xml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># tree scanme.nmap.org
+</span></span><span class="line"><span class="cl">scanme.nmap.org
+</span></span><span class="line"><span class="cl">`-- http-methods
+</span></span><span class="line"><span class="cl">    |-- scanme.nmap.org.nmap
+</span></span><span class="line"><span class="cl">    `-- scanme.nmap.org.xml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="combine-modes">Combine modes</h2>
 <p>You could now combine the modes:</p>
@@ -271,8 +271,8 @@ scanme.nmap.org
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">% ./wnmap -H -F scanme.nmap.org
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">% ./wnmap -H -F scanme.nmap.org
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And you&rsquo;ll get:</p>
 <div class="highlight"><div class="chroma">
@@ -287,15 +287,15 @@ scanme.nmap.org
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># tree scanme.nmap.org 
-scanme.nmap.org
-|-- fast
-|   |-- scanme.nmap.org.nmap
-|   `-- scanme.nmap.org.xml
-`-- http-methods
-    |-- scanme.nmap.org.nmap
-    `-- scanme.nmap.org.xml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># tree scanme.nmap.org 
+</span></span><span class="line"><span class="cl">scanme.nmap.org
+</span></span><span class="line"><span class="cl">|-- fast
+</span></span><span class="line"><span class="cl">|   |-- scanme.nmap.org.nmap
+</span></span><span class="line"><span class="cl">|   `-- scanme.nmap.org.xml
+</span></span><span class="line"><span class="cl">`-- http-methods
+</span></span><span class="line"><span class="cl">    |-- scanme.nmap.org.nmap
+</span></span><span class="line"><span class="cl">    `-- scanme.nmap.org.xml
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     
@@ -305,7 +305,7 @@ scanme.nmap.org
       
 <div id="disqus_thread"></div>
 <script type="application/javascript">
-    var disqus_config = function () {
+    window.disqus_config = function () {
     
     
     
