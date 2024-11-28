@@ -1,0 +1,2256 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+<meta name="generator" content="Hugo 0.120.3">
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+
+
+<script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="b8a4b728-8eda-42fb-8376-10168c622160" async>
+
+</script>
+
+</head>
+<body class="global-font">
+  <nav class=" flex-ns justify-between border-box pa3 pl3-l pr2-l mt1 mt0-ns" id="navbar">
+  <div class="flex">
+    <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph2 br2" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+  </div>
+  
+  <div class=" flex-ns mt2 mt0-ns pv1">
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/' title="Home">Home</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='http://dornea.nu' title="About">About</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+    
+      <a class="link dim dark-gray f6 dib mr2 mr3-l ttu tracked" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+    
+  </div>
+  
+</nav>
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Mastering Golang Debugging in Emacs</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>28 Nov 2024</time> 
+     | 
+    
+
+    
+     ~
+  
+
+21 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/debug' class="link silver">debug</a> <a href='https://blog.dornea.nu/tags/emacs' class="link silver">emacs</a> <a href='https://blog.dornea.nu/tags/golang' class="link silver">golang</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+
+      <h2 id="introduction">Introduction</h2>
+<p>Since I&rsquo;ve started developing in Golang I didn&rsquo;t really use the <em>debugger</em>. Instead I was
+naively adding <code>fmt.Print</code> statements everywhere to validate my code 🙈. While print
+statements and logs might be also your first debugging instinct, they often fall short
+when dealing with large and complex code base, with sophisticated runtime behaviour and
+(of course!) complex concurrency issues that seem impossible to reproduce.</p>
+<p>After starting working on more complex projects
+<span class="sidenote-number"><small class="sidenote">
+Like this one: <a href="https://github.com/cloudoperators/heureka">https://github.com/cloudoperators/heureka</a>
+</small></span>
+I had to force myself to have a deeper look at <code>delve</code> (the Golang debugger) and
+see what Emacs offers for interacting with it. While the Go ecosystem offers
+excellent debugging tools, integrating them into a comfortable development
+workflow can be challenging.</p>
+<p>In this post I&rsquo;ll elaborate the powerful combination of <a href="https://brainfck.org/t/Emacs">Emacs</a>,
+<a href="https://github.com/go-delve/delve">Delve</a>, and <a href="https://github.com/svaante/dape">dape</a>. Together, these tools create a debugging experience that mimics
+(and often surpasses) traditional IDEs, while preserving the flexibility and
+extensibility that Emacs is famous for.</p>
+<p>This is what you can expect:</p>
+<ul>
+<li>Set up and configure <a href="https://github.com/go-delve/delve">Delve</a> with <a href="https://github.com/svaante/dape">dape</a></li>
+<li>Debug both standard applications and <a href="https://github.com/onsi/ginkgo">Ginkgo</a> tests (this is what I&rsquo;m using at
+the moment 🤷)</li>
+<li>Optimize your debugging workflow with Emacs specific customizations</li>
+</ul>
+<h2 id="setting-up-the-development-environment">Setting Up the Development Environment</h2>
+<p>In this post I assume you already have some Emacs experience and now how to configure
+packages and write small <code>Elisp</code> snippets. I personally use <a href="https://github.com/radian-software/straight.el">straight.el</a> as a package
+manager, <a href="https://github.com/jamescherti/minimal-emacs.d">minimal-emacs.d</a> as a minimal vanilla Emacs configuration (along with my own
+<a href="https://github.com/dorneanu/dotfiles/blob/master/minimal-emacs/config.org">custommizations)</a>, <a href="https://github.com/svaante/dape">dape</a> as the debug adapter client and <a href="https://github.com/joaotavora/eglot">eglot</a> as my <em>LSP client</em>.</p>
+<h3 id="required-emacs-packages">Required Emacs Packages</h3>
+<p>For Emacs 29+ users, <code>eglot</code> is built-in.
+<span class="sidenote-number"><small class="sidenote">
+Check out <a href="https://github.com/golang/tools/blob/master/gopls/doc/emacs.md#configuring-eglot">configuring eglot for gopls</a> and some more advanced <a href="https://github.com/golang/tools/blob/master/gopls/doc/settings.md">gopls settings</a>.
+</small></span>
+We&rsquo;ll first add <code>dape</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-elisp" data-lang="elisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">dape</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:config</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">;; Pulse source line (performance hit)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;dape-display-source-hook</span> <span class="ss">&#39;pulse-momentary-highlight-one-line</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">;; To not display info and/or buffers on startup</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">;; (remove-hook &#39;dape-start-hook &#39;dape-info)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">remove-hook</span> <span class="ss">&#39;dape-start-hook</span> <span class="ss">&#39;dape-repl</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Configure dape
+</div>
+<p>and <code>go-mode</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-elisp" data-lang="elisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-mode</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:mode</span> <span class="s">&#34;\\.go\\&#39;&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:hook</span> <span class="p">((</span><span class="nv">before-save</span> <span class="o">.</span> <span class="nv">gofmt-before-save</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:bind</span> <span class="p">(</span><span class="nb">:map</span> <span class="nv">go-mode-map</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;M-?&#34;</span> <span class="o">.</span> <span class="nv">godoc-at-point</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;M-.&#34;</span> <span class="o">.</span> <span class="nv">xref-find-definitions</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;M-_&#34;</span> <span class="o">.</span> <span class="nv">xref-find-references</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="c1">;; (&#34;M-*&#34; . pop-tag-mark) ;; Jump back after godef-jump</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c m r&#34;</span> <span class="o">.</span> <span class="nv">go-run</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:custom</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">gofmt-command</span> <span class="s">&#34;goimports&#34;</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 2:</span>
+  Configure go-mode
+</div>
+<h3 id="installing-required-go-tools">Installing Required Go Tools</h3>
+<p>Install Delve and <a href="https://pkg.go.dev/golang.org/x/tools/gopls">gopls</a>, the LSP server:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Install Delve</span>
+</span></span><span class="line"><span class="cl">go install github.com/go-delve/delve/cmd/dlv@latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install gopls</span>
+</span></span><span class="line"><span class="cl">go install golang.org/x/tools/gopls@latest
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 3:</span>
+  Install the Golang debugger and LSP server
+</div>
+<p>Additionally I have a bunch of other tools which I use from time to time:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+</span></span><span class="line"><span class="cl">go install github.com/onsi/ginkgo/v2/ginkgo@latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">go install -v golang.org/x/tools/cmd/godoc@latest
+</span></span><span class="line"><span class="cl">go install -v golang.org/x/tools/cmd/goimports@latest
+</span></span><span class="line"><span class="cl">go install -v github.com/stamblerre/gocode@latest
+</span></span><span class="line"><span class="cl">go install -v golang.org/x/tools/cmd/gorename@latest
+</span></span><span class="line"><span class="cl">go install -v golang.org/x/tools/cmd/guru@latest
+</span></span><span class="line"><span class="cl">go install -v github.com/cweill/gotests/...@latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">go install -v github.com/davidrjenni/reftools/cmd/fillstruct@latest
+</span></span><span class="line"><span class="cl">go install -v github.com/fatih/gomodifytags@latest
+</span></span><span class="line"><span class="cl">go install -v github.com/godoctor/godoctor@latest
+</span></span><span class="line"><span class="cl">go install -v github.com/haya14busa/gopkgs/cmd/gopkgs@latest
+</span></span><span class="line"><span class="cl">go install -v github.com/josharian/impl@latest
+</span></span><span class="line"><span class="cl">go install -v github.com/rogpeppe/godef@latest
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 4:</span>
+  Additional Golang tools
+</div>
+<p>Then you need to configure the corresponding Emacs packages:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-elisp" data-lang="elisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">ginkgo</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="p">(</span><span class="nb">:type</span> <span class="nv">git</span> <span class="nb">:host</span> <span class="nv">github</span> <span class="nb">:repo</span> <span class="s">&#34;garslo/ginkgo-mode&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:init</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nb">setq</span> <span class="nv">ginkgo-use-pwd-as-test-dir</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">ginkgo-use-default-keys</span> <span class="no">t</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">gotest</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:after</span> <span class="nv">go-mode</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:bind</span> <span class="p">(</span><span class="nb">:map</span> <span class="nv">go-mode-map</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t f&#34;</span> <span class="o">.</span> <span class="nv">go-test-current-file</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t t&#34;</span> <span class="o">.</span> <span class="nv">go-test-current-test</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t j&#34;</span> <span class="o">.</span> <span class="nv">go-test-current-project</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t b&#34;</span> <span class="o">.</span> <span class="nv">go-test-current-benchmark</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t c&#34;</span> <span class="o">.</span> <span class="nv">go-test-current-coverage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t x&#34;</span> <span class="o">.</span> <span class="nv">go-run</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-guru</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:hook</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">go-mode</span> <span class="o">.</span> <span class="nv">go-guru-hl-identifier-mode</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-projectile</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:after</span> <span class="p">(</span><span class="nv">projectile</span> <span class="nv">go-mode</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">flycheck-golangci-lint</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:hook</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">go-mode</span> <span class="o">.</span> <span class="nv">flycheck-golangci-lint-setup</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-eldoc</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:hook</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">go-mode</span> <span class="o">.</span> <span class="nv">go-eldoc-setup</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-tag</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:bind</span> <span class="p">(</span><span class="nb">:map</span> <span class="nv">go-mode-map</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t a&#34;</span> <span class="o">.</span> <span class="nv">go-tag-add</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="s">&#34;C-c t r&#34;</span> <span class="o">.</span> <span class="nv">go-tag-remove</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:init</span> <span class="p">(</span><span class="nb">setq</span> <span class="nv">go-tag-args</span> <span class="p">(</span><span class="nf">list</span> <span class="s">&#34;-transform&#34;</span> <span class="s">&#34;camelcase&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-fill-struct</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-impl</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">use-package</span> <span class="nv">go-playground</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:straight</span> <span class="no">t</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 5:</span>
+  Configure additional Golang related Emacs packages
+</div>
+<h3 id="dape-configuration">Dape Configuration</h3>
+<p>There is no particular reason why I use <code>dape</code> instead of <a href="https://github.com/emacs-lsp/dap-mode">dap</a>. When I was still
+using <a href="https://github.com/abougouffa/minemacs">MinEmacs</a> it was part of it and I just got used to it. As the <a href="https://github.com/svaante/dape?tab=readme-ov-file#differences-with-dap-mode">documentation</a>
+states:</p>
+<blockquote>
+<ul>
+<li>Dape does not support launch.json files, if per project configuration is
+needed use dir-locals and dape-command.</li>
+<li>Dape enhances ergonomics within the minibuffer by allowing users to modify or
+add PLIST entries to an existing configuration using options. For example
+dape-config :cwd default-directory :program ＂/home/user/b.out＂ compile ＂gcc
+-g -o b.out main.c＂.</li>
+<li>No magic, no special variables like ${workspaceFolder}. Instead, functions and
+variables are resolved before starting a new session.</li>
+<li>Tries to envision how debug adapter configurations would be implemented in
+Emacs if vscode never existed.</li>
+</ul>
+</blockquote>
+<p>If you ever worked with VSCode you already know that it uses a <code>launch.json</code> to
+store different debugging profiles.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Launch file&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;go&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;request&#34;</span><span class="p">:</span> <span class="s2">&#34;launch&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;auto&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;program&#34;</span><span class="p">:</span> <span class="s2">&#34;${file}&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 6:</span>
+  Sample configuration to debug the current file
+</div>
+<p>You have different fields/properties which according to <a href="https://github.com/microsoft/vscode-go/blob/master/docs/Debugging-Go-code-using-VS-Code.md">this page</a> you can tweak
+in your debugging configuration:</p>
+<div class="table-caption">
+  <span class="table-number">Table 1:</span>
+  Properties to use for the Golang debugger
+</div>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>Name for your configuration that appears in the drop down in the Debug viewlet</td>
+</tr>
+<tr>
+<td>type</td>
+<td>Always set to &ldquo;go&rdquo;. This is used by VS Code to figure out which extension should be used for debugging your code</td>
+</tr>
+<tr>
+<td>request</td>
+<td>Either of `launch` or `attach`. Use `attach` when you want to attach to an already running process.</td>
+</tr>
+<tr>
+<td>mode</td>
+<td>For launch requests, either of `auto`, `debug`, `remote`, `test`, `exec`. For attach requests, use either `local` or `remote`</td>
+</tr>
+<tr>
+<td>program</td>
+<td>Absolute path to the package or file to debug when in `debug` &amp; `test` mode, or to the pre-built binary file to debug in `exec` mode. Not applicable to attach requests.</td>
+</tr>
+<tr>
+<td>env</td>
+<td>Environment variables to use when debugging. Example: `{ &ldquo;ENVNAME&rdquo;: &ldquo;ENVVALUE&rdquo; }`</td>
+</tr>
+<tr>
+<td>envFile</td>
+<td>Absolute path to a file containing environment variable definitions. The environment variables passed in the `env` property overrides the ones in this file.</td>
+</tr>
+<tr>
+<td>args</td>
+<td>Array of command line arguments that will be passed to the program being debugged.</td>
+</tr>
+<tr>
+<td>showLog</td>
+<td>Boolean indicating if logs from delve should be printed in the debug console</td>
+</tr>
+<tr>
+<td>logOutput</td>
+<td>Comma separated list of delve components (`debugger`, `gdbwire`, `lldbout`, `debuglineerr`, `rpc`) that should produce debug output when `showLog` is set to `true`.</td>
+</tr>
+<tr>
+<td>buildFlags</td>
+<td>Build flags to be passed to the Go compiler</td>
+</tr>
+<tr>
+<td>remotePath</td>
+<td>Absolute path to the file being debugged on the remote machine in case of remote debugging i.e when `mode` is set to `remote`. See the section on <a href="#remote-debugging">Remote Debugging</a> for details</td>
+</tr>
+<tr>
+<td>processId</td>
+<td>Applicable only when using the `attach` request with `local` mode. This is the id of the process that is running your executable which needs debugging.</td>
+</tr>
+</tbody>
+</table>
+<p>In <code>dape</code> you can use these properties to setup <code>dape-configs</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-elisp" data-lang="elisp"><span class="line"><span class="cl"><span class="c1">;; Basic dape configuration</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;dape</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">;; Add Go debug configuration</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;dape-configs</span>
+</span></span><span class="line"><span class="cl">               <span class="o">`</span><span class="p">(</span><span class="nv">go-debug-main</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1::autoport&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">command-cwd</span> <span class="nv">dape-command-cwd</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">port</span> <span class="nb">:autoport</span>
+</span></span><span class="line"><span class="cl">                 <span class="nb">:type</span> <span class="s">&#34;debug&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="nb">:name</span> <span class="s">&#34;Debug Go Program&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="nb">:cwd</span> <span class="s">&#34;.&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="nb">:program</span> <span class="s">&#34;.&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="nb">:args</span> <span class="p">[])))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 7:</span>
+  Basic dape config
+</div>
+<p>Usually I like to store my different debugging profiles in <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html">directory variables</a>
+(stored in <code>.dir-locals.el</code>). At the root of each project (you can as well have
+different configs per folder/package) I store my debugging profiles like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-elisp" data-lang="elisp"><span class="line"><span class="cl"><span class="p">((</span><span class="nv">go-mode</span> <span class="o">.</span> <span class="p">((</span><span class="nv">dape-configs</span> <span class="o">.</span>
+</span></span><span class="line"><span class="cl">        <span class="p">((</span><span class="nv">go-debug-main</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span> <span class="s">&#34;--log-dest&#34;</span> <span class="s">&#34;/tmp/dlv.log&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command-cwd</span> <span class="s">&#34;/home/victor/projects/repo1&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">host</span> <span class="s">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:mode</span> <span class="s">&#34;debug&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:type</span> <span class="s">&#34;go&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:showLog</span> <span class="s">&#34;true&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:program</span> <span class="s">&#34;/home/victor/projects/repo1/main.go&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="p">(</span><span class="nv">go-test</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command-cwd</span> <span class="s">&#34;/home/victor/projects/repo1&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">host</span> <span class="s">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:mode</span> <span class="s">&#34;test&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:type</span> <span class="s">&#34;go&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:program</span> <span class="s">&#34;/home/victor/projects/repo1/test/some_file_test.go&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="p">(</span><span class="nv">go-test-ginkgo</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">command-cwd</span> <span class="s">&#34;/home/victor/projects/repo1/&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">host</span> <span class="s">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:mode</span> <span class="s">&#34;test&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:type</span> <span class="s">&#34;go&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:showLog</span> <span class="s">&#34;true&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:args</span> <span class="p">[</span><span class="s">&#34;-ginkgo.v&#34;</span> <span class="s">&#34;-ginkgo.focus&#34;</span> <span class="s">&#34;MyGinkgoTest*&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">:program</span> <span class="s">&#34;/home/victor/projects/repo1/package/&#34;</span><span class="p">))))))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 8:</span>
+  Debugging profiles in <code>.dir-locals.el</code>
+</div>
+<h2 id="sample-application">Sample Application</h2>
+<p>Now let&rsquo;s put our knowledge into practice by debugging a real application implementint a
+REST API.</p>
+<h3 id="project-structure">Project Structure</h3>
+<p>Our example is a REST API for task management with the following structure:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">taskapi/
+</span></span><span class="line"><span class="cl">├── go.mod
+</span></span><span class="line"><span class="cl">├── go.sum
+</span></span><span class="line"><span class="cl">├── main.go
+</span></span><span class="line"><span class="cl">├── task_store.go
+</span></span><span class="line"><span class="cl">└── task_test.go
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 9:</span>
+  Basic code structure
+</div>
+<h3 id="core-components">Core Components</h3>
+<p>Let&rsquo;s have a look at the <strong>core components</strong>.</p>
+<p>The <code>Task</code> represents our core domain model which we&rsquo;ll use to demonstrate different debugging scenarios:</p>
+<p><a id="code-snippet--task-store-task"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Task</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ID</span>          <span class="kt">int</span>    <span class="s">`json:&#34;id&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Title</span>       <span class="kt">string</span> <span class="s">`json:&#34;title&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Description</span> <span class="kt">string</span> <span class="s">`json:&#34;description&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Done</span>        <span class="kt">bool</span>   <span class="s">`json:&#34;done&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--task-store-task">Code Snippet 10</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/task_store.go">task_store.go</a>: Task entity
+</div>
+<p>The <code>TaskStore</code> handles our in-memory data operations:</p>
+<p><a id="code-snippet--task-store-store"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">TaskStore</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">tasks</span>  <span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="nx">Task</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">nextID</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewTaskStore</span><span class="p">()</span> <span class="o">*</span><span class="nx">TaskStore</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">TaskStore</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">tasks</span><span class="p">:</span>  <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="nx">Task</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">nextID</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--task-store-store">Code Snippet 11</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/task_store.go">task_store.go</a>: The TaskStore storing multiple tasks
+</div>
+<h4 id="rest-api">REST API</h4>
+<p>The API should expose following endpoints:</p>
+<ul>
+<li><code>POST /task/create</code> - Creates a new task</li>
+<li><code>GET /task/get?id=&lt;id&gt;</code> - Retrieves a task by ID</li>
+</ul>
+<!--listend-->
+<p><a id="code-snippet--task-store-api"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// CreateTask stores a given Task internally
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">ts</span> <span class="o">*</span><span class="nx">TaskStore</span><span class="p">)</span> <span class="nf">CreateTask</span><span class="p">(</span><span class="nx">task</span> <span class="nx">Task</span><span class="p">)</span> <span class="nx">Task</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">task</span><span class="p">.</span><span class="nx">ID</span> <span class="p">=</span> <span class="nx">ts</span><span class="p">.</span><span class="nx">nextID</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ts</span><span class="p">.</span><span class="nx">tasks</span><span class="p">[</span><span class="nx">task</span><span class="p">.</span><span class="nx">ID</span><span class="p">]</span> <span class="p">=</span> <span class="nx">task</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ts</span><span class="p">.</span><span class="nx">nextID</span><span class="o">++</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">task</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// GetTask retrieves a Task by ID
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">ts</span> <span class="o">*</span><span class="nx">TaskStore</span><span class="p">)</span> <span class="nf">GetTask</span><span class="p">(</span><span class="nx">id</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">Task</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">task</span><span class="p">,</span> <span class="nx">exists</span> <span class="o">:=</span> <span class="nx">ts</span><span class="p">.</span><span class="nx">tasks</span><span class="p">[</span><span class="nx">id</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">!</span><span class="nx">exists</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">Task</span><span class="p">{},</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;task with id %d not found&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">task</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// UpdateTask updates task ID with a new Task object
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">ts</span> <span class="o">*</span><span class="nx">TaskStore</span><span class="p">)</span> <span class="nf">UpdateTask</span><span class="p">(</span><span class="nx">id</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">task</span> <span class="nx">Task</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">exists</span> <span class="o">:=</span> <span class="nx">ts</span><span class="p">.</span><span class="nx">tasks</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span> <span class="p">!</span><span class="nx">exists</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;task with id %d not found&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">task</span><span class="p">.</span><span class="nx">ID</span> <span class="p">=</span> <span class="nx">id</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ts</span><span class="p">.</span><span class="nx">tasks</span><span class="p">[</span><span class="nx">id</span><span class="p">]</span> <span class="p">=</span> <span class="nx">task</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--task-store-api">Code Snippet 12</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/task_store.go">task_store.go</a>: Rest API handlers
+</div>
+<h4 id="server">Server</h4>
+<p>Let&rsquo;s continue with the <strong>server</strong>:</p>
+<p><a id="code-snippet--task-server-api-handlers"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;encoding/json&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;net/http&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Server implements a web application for managing tasks
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Server</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">store</span> <span class="o">*</span><span class="nx">TaskStore</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Server</span><span class="p">)</span> <span class="nf">handleCreateTask</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Method</span> <span class="o">!=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">MethodPost</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">http</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Method not allowed&#34;</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusMethodNotAllowed</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">task</span> <span class="nx">Task</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">NewDecoder</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Body</span><span class="p">).</span><span class="nf">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">task</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">http</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusBadRequest</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">createdTask</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nf">CreateTask</span><span class="p">(</span><span class="nx">task</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">w</span><span class="p">.</span><span class="nf">Header</span><span class="p">().</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">,</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">w</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">createdTask</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Server</span><span class="p">)</span> <span class="nf">handleGetTask</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Method</span> <span class="o">!=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">http</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Method not allowed&#34;</span><span class="p">,</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusMethodNotAllowed</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// For demonstration, we&#39;ll extract ID from query parameter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">id</span> <span class="o">:=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sscanf</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nf">Query</span><span class="p">().</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;id&#34;</span><span class="p">),</span> <span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">task</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nf">GetTask</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">http</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">w</span><span class="p">.</span><span class="nf">Header</span><span class="p">().</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">,</span> <span class="s">&#34;application/json&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">w</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">task</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--task-server-api-handlers">Code Snippet 13</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/task_server.go">task_server.go</a>: API handlers
+</div>
+<h3 id="main-package">main package</h3>
+<p><a id="code-snippet--main-function"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;log&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;net/http&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">store</span> <span class="o">:=</span> <span class="nf">NewTaskStore</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">server</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Server</span><span class="p">{</span><span class="nx">store</span><span class="p">:</span> <span class="nx">store</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/task/create&#34;</span><span class="p">,</span> <span class="nx">server</span><span class="p">.</span><span class="nx">handleCreateTask</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/task/get&#34;</span><span class="p">,</span> <span class="nx">server</span><span class="p">.</span><span class="nx">handleGetTask</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Starting server on :8080&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:8080&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--main-function">Code Snippet 14</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/main.go">main.go</a>
+</div>
+<h3 id="go-dot-mod">go.mod</h3>
+<p>Create Go module:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">go mod init taskapi
+</span></span><span class="line"><span class="cl">go mod tidy
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Check dependencies:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">cat go.mod
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">module</span> <span class="nx">taskapi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">go</span> <span class="mf">1.23.0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">require</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">onsi</span><span class="o">/</span><span class="nx">ginkgo</span><span class="o">/</span><span class="nx">v2</span> <span class="nx">v2</span><span class="mf">.21.0</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">onsi</span><span class="o">/</span><span class="nx">gomega</span> <span class="nx">v1</span><span class="mf">.35.1</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">require</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">logr</span><span class="o">/</span><span class="nx">logr</span> <span class="nx">v1</span><span class="mf">.4.2</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">task</span><span class="o">/</span><span class="nx">slim</span><span class="o">-</span><span class="nx">sprig</span><span class="o">/</span><span class="nx">v3</span> <span class="nx">v3</span><span class="mf">.0.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">google</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">cmp</span> <span class="nx">v0</span><span class="mf">.6.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">google</span><span class="o">/</span><span class="nx">pprof</span> <span class="nx">v0</span><span class="mf">.0.0</span><span class="o">-</span><span class="mi">20241029153458</span><span class="o">-</span><span class="nx">d1b30febd7db</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">net</span> <span class="nx">v0</span><span class="mf">.30.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">sys</span> <span class="nx">v0</span><span class="mf">.26.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">text</span> <span class="nx">v0</span><span class="mf">.19.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">tools</span> <span class="nx">v0</span><span class="mf">.26.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">gopkg</span><span class="p">.</span><span class="nx">in</span><span class="o">/</span><span class="nx">yaml</span><span class="p">.</span><span class="nx">v3</span> <span class="nx">v3</span><span class="mf">.0.1</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 15:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/go.mod">go.mod</a>
+</div>
+<h3 id="build-application">Build application</h3>
+<p>Let&rsquo;s start the server:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">go build -o taskapi *.go
+</span></span><span class="line"><span class="cl">ls -c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now run it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./taskapi
+</span></span><span class="line"><span class="cl">2024/11/14 07:03:48 Starting server on :8080
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now from a different terminal <strong>create</strong> a new task:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">curl -X POST -s http://localhost:8080/task/create <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-H <span class="s2">&#34;Content-Type: application/json&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-d <span class="s1">&#39;{&#34;title&#34;:&#34;Learn Debugging&#34;,&#34;description&#34;:&#34;Master Emacs debugging with dape&#34;,&#34;done&#34;:false}&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;id&#34;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="nt">&#34;title&#34;</span><span class="p">:</span><span class="s2">&#34;Learn Debugging&#34;</span><span class="p">,</span><span class="nt">&#34;description&#34;</span><span class="p">:</span><span class="s2">&#34;Master Emacs debugging with dape&#34;</span><span class="p">,</span><span class="nt">&#34;done&#34;</span><span class="p">:</span><span class="kc">false</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 16:</span>
+  Results
+</div>
+<p>Let&rsquo;s see if we can fetch it:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">curl -X GET -s <span class="s2">&#34;http://localhost:8080/task/get?id=1&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;id&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&#34;title&#34;</span><span class="p">:</span><span class="s2">&#34;Learn Debugging&#34;</span><span class="p">,</span><span class="nt">&#34;description&#34;</span><span class="p">:</span><span class="s2">&#34;Master Emacs debugging with dape&#34;</span><span class="p">,</span><span class="nt">&#34;done&#34;</span><span class="p">:</span><span class="kc">false</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 17:</span>
+  Results
+</div>
+<h3 id="unit-tests">Unit tests</h3>
+<p>Below are some unit tests (writen in <a href="https://pkg.go.dev/github.com/onsi/ginkgo">Ginkgo</a>) for the <code>TaskStore</code>:</p>
+<p><a id="code-snippet--task-test"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;bytes&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;encoding/json&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;net/http&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;net/http/httptest&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span> <span class="s">&#34;github.com/onsi/ginkgo/v2&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span> <span class="s">&#34;github.com/onsi/gomega&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;testing&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestTasks</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">RegisterFailHandler</span><span class="p">(</span><span class="nx">Fail</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">RunSpecs</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;Task API Suite&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">_</span> <span class="p">=</span> <span class="nf">Describe</span><span class="p">(</span><span class="s">&#34;Task API&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">store</span>  <span class="o">*</span><span class="nx">TaskStore</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">server</span> <span class="o">*</span><span class="nx">Server</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">store</span> <span class="p">=</span> <span class="nf">NewTaskStore</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">server</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">Server</span><span class="p">{</span><span class="nx">store</span><span class="p">:</span> <span class="nx">store</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">Describe</span><span class="p">(</span><span class="s">&#34;POST /task/create&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Context</span><span class="p">(</span><span class="s">&#34;when creating a new task&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">It</span><span class="p">(</span><span class="s">&#34;should create and return a task with an ID&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">task</span> <span class="o">:=</span> <span class="nx">Task</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">Title</span><span class="p">:</span>       <span class="s">&#34;Test Task&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;Test Description&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">Done</span><span class="p">:</span>        <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">payload</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">task</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">req</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodPost</span><span class="p">,</span> <span class="s">&#34;/task/create&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">bytes</span><span class="p">.</span><span class="nf">NewBuffer</span><span class="p">(</span><span class="nx">payload</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">w</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRecorder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">server</span><span class="p">.</span><span class="nf">handleCreateTask</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Code</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="kd">var</span> <span class="nx">response</span> <span class="nx">Task</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">err</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">NewDecoder</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Body</span><span class="p">).</span><span class="nf">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">response</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ID</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Title</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="s">&#34;Test Task&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nf">It</span><span class="p">(</span><span class="s">&#34;should handle invalid JSON payload&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">req</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodPost</span><span class="p">,</span> <span class="s">&#34;/task/create&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">bytes</span><span class="p">.</span><span class="nf">NewBufferString</span><span class="p">(</span><span class="s">&#34;invalid json&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">w</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRecorder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">server</span><span class="p">.</span><span class="nf">handleCreateTask</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Code</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusBadRequest</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">Describe</span><span class="p">(</span><span class="s">&#34;GET /task/get&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Context</span><span class="p">(</span><span class="s">&#34;when fetching an existing task&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">var</span> <span class="nx">createdTask</span> <span class="nx">Task</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nf">BeforeEach</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">task</span> <span class="o">:=</span> <span class="nx">Task</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">Title</span><span class="p">:</span>       <span class="s">&#34;Test Task&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">Description</span><span class="p">:</span> <span class="s">&#34;Test Description&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nx">Done</span><span class="p">:</span>        <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">createdTask</span> <span class="p">=</span> <span class="nx">store</span><span class="p">.</span><span class="nf">CreateTask</span><span class="p">(</span><span class="nx">task</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nf">It</span><span class="p">(</span><span class="s">&#34;should return the correct task&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">req</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="s">&#34;/task/get?id=1&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">w</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRecorder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">server</span><span class="p">.</span><span class="nf">handleGetTask</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Code</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="kd">var</span> <span class="nx">response</span> <span class="nx">Task</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">NewDecoder</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Body</span><span class="p">).</span><span class="nf">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">response</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">err</span><span class="p">).</span><span class="nf">NotTo</span><span class="p">(</span><span class="nf">HaveOccurred</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">response</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">createdTask</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nf">Context</span><span class="p">(</span><span class="s">&#34;when fetching a non-existent task&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">It</span><span class="p">(</span><span class="s">&#34;should return a 404 error&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">req</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="s">&#34;/task/get?id=999&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">w</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRecorder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">server</span><span class="p">.</span><span class="nf">handleGetTask</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Code</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nf">Context</span><span class="p">(</span><span class="s">&#34;when using invalid task ID&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">It</span><span class="p">(</span><span class="s">&#34;should handle non-numeric ID gracefully&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">req</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span><span class="p">,</span> <span class="s">&#34;/task/get?id=invalid&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">w</span> <span class="o">:=</span> <span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRecorder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nx">server</span><span class="p">.</span><span class="nf">handleGetTask</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="nf">Expect</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Code</span><span class="p">).</span><span class="nf">To</span><span class="p">(</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusNotFound</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--task-test">Code Snippet 18</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/task_test.go">task_test.go</a>
+</div>
+<p>Add the Ginkgo dependencies to our <code>go.mod</code> file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">go get github.com/onsi/ginkgo/v2@latest
+</span></span><span class="line"><span class="cl">go get github.com/onsi/gomega
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now we should have a full list of dependencies in our <code>go.mod</code> file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">cat go.mod
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">module</span> <span class="nx">taskapi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">go</span> <span class="mf">1.23.0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">require</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">onsi</span><span class="o">/</span><span class="nx">ginkgo</span><span class="o">/</span><span class="nx">v2</span> <span class="nx">v2</span><span class="mf">.21.0</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">onsi</span><span class="o">/</span><span class="nx">gomega</span> <span class="nx">v1</span><span class="mf">.35.1</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">require</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">logr</span><span class="o">/</span><span class="nx">logr</span> <span class="nx">v1</span><span class="mf">.4.2</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">task</span><span class="o">/</span><span class="nx">slim</span><span class="o">-</span><span class="nx">sprig</span><span class="o">/</span><span class="nx">v3</span> <span class="nx">v3</span><span class="mf">.0.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">google</span><span class="o">/</span><span class="k">go</span><span class="o">-</span><span class="nx">cmp</span> <span class="nx">v0</span><span class="mf">.6.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">google</span><span class="o">/</span><span class="nx">pprof</span> <span class="nx">v0</span><span class="mf">.0.0</span><span class="o">-</span><span class="mi">20241029153458</span><span class="o">-</span><span class="nx">d1b30febd7db</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">net</span> <span class="nx">v0</span><span class="mf">.30.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">sys</span> <span class="nx">v0</span><span class="mf">.26.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">text</span> <span class="nx">v0</span><span class="mf">.19.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">golang</span><span class="p">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">x</span><span class="o">/</span><span class="nx">tools</span> <span class="nx">v0</span><span class="mf">.26.0</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">gopkg</span><span class="p">.</span><span class="nx">in</span><span class="o">/</span><span class="nx">yaml</span><span class="p">.</span><span class="nx">v3</span> <span class="nx">v3</span><span class="mf">.0.1</span> <span class="c1">// indirect
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 19:</span>
+  Results
+</div>
+<p>Let&rsquo;s run the tests:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">go <span class="nb">test</span> -v
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="o">===</span> RUN   TestTasks
+</span></span><span class="line"><span class="cl">Running Suite: Task API Suite - /home/victor/repos/priv/blog/static/code/2024/emacs-golang-debugging
+</span></span><span class="line"><span class="cl"><span class="o">======================================================================================================</span>
+</span></span><span class="line"><span class="cl">Random Seed: <span class="o">[</span>1m1731647885<span class="o">[</span>0m
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Will run <span class="o">[</span>1m5<span class="o">[</span>0m of <span class="o">[</span>1m5<span class="o">[</span>0m specs
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m•<span class="o">[</span>0m<span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m•<span class="o">[</span>0m<span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m•<span class="o">[</span>0m<span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m•<span class="o">[</span>0m<span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m•<span class="o">[</span>0m
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m<span class="o">[</span>1mRan <span class="m">5</span> of <span class="m">5</span> Specs in 0.001 seconds<span class="o">[</span>0m
+</span></span><span class="line"><span class="cl"><span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m<span class="o">[</span>1mSUCCESS!<span class="o">[</span>0m -- <span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>10m<span class="o">[</span>1m5 Passed<span class="o">[</span>0m <span class="p">|</span> <span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>9m<span class="o">[</span>1m0 Failed<span class="o">[</span>0m <span class="p">|</span> <span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>11m<span class="o">[</span>1m0 Pending<span class="o">[</span>0m <span class="p">|</span> <span class="o">[</span>38<span class="p">;</span>5<span class="p">;</span>14m<span class="o">[</span>1m0 Skipped<span class="o">[</span>0m
+</span></span><span class="line"><span class="cl">--- PASS: TestTasks <span class="o">(</span>0.00s<span class="o">)</span>
+</span></span><span class="line"><span class="cl">PASS
+</span></span><span class="line"><span class="cl">ok  	taskapi	0.193s
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 20:</span>
+  Results
+</div>
+<p>In Emacs I would then call <code>ginkgo-run-this-container</code> as shown in this screenshot:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo.png" class="glightbox" data-glightbox="title:Ginkgo functions in Emacs; description: Comfortable way of running different ginkgo container with Emacs; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo.png" alt="image">
+        <div class="caption">Ginkgo functions in Emacs</div>
+    </a>
+</div>
+
+<h2 id="basic-debugging-with-delve-and-dape">Basic Debugging with Delve and Dape</h2>
+<p>In order to debug our Task API we have following approaches</p>
+<ul>
+<li>we can <em>launch</em> the application directly and debug it</li>
+<li>we can <em>attach</em> to a running process</li>
+<li>we can <em>attach</em> to a running debugging session</li>
+</ul>
+<div class="table-caption">
+  <span class="table-number">Table 2:</span>
+  Options for different request types (<a href="https://github.com/go-delve/delve/blob/master/Documentation/api/dap/README.md">source</a>)
+</div>
+<table>
+<thead>
+<tr>
+<th>request</th>
+<th>mode</th>
+<th>required</th>
+<th>optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>launch</em></td>
+<td>debug</td>
+<td>program</td>
+<td>dlvCwd, env, backend, args, cwd, buildFlags, output, noDebug</td>
+</tr>
+<tr>
+<td></td>
+<td>test</td>
+<td>program</td>
+<td>dlvCwd, env, backend, args, cwd, buildFlags, output, noDebug</td>
+</tr>
+<tr>
+<td></td>
+<td>exec</td>
+<td>program</td>
+<td>dlvCwd, env, backend, args, cwd, noDebug</td>
+</tr>
+<tr>
+<td></td>
+<td>core</td>
+<td>program</td>
+<td>dlvCwd, env</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>corefilePath</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>replay</td>
+<td>traceDirPath</td>
+<td>dlvCwd, env</td>
+</tr>
+<tr>
+<td><em>attach</em></td>
+<td>local</td>
+<td>processId</td>
+<td>backend</td>
+</tr>
+<tr>
+<td></td>
+<td>remote</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>So for each <code>request</code> we have different <code>modes</code>. For the <code>attach</code> request type I&rsquo;ll only focus on the <code>remote</code> mode which requires you to start the debugger externally and then use the DAP client (within Emacs) to connect to it. I couldn&rsquo;t find any way how to interactively select the process ID before starting the debugger client. Now let&rsquo;s delve into each workflow.</p>
+<h3 id="profile-1-launch-application">Profile 1: Launch application</h3>
+<p>As I&rsquo;ve mentioned at the beginning I like to keep my debugging profiles in <code>.dir-locals</code> for each propject:</p>
+<p><a id="code-snippet--debug-profile1"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Profile 1: Launch application and start DAP server</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">go-debug-taskapi</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">command-cwd</span> <span class="nv">default-directory</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">host</span> <span class="s">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:mode</span> <span class="s">&#34;debug&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:type</span> <span class="s">&#34;go&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:showLog</span> <span class="s">&#34;true&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">:program</span> <span class="s">&#34;.&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--debug-profile1">Code Snippet 21</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/.dir-locals.el">.dir-locals.el</a> (only the launch debug profile is configured)
+</div>
+<p>💡 You may want to use a different value for <code>command-cwd</code> (the default setting is <code>dape-cwd-fn</code>). In my case I wanted to start the debugger in a directory which currently is not a project. <code>default-directory</code> is a variable which holds the working directory for the current buffer you&rsquo;re currently in.</p>
+<p>Start debugging:</p>
+<ul>
+<li>
+<p>Run <code>dape-info</code> to show debugging information</p>
+
+        
+    
+    
+    <div class="img-container">
+        <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-dape-info.png" class="glightbox" data-glightbox="title:Show debugging related buffers; description: ; descPosition: left">
+            <i class="fa fa-search-plus fa-2x"></i>
+            <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-dape-info.png" alt="image">
+            <div class="caption">Show debugging related buffers</div>
+        </a>
+    </div>
+
+</li>
+</ul>
+<!--listend-->
+<ul>
+<li>
+<p>Create breakpoint using <code>dape-breakpoint-toggle</code>:</p>
+
+        
+    
+    
+    <div class="img-container">
+        <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-dape-breakpoint.png" class="glightbox" data-glightbox="title:Set breakpoint; description: ; descPosition: left">
+            <i class="fa fa-search-plus fa-2x"></i>
+            <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-dape-breakpoint.png" alt="image">
+            <div class="caption">Set breakpoint</div>
+        </a>
+    </div>
+
+</li>
+<li>
+<p>Launch <code>dape</code></p>
+<p>In the <code>dape-repl</code> buffer you should something like:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">Available Dape commands: debug, next, <span class="k">continue</span>, pause, step, out, up, down, restart, kill, disconnect, quit
+</span></span><span class="line"><span class="cl">Empty input will rerun last command.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">DAP server listening at: 127.0.0.1:55878
+</span></span><span class="line"><span class="cl">debugserver-@<span class="o">(</span><span class="c1">#)PROGRAM:LLDB  PROJECT:lldb-1600.0.36.3</span>
+</span></span><span class="line"><span class="cl"> <span class="k">for</span> arm64.
+</span></span><span class="line"><span class="cl">Got a connection, launched process /home/victor/repos/priv/blog/static/code/2024/emacs-golang-debugging/__debug_bin3666561508 <span class="o">(</span><span class="nv">pid</span> <span class="o">=</span> 43984<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">Type <span class="s1">&#39;dlv help&#39;</span> <span class="k">for</span> list of commands.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 22:</span>
+  The debugger compiled the binary and also launched it
+</div>
+<p>You might have noticed that we didn&rsquo;t specify any binary/file to debug (we had <code>:program &quot;.&quot;</code> in <code>.dir-locals.el</code>). <code>delve</code> will automatically <em>build</em> the binary before it launches the application:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">go build -gcflags<span class="o">=</span><span class="nv">all</span><span class="o">=</span><span class="s2">&#34;-N -l&#34;</span> .
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 23:</span>
+  How delve builds the application when you have <code>:program "."</code>
+</div>
+</li>
+</ul>
+<h3 id="profile-2-attach-to-an-external-debugger">Profile 2: Attach to an external debugger</h3>
+<p>Let&rsquo;s say you now want to connect to an existing debugging session:</p>
+<p><a id="code-snippet--debug-profile2"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Profile 2: Attach to external debugger</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">go-attach-taskapi</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command-cwd</span> <span class="nv">default-directory</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">host</span> <span class="s">&#34;127.0.0.1&#34;</span>   <span class="c1">;; can also be skipped</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:request</span> <span class="s">&#34;attach&#34;</span>  <span class="c1">;; this will run &#34;dlv attach ...&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:mode</span> <span class="s">&#34;remote&#34;</span>     <span class="c1">;; connect to a running debugger session</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:type</span> <span class="s">&#34;go&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:showLog</span> <span class="s">&#34;true&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--debug-profile2">Code Snippet 24</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/.dir-locals.el">.dir-locals.el</a>: Additional config for attaching to a running process
+</div>
+<p>Now let&rsquo;s start the <strong>debugger</strong> on the CLI:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">~/emacs-golang-debugging $ go build -gcflags<span class="o">=</span><span class="nv">all</span><span class="o">=</span><span class="s2">&#34;-N -l&#34;</span> -o taskapi .
+</span></span><span class="line"><span class="cl">~/emacs-golang-debugging $ dlv debug taskapi --listen<span class="o">=</span>localhost:55878 --headless
+</span></span><span class="line"><span class="cl">API server listening at: 127.0.0.1:55878
+</span></span><span class="line"><span class="cl">debugserver-@<span class="o">(</span><span class="c1">#)PROGRAM:LLDB  PROJECT:lldb-1600.0.36.3</span>
+</span></span><span class="line"><span class="cl"> <span class="k">for</span> arm64.
+</span></span><span class="line"><span class="cl">Got a connection, launched process /home/victor/repos/priv/blog/static/code/2024/emacs-golang-debugging/__debug_bin794004190 <span class="o">(</span><span class="nv">pid</span> <span class="o">=</span> 23979<span class="o">)</span>.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now within Emacs you can launch <code>dape</code> and select the <code>go-attach-taskapi</code> profile:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-to-external-debugger.png" class="glightbox" data-glightbox="title:Attach to external debugger; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-to-external-debugger.png" alt="image">
+        <div class="caption">Attach to external debugger</div>
+    </a>
+</div>
+
+<h3 id="profile-3-attach-to-a-running-process">Profile 3: Attach to a running process</h3>
+<p>In this scenario the application is <em>already</em> running but you want to <em>attach</em> the debugger to it and use Emacs to connect to the debugger session. First we launch the application:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">$ ./taskapi
+</span></span><span class="line"><span class="cl">2024/11/20 06:34:29 Starting server on :8080
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 25:</span>
+  Start the taskapi application
+</div>
+<p>Find out its process ID (PID):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">ps -A <span class="p">|</span> grep -m1 taskapi <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now let&rsquo;s add a 3rd debug profile:</p>
+<p><a id="code-snippet--debug-profile3"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Profile 3: Attach to running process (by PID)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">go-attach-pid</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span> <span class="s">&#34;--log&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command-cwd</span> <span class="nv">default-directory</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">host</span> <span class="s">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:request</span> <span class="s">&#34;attach&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:mode</span> <span class="s">&#34;local&#34;</span>      <span class="c1">;; Attach to a running process local to the server</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:type</span> <span class="s">&#34;go&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:processId</span> <span class="p">(</span><span class="nv">+get-process-id-by-name</span> <span class="s">&#34;taskapi&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:showLog</span> <span class="s">&#34;true&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--debug-profile3">Code Snippet 26</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/.dir-locals.el">.dir-locals.el</a>: Attach to running process (by pid)
+</div>
+<p><a id="code-snippet--get-process-id-by-name"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Add helpful function</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">eval</span> <span class="o">.</span> <span class="p">(</span><span class="nb">progn</span>
+</span></span><span class="line"><span class="cl">          <span class="p">(</span><span class="nb">defun</span> <span class="nv">+get-process-id-by-name</span> <span class="p">(</span><span class="nf">process-name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;Return the process ID of a process specified by PROCESS-NAME. Works on Unix-like systems (Linux, MacOS).&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="nb">interactive</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="nb">let</span> <span class="p">((</span><span class="nv">pid</span> <span class="no">nil</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="nb">cond</span>
+</span></span><span class="line"><span class="cl">               <span class="p">((</span><span class="nf">memq</span> <span class="nv">system-type</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">gnu/linux</span> <span class="nv">darwin</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="nb">setq</span> <span class="nv">pid</span> <span class="p">(</span><span class="nv">shell-command-to-string</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">(</span><span class="nf">format</span> <span class="s">&#34;pgrep -f %s&#34;</span>
+</span></span><span class="line"><span class="cl">                                   <span class="p">(</span><span class="nv">shell-quote-argument</span> <span class="nf">process-name</span><span class="p">)))))</span>
+</span></span><span class="line"><span class="cl">               <span class="p">(</span><span class="no">t</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="ne">error</span> <span class="s">&#34;Unsupported system type: %s&#34;</span> <span class="nv">system-type</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              <span class="c1">;; Clean up the output and return first PID</span>
+</span></span><span class="line"><span class="cl">              <span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nb">and</span> <span class="nv">pid</span> <span class="p">(</span><span class="nv">not</span> <span class="p">(</span><span class="nv">string-empty-p</span> <span class="nv">pid</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="nf">car</span> <span class="p">(</span><span class="nv">split-string</span> <span class="nv">pid</span> <span class="s">&#34;\n&#34;</span> <span class="no">t</span><span class="p">)))))))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--get-process-id-by-name">Code Snippet 27</a>:</span>
+  <a href="https://github.com/dorneanu/blog/tree/master/static/code/2024/emacs-golang-debugging/.dir-locals.el">.dir-locals.el</a>: Helper function
+</div>
+<p>I&rsquo;ve also added <code>+get-process-id-by-name</code> which will return the process ID for the <code>taskapi</code> application.
+Now you can use the same debug profile (<code>go-attach-taskapi</code>) to start a new DAP server and let it attach to a running processs.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-running-process-breakpoint.png" class="glightbox" data-glightbox="title:Set breakpoint to CreateTask; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-running-process-breakpoint.png" alt="image">
+        <div class="caption">Set breakpoint to CreateTask</div>
+    </a>
+</div>
+
+<p>Now I start the debugger:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-running-process-pid.png" class="glightbox" data-glightbox="title:Specify PID; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-running-process-pid.png" alt="image">
+        <div class="caption">Specify PID</div>
+    </a>
+</div>
+
+<p>If I now send a POST request like this one:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">curl -X POST -s http://localhost:8080/task/create <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-H <span class="s2">&#34;Content-Type: application/json&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-d <span class="s1">&#39;{&#34;title&#34;:&#34;Learn Debugging&#34;,&#34;description&#34;:&#34;Master Emacs debugging with dape&#34;,&#34;done&#34;:false}&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The debugger should automatically halt at the set breakpoint:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-running-process-debugging.png" class="glightbox" data-glightbox="title:Running debugger; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-attach-running-process-debugging.png" alt="image">
+        <div class="caption">Running debugger</div>
+    </a>
+</div>
+
+<h2 id="debugging-ginkgo-tests">Debugging Ginkgo Tests</h2>
+<p>Being able to debug tests in Golang is a crucial step in the development
+process. Until recently it was still a struggle for me, until I&rsquo;ve decided to
+look into <code>dape-mode</code> and some other details.</p>
+<h3 id="dape-configuration-for-ginkgo">Dape Configuration for Ginkgo</h3>
+<p>For running ginkgo tests I use <a href="https://github.com/garslo/ginkgo-mode">ginkgo-mode</a> which has several features:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo-mode-options.png" class="glightbox" data-glightbox="title:Ginkgo options in Emacs; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo-mode-options.png" alt="image">
+        <div class="caption">Ginkgo options in Emacs</div>
+    </a>
+</div>
+
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo-focus-on-container.png" class="glightbox" data-glightbox="title:Focus on specific container; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo-focus-on-container.png" alt="image">
+        <div class="caption">Focus on specific container</div>
+    </a>
+</div>
+
+<p>And as an output I get:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">Running Suite: Task API Suite - /home/victor/repos/priv/blog/static/code/2024/emacs-golang-debugging
+</span></span><span class="line"><span class="cl"><span class="o">======================================================================================================</span>
+</span></span><span class="line"><span class="cl">Random Seed: <span class="m">1732600680</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Will run <span class="m">1</span> of <span class="m">5</span> specs
+</span></span><span class="line"><span class="cl">•SSSS
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Ran <span class="m">1</span> of <span class="m">5</span> Specs in 0.001 seconds
+</span></span><span class="line"><span class="cl">SUCCESS! -- <span class="m">1</span> Passed <span class="p">|</span> <span class="m">0</span> Failed <span class="p">|</span> <span class="m">0</span> Pending <span class="p">|</span> <span class="m">4</span> Skipped
+</span></span><span class="line"><span class="cl">PASS
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Ginkgo ran <span class="m">1</span> suite in 1.481440083s
+</span></span><span class="line"><span class="cl">Test Suite Passed
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 28:</span>
+  Ginkgo output
+</div>
+<p>This is the basic configuration for debugging Ginkgo tests:</p>
+<p><a id="code-snippet--debug-profile4"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="c1">;; Profile 4: Debug Ginkgo tests</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">go-test-ginkgo</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span> <span class="nv">go-ts-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span> <span class="s">&#34;--log&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">command-cwd</span> <span class="nv">default-directory</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">host</span> <span class="s">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:mode</span> <span class="s">&#34;test&#34;</span>      <span class="c1">;; Debug tests</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:type</span> <span class="s">&#34;go&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:args</span> <span class="p">[</span><span class="s">&#34;-ginkgo.v&#34;</span> <span class="s">&#34;-ginkgo.focus&#34;</span> <span class="s">&#34;should create and return a task with an ID&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"> <span class="nb">:program</span> <span class="s">&#34;.&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--debug-profile4">Code Snippet 29</a>:</span>
+  Debug profile for Ginkgo tests
+</div>
+<p>If I chose the <code>go-test-ginkgo</code> debug profile I should be able to debug the tests as shown in this screenshot:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo-debug-profile.png" class="glightbox" data-glightbox="title:Debugging profile for Ginkgo tests; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-ginkgo-debug-profile.png" alt="image">
+        <div class="caption">Debugging profile for Ginkgo tests</div>
+    </a>
+</div>
+
+<p>Now the configuration is quite static and therefore you cannot preselect the unit test / container. We need to somehow make the parameter <code>-ginkgo.focus</code> dynamic.</p>
+<p><a id="code-snippet--debug-ginkgo-focus"></a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my/dape-debug-ginkgo-focus</span> <span class="p">(</span><span class="nv">focus-string</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Start debugging Ginkgo tests with a specific focus string.&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nb">interactive</span> <span class="s">&#34;sEnter focus string: &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nf">make-local-variable</span> <span class="ss">&#39;dape-configs</span><span class="p">)</span>  <span class="c1">; Make buffer-local copy of dape-configs</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nb">setq</span> <span class="nv">dape-configs</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="nf">list</span>
+</span></span><span class="line"><span class="cl">         <span class="o">`</span><span class="p">(</span><span class="nv">debug-focused-test</span>
+</span></span><span class="line"><span class="cl">           <span class="nv">modes</span> <span class="p">(</span><span class="nv">go-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">           <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="nv">command-args</span> <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">           <span class="nv">command-cwd</span> <span class="nv">default-directory</span>
+</span></span><span class="line"><span class="cl">           <span class="nv">port</span> <span class="mi">55878</span>
+</span></span><span class="line"><span class="cl">           <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="nb">:name</span> <span class="s">&#34;Debug Focused Test&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="nb">:mode</span> <span class="s">&#34;test&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="nb">:program</span> <span class="s">&#34;.&#34;</span>
+</span></span><span class="line"><span class="cl">           <span class="nb">:args</span> <span class="p">[</span><span class="s">&#34;-ginkgo.v&#34;</span> <span class="s">&#34;-ginkgo.focus&#34;</span> <span class="o">,</span><span class="nv">focus-string</span><span class="p">]))))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number"><a href="#code-snippet--debug-ginkgo-focus">Code Snippet 30</a>:</span>
+  Helper function
+</div>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-debug-ginkgo-call-function.png" class="glightbox" data-glightbox="title:Call my/dape-debug-ginkgo-focus; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-debug-ginkgo-call-function.png" alt="image">
+        <div class="caption">Call my/dape-debug-ginkgo-focus</div>
+    </a>
+</div>
+
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-debug-ginkgo-set-focus-string.png" class="glightbox" data-glightbox="title:Set Ginkgo focus string; description: ; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2024/emacs-golang-debugging/emacs-debug-ginkgo-set-focus-string.png" alt="image">
+        <div class="caption">Set Ginkgo focus string</div>
+    </a>
+</div>
+
+<p>Afterwards If I have a look at the <code>dape-configs</code> variable I should see this value:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="nv">Value:</span>
+</span></span><span class="line"><span class="cl"><span class="p">((</span><span class="nv">debug-focused-test</span> <span class="nv">modes</span>
+</span></span><span class="line"><span class="cl">                     <span class="p">(</span><span class="nv">go-mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                     <span class="nv">command</span> <span class="s">&#34;dlv&#34;</span> <span class="nv">command-args</span>
+</span></span><span class="line"><span class="cl">                     <span class="p">(</span><span class="s">&#34;dap&#34;</span> <span class="s">&#34;--listen&#34;</span> <span class="s">&#34;127.0.0.1:55878&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                     <span class="nv">command-cwd</span> <span class="nv">default-directory</span> <span class="nv">port</span> <span class="mi">55878</span> <span class="nb">:request</span> <span class="s">&#34;launch&#34;</span> <span class="nb">:name</span> <span class="s">&#34;Debug Focused Test&#34;</span> <span class="nb">:mode</span> <span class="s">&#34;test&#34;</span> <span class="nb">:program</span> <span class="s">&#34;.&#34;</span> <span class="nb">:args</span>
+</span></span><span class="line"><span class="cl">                     <span class="p">[</span><span class="s">&#34;-ginkgo.v&#34;</span> <span class="s">&#34;-ginkgo.focus&#34;</span> <span class="s">&#34;when using invalid*&#34;</span><span class="p">]))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 31:</span>
+  Value of dape-configs in the buffer
+</div>
+<p>After starting the debugger (with the <code>debug-focused-test</code> profile) in the dape-repl buffer
+I get:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">Welcome to Dape REPL!
+</span></span><span class="line"><span class="cl">Available Dape commands: debug, next, <span class="k">continue</span>, pause, step, out, up, down, restart, kill, disconnect, quit
+</span></span><span class="line"><span class="cl">Empty input will rerun last command.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">DAP server listening at: 127.0.0.1:55878
+</span></span><span class="line"><span class="cl">debugserver-@<span class="o">(</span><span class="c1">#)PROGRAM:LLDB  PROJECT:lldb-1600.0.39.3</span>
+</span></span><span class="line"><span class="cl"> <span class="k">for</span> arm64.
+</span></span><span class="line"><span class="cl">Got a connection, launched process /home/victor/repos/priv/blog/static/code/2024/emacs-golang-debugging/__debug_bin2799839715 <span class="o">(</span><span class="nv">pid</span> <span class="o">=</span> 31882<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">Type <span class="s1">&#39;dlv help&#39;</span> <span class="k">for</span> list of commands.
+</span></span><span class="line"><span class="cl">Running Suite: Task API Suite - /home/victor/repos/priv/blog/static/code/2024/emacs-golang-debugging
+</span></span><span class="line"><span class="cl"><span class="o">======================================================================================================</span>
+</span></span><span class="line"><span class="cl">Random Seed: <span class="m">1732685749</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❶ Will run <span class="m">1</span> of <span class="m">5</span> specs
+</span></span><span class="line"><span class="cl">SSSS
+</span></span><span class="line"><span class="cl">------------------------------
+</span></span><span class="line"><span class="cl">❷ Task API GET /task/get when using invalid task ID should handle non-numeric ID gracefully
+</span></span><span class="line"><span class="cl">/home/victor/repos/priv/blog/static/code/2024/emacs-golang-debugging/task_store_test.go:108
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 32:</span>
+  The dape-repl buffer
+</div>
+<p>💡Notice that just &ldquo;1 of 5 specs&rdquo; (❶) were ran, meaning that <code>ginkgo</code> only focussed on the container we have specified (❷).</p>
+<h2 id="best-practices-and-tips">Best Practices and Tips</h2>
+<p>Throughout my debugging experience, I have come to appreciate the importance of <strong>version
+control</strong>, as it enables me to track my debugging configurations and their evolution over
+time. To streamline this process, I now maintain my debug configurations in a separate
+file, such as <code>.dir-locals.el</code>, which helps keep them organized and easily accessible.
+Additionally, I make sure to use <strong>meaningful names</strong> for these configurations to avoid
+confusion and ensure that the correct settings are used when needed. Moreover, I have
+found it useful to create <strong>project-specific</strong> debugging <strong>helper functions</strong> that can be easily
+customized to suit my needs. Finally, by making <strong>customizations locally</strong> (bound to a
+specific buffer), I can ensure that these settings apply only to the relevant context and
+do not interfere with other parts of my workflow.</p>
+<h2 id="resources-and-references">Resources and References</h2>
+<ul>
+<li><a href="https://github.com/golang/vscode-go/blob/master/docs/debugging.md">vscode-go/docs/debugging.md at master · golang/vscode-go</a></li>
+<li><a href="https://github.com/emacs-lsp/dap-mode/issues/318">support delve/dlv dap-mode directly · Issue #318 · emacs-lsp/dap-mode</a></li>
+<li><a href="https://github.com/svaante/dape">Dape GitHub Repository</a></li>
+<li><a href="https://github.com/go-delve/delve">Delve Debugger</a></li>
+<li><a href="https://github.com/joaotavora/eglot">Eglot Documentation</a></li>
+<li><a href="https://onsi.github.io/ginkgo/">Ginkgo Testing Framework</a></li>
+</ul>
+
+    
+
+  </div>
+  <div id="comments">
+      
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+<br>
+  <p class="mb0 mt2">
+  <a href="https://blog.dornea.nu/2024/10/16/book-summaries-may-september-2024/">prev</a>
+  
+  </p>
+</div>
+
+  <footer class="content-width mt0 mt5-l mb4 f6 center ph3 gray tc tl-l">
+  <hr class="dn db-l ml0-l gray w3"><br>
+  Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+  2009-2024 Victor Dorneanu - All rights reserved
+  <a href="https://blog.dornea.nu/feed.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+</footer>
+
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: '.post-content',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>
