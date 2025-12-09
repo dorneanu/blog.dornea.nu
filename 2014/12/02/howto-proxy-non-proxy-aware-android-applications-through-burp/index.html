@@ -159,7 +159,10 @@ type="image/x-icon"/>
 </li>
 </ul>
 <p>In theory that&rsquo;s all! <strong>BUT</strong>: During recent mobile application pentest sessions, I&rsquo;ve noticed that sometimes applications traffic is not being passed through the proxy, especially when the application does <strong>not</strong> connect to standard HTTP ports like <code>80</code> or <code>443</code>. Besides that: What about SSDP and all other text-based protocols you would like to intercept in Burp? In most cases the proxy settings will simply be ignored and the traffic would be routed directly to the destination. In order to achieve my goal I&rsquo;ll be using <em>iptables</em> and some Burp settings most pentest aren&rsquo;t aware of. But first things first: The basics.</p>
-<h3 id="virtual-pentest-environment">Virtual pentest environment</h3>
+<h3 id="virtual-pentest-environment">
+  Virtual pentest environment
+  <a href="#virtual-pentest-environment" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Before getting into details let&rsquo;s &ldquo;virtually&rdquo; (rather mentally) create a network we can use as an example:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -185,7 +188,10 @@ type="image/x-icon"/>
 
 <p><img src="https://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx01.svg" alt="png"></p>
 <p>So nothing special about it. The <em>burp</em> instance is running on my local machine and it&rsquo;s listening on <code>192.x.x.1:8080</code> for incoming connections.</p>
-<h3 id="some-words-about-proxying">Some words about proxying</h3>
+<h3 id="some-words-about-proxying">
+  Some words about proxying
+  <a href="#some-words-about-proxying" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Using <strong>no</strong> proxy at all, your client (in our case the target application) will have <em>no</em> pre-routed connections to its destinations. It will access them directly:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -219,10 +225,16 @@ type="image/x-icon"/>
 
 <p><img src="https://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx03.png" alt="png"></p>
 <p>Ok, so that&rsquo;s no big deal and works as expected as long as your application/client <em>knows</em> how to connect to the proxy and it&rsquo;s <em>aware</em> of that fact. But what about the clients that are <em>not</em> aware of the fact that their connection will be proxied? Let&rsquo;s have a closer look at this particular case.</p>
-<h3 id="non-proxy-aware-clients">Non-proxy-aware clients</h3>
+<h3 id="non-proxy-aware-clients">
+  Non-proxy-aware clients
+  <a href="#non-proxy-aware-clients" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p><strong>Proxy-aware</strong> clients need to be told how to connect to the proxy and the proxy server however knows how to connect to the final destination. <strong>Non-proxy-aware</strong> applications don&rsquo;t know that the connection is proxied through some other host. In that case some other <em>additional</em> steps are required to proxy the connection through Burp.</p>
 <p>In most cases you&rsquo;ll have to <em>redirect</em> the packages at a lower OSI level (rather than the application layer). In concrete terms that means you&rsquo;ll have to redirect the IP packets on the <strong>android-client</strong> to the <strong>burp</strong> instance. Burp instead must know where to redirect the packets (answer from <code>webserver</code>) back. This is the point where you&rsquo;ll need your operating system handle some things for you.</p>
-<h3 id="some-words-on-redirects">Some words on redirects</h3>
+<h3 id="some-words-on-redirects">
+  Some words on redirects
+  <a href="#some-words-on-redirects" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>On most <em>Linux</em> based hosts you&rsquo;ll have <code>iptables</code> installed which will help us out with packet filtering / redirects. By rooting your Android device you should be able to take advantage of using iptables. Otherwise I&rsquo;d recommend you <a href="https://play.google.com/store/apps/details?id=org.dyndns.sven_ola.debian_kit&amp;hl=en">Debian Kit</a>. The general iptables packet traversal scheme looks like this:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -287,9 +299,15 @@ type="image/x-icon"/>
 
 <p><img src="https://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx05.png" alt="png"></p>
 <p>While forwarding and re-routing packets between the <strong>android-client</strong> and the <strong>webserver</strong> through <strong>burp</strong> you won&rsquo;t be able to avoid  <a href="http://en.wikipedia.org/wiki/Network_address_translation"><em>NAT</em></a> (Network Address Translation). While modifying certain headers in the <em>IP</em> datagrams, packets are &ldquo;re-mapped&rdquo; from one IP address to another one. iptables can handle NAT (<code>-t nat</code>) and has 3 predefined chains: <em>PREROUTING</em>, <em>OUTPUT</em> and <em>POSTROUTING</em>.</p>
-<h3 id="proxying-with-proxydroid">Proxying with ProxyDroid</h3>
+<h3 id="proxying-with-proxydroid">
+  Proxying with ProxyDroid
+  <a href="#proxying-with-proxydroid" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Before getting into the cool stuff, let&rsquo;s see what happens when <strong>ProxyDroid</strong> is used. You can use it only on a <em>rooted</em> device since internally it depends on <em>iptables</em>.</p>
-<h4 id="http">HTTP</h4>
+<h4 id="http">
+  HTTP
+  <a href="#http" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>I&rsquo;ve used these settings:</p>
 <ul>
 <li><em>Host</em>: 192.168.1.2</li>
@@ -333,7 +351,10 @@ type="image/x-icon"/>
 <li>Every TCP-Connection with destination port <code>https</code> (443) will be redirected to <code>localhost:8124</code></li>
 </ul>
 <p>Apparently <em>ProxyDroid</em> itself listens on ports <em>8123, 8124</em> for incoming connections before redirecting them to <strong>burp</strong>. Just for the sake of completeness, let&rsquo;s have a look at the <em>other</em> proxy types.</p>
-<h4 id="socks4">SOCKS4</h4>
+<h4 id="socks4">
+  SOCKS4
+  <a href="#socks4" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>Using <code>SOCKS4</code> as proxy type you&rsquo;ll get:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -362,7 +383,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Regardless of the port all connection will be redirected first to <code>localhost:8123</code> (ProxyDroid) and then to the specified <code>&lt;host&gt;:&lt;port&gt;</code> pair.</p>
-<h4 id="socks5">SOCKS5</h4>
+<h4 id="socks5">
+  SOCKS5
+  <a href="#socks5" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>The iptables rules for <code>SOCKS5</code> and <code>SOCKS4</code> are pretty similar:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -409,7 +433,10 @@ type="image/x-icon"/>
 </details>
 
 <p><img src="https://blog.dornea.nu/posts/img/2014/howto-non-proxy-aware-android-burp/xx06.png" alt="png"></p>
-<h3 id="testing-the-connection">Testing the connection</h3>
+<h3 id="testing-the-connection">
+  Testing the connection
+  <a href="#testing-the-connection" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Using a <strong>HTTP proxy</strong> we&rsquo;ll test the connection between <strong>android-client</strong> and some webserver out there. Since the connection is proxied through <strong>burp</strong> we should be able to see it. On <strong>android-client</strong> I run:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -469,7 +496,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>So everything is ok, for now. But that&rsquo;s not the purpose of this post. Let&rsquo;s have a look at another text-based protocol we&rsquo;d like to sniff using <strong>burp</strong>.</p>
-<h3 id="ssdp">SSDP</h3>
+<h3 id="ssdp">
+  SSDP
+  <a href="#ssdp" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Using <strong>SSDP</strong> I&rsquo;d like to find any <em>UPnp</em> devices available on the LAN. All you need to do is to send an UDP message to the multicast address <code>239.255.255.250</code> on port <code>1900</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -542,7 +572,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Obviously we have found some devices. And because the requests were sent on <code>destination-port = 1900</code> you won&rsquo;t see them on <strong>burp</strong>. This is where <em>ProxyDroid</em> shows its first weakness. In general you&rsquo;re going to run into troubles if your requests are sent to a port different from <code>80</code> or <code>443</code>. So we need a more <em>generic</em> solution.</p>
-<h3 id="port-forwarding">Port forwarding</h3>
+<h3 id="port-forwarding">
+  Port forwarding
+  <a href="#port-forwarding" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Using <em>iptables</em> I&rsquo;ll re-route the traffic destinated to some specific <em>port</em> directly to <em>burp</em>.Without any proxies the connection &ldquo;flows&rdquo; between the client and the server. Using a proxy between them you&rsquo;ll have sth like this:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -634,7 +667,10 @@ node[shape=record];</p>
 <blockquote>
 <p><a href="http://serverfault.com/questions/119365/what-is-the-difference-between-a-source-nat-destination-nat-and-masquerading">What is the difference between a Source NAT, Destination NAT and Masquerading?</a></p>
 </blockquote>
-<h3 id="port-forwarding-on-the-client">Port forwarding on the client</h3>
+<h3 id="port-forwarding-on-the-client">
+  Port forwarding on the client
+  <a href="#port-forwarding-on-the-client" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Now we&rsquo;re ready to implement port forwarding on the client. We&rsquo;ll try to intercept all text-based traffic (like SSDP / HTTP etc.) destinated to <strong>port 8000</strong>. First of all we&rsquo;ll add <em>DNAT</em>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -645,7 +681,10 @@ node[shape=record];</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>This will &ldquo;forward&rdquo; all host generated traffic destinated at port 1900 to <code>192.168.1.2:8080</code> (Burp instance). Recall iptables packet traversal scheme: The rule is being added to the <em>OUTPUT</em> chain before the packet reaches the <em>POSTROUTING</em> chain.</p>
-<h4 id="server-listening-">Server listening &hellip;</h4>
+<h4 id="server-listening-">
+  Server listening &hellip;
+  <a href="#server-listening-" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>The Server (dornea.nu) will listen for incoming connections on port 8080:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -657,7 +696,10 @@ node[shape=record];</p>
 </span></span><span class="line"><span class="cl">Serving HTTP on 0.0.0.0 port 8000 ...
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="client---server">Client -&gt; Server</h4>
+</div><h4 id="client---server">
+  Client -&gt; Server
+  <a href="#client---server" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>On the Client we&rsquo;ll use curl to access the Server:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -678,7 +720,10 @@ node[shape=record];</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>So obviously the packet reached its destination.</p>
-<h4 id="dude-wheres-my-packet">Dude, where&rsquo;s my packet?</h4>
+<h4 id="dude-wheres-my-packet">
+  Dude, where&rsquo;s my packet?
+  <a href="#dude-wheres-my-packet" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>Sniffing for packets destinated to port 8000 won&rsquo;t give you any results:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -691,7 +736,10 @@ node[shape=record];</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>While triggering the <code>curl</code> command you won&rsquo;t be able to see the outgoing packets destinated to <code>http://dornea.nu:8000</code>. While rewriting the IP packet destination, the packet is <strong>not</strong> passed to the interface the address belongs to. It is handled by the network stack directly (<a href="http://serverfault.com/questions/502003/tcpdump-not-picking-up-traffic-redirected-by-iptables">SE answer</a>).</p>
-<h4 id="what-about-burp">What about Burp?</h4>
+<h4 id="what-about-burp">
+  What about Burp?
+  <a href="#what-about-burp" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>On <em>burp</em> you won&rsquo;t see anything. How comes? And this is the point where we come the final conclusion and also the main reason I&rsquo;ve written this post (sorry for the long prologue :)). And the reason is actually pretty &ldquo;invisible&rdquo; and can be found in Burps proxy options:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/38a52fceb67b54c86e46548098cd31ecee8f456c.png" alt="Burp invisible option"></p>
 <p>It&rsquo;s all about Burps <a href="http://portswigger.net/burp/help/proxy_options_invisible.html">invisible proxying</a>. It basically enables proxy support for non-proxy-aware clients to be able to connect directly to the listener (Burp). Editing the proxy options (Request Handling) you&rsquo;ll find these options:</p>
@@ -731,7 +779,10 @@ node[shape=record];</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Perfect!</p>
-<h2 id="no-iptables">No iptables?!</h2>
+<h2 id="no-iptables">
+  No iptables?!
+  <a href="#no-iptables" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Ok, using iptables you&rsquo;re ready to implement port forwarding. But what if your device does <strong>not</strong> have iptables or anything similar even installed? I usually root or jailbreak my test devices for better handling but in case you can&rsquo;t you won&rsquo;t be able to do NATing on the device itself. In that case maybe a <strong>VPN</strong> would help. Just install a <em>VPN server</em> on the host running the <strong>burp</strong> instance and connect your devices to it. This way you should be able to set a HTTP proxy for your devices. I honestly admit I don&rsquo;t really know if this is going to work for 100%. Test for yourself and let me know. But since this problem affects me as well there&rsquo;ll be probably another post regarding this issue :). Stay tuned.</p>
 
     
@@ -4718,8 +4769,6 @@ node[shape=record];</p>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4810,10 +4859,6 @@ node[shape=record];</p>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4857,17 +4902,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

@@ -142,7 +142,10 @@ type="image/x-icon"/>
     
 
       <p>Continuing my <a href="http://blog.dornea.nu/tag/ccna/">CCNA</a> journey I&rsquo;d like to address <em>inter VLAN switching</em> in a more detailed way. In this post I&rsquo;ll configure my <a href="http://blog.dornea.nu/2015/10/21/basic-layer-2-switching-using-cisco-packet-tracer/">previous topology</a> to use <strong>VTP</strong> and let <strong>STP</strong> prevent <em>frame looping</em> and other &ldquo;anomalies&rdquo; on <em>Layer 2</em>.</p>
-<h2 id="updated-network-topology">Updated network topology</h2>
+<h2 id="updated-network-topology">
+  Updated network topology
+  <a href="#updated-network-topology" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -225,7 +228,10 @@ type="image/x-icon"/>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_2_0.png" alt="png"></p>
 <p>The new added component <code>SW4</code> is connected to all other switches (red lines). Since a new switch has been added we&rsquo;ll have to add the existing <strong>VLANs</strong> to the corresponding interfaces as well. But this time I <strong>won&rsquo;t</strong> configure the ports manually. Instead I&rsquo;ll use a Cisco proprietary protocol called <code>VTP</code> to exchange information about VLAN accross all available switches. So called <code>VTP</code> advertisements can be sent over <code>ISL</code> or <code>802.1Q</code> (dot1q). Now let&rsquo;s have a look at the process of adding <code>VTP</code> to the existing infrastructure.</p>
-<h2 id="vlan-trunking-protocol">VLAN Trunking Protocol</h2>
+<h2 id="vlan-trunking-protocol">
+  VLAN Trunking Protocol
+  <a href="#vlan-trunking-protocol" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p><code>VTP</code> has 3 operation modes:</p>
 <ul>
 <li>VTP <strong>server</strong> mode
@@ -256,7 +262,10 @@ type="image/x-icon"/>
 <li><code>SW1</code> in VTP <strong>server</strong> mode</li>
 <li>all <strong>others</strong> switches in <strong>client</strong> mode</li>
 </ul>
-<h3 id="configure-sw1">Configure SW1</h3>
+<h3 id="configure-sw1">
+  Configure SW1
+  <a href="#configure-sw1" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -319,7 +328,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">Local updater ID is 30.30.30.1 on interface Vl30 <span class="o">(</span>lowest numbered VLAN interface found<span class="o">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="configure-vtp-clients">Configure VTP clients</h3>
+</div><h3 id="configure-vtp-clients">
+  Configure VTP clients
+  <a href="#configure-vtp-clients" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>The configuration of the remaining switches is pretty straight-forward. Let&rsquo;s have a look at an example (in this case <code>SW2</code>):</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -373,7 +385,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">Configuration last modified by 30.30.30.1 at 3-1-93 01:04:21
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="testing-setup">Testing setup</h3>
+</div><h3 id="testing-setup">
+  Testing setup
+  <a href="#testing-setup" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>In order to test the configuration I&rsquo;ll add <strong>VLAN 40</strong> (Testing) on <code>SW1</code> and check if that gets advertised:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -454,7 +469,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="m">1005</span> trnet-default                    active    
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="spanning-tree-protocol">Spanning Tree Protocol</h2>
+</div><h2 id="spanning-tree-protocol">
+  Spanning Tree Protocol
+  <a href="#spanning-tree-protocol" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Since we now have to deal with <strong>interconnected</strong> switches and <em>frame looping</em> might be an issue, activating <strong>STP</strong> (Spanning Tree Protocol) will help mitigate the impacts of <em>broadcast storms</em> or <em>multiple frame tranmissions</em>. Cisco devices usually use <strong>Per VLAN Spanning Tree Protocol</strong> (PVST+, PVSTP) which is <em>proprietary</em>. The biggest difference to the &ldquo;normal&rdquo; STP (<strong>802.1D</strong>) is that PVST+ creates a different topology <em>per VLAN</em>. That means you can elect different roots (and thus different topology) for every available VLAN. Let&rsquo;s have a look at the desired topology for <code>VLAN 30</code> (Management):</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -491,7 +509,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2015/advanced-inter-vlan-switching-using-cisco/output_8_0.png" alt="png"></p>
-<h3 id="roots-election">Root(s) election</h3>
+<h3 id="roots-election">
+  Root(s) election
+  <a href="#roots-election" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>In terms of <strong>STP</strong> <code>SW4</code> will be the <strong>p</strong>rimary (p) and <code>SW2</code> the <strong>s</strong>econdary (s) root. Let&rsquo;s configure <code>Sw4</code> and <code>Sw2</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -548,7 +569,10 @@ type="image/x-icon"/>
   </tr>
 </table>
 <p>So <code>SW1</code> (Fa0/1) is connected to <code>SW2</code> (Fa0/1), <code>SW3</code> (Fa0/3) is connected to <code>SW2</code> (Fa0/2) and so on. You may have noticed that <code>SW3</code> and <code>SW4</code> are connected to each other using <strong>4 ports</strong>. In that case we have a <em>redundant</em> connection between both switches. In this case we&rsquo;ll later on configure the redundant connection as an <a href="https://en.wikipedia.org/wiki/EtherChannel"><strong>EtherChannel</strong></a>.</p>
-<h3 id="testing-the-stp-configuration">Testing the STP configuration</h3>
+<h3 id="testing-the-stp-configuration">
+  Testing the STP configuration
+  <a href="#testing-the-stp-configuration" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>And now let&rsquo;s have a look at the STP information:</p>
 <ul>
 <li><code>SW2</code> (secondary root)</li>
@@ -704,7 +728,10 @@ type="image/x-icon"/>
 <li><code>Po2</code> is the <strong>root port</strong> with a cost of 9 and in <strong>forwarding</strong> state</li>
 <li><code>FastEthernet 0/1</code> is a <strong>designated</strong> port with a cost of 19 and in <strong>forwarding</strong> state</li>
 </ol>
-<h3 id="port-cost">Port cost</h3>
+<h3 id="port-cost">
+  Port cost
+  <a href="#port-cost" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Now you may have noticed the diffrent <strong>port costs</strong>. A port cost is an integer assigned to each interface per VLAN for providing a good way for measuring a port&rsquo;s connectivity.</p>
 <table cellpadding="0" cellspacing="0" width="100%" border="0">
   <tr>
@@ -729,9 +756,15 @@ type="image/x-icon"/>
   </tr>
 </table>
 <p>So because most of the ports are <em>FastEthernet</em> ports they will get a port cost of 19 (when connected directly to the root).</p>
-<h3 id="etherchannel">EtherChannel</h3>
+<h3 id="etherchannel">
+  EtherChannel
+  <a href="#etherchannel" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>As previosuly mentioned there are 2 port links between <code>SW3</code> and <code>SW4</code>. <strong>EtherChannel</strong> provides a way to prevent convergence (STP) when a single port or cable failure occurs. The switches will treat the EtherChannel as a single interface. The big advantage is that if one of the links fails, STP convergence does not have to occur if at least one of the links is up. Besides that the switches will now have a <strong>load-balancing</strong> effect which will spread the traffic load accross the active links in the (Ether)channel.</p>
-<h4 id="manual-etherchannel">Manual EtherChannel</h4>
+<h4 id="manual-etherchannel">
+  Manual EtherChannel
+  <a href="#manual-etherchannel" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>So when using EtherChannels STP will operate on the EtherChannel itself rather than on the individual physical links. STP will then either forward or block traffic on the entire logical EtherChannel for a specific VLAN. Probably the most simple way to activate EtherChannel is to put the physical interfaces into the same <strong>channel-group</strong>. Let&rsquo;s have a look how this is done:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -798,7 +831,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">%LINEPROTO-5-UPDOWN: Line protocol on Interface Port-channel 1, changed state to down
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="dynamically-configured-etherchannel">Dynamically configured EtherChannel</h4>
+</div><h4 id="dynamically-configured-etherchannel">
+  Dynamically configured EtherChannel
+  <a href="#dynamically-configured-etherchannel" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>If you don&rsquo;t want to manually configure the EtherChannel, one can let the switches <em>negotiate</em> the configuration for it. Cisco switches support</p>
 <ul>
 <li>Cisco proprietary Port Aggregation Protocol (<strong>PAgP</strong>)
@@ -847,7 +883,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">SW4<span class="o">(</span>config-if<span class="o">)</span><span class="c1">#channel-group 1 mode auto</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="testing-etherchannel-connectivity">Testing EtherChannel connectivity</h3>
+</div><h3 id="testing-etherchannel-connectivity">
+  Testing EtherChannel connectivity
+  <a href="#testing-etherchannel-connectivity" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Now let&rsquo;s see of the <em>port channels</em> are working well:</p>
 <ul>
 <li><code>SW4</code></li>
@@ -1014,7 +1053,10 @@ You also should have noticed that the ports on each switch belong to different c
 </span></span><span class="line"><span class="cl">Po1         10,20,30
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="troubleshooting">Troubleshooting</h2>
+</div><h2 id="troubleshooting">
+  Troubleshooting
+  <a href="#troubleshooting" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Although this is not a complex topology, adding STP to your switches, might increase the troubleshooting steps needed to localize your problem. In my particular case I was able to ping from <code>PC3</code> to <code>PC6</code>, however <code>PC1</code> wasn&rsquo;t able to reach <code>PC5</code>. After eliminating a list of might-be problems like:</p>
 <ul>
 <li>port security</li>
@@ -5046,8 +5088,6 @@ You also should have noticed that the ports on each switch belong to different c
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -5138,10 +5178,6 @@ You also should have noticed that the ports on each switch belong to different c
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -5185,17 +5221,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

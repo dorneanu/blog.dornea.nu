@@ -160,7 +160,10 @@ Below I&rsquo;ll try to give some overview which steps might be essential in fuz
 effective way. Modifying the source code for your needs definitely requires a deep understanding
 of the programms workflow. I hope this post will provide some useful tips how to speed up
 the fuzzing process - whatever your target will be.</p>
-<h2 id="motivation">Motivation</h2>
+<h2 id="motivation">
+  Motivation
+  <a href="#motivation" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Why would one want to <strong>fuzz</strong> <a href="http://conntrack-tools.netfilter.org">conntrack-tools</a> anyway? Before we continue: <strong>No 0day here!</strong>
 As sad as it sounds, I wasn&rsquo;t able to find any crashes using <code>AFL</code>. But that is no guarantee
 for safe, secure code so there might be some vulnerabilities ready to be found.</p>
@@ -170,7 +173,10 @@ have a <strong>huge</strong> focus on web applications (it&rsquo;s still the mai
 people (in relation to the first group mentioned) do have a look at network/system level
 stuff. In my case I wanted to audit and fuzz software that deals with <a href="http://www.iptables.info/en/connection-state.html#COMPLEXPROTOCOLS">connection tracking</a> management. In my particular case I&rsquo;ve used <a href="http://conntrack-tools.netfilter.org/conntrackd.html">conntrackd</a>
 to manage and synchronize the connection tracking information between 2 hosts.</p>
-<h2 id="setup">Setup</h2>
+<h2 id="setup">
+  Setup
+  <a href="#setup" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>On 2 virtual machines I&rsquo;ve downloaded the <code>conntrack-tools</code> (also includes <code>conntrackd</code>),
 compiled the code and ran the daemons:</p>
 <details>
@@ -255,7 +261,10 @@ In the end the daemons are started by specifying the config file:</p>
 </div><blockquote>
 <p>If you experience some crazy error messages, make sure you have following kernel modules loaded: <code>af_netlink</code></p>
 </blockquote>
-<h2 id="network-traffic">Network traffic</h2>
+<h2 id="network-traffic">
+  Network traffic
+  <a href="#network-traffic" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>If you then <strong>sniff</strong> for packets you&rsquo;ll see some magic packets:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -290,7 +299,10 @@ In the end the daemons are started by specifying the config file:</p>
 </span></span><span class="line"><span class="cl">00a176802b0206cff000800050000019e000500020600000000080003c16401bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf1000c00000a21680136ef208d000800050000019e0005000206000000000800039dc201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf2000c00000a17680236ef249d000800050000019e000500020600000000080003d12c01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf3000c00000a21680236ef208d000800050000019e000500020600000000080003be7c01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf4000c00000a21680236ef37cb000800050000019e000500020600000000080003d4d201bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf5000c00000a21680236ef208d000800050000019e000500020600000000080003de9001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf6000c00000a21680136ef208d000800050000019e000500020600000000080003bdae01bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf7000c00000a17680336ef22af000800050000019e000500020600000000080003a37a01bb000500040300000000080006000038400008000c7e64b2c31100004457e14cf8000c00000a21680136ef208d000800050000019e0005000206000000000800039c8601bb000500040300000000080006000038400008000ceb64b2c31100004457e14cf9000c00000a21680134314113000800050000019e00050002060000000008000382f401bb000500040300000000080006000038400008000ceb64b2c31100004c57e14cfa000c00000a21680236ef3698000800050000019e000500020600000000080003d27c01bb000500040300000000080006000038400008000ceb64b2c30006000eeb0600001100004457e14cfb000c00000a17680336ef249d000800050000019e000500020600000000080003de7601bb000500040300000000080006000038400008000c7e64b2c31100004457e14cfc000c00000a21680136ef208d000800050000019e0005000206000000000800039ce001bb000500040300000000080006000038400008000ceb64b2c31100004457e14cfd000c00000a176803c01efd70000800050000019e000500020600000000080003b51001bb0005000403000000000800
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="analysis">Analysis</h2>
+</div><h2 id="analysis">
+  Analysis
+  <a href="#analysis" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now what valuable information can we extract from the payloads? Using <a href="http://www.secdev.org/projects/scapy/">scapy</a> I&rsquo;ve did
 some basic traffic analysis:</p>
 <div class="highlight"><div class="chroma">
@@ -406,7 +418,10 @@ the source code is structured.</p>
 </span></span><span class="line"><span class="cl"><span class="n">Sent</span> <span class="mi">1</span> <span class="n">packets</span><span class="o">.</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="data-flow">Data flow</h3>
+</div><h3 id="data-flow">
+  Data flow
+  <a href="#data-flow" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>After heavy debugging sessions I was able to understand the data flow inside the code. Below I&rsquo;ll try to explain how <code>conntrackd</code> basically
 works:</p>
 <ol>
@@ -665,7 +680,10 @@ will be called every time an &ldquo;event&rdquo; occurs, that means a packet arr
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Nothing special about: Just call <code>recvfrom</code>, read the data into <code>data</code> and update some statistics.</p>
-<h3 id="the-plan">The plan</h3>
+<h3 id="the-plan">
+  The plan
+  <a href="#the-plan" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>If we want to do some fuzzing we&rsquo;ll have to modify <code>udp_recv</code> to read from some file instead of sockets. Re-writing
 the function was actually a quite easy task:</p>
 <div class="highlight"><div class="chroma">
@@ -780,7 +798,10 @@ this simple modification implied several changes across the whole base.</p>
 </div>
 </div><p>Now you can specify a file (<code>-X</code>) which will be used as parameter for <code>my_udp_recv</code>. The &ldquo;daemon&rdquo; will now just read
 the contents of the file, analyze the input and then simply exit.</p>
-<h2 id="generating-input-values">Generating input values</h2>
+<h2 id="generating-input-values">
+  Generating input values
+  <a href="#generating-input-values" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now that I was able to specify files as data input, I had to generate some input examples for the screening process of <code>AFL</code>.
 By sniffing enought traffic between 2 productive hosts running <code>conntrackd</code> I got a <strong>lots</strong> of payloads I could then use
 for <code>AFL</code>. All I had to do was to store those values as binary files:</p>
@@ -821,7 +842,10 @@ for <code>AFL</code>. All I had to do was to store those values as binary files:
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>For my test cases I&rsquo;ve chosen ca. 4-5 different payloads and stored them as binary files. Now I was ready to run <code>AFL</code>.</p>
-<h2 id="prepare-for-afl">Prepare for AFL</h2>
+<h2 id="prepare-for-afl">
+  Prepare for AFL
+  <a href="#prepare-for-afl" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Inside the project I&rsquo;ve then created the directory structure for <code>AFL</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -847,7 +871,10 @@ for <code>AFL</code>. All I had to do was to store those values as binary files:
 </span></span><span class="line"><span class="cl">[...]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="running-afl">Running AFL</h2>
+</div><h2 id="running-afl">
+  Running AFL
+  <a href="#running-afl" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p><code>AFL</code> itself had to be ran as <code>root</code> since <code>conntrackd</code> requires privileged permissions:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -932,7 +959,10 @@ for <code>AFL</code>. All I had to do was to store those values as binary files:
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ watch -n1 &#39;cat fuzzing/ftfw/output/.cur_input | hexdump -C&#39;
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="results">Results</h2>
+</div><h2 id="results">
+  Results
+  <a href="#results" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>While the <strong>preparation</strong> steps were indeed time-consuming I think I have definitely improved my <code>gdb</code>
 skills looking at the code and trying to understand how things work. Additionally I was able to trace
 the data flow within the code - from the sockets till to the functions where data got analyzed. The
@@ -4898,8 +4928,6 @@ and feel free to drop your comments for additional questions/suggestions regardi
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4990,10 +5018,6 @@ and feel free to drop your comments for additional questions/suggestions regardi
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -5037,17 +5061,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

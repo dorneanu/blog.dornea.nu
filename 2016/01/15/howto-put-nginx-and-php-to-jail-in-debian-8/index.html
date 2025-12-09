@@ -143,7 +143,10 @@ type="image/x-icon"/>
 
       <p>Although I thought this would be an easy task, it turned out that <strong>chrooting</strong> daemons takes more than copying config files and libraries. There are donzens of tutorials out there how to do it, but the devil lies in detail - as always. Setting up a chroot environment is easy. But securing it properly is prone to faults which in worst case could let an attacker escape the chroot. And this is your worst nightmare, right? So let&rsquo;s have a look at some more technical details.</p>
 <p>For those unfamiliar with <code>chroot</code> make sure you have a look at least the <a href="https://en.wikipedia.org/wiki/Chroot">Wikipedia entry</a>.  There are also soms <a href="http://www.unixwiz.net/techtips/chroot-practices.html">chroot best practices</a> you could have a look at. Although there are better alternatives solving this job (e.g. docker) and being unable to load <strong>LSM</strong> (<a href="https://en.wikipedia.org/wiki/Linux_Security_Modules">Linux Security Modules</a>) on a vServer, putting a daemon to <em>jails</em> seems to be a pretty good approach. But there are several things one should keep in mind since <code>chroot</code> isn&rsquo;t a security feature per se (make sure you read <a href="https://securityblog.redhat.com/2013/03/27/is-chroot-a-security-feature/">&ldquo;Is chroot a security feature?&rdquo;</a> and <a href="https://lwn.net/Articles/252794/">&ldquo;What chroot() is really for&rdquo;</a>).</p>
-<h2 id="before-starting">Before starting</h2>
+<h2 id="before-starting">
+  Before starting
+  <a href="#before-starting" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>All the shell commands below are part of a <code>bash</code> script I use to setup a secure chroot. Use this <a href="https://gist.github.com/dorneanu/9f940b2ded9c05b5be9f">gist</a> to download the script files:</p>
 <ul>
 <li><a href="https://gist.github.com/dorneanu/9f940b2ded9c05b5be9f#file-chroot-sh">chroot.sh</a></li>
@@ -152,7 +155,10 @@ type="image/x-icon"/>
 <li><a href="https://gist.github.com/dorneanu/9f940b2ded9c05b5be9f#file-php5-fpm-chroot">php5-fpm-chroot</a> (to copy to <code>/etc/init.d/*</code>)</li>
 </ul>
 <p>Make sure you <strong>edit</strong> the files and adapt <code>BASE</code> to your <strong>chroot path</strong> (in my scripts: <code>/var/www/chroot</code>).</p>
-<h2 id="unleash-the-daemons">Unleash the daemons</h2>
+<h2 id="unleash-the-daemons">
+  Unleash the daemons
+  <a href="#unleash-the-daemons" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Nowadays hosting a typical PHP application is  pretty straight-forward. Several components are necesarry:</p>
 <ul>
 <li>web server (<code>nginx</code>) hosting the application</li>
@@ -187,7 +193,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>So there are a lot of libraries which have to be copied into the chroot in order for the <code>nginx</code> binary to execute properly. But first, let&rsquo;s setup the basic directory structure.</p>
-<h2 id="chroot-environment">chroot() environment</h2>
+<h2 id="chroot-environment">
+  chroot() environment
+  <a href="#chroot-environment" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First we&rsquo;ll create the basic directory structure and copy some basic stuff to it:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -239,7 +248,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ cp -rfvL /etc/<span class="o">{</span>services,localtime,nsswitch.conf,nscd.conf,protocols,hosts,ld.so.cache,ld.so.conf,resolv.conf,host.conf<span class="o">}</span> <span class="nv">$JAIL</span>/etc
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="nginx">nginx</h2>
+</div><h2 id="nginx">
+  nginx
+  <a href="#nginx" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Next we&rsquo;ll setup <code>nginx</code> and copy necessary config files and libraries:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -289,7 +301,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ cp /usr/sbin/nginx <span class="nv">$JAIL</span>/usr/sbin/
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="troubleshooting">Troubleshooting</h3>
+</div><h3 id="troubleshooting">
+  Troubleshooting
+  <a href="#troubleshooting" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>First let&rsquo;s see if we can run the daemon at all:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -386,7 +401,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">nginx: configuration file /etc/nginx/nginx.conf <span class="nb">test</span> is successful
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="php5-fpm">php5-fpm</h2>
+</div><h2 id="php5-fpm">
+  php5-fpm
+  <a href="#php5-fpm" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>The PHP FastCGI Process Manager (<code>php5-fpm</code>) also requires some libraries and config files that have to be available in the new <code>chroot</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -445,7 +463,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <code>for</code>-loop will look at every php-module and copy its dependant libraries to the chroot.</p>
-<h3 id="cant-execute-exec-shell_exec-or-system">Can&rsquo;t execute exec(), shell_exec() or system()</h3>
+<h3 id="cant-execute-exec-shell_exec-or-system">
+  Can&rsquo;t execute exec(), shell_exec() or system()
+  <a href="#cant-execute-exec-shell_exec-or-system" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>If you experience some sort of problems like <a href="http://stackoverflow.com/questions/17006136/exec-with-php-fpm-on-nginx-under-chroot-returns-nothing">this</a> you probably have no <code>/bin/sh</code> inside your chroot (which is great after all, since we want to strip down the environment to a minimal setup). However <strong>PHP</strong>&rsquo;s functions like <code>exec()</code>, <code>shell_exec()</code> or <code>system()</code>will internally call <code>/bin/sh -c</code> to run the commands. So if your PHP application is using something like <code>sendmail</code> and you don&rsquo;t want to install any shell into your chroot, I&rsquo;ve found this <a href="https://knzl.de/setting-up-a-chroot-for-php/">solution</a> from <em>Sebastian Kienzl</em> which basically consists in providing a &ldquo;shell&rdquo; which will in turn use <code>execvp()</code> to run commands.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -534,7 +555,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>However this approach seemed to introduce more problems than it was a decent solution. Depending on the applications and the scope you can decide whether to use a wrapper or provide <code>/bin/sh</code> inside your chroot. Nevertheless there should be no <code>setuid</code> binaries. More on that later.</p>
-<h3 id="timezone-is-corrupt">Timezone is corrupt</h3>
+<h3 id="timezone-is-corrupt">
+  Timezone is corrupt
+  <a href="#timezone-is-corrupt" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>If you have issues like:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -562,7 +586,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-.bash" data-lang=".bash"><span class="line"><span class="cl">$ cp -Rv /usr/share/zoneinfo <span class="nv">$JAIL</span>/usr/share/
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="adjust-chroot-security">Adjust chroot() security</h2>
+</div><h2 id="adjust-chroot-security">
+  Adjust chroot() security
+  <a href="#adjust-chroot-security" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In fact the actual hardening of the environment has not taken place already. Many people have pointed out that <strong>chroot != security</strong> and additional steps are vital for not being able to <strong>unchroot</strong> inside it. A few years ago <a href="https://filippo.io/escaping-a-chroot-jail-slash-1/">Filippo</a> also showed how easy an attacker could achieve that if specific conditions were satisfied. Since <code>chroot()</code> in my opinion it not <strong>THE</strong> security feature I&rsquo;d say it&rsquo;s sort of <strong>security in depth</strong>. Although there are enough cases where  leaving the chroot is possible - if securing it hasn&rsquo;t been done correctly, some recommendations from <a href="http://talby.rcs.manchester.ac.uk/~isd/_unix_security/unix_security_intro_securing_network_services.Breaking_Out_of_and_Securing_Chroot_Jails.html">here</a> should be taken into consideration:</p>
 <ul>
 <li><strong>not</strong> run daemons as <strong>root</strong></li>
@@ -639,9 +666,15 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ chmod +rw <span class="nv">$JAIL</span>/run
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="systemd">systemd</h2>
+</div><h2 id="systemd">
+  systemd
+  <a href="#systemd" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Since <code>systemd</code>is now everywhere you can define your own <strong>service</strong> to start the daemons.</p>
-<h3 id="nginx-1">nginx</h3>
+<h3 id="nginx-1">
+  nginx
+  <a href="#nginx-1" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -742,7 +775,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ pgrep nginx <span class="p">|</span> xargs <span class="nb">kill</span> -9
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="php5-fpm-1">php5-fpm</h3>
+</div><h3 id="php5-fpm-1">
+  php5-fpm
+  <a href="#php5-fpm-1" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>The same applies to <code>php5-fpm</code> too:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -810,9 +846,15 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Jan <span class="m">13</span> 18:04 /proc/9468/root -&gt; /var/www/chroot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="system-v">System V</h2>
+</div><h2 id="system-v">
+  System V
+  <a href="#system-v" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>If you don&rsquo;t like <code>systemd</code> you can still do it the old way and have your scripts at <code>/etc/init.d/*</code>.</p>
-<h3 id="nginx-2">nginx</h3>
+<h3 id="nginx-2">
+  nginx
+  <a href="#nginx-2" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -881,7 +923,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="nb">exit</span> <span class="m">0</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="php5-fpm-2">php5-fpm</h3>
+</div><h3 id="php5-fpm-2">
+  php5-fpm
+  <a href="#php5-fpm-2" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -944,7 +989,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="nb">exit</span> <span class="m">0</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="install-new-services">Install new services</h3>
+</div><h3 id="install-new-services">
+  Install new services
+  <a href="#install-new-services" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>First of all make sure you <strong>remove</strong> the old ones:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -967,9 +1015,15 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ update-rc.d php5-fpm-chroot defaults
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="conclusion">Conclusion</h2>
+</div><h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now you have a basic structure to work with. You might want to add more <strong>binaries</strong> to the chroot but keep in mind the implied security concerns. And also try <strong>not</strong> to use symlinks/hardlinks to directories outside the chroot. You can always always override config files in the chroot with backuped one. And to make sure that everything works well, think about using <a href="http://linux.die.net/man/8/auditd">auditd</a> for monitoring file changes inside the chroot.</p>
-<h2 id="references">References</h2>
+<h2 id="references">
+  References
+  <a href="#references" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <ul>
 <li><a href="https://www.digitalocean.com/community/tutorials/how-to-host-multiple-websites-securely-with-nginx-and-php-fpm-on-ubuntu-14-04">Howt multiple websites with nginx and php-fpm</a></li>
 <li><a href="https://filippo.io/escaping-a-chroot-jail-slash-1/">Escaping a chroot</a></li>
@@ -4717,8 +4771,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4809,10 +4861,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4856,17 +4904,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

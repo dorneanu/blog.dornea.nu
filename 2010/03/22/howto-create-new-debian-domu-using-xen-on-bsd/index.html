@@ -142,7 +142,10 @@ type="image/x-icon"/>
     
 
       <p>In this tutorial you&rsquo;ll get detailed information how to setup a fully functionable Debian Lenny system using virtualization software <a href="http://xen.org/">Xen</a>. This entry was written due to high frustration caused by unreliable/outdated articles on the Internet and uncompleted tutorials. This here should be an attempt to describe the installation process completely and provide additional information which might help you solve common problems. The domU system we&rsquo;d like to setup (in our case Debian) provides a neat <a href="http://en.wikipedia.org/wiki/NetBoot">netboot</a> installer which supports Xen. I don&rsquo;t know - I don&rsquo;t really have the time to look it up - if any other Linux distributions have such installer (nor if they support Xen at all) , so this howto might also apply - or not - to any other distribution. The same applies to the dom0 system: On your system shown shell commands might differ (different syntax)  as well as described methods (e.g. mount pseudo devices etc.). I used NetBSD 5.0_STABLE (amd64) on my system, so there should be no major differences to other BSD systems. If you use Linux as your host system, then you should seek forward since this paper is aimed to focus on *BSD papers. There are enough (good) tutorials out there you can rely on.</p>
-<h2 id="prerequisites">Prerequisites</h2>
+<h2 id="prerequisites">
+  Prerequisites
+  <a href="#prerequisites" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>At this point you should have a running Xen instance and have booted your dom0 (NetBSD with kernel XEN3_DOM0). You should have sth like this:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -162,7 +165,10 @@ type="image/x-icon"/>
 <li>Xen tools: <em>xentools33-3.3.2nb1</em></li>
 <li>Xen dom0 kernel: <em>NetBSD 5.0_STABLE</em></li>
 </ul>
-<h2 id="step-1-network-configuration">Step 1: Network configuration</h2>
+<h2 id="step-1-network-configuration">
+  Step 1: Network configuration
+  <a href="#step-1-network-configuration" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now you&rsquo;ll have to create a network bridge:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -229,7 +235,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Be sure to replace <code>[your LAN interface]</code> with the interface identifier on your system (in my case it would be wm0).</p>
-<h2 id="create-disk-container">Create disk container</h2>
+<h2 id="create-disk-container">
+  Create disk container
+  <a href="#create-disk-container" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>After setting up the network stuff, you should now create a container (about 2GB) where Debian will be later on installed.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -239,14 +248,20 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ dd if=/dev/zero of=Debian-Lenny.img bs=1m count=2048
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="step-3-get-debian-kernel-and-ramdisk-file">Step 3: Get Debian kernel and ramdisk file</h2>
+</div><h2 id="step-3-get-debian-kernel-and-ramdisk-file">
+  Step 3: Get Debian kernel and ramdisk file
+  <a href="#step-3-get-debian-kernel-and-ramdisk-file" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In order to have a fully functionable Debian installation <strong>DON&rsquo;T</strong> use <a href="http://people.debian.org/%7Ejoeyh/d-i/images/daily/">these</a> files. You&rsquo;ll run into several problems which will keep you busy searching the Internet for the solutions. Instead you should use the i386-current Xen netboot installer from this<a href="ftp://ftp.debian.org/debian/dists/lenny/main/installer-i386/current/images/netboot/xen/"> link</a>. You should at least download:</p>
 <ul>
 <li>the kernel file (<a href="ftp://ftp.debian.org/debian/dists/lenny/main/installer-i386/current/images/netboot/xen/vmlinuz">vmlinuz</a>)</li>
 <li>the ramdisk file (<a href="ftp://ftp.debian.org/debian/dists/lenny/main/installer-i386/current/images/netboot/xen/initrd.gz">initrd.gz</a>)</li>
 </ul>
 <p>to your local directory.</p>
-<h2 id="step-4-xen-domu-configuration">Step 4: Xen domU configuration</h2>
+<h2 id="step-4-xen-domu-configuration">
+  Step 4: Xen domU configuration
+  <a href="#step-4-xen-domu-configuration" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now let us configure then Xen domU at least with these options (see xm-debian.cfg):</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -272,7 +287,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">...
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="step-5-start-xen-services">Step 5: Start Xen services</h2>
+</div><h2 id="step-5-start-xen-services">
+  Step 5: Start Xen services
+  <a href="#step-5-start-xen-services" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First be sure you have following entries in your <code>/etc/rc.conf</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -310,7 +328,10 @@ i.e $LOCALBASE/etc/xen/domain.foo.In my case $LOCALBASE is defined as /usr/pkg.T
 </span></span><span class="line"><span class="cl">$ /usr/pkg/share/examples/rc.d/xendomains start
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="step-6-install-debian">Step 6: Install Debian</h2>
+</div><h2 id="step-6-install-debian">
+  Step 6: Install Debian
+  <a href="#step-6-install-debian" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now you should be able to start the Debian installation process.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -366,7 +387,10 @@ i.e $LOCALBASE/etc/xen/domain.foo.In my case $LOCALBASE is defined as /usr/pkg.T
 <p>Attention: When configuring the virtual disk, have in mind that you should format your disk as ext2 and <strong>not as ext3</strong>. Ext3 is currently not supported by NetBSD. When you have reached the partitioning step, select the partition marked as ext3, press enter and change afterwards the file system type to ext2. Then you should select <code>Done setting up the partition</code> and press enter.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2010/147/m79cgk.jpg" alt="Ext3fs"></p>
 <p>You should now go through the installation process without experiencing any troubles. At the end of the installation you won&rsquo;t have to install grub nor any boot loader, so simply ignore the error messages and select <code>Continue</code>. Even if you should go back to the main installation menu, select <code>Continue without any boot loader</code> and everything will be alright.</p>
-<h2 id="step-7-start-your-fresh-new-debian-system">Step 7: Start your fresh new Debian system</h2>
+<h2 id="step-7-start-your-fresh-new-debian-system">
+  Step 7: Start your fresh new Debian system
+  <a href="#step-7-start-your-fresh-new-debian-system" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First you&rsquo;ll have to extract <code>vmlinuz</code> and <code>initrd.gz</code> from your local disk container. NetBSD provides vnconfig(8) to configure pseudo disk devices.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4438,8 +4462,6 @@ i.e $LOCALBASE/etc/xen/domain.foo.In my case $LOCALBASE is defined as /usr/pkg.T
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4530,10 +4552,6 @@ i.e $LOCALBASE/etc/xen/domain.foo.In my case $LOCALBASE is defined as /usr/pkg.T
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4577,17 +4595,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

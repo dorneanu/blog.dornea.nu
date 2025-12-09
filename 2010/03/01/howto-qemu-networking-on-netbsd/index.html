@@ -151,7 +151,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Using this example `tap0″ should be created before the qemu command. The shown examples might work on other platforms too. Be sure to have TUN/TAP device support built-in and the Qemu suite installed. Check out <strong>References</strong> for further information.</p>
-<h2 id="usermode-network-stack">Usermode network stack</h2>
+<h2 id="usermode-network-stack">
+  Usermode network stack
+  <a href="#usermode-network-stack" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Probably the simplest method of connecting your host and the guest system. In this mode Qemu will create a :</p>
 <ul>
 <li>virtual network (10.0.2.0)</li>
@@ -196,7 +199,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>On my system the firewall was blocking any ICMP packets so ping might not work. But don&rsquo;t get disoriented (like I did). Try to ssh or ftp any known host to check the connection.</p>
-<h2 id="connecting-vlans">Connecting VLANs</h2>
+<h2 id="connecting-vlans">
+  Connecting VLANs
+  <a href="#connecting-vlans" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>This is a quite simple step. You&rsquo;ll have to set up a Qemu process listening for incoming connection(s) on  a certain socket. The second Qemu process will connect to the listening socket. Whenever a frame/packet appears on the VLAN of the first Qemu process, it will be forwarded to the second one and <span style="font-style: italic;">vice versa</span>.</p>
 <p>Here&rsquo;s our configuration:</p>
 <ul>
@@ -204,7 +210,10 @@ type="image/x-icon"/>
 <li>Guest <strong>B</strong>: connect to Guest <strong>A</strong> through <code>localhost:8010</code></li>
 </ul>
 <p>Host <strong>A</strong> will listen for incomming connections on port 8010 and host <strong>B</strong> will be configured to connect to host <strong>A</strong>.</p>
-<h3 id="create-host-a">Create host A</h3>
+<h3 id="create-host-a">
+  Create host A
+  <a href="#create-host-a" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -215,7 +224,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">      -cdrom [iso file]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="create-host-b">Create host B</h3>
+</div><h3 id="create-host-b">
+  Create host B
+  <a href="#create-host-b" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -228,7 +240,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">      -cdrom [iso file]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="configure-host-a">Configure host A</h3>
+</div><h3 id="configure-host-a">
+  Configure host A
+  <a href="#configure-host-a" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -237,7 +252,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface] 10.0.2.100 netmask 255.255.255.0 up
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="configure-host-b">Configure host B</h3>
+</div><h3 id="configure-host-b">
+  Configure host B
+  <a href="#configure-host-b" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -247,7 +265,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Using this configuration you should be able to access host <strong>B</strong> from host <strong>A</strong> and vice versa.</p>
-<h2 id="connecting-vlans-to-tap-device-1-host">Connecting VLANs to TAP device (1 host)</h2>
+<h2 id="connecting-vlans-to-tap-device-1-host">
+  Connecting VLANs to TAP device (1 host)
+  <a href="#connecting-vlans-to-tap-device-1-host" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>There is another option to create VLANs: Using a virtual Ethernet device (tap device). Any frames transmitted through this device will also appear on the VLAN of your guest OS. Of course any frames sent to guest&rsquo;s VLAN will be also received by the TAP device.</p>
 <p>Using the kernel TAP/TUN device driver applications are allowed to interact with a network device using a simple file descriptor. Any data sent over the file descriptor will be received on both sides. That means that applications running on the guest system(s) will be able to access and connect to applications running on the host system. If port forwarding is allowed, guest applications can also access the Internet.</p>
 <p>First we create a TAP device:</p>
@@ -269,7 +290,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ ifconfig tap0 10.0.2.100 netmask 255.255.255.0 up
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="launch-qemu-process">Launch Qemu process:</h3>
+</div><h3 id="launch-qemu-process">
+  Launch Qemu process:
+  <a href="#launch-qemu-process" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -278,7 +302,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu -net nic,vlan=0 -net tap,vlan=0,ifname=tap0 -cdrom  [iso file]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="configure-virtual-host">Configure virtual host:</h3>
+</div><h3 id="configure-virtual-host">
+  Configure virtual host:
+  <a href="#configure-virtual-host" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -288,7 +315,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>You should now be able to access your Qemu host from your guest host (ping 10.0.2.101). 10.0.100 (guest system) should be also accessible from your Qemu process.</p>
-<h2 id="connecting-vlans-to-tap-devices-2-hosts">Connecting VLANs to TAP devices (2 hosts)</h2>
+<h2 id="connecting-vlans-to-tap-devices-2-hosts">
+  Connecting VLANs to TAP devices (2 hosts)
+  <a href="#connecting-vlans-to-tap-devices-2-hosts" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In this example we&rsquo;ll have 2 guests (= 2 TAP devices). Each guest is connected to the host system by a TAP device. In order to allow inter-connectivity the gust system should have a bridge between both TAP devices. The bridge will act as a central network node between the guest and both virtual hosts. For Internet access IP forwarding should be enabled (disabled by default). First we&rsquo;ll have to create the TAP devices:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -316,7 +346,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">        media: Ethernet autoselect
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="launch-guest-a">Launch guest A</h3>
+</div><h3 id="launch-guest-a">
+  Launch guest A
+  <a href="#launch-guest-a" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -325,7 +358,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ qemu  -net nic,macaddr=52:54:00:12:34:56 -net tap,ifname=tap0 -cdrom [iso file]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="launch-guest-b">Launch guest B</h3>
+</div><h3 id="launch-guest-b">
+  Launch guest B
+  <a href="#launch-guest-b" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -334,7 +370,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"> $ qemu  -net nic,macaddr=52:54:00:12:34:57 -net tap,ifname=tap1 -cdrom [iso file]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="setup-tap-devices-networking-settings">Setup TAP devices networking settings:</h3>
+</div><h3 id="setup-tap-devices-networking-settings">
+  Setup TAP devices networking settings:
+  <a href="#setup-tap-devices-networking-settings" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -345,7 +384,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ ifconfig tap1 10.0.3.100 netmask 255.255.255.0 up
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="create-bridge-interface">Create bridge interface:</h3>
+</div><h3 id="create-bridge-interface">
+  Create bridge interface:
+  <a href="#create-bridge-interface" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -356,7 +398,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">$ brconfig bridge0 add tap0 add tap1 up
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="setup-network-settings-for-guest-a">Setup network settings for guest A</h3>
+</div><h3 id="setup-network-settings-for-guest-a">
+  Setup network settings for guest A
+  <a href="#setup-network-settings-for-guest-a" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -365,7 +410,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ ifconfig [interface] 10.0.2.101 netmask 255.255.0.0 up
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="setup-network-settings-for-guest-b">Setup network settings for guest B</h3>
+</div><h3 id="setup-network-settings-for-guest-b">
+  Setup network settings for guest B
+  <a href="#setup-network-settings-for-guest-b" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -390,7 +438,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>In all cases you should be able to ping/access any system no matter what system you operate on. </p>
-<h2 id="references">References</h2>
+<h2 id="references">
+  References
+  <a href="#references" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>a) <a href="http://wiki.qemu.org/Main_Page">http://wiki.qemu.org/Main_Page</a></p>
 <p>b)<a href="http://qemu-buch.de/de/index.php/QEMU-KVM-Buch/_Netzwerkoptionen/_Virtuelle_Netzwerke_konfigurieren"> http://qemu-buch.de/de/index.php/QEMU-KVM-Buch/_Netzwerkoptionen/_Virtuelle_Netzwerke_konfigurieren</a></p>
 <p>c) <a href="http://compsoc.dur.ac.uk/%7Edjw/qemu.html">http://compsoc.dur.ac.uk/~djw/qemu.html</a></p>
@@ -4214,8 +4265,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4306,10 +4355,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4353,17 +4398,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

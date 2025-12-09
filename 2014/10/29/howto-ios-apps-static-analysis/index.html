@@ -142,7 +142,10 @@ type="image/x-icon"/>
     
 
       <p>In this short article I&rsquo;ll try to explain what are the main steps to analyze an iOS app. Since I&rsquo;ve writen similar posts related to <a href="https://blog.dornea.nu/tag/android/">Android</a> I thought I could devote some of spare time writing about the steps required to analyze iOS apps/binaries. But first of all let&rsquo;s start with:</p>
-<h2 id="whats-an-ios-app">What&rsquo;s an iOS app?</h2>
+<h2 id="whats-an-ios-app">
+  What&rsquo;s an iOS app?
+  <a href="#whats-an-ios-app" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In a nutshell here are the main characteristics:</p>
 <ul>
 <li>Objective-C / C / C++ compiled (ARM) executable</li>
@@ -152,7 +155,10 @@ type="image/x-icon"/>
 <li>apps come as an <strong>IPA</strong> file which is the counterpart to Android&rsquo;s <strong>APK</strong></li>
 </ul>
 <p>Now that you roughly know what an iOS app is let&rsquo;s have a look at the most common <em>blackbox</em> pentesting tools out there. In this post I&rsquo;ll focus only on <em>static analysis</em>. <em>Dynamic analysis</em> (also known as <em>runtime analysis</em>) will be covered in a future post.</p>
-<h2 id="binary-analysis-tools">Binary Analysis Tools</h2>
+<h2 id="binary-analysis-tools">
+  Binary Analysis Tools
+  <a href="#binary-analysis-tools" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Assuming you&rsquo;ve already jailbreaked your device, you&rsquo;ll definitely need these tools:</p>
 <ul>
 <li><strong>SSH</strong> - For connecting to the device</li>
@@ -166,11 +172,17 @@ type="image/x-icon"/>
 </ul>
 </li>
 </ul>
-<h2 id="ipa">IPA</h2>
+<h2 id="ipa">
+  IPA
+  <a href="#ipa" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p><strong>ipa</strong> files are archive files which are usually encrypted using Apple&rsquo;s FairPlay DRM. In a nutshell an ipa file consists of:</p>
 <p>{% img <a href="http://oi60.tinypic.com/15q2ici.jpg">http://oi60.tinypic.com/15q2ici.jpg</a> 600 200 &ldquo;IPA-File&rdquo; &ldquo;IPA-File&rdquo; %}</p>
 <p>The <strong>App binary</strong> is the target to be analyzed. It&rsquo;s compiled for ARM and used the <strong>Mach-O</strong>(mach object) file format. Check out next section for more detailed information.</p>
-<h4 id="installing-the-app">Installing the App</h4>
+<h4 id="installing-the-app">
+  Installing the App
+  <a href="#installing-the-app" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>Usually you can manually install apps by using <strong>ipainstaller</strong>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -183,10 +195,16 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>This will install your app under <code>/var/mobile/Applications</code>. Just do a <code>grep</code> to find out to which folder your app was copied to.</p>
-<h2 id="mach-o">Mach-O</h2>
+<h2 id="mach-o">
+  Mach-O
+  <a href="#mach-o" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>The Mach-O binary consists of 3 components:</p>
 <p>{% img <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachORuntime/art/mach_o_segments.gif">https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachORuntime/art/mach_o_segments.gif</a> 600 200 Mach-O Mach-O %}</p>
-<h4 id="header">Header</h4>
+<h4 id="header">
+  Header
+  <a href="#header" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>The <strong>header</strong> contains basic file type information like architecture and several flags. Using <strong>otool</strong> you can have a look a the headers:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -230,7 +248,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"> <span class="mh">0xfeedface</span>      <span class="mi">12</span>         <span class="mi">11</span>  <span class="mh">0x00</span>          <span class="mi">2</span>    <span class="mi">29</span>       <span class="mi">3544</span> <span class="mh">0x00210085</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="load-commands">Load commands</h4>
+</div><h4 id="load-commands">
+  Load commands
+  <a href="#load-commands" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>The <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachORuntime/index.html#//apple_ref/doc/uid/20001298-89026">load commands</a> are located directly after the header and specify the logical structure of the binary (as a file) and it&rsquo;s representation in the virtual memory (using offsets). Besides that you&rsquo;ll be able to get:</p>
 <ul>
 <li>the symbol table</li>
@@ -249,9 +270,15 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="o">...</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="raw-segment-data">Raw segment data</h4>
+</div><h4 id="raw-segment-data">
+  Raw segment data
+  <a href="#raw-segment-data" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>In the Mach-O file you&rsquo;ll also have <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/MachOTopics/0-Introduction/introduction.html">raw data</a> for the segments specified in the load commands. One segment can consist of multiple sections.</p>
-<h2 id="runtime-protection-features">Runtime protection features</h2>
+<h2 id="runtime-protection-features">
+  Runtime protection features
+  <a href="#runtime-protection-features" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>iOS has several mechanisms which prevent application from being compromised at runtime. In order to understand the security issues that affect iOS applications, it is important to understand and to known the security features of the platform. The main security features of iOS <a href="http://www.apple.com/ipad/business/docs/iOS_Security_Feb14.pdf">are</a>:</p>
 <ul>
 <li>
@@ -291,9 +318,15 @@ type="image/x-icon"/>
 </li>
 </ul>
 <p>Keeping all this stuff in mind, let&rsquo;s pickup some binary and go for it.</p>
-<h2 id="analyzing-the-binary">Analyzing the binary</h2>
+<h2 id="analyzing-the-binary">
+  Analyzing the binary
+  <a href="#analyzing-the-binary" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Comparing Android to iOS I must admit you&rsquo;ll have to overcome more (technical) challenges for a successful analysis. iOS uses <strong>binary</strong> files (instead of <em>bytecode</em>). Having that said I&rsquo;ll be using <strong>otool</strong> (which seems to be the equivalent to <strong>readelf</strong>) to inspect the binary.</p>
-<h4 id="architecture">Architecture</h4>
+<h4 id="architecture">
+  Architecture
+  <a href="#architecture" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>Let&rsquo;s first determine the <em>architecture</em> the binary was compiled for:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -349,7 +382,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Also have a look at this cool <a href="http://blakespot.com/ios_device_specifications_grid.html">list</a>.</p>
-<h4 id="encryption">Encryption</h4>
+<h4 id="encryption">
+  Encryption
+  <a href="#encryption" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>Usually the <code>ipa</code> file will be decrypted at runtime by the kernel&rsquo;s mach loader. If the binary is encrypted or not is easily found out using:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -378,7 +414,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"> <span class="n">cryptid</span>   <span class="mi">1</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="runtime-protections-mechanisms">Runtime protections mechanisms</h3>
+</div><h3 id="runtime-protections-mechanisms">
+  Runtime protections mechanisms
+  <a href="#runtime-protections-mechanisms" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>This time I&rsquo;ll show you how to extract some valuable information from the binary itself regarding some runtime protection mechanisms:</p>
 <ul>
 <li><strong>ASLR</strong>
@@ -484,7 +523,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="mh">0x00a13200</span> <span class="mi">241551</span> <span class="n">_dispatch_release</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="dangerous-functions">Dangerous functions</h4>
+</div><h4 id="dangerous-functions">
+  Dangerous functions
+  <a href="#dangerous-functions" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>Beside the previosly mentioned symbols we can also seek for symbols aimed at (classical) memory management mechanisms like <code>malloc</code> and <code>free</code>. Their presence indicate that the application has its own memory management which is the opposite to <strong>ARC</strong>. While this is not always a bad thing it could easily lead to some memory related vulnerabilities if not handled properly.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -513,7 +555,10 @@ type="image/x-icon"/>
 </div><blockquote>
 <p>Sometimes you&rsquo;ll find goodies like <code>strcpy</code> :)</p>
 </blockquote>
-<h2 id="understand-the-app">Understand the App</h2>
+<h2 id="understand-the-app">
+  Understand the App
+  <a href="#understand-the-app" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now that we have examined the binary we should proceed and try to &ldquo;understand&rdquo; the application. This means we have to look at it from a <em>logical perspective</em> and identify its main components. Afterwards one can go into detail and analyze only certain parts of the application which might be of interest.</p>
 <p>Using <code>class-dump-z</code> we&rsquo;ll dump the class information:</p>
 <div class="highlight"><div class="chroma">
@@ -567,7 +612,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Every class name seems to be encrypted. That&rsquo;s a good hint you should decrypt the binary in case you haven&rsquo;t done so yet.</p>
-<h3 id="decrypt-binary">Decrypt binary</h3>
+<h3 id="decrypt-binary">
+  Decrypt binary
+  <a href="#decrypt-binary" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Since every application downloaded from the AppStore is encrypted using Apple&rsquo;s FairPlay DRM you&rsquo;ll have to decrypt them before starting your analysis. For this step I&rsquo;ll be using <code>clutch</code> to dump the relevant data from memory to disk.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -690,11 +738,20 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Much better, isn&rsquo;t it? :)</p>
-<h3 id="disassemble-binary">Disassemble binary</h3>
+<h3 id="disassemble-binary">
+  Disassemble binary
+  <a href="#disassemble-binary" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>I don&rsquo;t want to be too specific and go into too much detail. A good <em>disassembler</em> could save you a <strong>lot</strong> of time. I really like <a href="http://www.hopperapp.com/">Hopper</a> because it&rsquo;s <em>free</em> and <em>easy</em> to use. For the geeks out there feel free to throw your binary into <a href="https://www.hex-rays.com/products/ida/">IDA</a> and let the bin rock. Particularly noteworthy is also <a href="http://www.radare.org/y/">radare2</a> which is unix-like reverse engineering framework.</p>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Binary analysis can be a hell of a lot of fun if you have the right tools. Especially when you&rsquo;re not used to Apple&rsquo;s universe and don&rsquo;t have a Mac OS machine it could be useful to jailbreak your smartphone/tablet and install your tools there. <em>Gather</em> as much information as you can get to get a pretty precise image of what you&rsquo;re dealing with. <em>Disassemble</em> your binary to get more in &ldquo;contact&rdquo;. Afterwards <em>run</em> it and do some runtime analysis.</p>
-<h2 id="references">References</h2>
+<h2 id="references">
+  References
+  <a href="#references" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <ul>
 <li><a href="http://conference.hitb.org/hitbsecconf2013ams/materials/D2T2%20-%20Chilik%20Tamir%20-%20iAnalyzer%20-%20No%20More%20Blackbox%20iOS%20Analysis.pdf">iNalyzer – No More iOS Blackbox Assessments</a></li>
 <li><a href="https://www.sans.org/reading-room/whitepapers/testing/ipwn-apps-pentesting-ios-applications-34577">iPwn Apps: Pentesting iOS Applications</a></li>
@@ -4585,8 +4642,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4677,10 +4732,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4724,17 +4775,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

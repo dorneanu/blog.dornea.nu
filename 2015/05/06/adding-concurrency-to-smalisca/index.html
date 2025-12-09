@@ -151,7 +151,10 @@ you may want to use your cores properly otherwise you&rsquo;ll end up like this:
 <p>multiprocessing is a package that supports spawning processes using an API similar to the threading module. The multiprocessing package offers both local and remote concurrency, effectively side-stepping the Global Interpreter Lock by using subprocesses instead of threads. Due to this, the multiprocessing module allows the programmer to fully leverage multiple processors on a given machine. It runs on both Unix and Windows.</p>
 </blockquote>
 <p>In the next steps I&rsquo;ll try to document my beginners attempts at <strong>concurrency</strong> in Python.</p>
-<h2 id="the-idea">The idea</h2>
+<h2 id="the-idea">
+  The idea
+  <a href="#the-idea" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Using the <code>-l</code> (location) parameter you can specify the location path where <em>smalisca</em> should
 lookup for files before parsing them and afterwards collecting valuable information. Looking closely
 at the <a href="https://github.com/dorneanu/smalisca/blob/master/smalisca/modules/module_smali_parser.py#L134">code</a> I&rsquo;ve noticed that <code>os.walk</code> already returns a list of &ldquo;some important information about files and directories.&rdquo; The <code>multiprocessing</code> documentation refers to the <code>Pool</code> object:</p>
@@ -166,7 +169,10 @@ at the <a href="https://github.com/dorneanu/smalisca/blob/master/smalisca/module
 <li><em>distribute</em> the input data across processes</li>
 </ul>
 <p>Ok, that sounds great!</p>
-<h2 id="some-basic-code">Some basic code</h2>
+<h2 id="some-basic-code">
+  Some basic code
+  <a href="#some-basic-code" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>The basic idea is to &ldquo;walk&rdquo; through files and call a <em>function</em> for every single found file. You&rsquo;d usually start like this:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -238,7 +244,10 @@ distribute the sub-lists equally to the number of available CPU cores. Given an 
 </div><p>But wait a second&hellip; What should every process do? Well, the answer is quite obvious:
 For every file in its sub-list, it has to call a certain function. Afterwards the process
 has to somehow return the results to the parent process. But how is this done?</p>
-<h2 id="communication-between-processes">Communication between processes</h2>
+<h2 id="communication-between-processes">
+  Communication between processes
+  <a href="#communication-between-processes" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>A simple way is to use <code>Queue</code> where you can pass messages back and forth between your processes. In a more complicated example you might use <code>JoinableQueue</code> where you have typical consumer scenario: Processes fetch data, modify it and then push them back into the queue (<a href="http://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem">producer consumer pattern</a>).</p>
 <p>In my case a <code>Queue</code> is perfectly fine. That way I have a safe way of letting the process pushing back the results into the queue, before merging all available results globally.
 Let&rsquo;s have a look at some example:</p>
@@ -275,7 +284,10 @@ Let&rsquo;s have a look at some example:</p>
 </div><p><code>process_files</code> gets a file list (a sub-list from the big list) and a <em>queue</em>. After
 <em>parsing</em> the files, the function will simply <code>put</code> the results into the queue. This
 specific type of queue <em>should</em> be thread and process safe as the documentation states.</p>
-<h2 id="collecting-results">Collecting results</h2>
+<h2 id="collecting-results">
+  Collecting results
+  <a href="#collecting-results" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>After all processes are done doing their job, it&rsquo;s time to collect the results:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -294,7 +306,10 @@ ready to go. You can found the whole code <a href="https://gist.github.com/dorne
 <p>Ok, I&rsquo;ve shown some introductory example how to use <code>multiprocessing</code> properly by using
 a very simplified code. Now let&rsquo;s move on to a more (or less) complicated scenrio:
 Implement parallelism for <a href="https://github.com/dorneanu/smalisca">smalisca&rsquo;s</a> <a href="http://smalisca.readthedocs.org/en/latest/parsing.html#page-parsing">parsing</a> features.</p>
-<h2 id="smalisca-and-parallelism">Smalisca and parallelism</h2>
+<h2 id="smalisca-and-parallelism">
+  Smalisca and parallelism
+  <a href="#smalisca-and-parallelism" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>One of the slowest step within <em>smalisca</em> is parsing. And that&rsquo;s because every directory,
 every file found within it, has to be parsed <em>sequentially</em>. Even from the beginning of
 the development I&rsquo;ve thought <em>concurrency</em> would be a better choice to solve that. Due
@@ -313,7 +328,10 @@ decided to parallelize several <code>SmaliParser</code> instances rather than cr
 <p>Regarding <strong>3</strong>: The answer to this one should be quite obvious. One could use a <code>Queue</code> (a thread-safe one like <code>mutiprocessing.Queue</code>) and <code>put</code> the results of every worker
 into it. Well that&rsquo;s pretty much what I&rsquo;ve done except for the fact that I&rsquo;ve used <strong>proxy</strong> objects instead of directly accessed ones. I&rsquo;ll come to this later one.</p>
 <p>Regarding <strong>4</strong>: I couldn&rsquo;t notice any side-effects.</p>
-<h2 id="the-basic-stuff">The basic stuff</h2>
+<h2 id="the-basic-stuff">
+  The basic stuff
+  <a href="#the-basic-stuff" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>I didn&rsquo;t have to write a lot of code. In my case the concurrency has been implemented this way:</p>
 <ul>
 <li>for a given path location, <em>walk</em> the location and return lists of all found directories and files</li>
@@ -625,7 +643,10 @@ results:</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Pretty straightforward, isn&rsquo;t it? Split the lists into sub-lists, assign each worker a sub-list and let them <em>run</em>. Then <em>join</em> the processes and collect the results.</p>
-<h2 id="concurrency-caveats">Concurrency caveats</h2>
+<h2 id="concurrency-caveats">
+  Concurrency caveats
+  <a href="#concurrency-caveats" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In some initial code I&rsquo;ve had, I was using a simple <code>multiprocessing.Queue()</code> to collect
 the results. After some testing I&rsquo;ve noticed that my processes never <strong>terminated</strong>.
 Sometimes (in fact <strong>always</strong>) it&rsquo;s a good idea to take a closer look at the documentation.
@@ -672,7 +693,10 @@ Looking at the <a href="https://docs.python.org/3.1/library/multiprocessing.html
 An important feature of proxy objects is that they are picklable so they can be passed between processes. Note, however, that if a proxy is sent to the corresponding manager’s process then unpickling it will produce the referent itself.</p>
 </blockquote>
 <p>Ahhhh! Now that we&rsquo;ve implemented it (hopefully) the clean way, let&rsquo;s have a look at some metrics.</p>
-<h2 id="metrics">Metrics</h2>
+<h2 id="metrics">
+  Metrics
+  <a href="#metrics" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Of course I wanted to somehow measure my improvements. Having that said don&rsquo;t expect <strong>huge</strong> improvements.
 It kind of surprised me too. I&rsquo;ve compared the execution time (<strong>just for the parsing job</strong>) between</p>
 <ul>
@@ -847,7 +871,10 @@ execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p
 </tr>
 </tbody>
 </table>
-<h2 id="lessons-learned">Lessons learned</h2>
+<h2 id="lessons-learned">
+  Lessons learned
+  <a href="#lessons-learned" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <ul>
 <li>Concurrency is <strong>NOT</strong> easy</li>
 <li>It may not always have a big (positive) impact on the <strong>performance</strong> of your code</li>
@@ -856,7 +883,10 @@ execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p
 <li>Despite all those kind of problems, it&rsquo;s <strong>fun</strong>! :)</li>
 <li>Have a look at the <a href="https://github.com/dorneanu/smalisca/commit/a48a1b9e3eb648baf6547658e06bfe32c094551c">commit details</a> in the <a href="https://github.com/dorneanu/smalisca/tree/develop">develop</a> branch.</li>
 </ul>
-<h2 id="references">References</h2>
+<h2 id="references">
+  References
+  <a href="#references" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <ul>
 <li><a href="http://everydayimlearning.blogspot.de/2013/03/multiprocessing-with-python.html">Multiprocessing with Python</a></li>
 <li><a href="https://moinakg.wordpress.com/2013/07/01/parallel-directory-tree-compare-in-python/">Parallel Directory Tree Compare with Python</a></li>
@@ -4568,8 +4598,6 @@ execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4660,10 +4688,6 @@ execution time. Ok, now let&rsquo;s try with more <strong>jobs</strong> (=8):</p
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4707,17 +4731,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

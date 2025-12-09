@@ -130,7 +130,7 @@ type="image/x-icon"/>
      ~
   
 
-5 mins
+6 mins
 |
 
     
@@ -144,7 +144,10 @@ type="image/x-icon"/>
       <p>Backuping a whole bunch of photos and videos might be a difficult task. Taking care of the <strong>consistency</strong> of your backups is even more complicated task. Besides that you don&rsquo;t want to have your backups at a <strong>single place</strong>, thus mitigating the impact of a <strong>single point of data loss</strong>.</p>
 <p>I&rsquo;ve been using <code>git-annex</code> for some years but not like a <em>pro</em> user, rather than &ldquo;it just works&rdquo;. Meanwhile I&rsquo;ve heard of <code>ownCloud</code> and I&rsquo;ve liked it because one can access its data via <em>web</em>, <em>mobile client</em> or whatever. In connection with a <strong>VPN</strong> (I prefer <a href="http://blog.dornea.nu/2015/11/17/openvpn-for-paranoids">openvpn</a>) solution you can have a <strong>secure</strong> way of remotely accessing your data from everywhere.</p>
 <p>Well this post is where the link between <code>git-annex</code> and <code>ownCloud</code> should be emphasized: Use ownCloud as your &ldquo;frontend&rdquo; tool for accessing the data while letting git-annex do the &ldquo;backend&rdquo; (aka backup) job. While this might sound like a pretty easy task, it does have some peculiarities to be taken into consideration.</p>
-<h1 id="backup-setup">Backup setup</h1>
+<h1 id="backup-setup">
+  Backup setup
+  <a href="#backup-setup" class="heading-anchor" aria-label="Anchor">#</a>
+</h1>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
     blockdiag code
@@ -171,7 +174,10 @@ type="image/x-icon"/>
 <p><img src="https://blog.dornea.nu/posts/img/2016/distribute-your-backups-git-annex/xx01.png" alt="png"></p>
 <p>There is one <strong>centralized</strong> repo on my raspberry pi where my HDD is attached to. Usually I <em>push</em> stuff to the HDD using <code>rsync</code> from my laptop or <code>ownCloud</code> using my mobile clients. Afterwards the <strong>encrypted</strong> repo <strong>and</strong> the data itself is being pushed to some <strong>external server</strong>. Data is being encrypted using my private GPG key. From the server I could then replicate the repo+data stuff to some <strong>cloud</strong> provider like <em>AWS</em>, <em>DropBox</em> or whatever.</p>
 <p>Additionally one could push the git repo to GitHub in an encrypted form - without the data itself. It will then only contain the git information (symlinks) but no data (annexed data).</p>
-<h2 id="using-owncloud-with-git-annex">Using ownCloud with git-annex</h2>
+<h2 id="using-owncloud-with-git-annex">
+  Using ownCloud with git-annex
+  <a href="#using-owncloud-with-git-annex" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
     blockdiag code
@@ -204,13 +210,19 @@ type="image/x-icon"/>
 <li>you can add files/folders and delete them only if these weren&rsquo;t added to the git-annex repo yet</li>
 </ul>
 <p>That means: Newly added data (but not committed to the repo) can be deleted by the client which added the data. In this case old data can&rsquo;t be deleted. You&rsquo;ll have to work with git-annex to do that.</p>
-<h2 id="encryption">Encryption</h2>
+<h2 id="encryption">
+  Encryption
+  <a href="#encryption" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>One the important constraints before pushing my backups into the cloud was <strong>security</strong>. In order to be able to encrypt my stuff <strong>before</strong> pushing into the cloud, I had to</p>
 <ul>
 <li>generate a GPG key</li>
 <li>create a special remote (see below) which offers encryption</li>
 </ul>
-<h3 id="gpg">GPG</h3>
+<h3 id="gpg">
+  GPG
+  <a href="#gpg" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Generating a GPG key was the easiest step. Afterwards I had to make sure that my <strong>keychain</strong> was available <code>git-annex</code> for a specific period of time. Here are my configuration files:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -245,7 +257,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">allow-loopback-pinentry
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="keychain">Keychain</h3>
+</div><h3 id="keychain">
+  Keychain
+  <a href="#keychain" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Then I&rsquo;ve found <a href="http://www.funtoo.org/Keychain">keychain</a> which helps you manage your SSH and GPG keys in a secure manner. Adding this to your bashrc/zshrc/whatever</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -270,8 +285,14 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>will <strong>cache</strong> your GPG and SSH keys to a specific time of period.</p>
-<h1 id="git-annex-reference">git-annex reference</h1>
-<h2 id="create-git-repo">Create git repo</h2>
+<h1 id="git-annex-reference">
+  git-annex reference
+  <a href="#git-annex-reference" class="heading-anchor" aria-label="Anchor">#</a>
+</h1>
+<h2 id="create-git-repo">
+  Create git repo
+  <a href="#create-git-repo" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -280,7 +301,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git init
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="create-git-annex-repo">Create git annex repo</h2>
+</div><h2 id="create-git-annex-repo">
+  Create git annex repo
+  <a href="#create-git-annex-repo" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -289,8 +313,14 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git-annex init &lt;name&gt;
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h1 id="add-remotes">Add remotes</h1>
-<h2 id="create-bare-git-repo-on-the-server">Create bare git repo on the server</h2>
+</div><h1 id="add-remotes">
+  Add remotes
+  <a href="#add-remotes" class="heading-anchor" aria-label="Anchor">#</a>
+</h1>
+<h2 id="create-bare-git-repo-on-the-server">
+  Create bare git repo on the server
+  <a href="#create-bare-git-repo-on-the-server" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -299,7 +329,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git init --bare oc-encrypted 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="add-special-remote--sshrsync">Add special remote  (ssh+rsync)</h2>
+</div><h2 id="add-special-remote--sshrsync">
+  Add special remote  (ssh+rsync)
+  <a href="#add-special-remote--sshrsync" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -308,8 +341,14 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git-annex initremote oc-encrypted type=gcrypt gitrepo=ssh://backup.ext/home/backup/oc-encrypted keyid=xxxx
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h1 id="synchronize-data">Synchronize data</h1>
-<h2 id="sync-only-git-repository-to-ssh-remote">Sync only git repository to ssh remote</h2>
+</div><h1 id="synchronize-data">
+  Synchronize data
+  <a href="#synchronize-data" class="heading-anchor" aria-label="Anchor">#</a>
+</h1>
+<h2 id="sync-only-git-repository-to-ssh-remote">
+  Sync only git repository to ssh remote
+  <a href="#sync-only-git-repository-to-ssh-remote" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -318,7 +357,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git-annex sync oc-encrypted
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="sync-git-repo--content-to-ssh-remote">Sync git repo + content to ssh remote</h2>
+</div><h2 id="sync-git-repo--content-to-ssh-remote">
+  Sync git repo + content to ssh remote
+  <a href="#sync-git-repo--content-to-ssh-remote" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -382,8 +424,14 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">annex/objects/000/32a/GPGHMACSHA1--0222fb5a96702da2e0e0d763f3893d0a97897d32/GPGHMACSHA1--0222fb5a96702da2e0e0d763f3893d0a97897d32: GPG symmetrically encrypted data (AES cipher)
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h1 id="troubleshooting">Troubleshooting</h1>
-<h2 id="find-broken-symlinks">Find broken symlinks</h2>
+</div><h1 id="troubleshooting">
+  Troubleshooting
+  <a href="#troubleshooting" class="heading-anchor" aria-label="Anchor">#</a>
+</h1>
+<h2 id="find-broken-symlinks">
+  Find broken symlinks
+  <a href="#find-broken-symlinks" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -401,8 +449,14 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ find . -type l -! -exec test -e {} \; -print
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h1 id="garbage-collection">Garbage collection</h1>
-<h2 id="delete-unused-annexed-data">Delete unused (annexed) data</h2>
+</div><h1 id="garbage-collection">
+  Garbage collection
+  <a href="#garbage-collection" class="heading-anchor" aria-label="Anchor">#</a>
+</h1>
+<h2 id="delete-unused-annexed-data">
+  Delete unused (annexed) data
+  <a href="#delete-unused-annexed-data" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -458,7 +512,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ git-annex dropunused 1-4
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="delete-unused-remote">Delete unused remote</h2>
+</div><h2 id="delete-unused-remote">
+  Delete unused remote
+  <a href="#delete-unused-remote" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First you&rsquo;ll have to mark the repo as <strong>dead</strong>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4157,8 +4214,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4249,10 +4304,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4296,17 +4347,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

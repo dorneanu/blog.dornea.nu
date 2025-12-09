@@ -143,12 +143,18 @@ type="image/x-icon"/>
 
       <p>Simply out of necessity I&rsquo;ve written this mini-tutorial how debug android APKs using Eclipse and <a href="http://developer.android.com/tools/debugging/ddms.html">DDMS</a>.
 After hours of wild googling these are the steps to make your APK debuggable under Eclipse. I&rsquo;ll be using the <code>FakeBanker</code> APK reverse-engineered in previous <a href="http://blog.dornea.nu/tag/android/">articles</a>.</p>
-<h2 id="revisions">Revisions</h2>
+<h2 id="revisions">
+  Revisions
+  <a href="#revisions" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <ul>
 <li><em><strong>UPDATE 2014-12-09</strong></em>:</li>
 </ul>
 <p>Before looking at the next steps, make sure you&rsquo;ll have a look at <a href="http://adus.dev.dornea.nu/">ADUS</a>. It will help you with the automation of several steps described in this post. Added some additional infos regarding the breakpoints.</p>
-<h2 id="dump-the-apk">Dump the APK</h2>
+<h2 id="dump-the-apk">
+  Dump the APK
+  <a href="#dump-the-apk" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First of all make sure you&rsquo;ll have the latest version of <code>apktool</code>. I&rsquo;ve compiled it by myself:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -279,7 +285,10 @@ After hours of wild googling these are the steps to make your APK debuggable und
 </span></span><span class="line"><span class="cl"><span class="m">14</span> directories, <span class="m">3</span> files
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="make-apk-debuggable">Make APK debuggable</h2>
+</div><h2 id="make-apk-debuggable">
+  Make APK debuggable
+  <a href="#make-apk-debuggable" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>After dumping the APK now you&rsquo;ll have to mark your APK as debuggable. There are several ways in order to achieve that:</p>
 <ul>
 <li>manually</li>
@@ -298,7 +307,10 @@ After hours of wild googling these are the steps to make your APK debuggable und
 </span></span><span class="line"><span class="cl">...
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="build-new-app">Build new APP</h2>
+</div><h2 id="build-new-app">
+  Build new APP
+  <a href="#build-new-app" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now you&rsquo;re ready to build you new debuggable APK using <code>apktool</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -335,7 +347,10 @@ After hours of wild googling these are the steps to make your APK debuggable und
 </ul>
 </li>
 </ul>
-<h2 id="extract-sources">Extract sources</h2>
+<h2 id="extract-sources">
+  Extract sources
+  <a href="#extract-sources" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>I&rsquo;ll be using <code>jd-gui</code> to <strong>undex</strong> the dex files inside the newly created package. First let&rsquo;s unpack <code>FakeBanker.Debug.apk</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -390,7 +405,10 @@ After hours of wild googling these are the steps to make your APK debuggable und
 </div>
 </div><p>Now open the jar file using <code>jd-gui</code> and save the sources as zip like I did:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/jd-gui.png" alt=""></p>
-<h2 id="sign-the-apk">Sign the APK</h2>
+<h2 id="sign-the-apk">
+  Sign the APK
+  <a href="#sign-the-apk" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In order to push your APK to the device you&rsquo;ll have to <strong>sign</strong> it. I&rsquo;ll therefor using a test <a href="http://developer.android.com/tools/publishing/app-signing.html">certificate</a>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -419,7 +437,10 @@ After hours of wild googling these are the steps to make your APK debuggable und
 <pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># java -jar sign/dist/signapk.jar sign/testkey.x509.pem sign/testkey.pk8 FakeBanker.Debug.apk FakeBanker.Debug.Signed.apk          </span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="install-the-apk">Install the APK</h2>
+</div><h2 id="install-the-apk">
+  Install the APK
+  <a href="#install-the-apk" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Having signed the APK now you&rsquo;re ready to push it to your device and have some fun.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -444,7 +465,10 @@ After hours of wild googling these are the steps to make your APK debuggable und
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_installed.png" alt=""></p>
-<h2 id="add-sources">Add sources</h2>
+<h2 id="add-sources">
+  Add sources
+  <a href="#add-sources" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>We&rsquo;ll add the Java sources to the <code>source</code> directory structure:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -533,30 +557,54 @@ After hours of wild googling these are the steps to make your APK debuggable und
 </span></span><span class="line"><span class="cl"><span class="m">23</span> directories, <span class="m">4</span> files
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="debug-settings">Debug settings</h2>
+</div><h2 id="debug-settings">
+  Debug settings
+  <a href="#debug-settings" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>I had to active the debug settings for my targeted app. Go to <code>Device Settings</code> -&gt; <code>Select debug app</code>. Also make sure you have <code>Wait for debugger</code> activated.
 This will prevent your app starting before any debugger gets connected to it.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_select_debug_app.png" alt=""></p>
-<h2 id="setup-eclipse">Setup Eclipse</h2>
+<h2 id="setup-eclipse">
+  Setup Eclipse
+  <a href="#setup-eclipse" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First of all make sure you have the <a href="http://developer.android.com/tools/sdk/eclipse-adt.html">ADT</a> along with the <a href="http://developer.android.com/sdk/index.html">Android SDK</a> installed. Now let&rsquo;s move on:</p>
-<h4 id="create-new-java-project">Create new Java project</h4>
+<h4 id="create-new-java-project">
+  Create new Java project
+  <a href="#create-new-java-project" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>First create a new <em>Java</em> project and use <code>source</code> as the location of the project.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_create_java_project.png" alt=""></p>
-<h4 id="add-src-folder-to-build-path">Add src folder to build path</h4>
+<h4 id="add-src-folder-to-build-path">
+  Add src folder to build path
+  <a href="#add-src-folder-to-build-path" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>Make sure the <code>src</code> folder is added as a source location to the build path.</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_project_src.png" alt=""></p>
-<h4 id="check-project-properties">Check project properties</h4>
+<h4 id="check-project-properties">
+  Check project properties
+  <a href="#check-project-properties" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>You could also check the project properties by clicking on it and then <code>ALT+Enter</code>. You should have sth similar to:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_project_properties_build_path.png" alt=""></p>
-<h2 id="set-breakpoints">Set breakpoints</h2>
+<h2 id="set-breakpoints">
+  Set breakpoints
+  <a href="#set-breakpoints" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Having set up the Eclipse environment let&rsquo;s add some breakpoints.</p>
-<h3 id="update-2014-12-09">UPDATE 2014-12-09</h3>
+<h3 id="update-2014-12-09">
+  UPDATE 2014-12-09
+  <a href="#update-2014-12-09" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p><strong>Important note</strong>: As stated <a href="https://code.google.com/p/android-apktool/wiki/SmaliDebugging">here</a> you should pay attention <strong>where</strong> you set your breakpoint:</p>
 <blockquote>
 <p>You must select line with some instruction, you can&rsquo;t set breakpoint on lines starting with &ldquo;.&rdquo;, &ldquo;:&rdquo; or &ldquo;#&rdquo;.</p>
 </blockquote>
 <p>So be careful whet choosing your breakpoints otherwise you might ask yourself why your code doesn&rsquo;t get debugged.</p>
-<h3 id="debug-oncreate">Debug onCreate</h3>
+<h3 id="debug-oncreate">
+  Debug onCreate
+  <a href="#debug-oncreate" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>First search for <strong>onCreate</strong> in all files:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_search_on_create.png" alt=""></p>
 <p>Eclipse found several matches:</p>
@@ -565,7 +613,10 @@ This will prevent your app starting before any debugger gets connected to it.</p
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_set_breakpoint.png" alt=""></p>
 <p>Switching the perspective to <code>Debug</code> you should be able to see your breakpoints (marked in red):</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_view_breakpoints.png" alt=""></p>
-<h2 id="run-application">Run application</h2>
+<h2 id="run-application">
+  Run application
+  <a href="#run-application" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Before running our application we&rsquo;ll have a look at the already running processes on the device:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_running_processes.png" alt=""></p>
 <p>After starting the application in the <code>AVD</code> you&rsquo;ll notice a new process:</p>
@@ -573,7 +624,10 @@ This will prevent your app starting before any debugger gets connected to it.</p
 <p>The red &ldquo;bug&rdquo; indicates that the process isn&rsquo;t being debugged yet. Meanwhile the app waits for some debugger
 to get connected:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_waiting_for_debugger.png" alt=""></p>
-<h4 id="debug-configuration">Debug configuration</h4>
+<h4 id="debug-configuration">
+  Debug configuration
+  <a href="#debug-configuration" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p>In order to be able to debug process you&rsquo;ll have to add a new debug configuration:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_configuration.png" alt=""></p>
 <p>When setting up the configuration pay attention to the <strong>port</strong> your debugger should connect to. Make sure it matches with the port pair previously
@@ -582,7 +636,10 @@ seen in the running process list (marked in red):</p>
 <p>Now click on <strong>Debug</strong> and you&rsquo;re ready to go. Take a look at the running processes. You&rsquo;ll notice sth changed:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_running.png" alt=""></p>
 <p>The bug is now &ldquo;green&rdquo; meaning you&rsquo;re ready to debug your application.</p>
-<h2 id="trigger-breakpoint">Trigger breakpoint</h2>
+<h2 id="trigger-breakpoint">
+  Trigger breakpoint
+  <a href="#trigger-breakpoint" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>We&rsquo;ve previously set a breakpoint at the <code>onCreate</code> method. Now that the application is running I had to &ldquo;trigger&rdquo; that breakpoint. Switching to my AVD I took
 a look at the application and filled in the fields:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/app_enter_click.png" alt=""></p>
@@ -590,12 +647,18 @@ a look at the application and filled in the fields:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_hold_on_breakpoint.png" alt=""></p>
 <p>The execution stopped at the breakpoint. Success! Now I&rsquo;ve typed F6 (Step over) and the execution moved on:</p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/eclipse-ddms/eclipse_debug_stepin.png" alt=""></p>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Using great tools like <code>apktool</code> and <code>dex2jar</code> you can prepare your APK to inspect it dynamically in Eclipse. I think Eclipse (along with ADT) is a very powerful tool
 when it comes to dynamic analysis. I can easily switch between code parts and analyze the execution flow. Keep in mind that when the original is <em>obfuscated</em> you may
 want to debug <strong>smali</strong> code. In that case make sure you add the <strong>smali</strong> order instead of the <strong>src</strong> one (described earlier). For any questions feel free to write comments
 below.</p>
-<h2 id="references">References</h2>
+<h2 id="references">
+  References
+  <a href="#references" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <ul>
 <li><a href="http://www.programering.com/a/MjM5UTMwATg.html">http://www.programering.com/a/MjM5UTMwATg.html</a></li>
 <li><a href="http://resources.infosecinstitute.com/android-hacking-security-part-6-exploiting-debuggable-android-applications/">http://resources.infosecinstitute.com/android-hacking-security-part-6-exploiting-debuggable-android-applications/</a></li>
@@ -4393,8 +4456,6 @@ below.</p>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4485,10 +4546,6 @@ below.</p>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4532,17 +4589,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

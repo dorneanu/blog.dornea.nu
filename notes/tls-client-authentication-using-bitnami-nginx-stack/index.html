@@ -150,7 +150,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[info] 30979#0: *2 client SSL certificate verify error: (18:self signed certificate) while reading client request headers, client: xxx, server: yyy, request: &#34;GET / HTTP/1.1&#34;, host: &#34;yyy&#34;
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="use-nginx-stack-environment">Use nginx stack environment</h2>
+</div><h2 id="use-nginx-stack-environment">
+  Use nginx stack environment
+  <a href="#use-nginx-stack-environment" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p><strong>Not</strong> generating the certificates inside the Bitnami environment was the root cause - at least I think it is. In your Bitnami installation folder (remember the instructions <a href="http://blog.dornea.nu/2016/02/12/chrooting-nginx-php-fpm-and-mysql-using-bitnami/">here</a>) you&rsquo;ll find a small script called <code>use_nginxstack</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -167,7 +170,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>I still don&rsquo;t know <strong>why</strong> but you&rsquo;ll have to use the <code>openssl</code> binary inside the nginx stack.</p>
-<h2 id="generate-root-ca">Generate root CA</h2>
+<h2 id="generate-root-ca">
+  Generate root CA
+  <a href="#generate-root-ca" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First generate a <strong>key</strong> for the root CA and then the correponding <strong>certificate</strong>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -179,7 +185,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">bash-4.3# openssl req -new -x509 -days <span class="m">365</span> -key ca.key -out ca.crt
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="generate-client-certificate">Generate client certificate</h2>
+</div><h2 id="generate-client-certificate">
+  Generate client certificate
+  <a href="#generate-client-certificate" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First generate some <em>client</em> key (without any password):</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -207,7 +216,10 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">bash-4.3# openssl x509 -req -days <span class="m">365</span> -in client.csr -CA ca.crt -CAkey ca.key -set_serial <span class="m">01</span> -out client.crt
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="configure-nginx">Configure nginx</h2>
+</div><h2 id="configure-nginx">
+  Configure nginx
+  <a href="#configure-nginx" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>To make this work you&rsquo;ll have to configure your <code>nginx</code>. In your <code>nginx-vhosts.conf</code> make sure you have this:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -273,7 +285,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>So your client has to specify the <strong>client</strong> certificate. Let&rsquo;s move on to next section.</p>
-<h2 id="exportimport-client-key">Export/Import client key</h2>
+<h2 id="exportimport-client-key">
+  Export/Import client key
+  <a href="#exportimport-client-key" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Let&rsquo;s now <strong>export</strong> the client stuff in order to import it into your browser:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4055,8 +4070,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4147,10 +4160,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4194,17 +4203,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

@@ -141,10 +141,16 @@ type="image/x-icon"/>
   <div class="lh-copy post-content">
     
 
-      <h2 id="why-nginx">Why Nginx?</h2>
+      <h2 id="why-nginx">
+  Why Nginx?
+  <a href="#why-nginx" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Since I wanted to improve my sites load speed I thought I should look around for some lighttpd-alternatives which I have used for so many years. The really annoying thing about <code>lighttpd</code> is its configuration syntax. I don&rsquo;t think it&rsquo;s comprehensive nor easy to learn. Besides that I wanted to have a configuration where <code>memcahed</code> plays a major role: Serve static content (html) from memcache. Lighttpd does have some modules/tutorials how to interact with <code>memcached</code> but I couldn&rsquo;t find any working configuration. Frustration but also curiosity brought me to <code>Nginx</code>.</p>
 <p>According to the author Nginx <code>is an HTTP and reverse proxy server, as well as a mail proxy server</code>. I thought I should give it a try and test its performance against Lighttpd. Meanwhile I&rsquo;m using Lighttpd <code>'AND</code>&rsquo; Nginx on my server due to some regexp issue that have to be solved very soon. In that case Nginx acts a a proxy server (see below for configuration stuff).</p>
-<h2 id="get-it">Get it!</h2>
+<h2 id="get-it">
+  Get it!
+  <a href="#get-it" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Before going further you should have the latest (stable) available Nginx version. If you use Debian make sure, you add following to your <code>/etc/apt/sources.list</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -155,7 +161,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>On my system I have currently version <code>1.0.9-1</code> installed.</p>
-<h2 id="basic-configuration">Basic configuration</h2>
+<h2 id="basic-configuration">
+  Basic configuration
+  <a href="#basic-configuration" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>The main file for this part is <code>/etc/nginx/nginx.conf</code>. This is my <code>nginx.conf</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -244,7 +253,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>I won&rsquo;t explain every line since this is not what I&rsquo;m supposed to do. Please have a look at the links at the end of this article for additional links.</p>
-<h2 id="vhost-configuration">vHost configuration</h2>
+<h2 id="vhost-configuration">
+  vHost configuration
+  <a href="#vhost-configuration" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Well this is probably the most interesting part. You should have a configuration file per each vhost located at <code>/etc/nginx/conf.d/</code>. In my case the configuration was adapted to Drupals system and needs. Let&rsquo;s have a look:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -617,7 +629,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">/usr/bin/spawn-fcgi -F <span class="m">1</span> -C <span class="m">10</span> -a 127.0.0.1 -s /tmp/fcgi.sock -u www-data -g www-data -f <span class="s2">&#34;/usr/bin/php5-cgi -c /etc/php5/cgi/php.ini&#34;</span> -P /var/run/fastcgi-php.pid
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="nginx-as-proxy-server">Nginx as proxy server</h2>
+</div><h2 id="nginx-as-proxy-server">
+  Nginx as proxy server
+  <a href="#nginx-as-proxy-server" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>As already mentioned nginx can be used as a proxy server. In my case I need nginx to redirect requests on a certain subdomain to <code>lighttpd</code> listening to a local interface. The configuration:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -686,9 +701,18 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>All requests to <code>'dl.dornea.nu/*</code>&rsquo; will be redirected to <code>'http://127.0.0.1:8080</code>&rsquo;. Isn&rsquo;t that simple? Simple configuration, no need for magic!</p>
-<h2 id="benchmarks">Benchmarks</h2>
-<h3 id="ab-apache-suite-benchmark">ab (apache suite) benchmark</h3>
-<h4 id="lighttpd">lighttpd</h4>
+<h2 id="benchmarks">
+  Benchmarks
+  <a href="#benchmarks" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
+<h3 id="ab-apache-suite-benchmark">
+  ab (apache suite) benchmark
+  <a href="#ab-apache-suite-benchmark" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
+<h4 id="lighttpd">
+  lighttpd
+  <a href="#lighttpd" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -805,7 +829,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"> 100%  <span class="m">15536</span> <span class="o">(</span>longest request<span class="o">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="nginx">nginx</h4>
+</div><h4 id="nginx">
+  nginx
+  <a href="#nginx" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -920,12 +947,24 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"> 100%    <span class="m">713</span> <span class="o">(</span>longest request<span class="o">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="toolspingdomcom-benchmark">tools.pingdom.com benchmark</h3>
-<h4 id="lighttpd-1">lighttpd</h4>
+</div><h3 id="toolspingdomcom-benchmark">
+  tools.pingdom.com benchmark
+  <a href="#toolspingdomcom-benchmark" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
+<h4 id="lighttpd-1">
+  lighttpd
+  <a href="#lighttpd-1" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <p><img src="https://blog.dornea.nu/posts/img/2012/pingdom_nl_dornea.nu_lighttpd.png" alt="lighttpd"></p>
-<h3 id="nginx-1">nginx</h3>
+<h3 id="nginx-1">
+  nginx
+  <a href="#nginx-1" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p><img src="https://blog.dornea.nu/posts/img/2012/pingdom_nl_dornea.nu_nginx.png" alt="lighttpd"></p>
-<h2 id="literature">Literature</h2>
+<h2 id="literature">
+  Literature
+  <a href="#literature" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <ul>
 <li>Nginx
 <ul>
@@ -4619,8 +4658,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4711,10 +4748,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4758,17 +4791,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

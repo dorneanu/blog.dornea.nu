@@ -130,7 +130,7 @@ type="image/x-icon"/>
      ~
   
 
-17 mins
+18 mins
 |
 
     
@@ -147,7 +147,10 @@ type="image/x-icon"/>
 </blockquote>
 <p>I was charmed but its capabilities and the pythonic art of handling with APKs. In the 2nd step I&rsquo;ve needed a malware to play it, so I had a look at <a href="http://contagiominidump.blogspot.de/">Contagio Mobile</a>. There I&rsquo;ve randomly chosen a malware and got stucked with <a href="http://contagiominidump.blogspot.de/2014/05/android-fake-banker.html">Fake Banker</a>. There are some technical details about the malware itself gained during automated tests which can be read <a href="http://www.apk-analyzer.net/analysis/646/3752/0/html">here</a>.</p>
 <p>This article will only deal with the <strong>static source code analysis</strong> of the malware. A 2nd part dedicated to the <strong>dynamic analysis</strong> is planed as well.</p>
-<h3 id="start-kali-linux">Start Kali Linux</h3>
+<h3 id="start-kali-linux">
+  Start Kali Linux
+  <a href="#start-kali-linux" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Stay safe and run the stuff isolated:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -218,7 +221,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">permitted by applicable law.
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="install-sdk">Install SDK</h3>
+</div><h3 id="install-sdk">
+  Install SDK
+  <a href="#install-sdk" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -236,7 +242,10 @@ type="image/x-icon"/>
 </div><blockquote>
 <p>Make sure you have the <strong>ia32-libs</strong> installed.</p>
 </blockquote>
-<h3 id="setup-path">Setup PATH</h3>
+<h3 id="setup-path">
+  Setup PATH
+  <a href="#setup-path" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -269,7 +278,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&#34;/root/work/apk/&#34;</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="setup-ipython-settings">Setup IPython settings</h3>
+</div><h3 id="setup-ipython-settings">
+  Setup IPython settings
+  <a href="#setup-ipython-settings" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -298,7 +310,10 @@ type="image/x-icon"/>
 </div>
 </div><pre><code>Populating the interactive namespace from numpy and matplotlib
 </code></pre>
-<h2 id="get-malicious-apks">Get malicious APKs</h2>
+<h2 id="get-malicious-apks">
+  Get malicious APKs
+  <a href="#get-malicious-apks" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now that you got everything running it&rsquo;s time to get some <strong>malicious</strong> APKs to play with. On <a href="http://contagiominidump.blogspot.de/">contagio mobile</a> you&rsquo;ll get tons of malicious files to look at. I&rsquo;ve decided to look at the <a href="http://www.mediafire.com/download/e938k6t3y6ul1yy/FakeBankerAPKs.zip">Fake Banker</a>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -354,7 +369,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">Compressed: <span class="m">622336</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="scratch-the-surface">Scratch the surface</h2>
+</div><h2 id="scratch-the-surface">
+  Scratch the surface
+  <a href="#scratch-the-surface" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In this section we&rsquo;ll have a brief look at the APK(s):</p>
 <ul>
 <li>Which files does the APK contain?</li>
@@ -372,7 +390,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">os.chdir(&#34;/root/work/apk/DroidBox/APK&#34;)
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="check-apks-contents">Check APKs contents</h3>
+</div><h3 id="check-apks-contents">
+  Check APKs contents
+  <a href="#check-apks-contents" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -387,7 +408,10 @@ type="image/x-icon"/>
 a15b704743f53d3edb9cdd1182ca78d1: Zip archive data, at least v2.0 to extract
 aac4d15741abe0ee9b4afe78be090599: Zip archive data, at least v2.0 to extract
 </code></pre>
-<h3 id="zippped-files">Zippped files</h3>
+<h3 id="zippped-files">
+  Zippped files
+  <a href="#zippped-files" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -422,7 +446,10 @@ signed by SignApk
 ---------                     -------
    449584                     17 files
 </code></pre>
-<h2 id="dump-apks-content-with-apktool">Dump APKs content with apktool</h2>
+<h2 id="dump-apks-content-with-apktool">
+  Dump APKs content with apktool
+  <a href="#dump-apks-content-with-apktool" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -437,7 +464,10 @@ signed by SignApk
 </div>
 </div><pre><code>Destination directory (/root/work/apk/DroidBox/APK/output) already exists. Use -f switch if you want to overwrite it.
 </code></pre>
-<h3 id="androidmanifestxml">AndroidManifest.xml</h3>
+<h3 id="androidmanifestxml">
+  AndroidManifest.xml
+  <a href="#androidmanifestxml" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -492,7 +522,10 @@ signed by SignApk
     &lt;/application&gt;
 &lt;/manifest&gt;
 </code></pre>
-<h3 id="check-for-media">Check for media</h3>
+<h3 id="check-for-media">
+  Check for media
+  <a href="#check-for-media" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -518,7 +551,10 @@ signed by SignApk
 <p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_23_3.png" alt="png"></p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_23_4.png" alt="png"></p>
 <p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_23_5.png" alt="png"></p>
-<h3 id="directory-structure">Directory structure</h3>
+<h3 id="directory-structure">
+  Directory structure
+  <a href="#directory-structure" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -561,7 +597,10 @@ signed by SignApk
 
 9 directories, 17 files
 </code></pre>
-<h3 id="first-findings">First findings</h3>
+<h3 id="first-findings">
+  First findings
+  <a href="#first-findings" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Having a look at the <em>AndroidManifest.xml</em> file itself you can see that we have a <em>MessageReceiver</em> with a quite high priority:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -603,7 +642,10 @@ signed by SignApk
 <li><code>output/res/raw/blfs.key</code></li>
 <li><code>output/res/raw/config.cfg</code></li>
 </ul>
-<h2 id="static-code-analysis-using-androguard">Static code analysis using AndroGuard</h2>
+<h2 id="static-code-analysis-using-androguard">
+  Static code analysis using AndroGuard
+  <a href="#static-code-analysis-using-androguard" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -634,7 +676,10 @@ signed by SignApk
 </div>
 </div><pre><code>'\nd = anz.DalvikVMFormat(a.get_dex())\ndx = anz.VMAnalysis( d )\ngx = anz.GVMAnalysis( dx, None )\nd.set_vmanalysis( dx )\nd.set_gvmanalysis( gx )\n'
 </code></pre>
-<h3 id="analyze-the-manifest-file">Analyze the manifest file</h3>
+<h3 id="analyze-the-manifest-file">
+  Analyze the manifest file
+  <a href="#analyze-the-manifest-file" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -795,7 +840,10 @@ typeInternetConnection
         return v2;
     }
 </code></pre>
-<h2 id="decrypting-stuff">Decrypting stuff</h2>
+<h2 id="decrypting-stuff">
+  Decrypting stuff
+  <a href="#decrypting-stuff" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Apparently there is an encryption routine (<em>Blowfish</em>) used for some <em>stuff</em>. In this case a new class <code>v2</code> is initialized. The constructor gets several parameters:</p>
 <ul>
 <li>content of <code>BLFSK</code> (<code>v1</code>)</li>
@@ -1398,7 +1446,10 @@ output/smali/com/gmail/xpack/R$raw.smali:.field public static final config:I = 0
   </tbody>
 </table>
 </div>
-<h2 id="inspect-malwares-config">Inspect malwares config</h2>
+<h2 id="inspect-malwares-config">
+  Inspect malwares config
+  <a href="#inspect-malwares-config" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Looks interesting. Are those URLs still available?</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1484,7 +1535,10 @@ output/smali/com/gmail/xpack/R$raw.smali:.field public static final config:I = 0
   ('server', 'Apache')]}
 </code></pre>
 <p>Hmmm.. Nothing special. The servers might have been patched meanwhile against this malware. I hope we&rsquo;re going to see more when doing the dynamic analysis.</p>
-<h2 id="control-flow-graph-cfg">Control Flow Graph (CFG)</h2>
+<h2 id="control-flow-graph-cfg">
+  Control Flow Graph (CFG)
+  <a href="#control-flow-graph-cfg" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1593,7 +1647,10 @@ signed by SignApk
 </span></span><span class="line"><span class="cl">    return graph
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="comgmailxlibsmyfunctions-getfirst">com.gmail.xlibs.myFunctions: getFirst()</h3>
+</div><h3 id="comgmailxlibsmyfunctions-getfirst">
+  com.gmail.xlibs.myFunctions: getFirst()
+  <a href="#comgmailxlibsmyfunctions-getfirst" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1627,7 +1684,10 @@ signed by SignApk
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_79_0.png" alt="png"></p>
-<h3 id="comgmailxlibsmyfunctions-getsecond">com.gmail.xlibs.myFunctions: getSecond()</h3>
+<h3 id="comgmailxlibsmyfunctions-getsecond">
+  com.gmail.xlibs.myFunctions: getSecond()
+  <a href="#comgmailxlibsmyfunctions-getsecond" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1645,7 +1705,10 @@ signed by SignApk
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_81_0.png" alt="png"></p>
-<h3 id="comgmailxservices-xrepeat">com.gmail.xservices: XRepeat</h3>
+<h3 id="comgmailxservices-xrepeat">
+  com.gmail.xservices: XRepeat
+  <a href="#comgmailxservices-xrepeat" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p><code>getFirst</code> and <code>getSecond</code> are both called from the class <code>com.gmail.xservices.XRepeat</code> in the method <code>doInBackground</code>. Let&rsquo;s search for the appropriate <em>method descriptor</em>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1752,7 +1815,10 @@ signed by SignApk
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blog.dornea.nu/posts/img/2014/disect-android-apks-like-a-pro-sca/output_86_0.png" alt="png"></p>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>I&rsquo;ve found cool new ways how to analyze an APK using python tools. <strong>AndroGuard</strong> seems to be a quite good framework to work it. Although I&rsquo;ve managed it to get <em>almost</em> everything working, I must say that the project itself (and its components!) aren&rsquo;t well documented. Then I had several errors like this one:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -5824,8 +5890,6 @@ signed by SignApk
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -5916,10 +5980,6 @@ signed by SignApk
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -5963,17 +6023,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

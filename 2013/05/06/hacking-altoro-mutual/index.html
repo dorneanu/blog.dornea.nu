@@ -130,7 +130,7 @@ type="image/x-icon"/>
      ~
   
 
-12 mins
+13 mins
 |
 
     
@@ -141,11 +141,20 @@ type="image/x-icon"/>
   <div class="lh-copy post-content">
     
 
-      <h2 id="introduction">Introduction</h2>
+      <h2 id="introduction">
+  Introduction
+  <a href="#introduction" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>AltoroMutual is an vulnerable-by-design web application created by WatchFire (now AppScan Standard) as a demo test application for their BlackBox Scanner. (Source:<a href="https://www.owasp.org/index.php/AltoroMutual">https://www.owasp.org/index.php/AltoroMutual</a>)</p>
 <p>The demo can be found at <a href="http://demo.testfire.net/">http://demo.testfire.net/</a>.</p>
-<h2 id="vulnerabilities">Vulnerabilities</h2>
-<h3 id="defaultaspxcontent">/default.aspx?content=</h3>
+<h2 id="vulnerabilities">
+  Vulnerabilities
+  <a href="#vulnerabilities" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
+<h3 id="defaultaspxcontent">
+  /default.aspx?content=
+  <a href="#defaultaspxcontent" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>There is a <strong>file inclusion vulnerability</strong> which we&rsquo;ll use for further investigation. URL <em><a href="http://demo.testfire.net/default.aspx?content=../testing.txt">http://demo.testfire.net/default.aspx?content=../testing.txt</a></em> will show:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -164,7 +173,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see we have found the root path of the web application which is at <code>D:downloads!AltoroMutual_v6website</code>.</p>
-<h2 id="bank">/bank</h2>
+<h2 id="bank">
+  /bank
+  <a href="#bank" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <hr>
 <p>You&rsquo;ll find a <strong>directory listening</strong> at <a href="http://demo.testfire.net/bank/">http://demo.testfire.net/bank/</a> which will show you a lot of information about the applications functionalities.</p>
 <div class="highlight"><div class="chroma">
@@ -250,7 +262,10 @@ type="image/x-icon"/>
 </div>
 </div><p>We&rsquo;ll have to bypass the filter in order to get the file. Remember the <strong>null string vulnerability</strong>? Here we go: <a href="http://demo.testfire.net/default.aspx?content=../bank/login.aspx.cs%EF%BF%BD.txt">http://demo.testfire.net/default.aspx?content=../bank/login.aspx.cs%00.txt</a>.</p>
 <p>That will show you the content of <em>/bank/login.aspx.cs</em>. Now you can inspect the the source code to find more vulnerabilities.</p>
-<h2 id="bankloginaspx">/bank/login.aspx</h2>
+<h2 id="bankloginaspx">
+  /bank/login.aspx
+  <a href="#bankloginaspx" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Here is the source code (<a href="http://demo.testfire.net/default.aspx?content=../bank/login.aspx.cs%EF%BF%BD.txt">http://demo.testfire.net/default.aspx?content=../bank/login.aspx.cs%00.txt</a>):</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -558,7 +573,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="brute-force-vulnerability">Brute force vulnerability</h3>
+</div><h3 id="brute-force-vulnerability">
+  Brute force vulnerability
+  <a href="#brute-force-vulnerability" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Before we investigate the code, let&rsquo;s have a look at a much common vulnerability. Go to <a href="http://demo.testfire.net/bank/login.aspx">http://demo.testfire.net/bank/login.aspx</a> and use a random user for the login process. You&rsquo;ll get:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -578,7 +596,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><em>admin:admin</em> is a valid username/password combination.</p>
-<h3 id="sql-injection-using-post-parameters">SQL injection using POST parameters</h3>
+<h3 id="sql-injection-using-post-parameters">
+  SQL injection using POST parameters
+  <a href="#sql-injection-using-post-parameters" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Now let&rsquo;s have a closer look at the source code&hellip; Let&rsquo;s analyze the <em>!ValidateUser</em>function:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -729,7 +750,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">uid=admin<span class="err">&amp;</span>passw=&#39; OR 1=1;--<span class="err">&amp;</span>btnSubmit=Login
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="base64-encoded-login-credentials">Base64-encoded login credentials</h3>
+</div><h3 id="base64-encoded-login-credentials">
+  Base64-encoded login credentials
+  <a href="#base64-encoded-login-credentials" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>After a successful login the server will set a cookie <em>amUserInfo</em> which contains login information encoded in base64. This is for sure a vulnerability since an attacker could easily decode the information and get the login credentials.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -748,9 +772,15 @@ type="image/x-icon"/>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">amUserInfo=Username=admin&#39; OR 1=2;--&amp;Password=test
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="bankmainaspx">/bank/main.aspx</h2>
+</div><h2 id="bankmainaspx">
+  /bank/main.aspx
+  <a href="#bankmainaspx" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>After a successful login you&rsquo;ll be redirected to <a href="http://demo.testfire.net/bank/main.aspx">http://demo.testfire.net/bank/main.aspx</a>. Let&rsquo;s have a look at the functionalities within this page.</p>
-<h3 id="source-code-disclosure">Source code disclosure&lt;</h3>
+<h3 id="source-code-disclosure">
+  Source code disclosure&lt;
+  <a href="#source-code-disclosure" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Here&rsquo;s the source code (<a href="http://demo.testfire.net/default.aspx?content=../bank/main.aspx.cs%EF%BF%BD.txt">http://demo.testfire.net/default.aspx?content=../bank/main.aspx.cs%00.txt</a>)</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -962,7 +992,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="sql-injection-using-cookie-data">SQL injection using Cookie data</h3>
+</div><h3 id="sql-injection-using-cookie-data">
+  SQL injection using Cookie data
+  <a href="#sql-injection-using-cookie-data" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>After login following request will be sent to the server:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1068,7 +1101,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Simple, isn&rsquo;t it?</p>
-<h3 id="xss-using-cookie-data">XSS using cookie data</h3>
+<h3 id="xss-using-cookie-data">
+  XSS using cookie data
+  <a href="#xss-using-cookie-data" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Alternatively you could combine SQLi with XSS:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4943,8 +4979,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -5035,10 +5069,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -5082,17 +5112,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

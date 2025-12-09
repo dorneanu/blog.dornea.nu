@@ -130,7 +130,7 @@ type="image/x-icon"/>
      ~
   
 
-8 mins
+9 mins
 |
 
     
@@ -143,7 +143,10 @@ type="image/x-icon"/>
 
       <p>Being involved in different projects where web technologies are used, I have to make sure that <a href="http://blog.dornea.nu/tag/appsec/">AppSec</a> related security nightmares
 are avoided. One of those security nightmare - and in my own oppinion the most complicated one to explain to a <strong>non-sec</strong> person - is <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet">CSRF</a>. I won&rsquo;t go into details since these are freely available. Furthermore I would like to focus on the <strong>countermeasures</strong> one would implement to prevent CSRF. In some cases it&rsquo;s suggested to think of some attack scenarios before relying on the implemented solution. But first let&rsquo;s have a look how a typical CSRF attack works like.</p>
-<h2 id="general-idea">General idea</h2>
+<h2 id="general-idea">
+  General idea
+  <a href="#general-idea" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Usually we have 3 components involved:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -188,7 +191,10 @@ to fire requests to the server <strong>without</strong> any user interaction. Th
 </details>
 
 <p><img src="https://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx02.png" alt=""></p>
-<h2 id="some-example">Some example</h2>
+<h2 id="some-example">
+  Some example
+  <a href="#some-example" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now let&rsquo;s think of some <strong>real-world</strong> example. User <strong>Bob</strong> has an account on <code>http://bank.nu</code>. Attacker <strong>Victor</strong> will prepare a site <code>http://attacker.nu</code> which once accessed will load following <strong>iframe</strong>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -211,7 +217,10 @@ to fire requests to the server <strong>without</strong> any user interaction. Th
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>In this case the <strong>iframe</strong> ins&rsquo;t visible at all (<code>display:none</code>) and some JavaScript will trigger the submission of the form once the <code>script</code>tag is loaded aka the user enters the site. In this fictional example the form will trigger a <code>POST</code> request which will <strong>transfer</strong> some money to the <strong>attacker</strong> (Victor). Next the <strong>attacker</strong> will send <strong>Bob</strong> a mail with a link to his site <code>http://attacker.nu</code>. Bob will click on this link and the browser will open the link. Untill now nothing happens. Once the browser will load the attackers site, the whole <strong>voodoo</strong> behind CSRF would take place.</p>
-<h2 id="csrf-fundamentals">CSRF fundamentals</h2>
+<h2 id="csrf-fundamentals">
+  CSRF fundamentals
+  <a href="#csrf-fundamentals" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>At this point I&rsquo;d like to slow down things a little bit and focus on some details. In the past people have asked me some questions or made some observations regarding the whole process. Among these (I tried to apply the questions/observations to the previous example):</p>
 <ol>
 <li><em>&ldquo;In a iframe you are able to load stuff (javascript, images etc.) via GET. How do you trigger a <strong>POST</strong> request at all?&rdquo;</em></li>
@@ -261,7 +270,10 @@ This is a very important one and <strong>often misunderstood</strong> by non-sec
 <p><img src="https://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx04.png" alt=""></p>
 <p>That in turn means that every time a request is conducted by your browser - whether intended by the user or not - the session cookie will be <strong>always</strong> be sent
 along with the request.</p>
-<h2 id="the-attack">The attack</h2>
+<h2 id="the-attack">
+  The attack
+  <a href="#the-attack" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Recalling a few thoughts made some sentences ago, the attack will consist of following steps:</p>
 <ol>
 <li>Send a malicious link to <strong>Bob</strong></li>
@@ -307,7 +319,10 @@ along with the request.</p>
 </ul>
 <p>But the attacker doesn&rsquo;t have to know the cookie. In the case of CSRF he/she will fire up a request assuming that the victim is <strong>authentificated</strong> against <code>bank.nu</code>. If not, the
 attack will have no consequences since the POST request won&rsquo;t be accepted by the server.</p>
-<h2 id="the-defense">The defense</h2>
+<h2 id="the-defense">
+  The defense
+  <a href="#the-defense" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Since it is the <strong>natural</strong> behaviour of the browser to add the cookies to some specific requests (in order to tell the server that the user is authentificated),
 the mitigation of such attacks has to be done somewhere else. The <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#General_Recommendation:_Synchronizer_Token_Pattern">generic solution</a> consists of adding some <strong>random secure token</strong> which has to be:</p>
 <ul>
@@ -316,7 +331,10 @@ the mitigation of such attacks has to be done somewhere else. The <a href="https
 <li>generated by a secure PRNG</li>
 </ul>
 <p>The <strong>client</strong> has to provide this token in its requests. The server will reject the request/action if the token is not valid. Sounds simple, isn&rsquo;t it? There are two ways to do it:</p>
-<h3 id="provide-the-token-in-a-hidden-field-synchronizer-token-pattern">Provide the token in a hidden field (Synchronizer Token Pattern)</h3>
+<h3 id="provide-the-token-in-a-hidden-field-synchronizer-token-pattern">
+  Provide the token in a hidden field (Synchronizer Token Pattern)
+  <a href="#provide-the-token-in-a-hidden-field-synchronizer-token-pattern" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>If the client wants to perform an action (like sending a POST request), the server will put inside the <strong>body</strong> content a hidden token which the client has to provide when sending the POST request:</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -336,7 +354,10 @@ the mitigation of such attacks has to be done somewhere else. The <a href="https
 
 <p><img src="https://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx06.png" alt=""></p>
 <p>The token should change every time the site is loaded again. That means that the server should <strong>not</strong> accept 2 POST requests with the <strong>same</strong> token value.</p>
-<h3 id="provide-session-based-csrf-token-double-submit-cookies">Provide session based CSRF token (Double Submit Cookies)</h3>
+<h3 id="provide-session-based-csrf-token-double-submit-cookies">
+  Provide session based CSRF token (Double Submit Cookies)
+  <a href="#provide-session-based-csrf-token-double-submit-cookies" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Once the client has authentificated against the server, the server will send the client a CSRF token which will be used for <strong>every</strong> request. The token value <strong>doesn&rsquo;t change</strong> and remains the same for the whole session.</p>
 <details>
   <summary style="background-color:#f5f5f5;border:1px solid #ccc;padding:5px;">
@@ -382,7 +403,10 @@ server can&rsquo;t distinguish between a <strong>legitimate</strong> and a <stro
 
 <p><img src="https://blog.dornea.nu/posts/img/2016/some-words-on-csrf-and-cookies/xx08.png" alt=""></p>
 <p>This is the reason the attacker <strong>can&rsquo;t</strong> read the token value even though he is able to <em>forge</em> requests. Providing the token value <strong>twice</strong> make this approach secure since the attacker can&rsquo;t read the token value and therefore can&rsquo;t forge a valid request (accepted by the server).</p>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>There are some other patterns I&rsquo;m aware of (there might more!):</p>
 <ul>
 <li><a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Encrypted_Token_Pattern">Encrypted Token Pattern</a></li>
@@ -4056,8 +4080,6 @@ considered:</p>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4148,10 +4170,6 @@ considered:</p>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4195,17 +4213,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

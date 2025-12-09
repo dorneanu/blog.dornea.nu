@@ -201,7 +201,10 @@ Installed diagmagic.py. To use it, type:
 Installed gvmagic.py. To use it, type:
   %load_ext gvmagic
 </code></pre>
-<h2 id="what-is-it">What is it?</h2>
+<h2 id="what-is-it">
+  What is it?
+  <a href="#what-is-it" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Having to implement <em>certificate pinning</em> most developers have a poor knowledge about it and the impact it <em>could</em> have on an end-user if not done properly. I think MITM attacks are nowadays widely understood (generally speaking) and developers seem to accept the importance of security measurements against this specific type of attacks. Certificate pinning referrs to the <strong>authenticity</strong> of data and the process of comparing some <em>presented</em> to <em>expected</em> data. Take a look at the <a href="https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning">OWASP site</a> for a more detailed introduction. But first let&rsquo;s have a look how client communicates to a server using a secure (SSL/TLS) channel:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -288,7 +291,10 @@ Installed gvmagic.py. To use it, type:
 <li><strong>pin the certificate</strong></li>
 </ul>
 <p>In the following I&rsquo;ll take a closer look what&rsquo;s inside the certificate and which options one has to do the pinning.</p>
-<h2 id="inside-the-certificate">Inside the certificate</h2>
+<h2 id="inside-the-certificate">
+  Inside the certificate
+  <a href="#inside-the-certificate" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>A <a href="http://en.wikipedia.org/wiki/X.509">X.509 certificate</a> usually consists of three main components:</p>
 <ol>
 <li>the <em>certificate</em> itself</li>
@@ -296,7 +302,10 @@ Installed gvmagic.py. To use it, type:
 <li>certificate <em>signature</em></li>
 </ol>
 <p>For the rest of post I&rsquo;ll be analyzing the SSL certificate of <a href="https://www.google.com">www.google.com</a>. Now let&rsquo;s get back to work:</p>
-<h4 id="connection-settings">Connection settings</h4>
+<h4 id="connection-settings">
+  Connection settings
+  <a href="#connection-settings" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -345,7 +354,10 @@ Installed gvmagic.py. To use it, type:
 </span></span><span class="line"><span class="cl"><span class="n">ssl_context</span><span class="o">.</span><span class="n">load_verify_locations</span><span class="p">(</span><span class="s2">&#34;/etc/ssl/certs/ca-certificates.crt&#34;</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="make-connection">Make connection</h4>
+</div><h4 id="make-connection">
+  Make connection
+  <a href="#make-connection" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -371,7 +383,10 @@ Installed gvmagic.py. To use it, type:
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now that we&rsquo;ve established the socket connection, we can fetch the certificate and do the analysis.</p>
-<h4 id="fetch-the-certificate">Fetch the certificate</h4>
+<h4 id="fetch-the-certificate">
+  Fetch the certificate
+  <a href="#fetch-the-certificate" class="heading-anchor" aria-label="Anchor">#</a>
+</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -392,7 +407,10 @@ Installed gvmagic.py. To use it, type:
 <p>You don&rsquo;t know nothing about <strong>ASN.1</strong>, <strong>DER</strong> or <strong>PEM</strong>? No problem! Just have a look at this <a href="https://tls.mbed.org/kb/cryptography/asn1-key-structures-in-der-and-pem">great article</a>. But to summarize it:
 <em>DER</em> is binary format, its structure is called <em>ASN.1</em>. <em>PEM</em> format is Base64 encoded representation of <em>DER</em>.</p>
 </blockquote>
-<h5 id="pem-format">PEM format</h5>
+<h5 id="pem-format">
+  PEM format
+  <a href="#pem-format" class="heading-anchor" aria-label="Anchor">#</a>
+</h5>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -428,7 +446,10 @@ RhahlBFXh6VobK8dbFtql6P4+x//7+ze0tXaMRoRsOQfjwWmD6SaA13JJOo8/oBQ
 aUYdqnU+Mgkfro7CDpEjOucBzZbsSevm9vPQMhExdju6pKf+nC0bz+7T
 -----END CERTIFICATE-----
 </code></pre>
-<h5 id="text-format">TEXT format</h5>
+<h5 id="text-format">
+  TEXT format
+  <a href="#text-format" class="heading-anchor" aria-label="Anchor">#</a>
+</h5>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -458,7 +479,10 @@ aUYdqnU+Mgkfro7CDpEjOucBzZbsSevm9vPQMhExdju6pKf+nC0bz+7T
 <p>Have a look at <a href="http://www.zytrax.com/tech/survival/ssl.html">this site</a> for great explanations regarding the properties.</p>
 </blockquote>
 <p>From an attackers perspective generating certificates that contain the same data is easy peasy. So while doing the certificate pinning you shouldn&rsquo;t rely on these values. Furthermore rely on data that can not be manipulated or data that has been generated randomly. Of course there is still a risk with &ldquo;pseudo-random&rdquo; data in case of insecure <a href="http://en.wikipedia.org/wiki/Pseudorandom_number_generator">PRNGs</a>. Or don&rsquo;t you remember this <a href="http://article.gmane.org/gmane.linux.debian.security.announce/1614">one</a> anymore? :)</p>
-<h2 id="certificate-pinning">Certificate pinning</h2>
+<h2 id="certificate-pinning">
+  Certificate pinning
+  <a href="#certificate-pinning" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>When it comes to pinning you&rsquo;ll have different options what to &ldquo;pin&rdquo; for. Let&rsquo;s have a look how this is done using <em>Python</em>, but the procedure should apply to other programming languages as well. First let&rsquo;s do some conversions and extract data we&rsquo;re interested in.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -522,7 +546,10 @@ aUYdqnU+Mgkfro7CDpEjOucBzZbsSevm9vPQMhExdju6pKf+nC0bz+7T
 </span></span><span class="line"><span class="cl"><span class="n">sign_algo</span> <span class="o">=</span> <span class="n">x509</span><span class="o">.</span><span class="n">get_signature_algorithm</span><span class="p">()</span> 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="pin-the-certificate">Pin the certificate</h3>
+</div><h3 id="pin-the-certificate">
+  Pin the certificate
+  <a href="#pin-the-certificate" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>You can of course check of the X.509 properties you&rsquo;ve seen before, but you should not rely on these values. Instead use a digest (e.g. SHA-1, SHA-256 etc.) to <strong>fingerprint</strong> the certificate. If the generated fingerprint is exactly the one you have <em>expected</em> then you can trust the certificate. However certificates may change at regular time intervals, so you&rsquo;ll have to adapt your <em>expected</em> fingerprint value every time this happens. Pinning the <em>public key</em> is a much better solution.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -558,7 +585,10 @@ aUYdqnU+Mgkfro7CDpEjOucBzZbsSevm9vPQMhExdju6pKf+nC0bz+7T
 <li>the certificates length &gt; 0</li>
 <li>? (did i miss sth?)</li>
 </ul>
-<h3 id="pin-the-public-key">Pin the public key</h3>
+<h3 id="pin-the-public-key">
+  Pin the public key
+  <a href="#pin-the-public-key" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>I&rsquo;ll first extract the <strong>public key</strong> from the certificate and print it in a human readable way.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -693,7 +723,10 @@ Exponent: 65537 (0x10001)
 </div>
 </div><pre><code>618a8d05fce8d0f8f790e0a2fbaaf739ff7049e7da087520e81a31d0af81513a  /tmp/pyopenssl/pubkey.pem
 </code></pre>
-<h2 id="validate-certificate">Validate certificate</h2>
+<h2 id="validate-certificate">
+  Validate certificate
+  <a href="#validate-certificate" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Get the <em>trust chain</em>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -844,9 +877,15 @@ DONE
 <blockquote>
 <p>If you have any ideas how to solve this, just drop me a line!</p>
 </blockquote>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p><strong>Certificate pinning</strong> is a useful step towards authenticity verfication of a X.509 certificate. Keep in mind that <strong>MITM</strong> attacks are no rarity anymore and should be always be taken into consideration. Do <strong>not</strong> just validate the certificate. Make sure it is the one you&rsquo;ve been <strong>expecting</strong> while connecting to your site/SSL-backend. Use <strong>fingerprints</strong> (in general <strong>digests</strong>) which you can always compute on the <strong>presented</strong> information and compare it against an expected value.</p>
-<h3 id="references">References</h3>
+<h3 id="references">
+  References
+  <a href="#references" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <ul>
 <li><a href="http://www.artur-rodrigues.com/tech/2013/08/19/verifying-x509-signatures-in-python.html">Verifying x509 signatures in Python</a></li>
 <li><a href="http://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python">How can I retrieve the TLS/SSL peer certificate of a remote host using python?</a></li>
@@ -4752,8 +4791,6 @@ DONE
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4844,10 +4881,6 @@ DONE
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4891,17 +4924,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

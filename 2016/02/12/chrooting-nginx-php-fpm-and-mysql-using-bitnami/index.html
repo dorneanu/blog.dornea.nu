@@ -175,13 +175,19 @@ type="image/x-icon"/>
 </div>
 </div><p>The binaries inside the stack are using <strong>libraries</strong> inside the <em>closed</em> system (by changing <code>LD_LIBRARY_PATH</code>). So the Bitnami installation will run out of the stack without interacting with the underlying operating system (read more about the technology <a href="https://bitnami.com/learn_more">here</a>). This is a great advantage since you can simply <strong>copy</strong> the directory, change the <strong>settings</strong> and you&rsquo;ll have another instance running in its own directory (remember the <strong>portable</strong> aspect of my wish list before?)</p>
 <p>However the Bitnami stacks won&rsquo;t use <code>chroot</code> by default. This is where I had to commit my own modifications to the local installation. But, one thing after another.</p>
-<h2 id="the-nginx-stack">The Nginx stack</h2>
+<h2 id="the-nginx-stack">
+  The Nginx stack
+  <a href="#the-nginx-stack" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>If you&rsquo;re recalling the <a href="http://blog.dornea.nu/2016/01/15/howto-put-nginx-and-php-to-jail-in-debian-8">previous post</a>, my <code>chroot</code> environment consisted of: <code>nginx</code>, <code>php-fpm</code> and <code>mysql</code>. Fortunately Bitnami provides a <a href="https://bitnami.com/stack/nginx">Nginx Stack</a> which is a:</p>
 <blockquote>
 <p>&ldquo;&hellip; complete,  fully-integrated and ready to run PHP, MySQL and Nginx development environment. In addition, it bundles phpMyAdmin, SQLite, ImageMagick, FastCGI, Memcache, GD, CURL, PEAR, PECL and other components. Also known as LEMP for Linux, WEMP for Windows and MEMP for OS X.&rdquo; (Source: <a href="https://bitnami.com/stack/nginx">https://bitnami.com/stack/nginx</a>)</p>
 </blockquote>
 <p>So let&rsquo;s give it a try.</p>
-<h2 id="installing-bitnami-nginx-stack">Installing Bitnami Nginx stack</h2>
+<h2 id="installing-bitnami-nginx-stack">
+  Installing Bitnami Nginx stack
+  <a href="#installing-bitnami-nginx-stack" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Download the <a href="https://bitnami.com/stack/nginx/installer">installer</a> to your machine and run it:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -307,7 +313,10 @@ type="image/x-icon"/>
 <li><code>MySQL</code> will listen on <code>localhost:3307</code></li>
 <li><code>nginx</code> will listen on <code>localhost:8080</code></li>
 </ul>
-<h2 id="setup-chroot-environment">Setup chroot environment</h2>
+<h2 id="setup-chroot-environment">
+  Setup chroot environment
+  <a href="#setup-chroot-environment" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now that we have installed the <em>nginx stack</em>, we&rsquo;ll setup a <code>chroot</code> environment and copy the <em>nginx stack directory</em> to it. Supposing that the chroot will be located at <code>/home/bitnami/nginxstack-chroot</code>, inside the chroot we&rsquo;ll have following directory structure:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -720,9 +729,15 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>This is very important</strong>, since all daemons (nginx, php-fpm, mysqld) will look at <code>/home/bitnami/nginxstack</code> for their config files etc. before entering the <code>chroot</code>.</p>
-<h2 id="patch-scripts">Patch scripts</h2>
+<h2 id="patch-scripts">
+  Patch scripts
+  <a href="#patch-scripts" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now the <strong>controll scripts</strong> have to be modified to run the binaries in a <code>chroot</code>.</p>
-<h3 id="patch-setenvsh">Patch setenv.sh</h3>
+<h3 id="patch-setenvsh">
+  Patch setenv.sh
+  <a href="#patch-setenvsh" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>At <code>/home/bitnami/nginxstack/scripts/setenv.sh</code> (inside the <code>chroot</code>) there is a script which sets all the environment variables (e.g. <code>LD_LIBRARY_PATH</code>) for the binaries. We&rsquo;ll use this script to set a variable which we&rsquo;ll use a few times in some other scripts. At the beginning of the script set the <code>JAIL</code> variable accordingly:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -738,7 +753,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="o">[</span>...<span class="o">]</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="patch-nginx-control-script">Patch nginx control script</h3>
+</div><h3 id="patch-nginx-control-script">
+  Patch nginx control script
+  <a href="#patch-nginx-control-script" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>When calling <code>./ctlscript.sh start nginx</code> the script will then call <code>./nginx/scripts/ctl.sh</code> and finally this will call <code>./nginx/sbin/nginx</code>. The last contains the commands for calling the <code>nginx</code> binary directly. You&rsquo;ll have sth like this:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -787,7 +805,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>I&rsquo;ve set the <code>LD_LIBRARY_PATH</code> manually since not all libs are located at <code>/lib/*</code>.</p>
-<h3 id="patch-php-fpm-control-script">Patch php-fpm control script</h3>
+<h3 id="patch-php-fpm-control-script">
+  Patch php-fpm control script
+  <a href="#patch-php-fpm-control-script" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Despite some previous approaches this turned out to be a very simple step. All you&rsquo;ll have to do is to add following lines to your <code>php-fpm.conf</code> insde <code>/home/bitnami/nginxstack/php/etc/php-fpm.conf</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -800,7 +821,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>This will put the <code>php-fpm</code> workers into <code>/home/bitnami/nginxstack-chroot</code>. However, you may want to restrict that a little bit more and &ldquo;jail&rdquo; <code>php-fpm</code> to <code>/home/bitnami/nginxstack/apps/yourapp</code>. I&rsquo;ll come back to this point in a sec.</p>
-<h3 id="patch-mysql-control-script">Patch mysql control script</h3>
+<h3 id="patch-mysql-control-script">
+  Patch mysql control script
+  <a href="#patch-mysql-control-script" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Patching the <code>mysql</code> control scripts seemed to be a never-ending story. Till I&rsquo;ve found <code>--chroot</code>:</p>
 <blockquote>
 <p>&ldquo;Put the mysqld server in a closed environment during startup by using the chroot() system call.&rdquo; (Source: <a href="http://dev.mysql.com/doc/refman/5.7/en/server-options.html">http://dev.mysql.com/doc/refman/5.7/en/server-options.html</a>)</p>
@@ -847,9 +871,15 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="o">[</span>...<span class="o">]</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="check-setup">Check setup</h2>
+</div><h2 id="check-setup">
+  Check setup
+  <a href="#check-setup" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now that we have modified the scripts let&rsquo;s have a dry run.</p>
-<h3 id="nginx">nginx</h3>
+<h3 id="nginx">
+  nginx
+  <a href="#nginx" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -877,7 +907,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>So there is a nginx instance (PID = <code>22706</code>) and this is running in a <code>chroot</code> (/home/bitnami/nginxstack-chroot). Alright!</p>
-<h3 id="php-fpm">php-fpm</h3>
+<h3 id="php-fpm">
+  php-fpm
+  <a href="#php-fpm" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -902,7 +935,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">lrwxrwxrwx <span class="m">1</span> root root <span class="m">0</span> Feb  <span class="m">8</span> 21:07 /proc/15134/root -&gt; /home/bitnami/nginxstack-chroot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="mysql">mysql</h3>
+</div><h3 id="mysql">
+  mysql
+  <a href="#mysql" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -937,7 +973,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">lrwxrwxrwx 1 root root 0 Feb  9 16:37 /proc/14237/root -&gt; /home/bitnami/nginxstack-chroot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="run-the-nginx-stack">Run the nginx stack</h2>
+</div><h2 id="run-the-nginx-stack">
+  Run the nginx stack
+  <a href="#run-the-nginx-stack" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now that everything seems to work fine, let&rsquo;s start all services using Bitnamis <code>ctlscript.sh</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -972,7 +1011,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">/home/bitnami/nginxstack/mysql/scripts/ctl.sh : mysql stopped
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="check-uid-and-gid">Check UID and GID</h3>
+</div><h3 id="check-uid-and-gid">
+  Check UID and GID
+  <a href="#check-uid-and-gid" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>To make sure that the previously launched services are dropping privileges (as they are supposed to!) let&rsquo;s have a look at the running processes:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1023,9 +1065,15 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl">100   101 /home/bitnami/nginxstack/mysql/bin/mysqld.bin --defaults-file=/home/bitnami/nginxstack/mysql/my.cnf --basedir=/home/bitnami/nginxstack/mysql --datadir=/home/bitnami/nginxstack/mysql/data --plugin-dir=/home/bitnami/nginxstack/mysql/lib/plugin --user=mysql --lower-case-table-names=1 --log-error=/home/bitnami/nginxstack/mysql/data/mysqld.log --pid-file=/home/bitnami/nginxstack/mysql/data/mysqld.pid --socket=/home/bitnami/nginxstack/mysql/tmp/mysql.sock --port=3307
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="extras">Extras</h2>
+</div><h2 id="extras">
+  Extras
+  <a href="#extras" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>In this section I&rsquo;ll try to sum up some &ldquo;best practices&rdquo; I&rsquo;ve experienced while setting up the (web) application inside the bitnami nginxstack chrooted environment.</p>
-<h3 id="check-uidgid">Check UID/GID</h3>
+<h3 id="check-uidgid">
+  Check UID/GID
+  <a href="#check-uidgid" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>Inside the chroot <code>/etc/passwd</code> should have:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1064,7 +1112,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>If you don&rsquo;t pay attention to this, you might be setting ownserships and permissions to the right user/group, but the UID/GID might differ between the chroot and the operating system.</p>
-<h3 id="applying-ld_library_path-globally">Applying LD_LIBRARY_PATH globally</h3>
+<h3 id="applying-ld_library_path-globally">
+  Applying LD_LIBRARY_PATH globally
+  <a href="#applying-ld_library_path-globally" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>If some of your web applications are using some extra binaries (<code>/usr/bin/git</code> for example), you may have to install the dependent libraries for this binary like we did before using <code>n2chroot</code>. If <code>git</code> has some dependencies, that are already installed inside the chroot (let&rsquo;s say inside <code>/home/bitnami/nginxstack/common/lib</code>) you can set the <code>LD_LIBRARY_PATH</code> variable globally. Inside the chroot, you&rsquo;ll have <code>/etc/ld.so.conf</code>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1107,7 +1158,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now you should be running <code>git</code> without any missing dependencies inside your chroot.</p>
-<h3 id="run-own-php-fpm-pool-for-each-vhost">Run own php-fpm pool for each vhost</h3>
+<h3 id="run-own-php-fpm-pool-for-each-vhost">
+  Run own php-fpm pool for each vhost
+  <a href="#run-own-php-fpm-pool-for-each-vhost" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
 <p>In some previous thoughts I&rsquo;ve mentioned that you may want to put <code>php-fpm</code> in &ldquo;jail&rdquo; into some more specific than <code>/home/bitnami/nginxstack</code>. For example if you have a vhost at <code>bla.example.com</code> and the according conf/htdocs file structure is located at <code>/home/bitnami/nginxstack/apps/bla.example.com</code> you can <code>chroot</code> php-fpm into the same location.</p>
 <blockquote>
 <p>Btw: The <a href="https://wiki.bitnami.com/Infrastructure_Stacks/Bitnami_Nginx_Stack#How_can_I_create_a_custom_PHP_application.3f">bitnami documentation</a> regarding custom PHP applications  is awesome!</p>
@@ -1260,7 +1314,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Voila!</p>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">
+  Conclusion
+  <a href="#conclusion" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>The Bitnami nginx stack is a really easy-to-configure bundle one can either use in a dev or productive environment. Applying additional security measurements to it like <code>chroot</code> will help you to mitigate the impact of a potential attack. Again: <strong>chroot != security</strong>. Don&rsquo;t blindly rely on <code>chroot</code> and make sure you deeply understand how this technology works and what its potential risks could damage your business.</p>
 
     
@@ -5003,8 +5060,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -5095,10 +5150,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -5142,17 +5193,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>

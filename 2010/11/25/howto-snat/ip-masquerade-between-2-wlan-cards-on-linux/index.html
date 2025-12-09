@@ -142,7 +142,10 @@ type="image/x-icon"/>
     
 
       <p>Although this is a quite minimalistic howto you should be able to do IP masquerading between your WLAN cards in less than 2 minutes. As I posted <a href="http://lists.debian.org/debian-user/2010/10/msg00884.html">here</a> I&rsquo;d like to share use my WLAN cards to share one cards Internet connection with the other one. The following steps don&rsquo;t apply only to wifi cards. The same commands should work on Ethernet cards too. Let&rsquo;s start&hellip;</p>
-<h2 id="the-big-picture">The Big picture</h2>
+<h2 id="the-big-picture">
+  The Big picture
+  <a href="#the-big-picture" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p><img src="https://blog.dornea.nu/posts/img/2010/220/snat-ip-masquerade.png" alt="The big picture"></p>
 <p>As you see you have 2 networks:</p>
 <ul>
@@ -150,9 +153,15 @@ type="image/x-icon"/>
 <li>192.168.178.x (wlan0)</li>
 </ul>
 <p>wlan1 will act as a Access Point waiting for incomming connections and wlan0 will be connected to the Internet via FritzBox. Let&rsquo;s get all the pieces together.</p>
-<h2 id="configure-wlan0">Configure wlan0</h2>
+<h2 id="configure-wlan0">
+  Configure wlan0
+  <a href="#configure-wlan0" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Well there is not much to say about this section. Make sure you have a working Internet connection via wlan0.</p>
-<h2 id="configure-wlan1">Configure wlan1</h2>
+<h2 id="configure-wlan1">
+  Configure wlan1
+  <a href="#configure-wlan1" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Now comes the more interesting part. You want to allow your clients (whoever they are) to connect to your host via <strong>wlan1</strong> and use the Internet connection on <strong>wlan0</strong>. Pretty much &hellip; simple! Let&rsquo;s sum up which steps are required:</p>
 <ul>
 <li>Allow users to connect to wlan1</li>
@@ -161,7 +170,10 @@ type="image/x-icon"/>
 <li>Forward packets comming from <strong>wlan1</strong> to <strong>wlan0</strong></li>
 <li>Forward packets which refer to our <em>10.0.0.x</em> network from <strong>wlan0</strong> to <strong>wlan1</strong></li>
 </ul>
-<h2 id="configure-hostapd">Configure hostapd</h2>
+<h2 id="configure-hostapd">
+  Configure hostapd
+  <a href="#configure-hostapd" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>That sounds quite simple, isn&rsquo;t it? Suppose <strong>wlan1</strong> is already listening for incoming connection. You can achieve that by using <strong>hostapd</strong>  and thereby acting like an Access Point on <strong>wlan1</strong>. Maybe I&rsquo;ll write an additional tutorial related to this topic. But by now let&rsquo;s say hostapd is running (among with **dhcpd, **which will assign IP addresses to the clients) and your clients are able to connect to your wifi interface and are successfully in getting an IP address.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -251,7 +263,10 @@ type="image/x-icon"/>
 </span></span><span class="line"><span class="cl"><span class="n">Nov</span> <span class="mi">25</span> <span class="mi">20</span><span class="p">:</span><span class="mi">03</span><span class="p">:</span><span class="mi">16</span> <span class="n">nat</span> <span class="n">dhcpd</span><span class="p">:</span> <span class="n">Wrote</span> <span class="mi">11</span> <span class="n">leases</span> <span class="n">to</span> <span class="n">leases</span> <span class="n">file</span><span class="o">.</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="do-some-tests">Do some tests</h2>
+</div><h2 id="do-some-tests">
+  Do some tests
+  <a href="#do-some-tests" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Let&rsquo;s say host <em><code>BlackTiny</code></em> is listening for incomming connections and host <code>*Daemon</code>* would like to connect to <em><code>BlackTiny</code></em>. <strong>Start with the client</strong>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -318,7 +333,10 @@ type="image/x-icon"/>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Oh &hellip; I have forgotten about that. We&rsquo;ll have to allow <em><code>Daemon</code></em> to access the Internet through <em><code>BlackTiny</code></em>. Move on to the next step.</p>
-<h2 id="do-the-cool-stuff">Do the cool stuff</h2>
+<h2 id="do-the-cool-stuff">
+  Do the cool stuff
+  <a href="#do-the-cool-stuff" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>First  of all we&rsquo;ll enable port forwarding on <em><code>BlackTiny</code></em>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -404,7 +422,10 @@ type="image/x-icon"/>
 <blockquote>
 <p>&ldquo;The <b class="COMMAND">-to-source</b> option is used to specify which source the packet should use. This option, at its simplest, takes one IP address which we want to use for the <b class="COMMAND">source IP</b> address in the <b class="COMMAND">IP header</b>. [&hellip;] The -to-source IP numbers could then, for instance, be something like: 194.236.50.155-194.236.50.160. [&hellip;] We can also specify a range of ports to be used by <b class="COMMAND">SNAT</b>. All the source ports would then be confined to the ports specified. The port bit of the rule would then look like in the example above, :1024-32000. This is only valid if -p tcp or -p udp was specified somewhere in the match of the rule in question. [&hellip;]&rdquo;</p>
 </blockquote>
-<h2 id="give-it-a-try">Give it a try</h2>
+<h2 id="give-it-a-try">
+  Give it a try
+  <a href="#give-it-a-try" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
 <p>Client <em><code>Daemon</code></em>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4348,8 +4369,6 @@ type="image/x-icon"/>
 
 
 
-<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
-
 
 
 <div class="pagination tc tr-l db fixed-l bottom-2-l right-2-l mb3 mb0-l">
@@ -4440,10 +4459,6 @@ type="image/x-icon"/>
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
-<style>.is-active-link::before { background-color: var(--secondary-color); }</style>
-
 
 
 
@@ -4487,17 +4502,6 @@ function topFunction() {
 
 
 
-
-if (document.getElementById("contents-list") !== null && document.getElementsByClassName("post-content").length !== 0) { 
-  tocbot.init({
-    
-    tocSelector: '#contents-list',
-    
-    contentSelector: '.post-content',
-    
-    headingSelector: 'h1, h2, h3',
-  });
-}
 
 
 </script>
