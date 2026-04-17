@@ -9,12 +9,12 @@
   <meta content='Using forge with gh CLI token - blog.dornea.nu' property='og:title' />
 
 
-<meta name="description" content="Forge requires a GitHub token stored in ~/.authinfo or ~/.netrc. For GitHub Enterprise (e.g., corporate instances), this means:
-Manually creating a PAT (Personal Access Token) in the GitHub UI Figuring out the right OAuth scopes Storing it securely Remembering to rotate it If you already use the gh CLI and are authenticated, you have a perfectly good token — why not reuse it?
-Advise ghub to use gh CLI # Instead of storing a token manually, we can intercept forge&rsquo;s token lookup and delegate it to the gh CLI." />
-<meta property="og:description" content="Forge requires a GitHub token stored in ~/.authinfo or ~/.netrc. For GitHub Enterprise (e.g., corporate instances), this means:
-Manually creating a PAT (Personal Access Token) in the GitHub UI Figuring out the right OAuth scopes Storing it securely Remembering to rotate it If you already use the gh CLI and are authenticated, you have a perfectly good token — why not reuse it?
-Advise ghub to use gh CLI # Instead of storing a token manually, we can intercept forge&rsquo;s token lookup and delegate it to the gh CLI." />
+<meta name="description" content="Update 2026-04-17: A Reddit comment pointed out a cleaner approach: instead of advising ghub--token directly, you can register a proper auth-source backend. This way any package that uses auth-source (not just ghub/forge) benefits automatically. Both approaches are documented below.
+Forge requires a GitHub token stored in ~/.authinfo or ~/.netrc. For GitHub Enterprise (e.g., corporate instances), this means:
+Manually creating a PAT (Personal Access Token) in the GitHub UI Figuring out the right OAuth scopes Storing it securely Remembering to rotate it If you already use the gh CLI and are authenticated, you have a perfectly good token — why not reuse it?" />
+<meta property="og:description" content="Update 2026-04-17: A Reddit comment pointed out a cleaner approach: instead of advising ghub--token directly, you can register a proper auth-source backend. This way any package that uses auth-source (not just ghub/forge) benefits automatically. Both approaches are documented below.
+Forge requires a GitHub token stored in ~/.authinfo or ~/.netrc. For GitHub Enterprise (e.g., corporate instances), this means:
+Manually creating a PAT (Personal Access Token) in the GitHub UI Figuring out the right OAuth scopes Storing it securely Remembering to rotate it If you already use the gh CLI and are authenticated, you have a perfectly good token — why not reuse it?" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.dornea.nu/2026/04/13/using-forge-with-gh-cli-token/" />
 
@@ -24,14 +24,14 @@ Advise ghub to use gh CLI # Instead of storing a token manually, we can intercep
 
 <meta name="twitter:title" content="Using forge with gh CLI token - blog.dornea.nu" />
 
-<meta name="twitter:description" content="Forge requires a GitHub token stored in ~/.authinfo or ~/.netrc. For GitHub Enterprise (e.g., corporate instances), this means:
-Manually creating a PAT (Personal Access Token) in the GitHub UI Figuring out the right OAuth scopes Storing it securely Remembering to rotate it If you already use the gh CLI and are authenticated, you have a perfectly good token — why not reuse it?
-Advise ghub to use gh CLI # Instead of storing a token manually, we can intercept forge&rsquo;s token lookup and delegate it to the gh CLI." />
+<meta name="twitter:description" content="Update 2026-04-17: A Reddit comment pointed out a cleaner approach: instead of advising ghub--token directly, you can register a proper auth-source backend. This way any package that uses auth-source (not just ghub/forge) benefits automatically. Both approaches are documented below.
+Forge requires a GitHub token stored in ~/.authinfo or ~/.netrc. For GitHub Enterprise (e.g., corporate instances), this means:
+Manually creating a PAT (Personal Access Token) in the GitHub UI Figuring out the right OAuth scopes Storing it securely Remembering to rotate it If you already use the gh CLI and are authenticated, you have a perfectly good token — why not reuse it?" />
 
 
 <meta property="article:published_time" content="2026-04-13T00:00:00&#43;00:00"/>
 
-<meta property="article:modified_time" content="2026-04-13T19:11:50&#43;02:00"/>
+<meta property="article:modified_time" content="2026-04-17T10:39:03&#43;02:00"/>
 
 
 
@@ -169,7 +169,7 @@ type="image/x-icon"/>
      ~
   
 
-3 mins
+4 mins
 |
 
     
@@ -180,7 +180,12 @@ type="image/x-icon"/>
   <div class="lh-copy post-content">
     
 
-      <p><a href="https://github.com/magit/forge">Forge</a> requires a GitHub token stored in <code>~/.authinfo</code> or <code>~/.netrc</code>. For GitHub Enterprise (e.g.,
+      <blockquote>
+<p><strong>Update 2026-04-17:</strong> A <a href="https://www.reddit.com/r/emacs/comments/1sl1lex/using_forge_with_gh_cli_token/">Reddit comment</a> pointed out a cleaner approach: instead of advising
+<code>ghub--token</code> directly, you can register a proper <code>auth-source</code> backend. This way <em>any</em> package that
+uses <code>auth-source</code> (not just ghub/forge) benefits automatically. Both approaches are documented below.</p>
+</blockquote>
+<p><a href="https://github.com/magit/forge">Forge</a> requires a GitHub token stored in <code>~/.authinfo</code> or <code>~/.netrc</code>. For GitHub Enterprise (e.g.,
 corporate instances), this means:</p>
 <ul>
 <li>Manually creating a PAT (Personal Access Token) in the GitHub UI</li>
@@ -289,6 +294,65 @@ lookup if our function returns <code>nil</code>.</p>
 <p><code>ghub</code> (Forge&rsquo;s HTTP layer) calls <code>ghub--token</code> to resolve credentials. By advising it with
 <code>:before-until</code>, we short-circuit the lookup for matching hostnames and return the <code>gh</code> CLI token
 directly — no <code>~/.authinfo</code> entry needed.</p>
+<h2 id="better-alternative-a-proper-auth-source-backend">
+  Better alternative: a proper auth-source backend
+  <a href="#better-alternative-a-proper-auth-source-backend" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
+<p>The approach above works, but it&rsquo;s ghub-specific. A <a href="https://www.reddit.com/r/emacs/comments/1sl1lex/using_forge_with_gh_cli_token/">Reddit commenter</a> pointed out that Magit
+ultimately resolves tokens via <code>auth-source-search</code>, so you can register a custom <code>auth-source</code>
+backend instead. This is cleaner because:</p>
+<ul>
+<li>No monkey-patching of <code>ghub--token</code></li>
+<li>Any package using <code>auth-source</code> gets the token automatically</li>
+<li>Follows the intended extension point of the <code>auth-source</code> API</li>
+</ul>
+<!--listend-->
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">defun</span> <span class="nv">auth-source-backend-gh-parse</span> <span class="p">(</span><span class="nv">entry</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nv">string=</span> <span class="s">&#34;gh&#34;</span> <span class="nv">entry</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nv">auth-source-backend</span>
+</span></span><span class="line"><span class="cl">     <span class="nb">:source</span> <span class="s">&#34;.&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="nb">:type</span> <span class="ss">&#39;gh</span>
+</span></span><span class="line"><span class="cl">     <span class="nb">:search-function</span> <span class="nf">#&#39;</span><span class="nv">auth-source-gh-search</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;auth-source-backend-parser-functions</span> <span class="nf">#&#39;</span><span class="nv">auth-source-backend-gh-parse</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">cl-defun</span> <span class="nv">auth-source-gh-search</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">spec</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">when-let*</span> <span class="p">((</span><span class="nv">host</span> <span class="p">(</span><span class="nf">plist-get</span> <span class="nv">spec</span> <span class="nb">:host</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">              <span class="p">((</span><span class="nv">string-match-p</span> <span class="s">&#34;github\\.example\\.corp&#34;</span> <span class="p">(</span><span class="nf">format</span> <span class="s">&#34;%s&#34;</span> <span class="nv">host</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">let</span> <span class="p">((</span><span class="nv">token</span> <span class="p">(</span><span class="nv">string-trim</span> <span class="p">(</span><span class="nv">shell-command-to-string</span>
+</span></span><span class="line"><span class="cl">                               <span class="s">&#34;gh auth token --hostname github.example.corp&#34;</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Using gh CLI token for %s&#34;</span> <span class="nv">host</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="o">`</span><span class="p">(</span><span class="nb">:secret</span> <span class="o">,</span><span class="nv">token</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;auth-sources</span> <span class="s">&#34;gh&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">auth-source-forget-all-cached</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You can drop this inside your <code>forge</code> <code>use-package</code> <code>:config</code> block, or load it independently — it
+doesn&rsquo;t depend on forge at all.</p>
+<p>The old <code>advice-add</code> approach still works if you prefer to keep it scoped strictly to ghub. But for a
+new setup, the <code>auth-source</code> backend is the right way to go.</p>
 <h2 id="alternative-consult-gh">
   Alternative: consult-gh
   <a href="#alternative-consult-gh" class="heading-anchor" aria-label="Anchor">#</a>
@@ -4039,7 +4103,7 @@ everything.</p>
   <div class="tc mt4 pt3 f7 o-70">
     Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo 0.120.3</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
     <br>
-    <span class="o-50">Last build: 13 Apr 2026, 17:14 UTC</span>
+    <span class="o-50">Last build: 17 Apr 2026, 08:40 UTC</span>
   </div>
 </footer>
   
