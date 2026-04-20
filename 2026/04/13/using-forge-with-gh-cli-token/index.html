@@ -31,7 +31,7 @@ Manually creating a PAT (Personal Access Token) in the GitHub UI Figuring out th
 
 <meta property="article:published_time" content="2026-04-13T00:00:00&#43;00:00"/>
 
-<meta property="article:modified_time" content="2026-04-17T10:39:03&#43;02:00"/>
+<meta property="article:modified_time" content="2026-04-20T14:00:16&#43;02:00"/>
 
 
 
@@ -181,9 +181,9 @@ type="image/x-icon"/>
     
 
       <blockquote>
-<p><strong>Update 2026-04-17:</strong> A <a href="https://www.reddit.com/r/emacs/comments/1sl1lex/using_forge_with_gh_cli_token/">Reddit comment</a> pointed out a cleaner approach: instead of advising
-<code>ghub--token</code> directly, you can register a proper <code>auth-source</code> backend. This way <em>any</em> package that
-uses <code>auth-source</code> (not just ghub/forge) benefits automatically. Both approaches are documented below.</p>
+<p><strong>Update 2026-04-17:</strong> A <a href="https://www.reddit.com/r/emacs/comments/1sl1lex/using_forge_with_gh_cli_token/">Reddit comment</a> pointed out a cleaner approach: instead of advising <code>ghub--token</code>
+directly, you can register a proper <code>auth-source</code> backend. This way <em>any</em> package that uses <code>auth-source</code>
+(not just ghub/forge) benefits automatically. Both approaches are documented below.</p>
 </blockquote>
 <p><a href="https://github.com/magit/forge">Forge</a> requires a GitHub token stored in <code>~/.authinfo</code> or <code>~/.netrc</code>. For GitHub Enterprise (e.g.,
 corporate instances), this means:</p>
@@ -327,6 +327,7 @@ backend instead. This is cleaner because:</p>
 </span><span class="lnt">16
 </span><span class="lnt">17
 </span><span class="lnt">18
+</span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-emacs-lisp" data-lang="emacs-lisp"><span class="line"><span class="cl"><span class="p">(</span><span class="nb">defun</span> <span class="nv">auth-source-backend-gh-parse</span> <span class="p">(</span><span class="nv">entry</span><span class="p">)</span>
@@ -340,10 +341,11 @@ backend instead. This is cleaner because:</p>
 </span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">cl-defun</span> <span class="nv">auth-source-gh-search</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">spec</span> <span class="kp">&amp;allow-other-keys</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nv">when-let*</span> <span class="p">((</span><span class="nv">host</span> <span class="p">(</span><span class="nf">plist-get</span> <span class="nv">spec</span> <span class="nb">:host</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl">              <span class="p">((</span><span class="nv">string-match-p</span> <span class="s">&#34;github\\.example\\.corp&#34;</span> <span class="p">(</span><span class="nf">format</span> <span class="s">&#34;%s&#34;</span> <span class="nv">host</span><span class="p">))))</span>
-</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">let</span> <span class="p">((</span><span class="nv">token</span> <span class="p">(</span><span class="nv">string-trim</span> <span class="p">(</span><span class="nv">shell-command-to-string</span>
-</span></span><span class="line"><span class="cl">                               <span class="s">&#34;gh auth token --hostname github.example.corp&#34;</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="nb">let*</span> <span class="p">((</span><span class="nv">token</span> <span class="p">(</span><span class="nv">string-trim</span> <span class="p">(</span><span class="nv">shell-command-to-string</span>
+</span></span><span class="line"><span class="cl">                                <span class="s">&#34;gh auth token --hostname github.example.corp&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">           <span class="p">(</span><span class="nv">user</span> <span class="p">(</span><span class="nb">or</span> <span class="p">(</span><span class="nf">plist-get</span> <span class="nv">spec</span> <span class="nb">:user</span><span class="p">)</span> <span class="nf">user-login-name</span><span class="p">)))</span>
 </span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nf">message</span> <span class="s">&#34;Using gh CLI token for %s&#34;</span> <span class="nv">host</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="o">`</span><span class="p">(</span><span class="nb">:secret</span> <span class="o">,</span><span class="nv">token</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="nf">list</span> <span class="p">(</span><span class="nf">list</span> <span class="nb">:host</span> <span class="nv">host</span> <span class="nb">:user</span> <span class="nv">user</span> <span class="nb">:secret</span> <span class="nv">token</span><span class="p">)))))</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;auth-sources</span> <span class="s">&#34;gh&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">auth-source-forget-all-cached</span><span class="p">)</span>
@@ -4103,7 +4105,7 @@ everything.</p>
   <div class="tc mt4 pt3 f7 o-70">
     Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo 0.120.3</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
     <br>
-    <span class="o-50">Last build: 17 Apr 2026, 08:40 UTC</span>
+    <span class="o-50">Last build: 20 Apr 2026, 18:26 UTC</span>
   </div>
 </footer>
   
