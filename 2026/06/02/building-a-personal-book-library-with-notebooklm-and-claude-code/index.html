@@ -1,0 +1,4301 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content='text/html; charset=utf-8' http-equiv='content-type' />
+
+  <title>Building a personal book library with NotebookLM and Claude Code - blog.dornea.nu</title>
+  <meta content='Building a personal book library with NotebookLM and Claude Code - blog.dornea.nu' property='title' />
+  <meta content='Building a personal book library with NotebookLM and Claude Code - blog.dornea.nu' property='og:title' />
+
+
+<meta name="description" content="Ever since I started highlighting text on my Kindle, then my PocketBook, and also the old-fashioned way with pen and paper, I have been trying to store those highlights in my digital garden — which serves as a second brain for recalling insights from books I have read. I built brainfck.org to keep my collection of notes available online, not only for myself but also for others. I even added a search feature (first introduced in ce36502 and later improved in 9a23b40) that lets you search across the entire collection." />
+<meta property="og:description" content="Ever since I started highlighting text on my Kindle, then my PocketBook, and also the old-fashioned way with pen and paper, I have been trying to store those highlights in my digital garden — which serves as a second brain for recalling insights from books I have read. I built brainfck.org to keep my collection of notes available online, not only for myself but also for others. I even added a search feature (first introduced in ce36502 and later improved in 9a23b40) that lets you search across the entire collection." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.dornea.nu/2026/06/02/building-a-personal-book-library-with-notebooklm-and-claude-code/" />
+
+
+
+<meta name="twitter:card" content="summary_large_image" />
+
+<meta name="twitter:title" content="Building a personal book library with NotebookLM and Claude Code - blog.dornea.nu" />
+
+<meta name="twitter:description" content="Ever since I started highlighting text on my Kindle, then my PocketBook, and also the old-fashioned way with pen and paper, I have been trying to store those highlights in my digital garden — which serves as a second brain for recalling insights from books I have read. I built brainfck.org to keep my collection of notes available online, not only for myself but also for others. I even added a search feature (first introduced in ce36502 and later improved in 9a23b40) that lets you search across the entire collection." />
+
+
+<meta property="article:published_time" content="2026-06-02T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2026-06-02T06:54:05&#43;02:00"/>
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.120.3">
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" rel="stylesheet"/>
+<style type="text/css">/*https://coolors.co/afd5aa-f0f2ef-a69f98-3d3d3d-8c6057*/
+:root {
+  --main-color: #8C6056; 
+  --secondary-color: #AFD5AA;
+  --logo-text-color: #fff;
+  --body-text-color: #3d3d3d;
+  --heading-text-color: #383838;
+  --background-color: #fff;
+}</style>
+<link href='https://blog.dornea.nu/css/tachyons.min.css' rel="stylesheet">
+<link href='https://blog.dornea.nu/css/styles.css' rel="stylesheet">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/custom.css">
+<link rel="stylesheet" href="https://blog.dornea.nu/css/syntax.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+
+
+<link rel="icon" 
+ 
+  href='https://blog.dornea.nu/favicon.ico'
+
+type="image/x-icon"/>
+
+<link href='https://blog.dornea.nu/feed.xml' rel="alternate" type="application/atom+xml" title="blog.dornea.nu" />
+
+
+
+<script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="b8a4b728-8eda-42fb-8376-10168c622160" async>
+
+</script>
+
+</head>
+<body class="global-font">
+  <nav class="fixed w-100 bg-white bb b--black-10" id="navbar" style="z-index: 9999;">
+  <div class="content-width center flex flex-wrap justify-between items-center pa3">
+    
+    <div class="flex items-center">
+      
+      <a class="f4 fw6 ttu no-underline dim bg-main-color pv1 ph3 br2 white" id="site-title" href='https://blog.dornea.nu/' title="Home">blog.dornea.nu</a>
+      
+    </div>
+
+    
+    <div class="dn flex-l items-center">
+      
+        
+          <a class="link dim dark-gray f6 dib ml4 ttu tracked fw5" href='https://blog.dornea.nu/' title="Home">Home</a>
+        
+          <a class="link dim dark-gray f6 dib ml4 ttu tracked fw5" href='http://dornea.nu' title="About">About</a>
+        
+          <a class="link dim dark-gray f6 dib ml4 ttu tracked fw5" href='https://blog.dornea.nu/archive' title="Archive">Archive</a>
+        
+          <a class="link dim dark-gray f6 dib ml4 ttu tracked fw5" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+        
+          <a class="link dim dark-gray f6 dib ml4 ttu tracked fw5" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+        
+          <a class="link dim dark-gray f6 dib ml4 ttu tracked fw5" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+        
+      
+    </div>
+
+    
+    <div class="db dn-l">
+      <button class="bg-transparent bn pointer dim" id="menu-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  
+  <div class="dn bg-white w-100 pa3 shadow-1" id="mobile-menu">
+    
+      
+        <a class="link dim dark-gray f6 db pv2 ttu tracked fw5" href='https://blog.dornea.nu/' title="Home">Home</a>
+      
+        <a class="link dim dark-gray f6 db pv2 ttu tracked fw5" href='http://dornea.nu' title="About">About</a>
+      
+        <a class="link dim dark-gray f6 db pv2 ttu tracked fw5" href='https://blog.dornea.nu/archive' title="Archive">Archive</a>
+      
+        <a class="link dim dark-gray f6 db pv2 ttu tracked fw5" href='https://blog.dornea.nu/tags' title="Tags">Tags</a>
+      
+        <a class="link dim dark-gray f6 db pv2 ttu tracked fw5" href='https://blog.dornea.nu/feed.xml' title="RSS">RSS</a>
+      
+        <a class="link dim dark-gray f6 db pv2 ttu tracked fw5" href='https://brainfck.org' title="Zettelkasten">Zettelkasten</a>
+      
+    
+  </div>
+</nav>
+
+
+<div class="h3"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    menuToggle.addEventListener('click', function() {
+      const expanded = mobileMenu.classList.contains('db');
+      mobileMenu.classList.toggle('db');
+      mobileMenu.classList.toggle('dn');
+    });
+  });
+</script>
+
+  
+<main class="center mv4 content-width ph3">
+  <div class="f3 fw6 heading-color heading-font post-title">Building a personal book library with NotebookLM and Claude Code</div>
+  <p class="silver f6 mt1 mb4 post-meta">
+    <time>02 Jun 2026</time> 
+     | 
+    
+
+    
+     ~
+  
+
+5 mins
+|
+
+    
+    tags: [ <a href='https://blog.dornea.nu/tags/ai' class="link silver">ai</a> <a href='https://blog.dornea.nu/tags/books' class="link silver">books</a> <a href='https://blog.dornea.nu/tags/notebooklm' class="link silver">notebooklm</a> <a href='https://blog.dornea.nu/tags/claudecode' class="link silver">claudecode</a>  ]
+    
+
+  </p>
+  <div class="lh-copy post-content">
+    
+
+      <p>Ever since I started highlighting text on my Kindle, then my PocketBook, and also the <a href="https://blog.dornea.nu/2021/06/13/note-taking-in-2021/">old-fashioned way with pen and paper</a>, I have been trying to store those highlights in my <a href="https://brainfck.org">digital garden</a> — which serves as a <strong>second brain</strong> for recalling insights from books I have read. I built <a href="https://brainfck.org">brainfck.org</a> to keep my collection of notes available online, not only for myself but also for others. I even added a <a href="https://brainfck.org/books/">search feature</a> (first introduced in <a href="https://github.com/dorneanu/roam/commit/ce365029a143dad9b8bdb11f8484c0a8ba97b017">ce36502</a> and later improved in <a href="https://github.com/dorneanu/roam/commit/9a23b40">9a23b40</a>) that lets you search across the entire collection. Whenever I want to look something up, I go to <a href="https://brainfck.org">brainfck.org</a>, type in a keyword, and it shows me the books and journal entries where that word appears.</p>
+<p>Recently I built a workflow that allows to expand all this. I now have all my <em>e-books</em> loaded into <a href="https://notebooklm.google.com">NotebookLM</a> notebooks, organised year by year, so I can ask questions across everything I have read in a given period. The process is to convert EPUBs and
+PDFs to Markdown, upload them into the relevant notebook, and start asking questions. A particularly useful feature is that you can select a single source and have a focused conversation about just that one book.</p>
+<p>This post describes how I built it using Claude Code with the NotebookLM MCP server and the Dropbox (where I usually store my EPUB files).</p>
+<h2 id="the-goal">
+  The goal
+  <a href="#the-goal" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
+<p>The end state is simple: one NotebookLM notebook per year (Books 2020, Books 2021, …, Books 2026), each containing the
+full text of every book I read that year. With that in place I can do things like:</p>
+<blockquote>
+<p>&ldquo;What did these books say about motivation and focus?&rdquo;</p>
+<p>&ldquo;Summarise each book in three bullet points&rdquo;</p>
+<p>&ldquo;Which books overlap on the topic of climate change?&rdquo;</p>
+</blockquote>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-notebooks-overview.png" class="glightbox" data-glightbox="title:NotebookLM notebooks overview; description: One notebook per year — Books 2020 through Books 2026 — each populated with the full text of every book read that year.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-notebooks-overview.png" alt="image">
+        <div class="caption">NotebookLM notebooks overview</div>
+    </a>
+</div>
+
+<h2 id="the-tools">
+  The tools
+  <a href="#the-tools" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
+<p>I used three MCP servers inside Claude Code:</p>
+<ul>
+<li><a href="https://github.com/jacob-bd/notebooklm-mcp-cli">notebooklm-mcp</a> — create notebooks, add sources, query them</li>
+<li><a href="https://mcp.dropbox.com">DropboxMCP</a> — search and download EPUBs/PDFs from my PocketBook library synced to Dropbox</li>
+<li><strong>WebFetch</strong> — scrape <a href="https://brainfck.org/books/">brainfck.org/books</a> to get the canonical list of books per year</li>
+</ul>
+<p>To keep MCP servers scoped per repository, add them to your project&rsquo;s <code>.claude.json</code> under <code>mcpServers</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;mcpServers&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;notebooklm-mcp&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;stdio&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;command&#34;</span><span class="p">:</span> <span class="s2">&#34;notebooklm-mcp&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;DropboxMCP&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;http&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;https://mcp.dropbox.com/mcp&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Install the NotebookLM CLI once globally with:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">uv tool install notebooklm-mcp-cli
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The Dropbox MCP is a hosted HTTP server — no local install needed, just authenticate once via <code>claude mcp auth DropboxMCP</code> in the project directory.</p>
+<h2 id="the-workflow">
+  The workflow
+  <a href="#the-workflow" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
+<h3 id="step-1-get-the-book-list-for-a-year">
+  Step 1: Get the book list for a year
+  <a href="#step-1-get-the-book-list-for-a-year" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
+<p>The <a href="https://brainfck.org/books">brainfck books page</a> lists the books I have read, sorted by year. Starting with only two notebooks (&ldquo;Books 2026&rdquo; and &ldquo;Books 2025&rdquo;), I wanted to create notebooks for earlier years but I did not know which books I actually had as EPUBs in Dropbox.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/brainfck-books-page.png" class="glightbox" data-glightbox="title:brainfck.org/books; description: The books page on brainfck.org — books grouped by year with read dates and tags. This served as the ground truth for which books belong in which notebook.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/brainfck-books-page.png" alt="image">
+        <div class="caption">brainfck.org/books</div>
+    </a>
+</div>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">WebFetch https://brainfck.org/books/
+</span></span><span class="line"><span class="cl">→ returns books grouped by year with their read dates
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="src-block-caption">
+  <span class="src-block-number">Code Snippet 1:</span>
+  Use claude-code to WebFetch the list of books
+</div>
+<p>With the book list in hand, I also asked Claude to list the existing NotebookLM notebooks so I could see which years were already covered and how many sources each had:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-listing-notebooks.png" class="glightbox" data-glightbox="title:Claude Code listing NotebookLM notebooks; description: Claude Code querying all notebooks via the notebooklm-mcp tool. The response is structured as a table — books by year, plus other notebooks I use for music and programming topics.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-listing-notebooks.png" alt="image">
+        <div class="caption">Claude Code listing NotebookLM notebooks</div>
+    </a>
+</div>
+
+<h3 id="step-2-search-dropbox-for-the-files">
+  Step 2: Search Dropbox for the files
+  <a href="#step-2-search-dropbox-for-the-files" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
+<p>For each book I ran a parallel Dropbox search:</p>
+<p>I asked Claude to search for each book title using the <code>DropboxMCP</code> MCP tool. Under the hood, Claude Code calls the tool directly:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># Claude Code MCP tool call (one per book, all run in parallel)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mcp__DropboxMCP__search</span>
+</span></span><span class="line"><span class="cl">  <span class="n">query</span><span class="p">:</span> <span class="s2">&#34;Book Title&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">file_extensions</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;epub&#34;</span><span class="p">,</span> <span class="s2">&#34;pdf&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">filename_only</span><span class="p">:</span> <span class="bp">true</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Claude ran all searches in parallel, then cross-referenced the results against the book list. Many books lived in year-based folders (<code>E-Books/2024/</code>, <code>E-Books/2025/</code>, etc.), while older ones were in the root <code>E-Books/</code> folder or the <code>Golang/</code> subfolder.</p>
+<h3 id="step-3-extract-text-content">
+  Step 3: Extract text content
+  <a href="#step-3-extract-text-content" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
+<p>For files under 5MB, the Dropbox MCP can extract text directly:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mcp__DropboxMCP__get_file_content
+</span></span><span class="line"><span class="cl">  path_or_file_id: &#34;id:aTF8BX-...&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>For larger files (5–15MB EPUBs, oversized PDFs), I had to generate shared download link:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">mcp__DropboxMCP__create_shared_link</span>
+</span></span><span class="line"><span class="cl">  <span class="n">path_or_file_id</span><span class="p">:</span> <span class="s2">&#34;id:aTF8BX-...&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">allow_download</span><span class="p">:</span> <span class="bp">true</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then downloaded locally and converted with <code>pandoc</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pandoc -t markdown book.epub -o book_full.md
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>For PDFs, <code>pdftotext</code> worked better:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pdftotext book.pdf book_full.md
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="step-4-create-the-notebook-and-upload">
+  Step 4: Create the notebook and upload
+  <a href="#step-4-create-the-notebook-and-upload" class="heading-anchor" aria-label="Anchor">#</a>
+</h3>
+<p>With the converted Markdown files in hand, I first created a new notebook for the year, then added each book as a source. The <code>notebook_create</code> call returns a notebook ID which is then passed to every subsequent <code>source_add</code> call:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 1. Create the notebook for the year (returns a notebook_id)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mcp__notebooklm</span><span class="o">-</span><span class="n">mcp__notebook_create</span> <span class="n">title</span><span class="p">:</span> <span class="s2">&#34;Books 2024&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. For each book: upload the converted Markdown file as a source</span>
+</span></span><span class="line"><span class="cl"><span class="n">mcp__notebooklm</span><span class="o">-</span><span class="n">mcp__source_add</span>
+</span></span><span class="line"><span class="cl">  <span class="n">notebook_id</span><span class="p">:</span> <span class="s2">&#34;...&#34;</span>          <span class="c1"># ID returned from step 1</span>
+</span></span><span class="line"><span class="cl">  <span class="n">source_type</span><span class="p">:</span> <span class="n">file</span>
+</span></span><span class="line"><span class="cl">  <span class="n">file_path</span><span class="p">:</span> <span class="s2">&#34;/path/to/book_full.md&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">title</span><span class="p">:</span> <span class="s2">&#34;The Effective Executive&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>All <code>source_add</code> calls for a given year ran in parallel — typically 6–8 at once — so populating a full year&rsquo;s notebook took only a minute or two.</p>
+<h2 id="querying-across-years">
+  Querying across years
+  <a href="#querying-across-years" class="heading-anchor" aria-label="Anchor">#</a>
+</h2>
+<p>With all notebooks populated, I can now query a year&rsquo;s reading. But even simpler — I can just ask Claude Code in plain English:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-querying-books-2026.png" class="glightbox" data-glightbox="title:Asking Claude Code about Books 2026; description: A plain-English query to Claude Code: &#34;which books are in 2026?&#34; — Claude calls the notebooklm-mcp tool and returns a clean list of the 5 books in that notebook.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-querying-books-2026.png" alt="image">
+        <div class="caption">Asking Claude Code about Books 2026</div>
+    </a>
+</div>
+
+<p>Or go deeper with a structured query:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mcp__notebooklm-mcp__notebook_query
+</span></span><span class="line"><span class="cl">  notebook_id: &#34;Books 2026&#34;
+</span></span><span class="line"><span class="cl">  query: &#34;Give me a short summary of each book — main argument and key takeaways&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The answers are grounded in the source material and surprisingly detailed. Here&rsquo;s an example querying the main concepts from <em>Earth for All</em>:</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-earth-for-all-query.png" class="glightbox" data-glightbox="title:Querying Earth for All via Claude Code; description: Asking Claude Code for the main concepts from &#34;Earth for All&#34; — it queries the notebooklm-mcp tool and returns a structured breakdown of the book&#39;s core premise, five turnarounds, and key ideas.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-earth-for-all-query.png" alt="image">
+        <div class="caption">Querying Earth for All via Claude Code</div>
+    </a>
+</div>
+
+<p>This is particularly useful for rediscovering insights from books I read years ago and for finding thematic threads across multiple books in the same period.</p>
+
+    
+
+
+<div class="img-container">
+    <a href="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-books-2025-detail.png" class="glightbox" data-glightbox="title:Inside the Books 2025 notebook; description: The Books 2025 notebook with 9 sources loaded. The Studio panel on the right offers audio overviews, slide decks, mind maps, and more — all generated from the book content.; descPosition: left">
+        <i class="fa fa-search-plus fa-2x"></i>
+        <img src="https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-books-2025-detail.png" alt="image">
+        <div class="caption">Inside the Books 2025 notebook</div>
+    </a>
+</div>
+
+<p>The whole setup took a few hours across multiple sessions — most of that was handling edge
+cases (DRM, oversized files, misplacements). The actual notebook creation and uploading
+per year takes about 5 minutes once the files are in order.</p>
+
+    
+
+  </div>
+  
+  
+  
+
+
+
+
+
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+
+  
+    
+    
+      
+    
+      
+        
+      
+    
+      
+        
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+        
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+        
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+        
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+        
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+        
+      
+    
+      
+    
+      
+    
+    
+      
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+  
+
+  
+
+
+
+<section class="related-topics mt5 mb4">
+  <div class="bt b--black-10 pt4">
+    <h3 class="f4 fw6 mb3">Related Posts</h3>
+
+    <div class="related-posts-grid">
+      
+        <div class="related-post-card">
+          <a href="https://blog.dornea.nu/2026/04/23/claude-code-customizations-in-emacs/" class="link">
+            <div class="related-post-title">Claude Code customizations in Emacs</div>
+            <div class="related-post-date">23 Apr 2026</div>
+            
+              <div class="related-post-tags">
+                
+                  <span class="tag-badge">emacs</span>
+                
+                  <span class="tag-badge">ai</span>
+                
+                  <span class="tag-badge">claudecode</span>
+                
+              </div>
+            
+          </a>
+        </div>
+      
+        <div class="related-post-card">
+          <a href="https://blog.dornea.nu/2026/02/27/book-summaries-april-december-2025/" class="link">
+            <div class="related-post-title">Book Summaries: April-December 2025</div>
+            <div class="related-post-date">27 Feb 2026</div>
+            
+              <div class="related-post-tags">
+                
+                  <span class="tag-badge">summary</span>
+                
+                  <span class="tag-badge">books</span>
+                
+              </div>
+            
+          </a>
+        </div>
+      
+        <div class="related-post-card">
+          <a href="https://blog.dornea.nu/2025/04/02/book-summaries-january-march-2025/" class="link">
+            <div class="related-post-title">Book Summaries: January - March 2025</div>
+            <div class="related-post-date">02 Apr 2025</div>
+            
+              <div class="related-post-tags">
+                
+                  <span class="tag-badge">summary</span>
+                
+                  <span class="tag-badge">books</span>
+                
+              </div>
+            
+          </a>
+        </div>
+      
+        <div class="related-post-card">
+          <a href="https://blog.dornea.nu/2025/01/16/book-summaries-october-december-2024/" class="link">
+            <div class="related-post-title">Book Summaries: October - December 2024</div>
+            <div class="related-post-date">16 Jan 2025</div>
+            
+              <div class="related-post-tags">
+                
+                  <span class="tag-badge">summary</span>
+                
+                  <span class="tag-badge">books</span>
+                
+              </div>
+            
+          </a>
+        </div>
+      
+        <div class="related-post-card">
+          <a href="https://blog.dornea.nu/2024/10/16/book-summaries-may-september-2024/" class="link">
+            <div class="related-post-title">Book summaries: May - September 2024</div>
+            <div class="related-post-date">16 Oct 2024</div>
+            
+              <div class="related-post-tags">
+                
+                  <span class="tag-badge">summary</span>
+                
+                  <span class="tag-badge">books</span>
+                
+              </div>
+            
+          </a>
+        </div>
+      
+        <div class="related-post-card">
+          <a href="https://blog.dornea.nu/2024/05/05/book-summaries-january-april-2024/" class="link">
+            <div class="related-post-title">Book summaries: January - April 2024</div>
+            <div class="related-post-date">05 May 2024</div>
+            
+              <div class="related-post-tags">
+                
+                  <span class="tag-badge">books</span>
+                
+                  <span class="tag-badge">summary</span>
+                
+              </div>
+            
+          </a>
+        </div>
+      
+    </div>
+
+    <div class="tc mt4">
+      <a href="https://blog.dornea.nu/tags" class="f6 link dim br-pill ph3 pv2 mb2 dib white bg-main-color">Browse All Tags</a>
+    </div>
+  </div>
+</section>
+
+
+  
+  <div id="comments">
+      
+
+  </div>
+</main>
+ 
+
+
+
+
+
+
+<div class="tl fixed list-pages lh-copy" id="contents-list"></div>
+
+
+
+<div class="post-navigation-container fixed-l bottom-2-l right-2-l mb3 mb0-l">
+  
+<a id="scroll-to-top" class="f6 o-0 link br2 ph2 pv1 mb1 bg-main-color pointer" onclick="topFunction()" style="color: #fff; visibility: hidden; display: none; transition: opacity .5s, visibility .5s;" title="back to top">back to top</a>
+
+  <div class="post-nav-links">
+    <a href="https://blog.dornea.nu/2026/04/23/claude-code-customizations-in-emacs/" class="post-nav-btn">← prev</a>
+    
+  </div>
+</div>
+
+  <footer class="content-width mt5 mb4 center ph3 gray f6">
+  
+  <div class="bt b--black-10 pv3"></div>
+  
+  
+  <div class="cf">
+    
+    <div class="fl w-100 w-50-l pr4-l">
+      <p class="mb2 fw6">About this blog</p>
+      <p class="mv0 lh-copy">
+        Personal thoughts on programming, productivity, and philosophy. I write about things I'm learning and ideas I find interesting.
+      </p>
+      <p class="mt3 o-70">
+        © 2026 Victor Dorneanu
+      </p>
+    </div>
+    
+    
+    <div class="fl w-100 w-50-l pl4-l mt4 mt0-l">
+      <div class="cf">
+        
+        <div class="fl w-33">
+          <p class="mb2 fw6">Navigation</p>
+          <ul class="list pl0">
+            <li class="pv1"><a href='https://blog.dornea.nu/' title="Home" class="link gray dim">Home</a></li>
+            <li class="pv1"><a href='http://dornea.nu' title="About" class="link gray dim">About</a></li>
+            <li class="pv1"><a href='https://blog.dornea.nu/tags' title="Tags" class="link gray dim">Tags</a></li>
+            <li class="pv1"><a href='https://brainfck.org' title="Zettelkasten" class="link gray dim">Zettelkasten</a></li>
+          </ul>
+        </div>
+        
+        
+        <div class="fl w-33">
+          <p class="mb2 fw6">Connect</p>
+          <ul class="list pl0">
+            <li class="pv1">
+              <a href='https://blog.dornea.nu/feed.xml' title="RSS" class="link gray dim">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="v-mid mr1"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
+                RSS Feed
+              </a>
+            </li>
+            <li class="pv1">
+              <a href='https://github.com/dorneanu' title="GitHub" class="link gray dim">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="v-mid mr1"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                GitHub
+              </a>
+            </li>
+            <li class="pv1">
+              <a href='https://www.goodreads.com/user/show/121423977-victor-dorneanu' title="Goodreads" class="link gray dim">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="v-mid mr1"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                Goodreads
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        
+        <div class="fl w-33">
+          <p class="mb2 fw6">Support</p>
+          <div class="pv1">
+            <a href="https://www.buymeacoffee.com/dorneanu" target="_blank" class="dib">
+              <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px;">
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="tc mt4 pt3 f7 o-70">
+    Powered by <a href="https://gohugo.io/" target="_blank" class="link gray dim">Hugo 0.120.3</a>, based on the <a href="https://github.com/lingxz/er" target="_blank" class="link gray dim">Er</a> theme.
+    <br>
+    <span class="o-50">Last build: 02 Jun 2026, 04:55 UTC</span>
+  </div>
+</footer>
+  
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<style>
+  .is-active-link::before { background-color: var(--secondary-color); }
+  #contents-list .heading-anchor { display: none; }
+</style>
+
+
+
+
+<script type="text/javascript">
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+
+  
+  if (document.getElementById("tag-cloud") !== null) { 
+    if (prevScrollpos > currentScrollPos) { 
+      document.getElementById("tag-cloud").style.visibility = "visible";
+      document.getElementById("tag-cloud").style.opacity = "1";
+    } else {
+      document.getElementById("tag-cloud").style.visibility = "hidden";
+      document.getElementById("tag-cloud").style.opacity = "0";
+    }
+  }
+  
+
+  
+  if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
+      document.getElementById("scroll-to-top").style.display = "inline";
+      document.getElementById("scroll-to-top").style.visibility = "visible";
+      document.getElementById("scroll-to-top").style.opacity = "1";
+  } else {
+      document.getElementById("scroll-to-top").style.visibility = "hidden";
+      document.getElementById("scroll-to-top").style.opacity = "0";
+  }
+  
+  prevScrollpos = currentScrollPos;
+}
+
+
+function topFunction() {
+  document.body.scrollTop = 0; 
+  document.documentElement.scrollTop = 0; 
+}
+
+
+
+
+
+
+if (document.getElementById("contents-list") !== null && document.getElementsByTagName("main").length !== 0) {
+  tocbot.init({
+    
+    tocSelector: '#contents-list',
+    
+    contentSelector: 'main',
+    
+    headingSelector: 'h1, h2, h3',
+  });
+
+  
+  setTimeout(function() {
+    var tocLinks = document.querySelectorAll('#contents-list a');
+    tocLinks.forEach(function(link) {
+      link.textContent = link.textContent.replace(/\s*#\s*$/, '');
+    });
+  }, 100);
+}
+
+
+</script>
+
+
+
+
+
+<script>
+ var glightbox = GLightbox({
+     selector: '.glightbox'
+ });
+</script>
+
+  
+</body>
+</html>

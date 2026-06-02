@@ -12,6 +12,299 @@
     
     
     <item>
+      <title>Building a personal book library with NotebookLM and Claude Code</title>
+      <link>https://blog.dornea.nu/2026/06/02/building-a-personal-book-library-with-notebooklm-and-claude-code/</link>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.dornea.nu/2026/06/02/building-a-personal-book-library-with-notebooklm-and-claude-code/</guid>
+      <description>&lt;p&gt;Ever since I started highlighting text on my Kindle, then my PocketBook, and also the &lt;a href=&#34;https://blog.dornea.nu/2021/06/13/note-taking-in-2021/&#34;&gt;old-fashioned way with pen and paper&lt;/a&gt;, I have been trying to store those highlights in my &lt;a href=&#34;https://brainfck.org&#34;&gt;digital garden&lt;/a&gt; — which serves as a &lt;strong&gt;second brain&lt;/strong&gt; for recalling insights from books I have read. I built &lt;a href=&#34;https://brainfck.org&#34;&gt;brainfck.org&lt;/a&gt; to keep my collection of notes available online, not only for myself but also for others. I even added a &lt;a href=&#34;https://brainfck.org/books/&#34;&gt;search feature&lt;/a&gt; (first introduced in &lt;a href=&#34;https://github.com/dorneanu/roam/commit/ce365029a143dad9b8bdb11f8484c0a8ba97b017&#34;&gt;ce36502&lt;/a&gt; and later improved in &lt;a href=&#34;https://github.com/dorneanu/roam/commit/9a23b40&#34;&gt;9a23b40&lt;/a&gt;) that lets you search across the entire collection. Whenever I want to look something up, I go to &lt;a href=&#34;https://brainfck.org&#34;&gt;brainfck.org&lt;/a&gt;, type in a keyword, and it shows me the books and journal entries where that word appears.&lt;/p&gt;
+&lt;p&gt;Recently I built a workflow that allows to expand all this. I now have all my &lt;em&gt;e-books&lt;/em&gt; loaded into &lt;a href=&#34;https://notebooklm.google.com&#34;&gt;NotebookLM&lt;/a&gt; notebooks, organised year by year, so I can ask questions across everything I have read in a given period. The process is to convert EPUBs and
+PDFs to Markdown, upload them into the relevant notebook, and start asking questions. A particularly useful feature is that you can select a single source and have a focused conversation about just that one book.&lt;/p&gt;
+&lt;p&gt;This post describes how I built it using Claude Code with the NotebookLM MCP server and the Dropbox (where I usually store my EPUB files).&lt;/p&gt;
+&lt;h2 id=&#34;the-goal&#34;&gt;
+  The goal
+  &lt;a href=&#34;#the-goal&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The end state is simple: one NotebookLM notebook per year (Books 2020, Books 2021, …, Books 2026), each containing the
+full text of every book I read that year. With that in place I can do things like:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;What did these books say about motivation and focus?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Summarise each book in three bullet points&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Which books overlap on the topic of climate change?&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+    
+
+
+&lt;div class=&#34;img-container&#34;&gt;
+    &lt;a href=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-notebooks-overview.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:NotebookLM notebooks overview; description: One notebook per year — Books 2020 through Books 2026 — each populated with the full text of every book read that year.; descPosition: left&#34;&gt;
+        &lt;i class=&#34;fa fa-search-plus fa-2x&#34;&gt;&lt;/i&gt;
+        &lt;img src=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-notebooks-overview.png&#34; alt=&#34;image&#34;&gt;
+        &lt;div class=&#34;caption&#34;&gt;NotebookLM notebooks overview&lt;/div&gt;
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&#34;the-tools&#34;&gt;
+  The tools
+  &lt;a href=&#34;#the-tools&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I used three MCP servers inside Claude Code:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/jacob-bd/notebooklm-mcp-cli&#34;&gt;notebooklm-mcp&lt;/a&gt; — create notebooks, add sources, query them&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://mcp.dropbox.com&#34;&gt;DropboxMCP&lt;/a&gt; — search and download EPUBs/PDFs from my PocketBook library synced to Dropbox&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;WebFetch&lt;/strong&gt; — scrape &lt;a href=&#34;https://brainfck.org/books/&#34;&gt;brainfck.org/books&lt;/a&gt; to get the canonical list of books per year&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To keep MCP servers scoped per repository, add them to your project&amp;rsquo;s &lt;code&gt;.claude.json&lt;/code&gt; under &lt;code&gt;mcpServers&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;mcpServers&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;#34;notebooklm-mcp&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;stdio&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;notebooklm-mcp&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;#34;DropboxMCP&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;#34;url&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;https://mcp.dropbox.com/mcp&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Install the NotebookLM CLI once globally with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uv tool install notebooklm-mcp-cli
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;The Dropbox MCP is a hosted HTTP server — no local install needed, just authenticate once via &lt;code&gt;claude mcp auth DropboxMCP&lt;/code&gt; in the project directory.&lt;/p&gt;
+&lt;h2 id=&#34;the-workflow&#34;&gt;
+  The workflow
+  &lt;a href=&#34;#the-workflow&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;step-1-get-the-book-list-for-a-year&#34;&gt;
+  Step 1: Get the book list for a year
+  &lt;a href=&#34;#step-1-get-the-book-list-for-a-year&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The &lt;a href=&#34;https://brainfck.org/books&#34;&gt;brainfck books page&lt;/a&gt; lists the books I have read, sorted by year. Starting with only two notebooks (&amp;ldquo;Books 2026&amp;rdquo; and &amp;ldquo;Books 2025&amp;rdquo;), I wanted to create notebooks for earlier years but I did not know which books I actually had as EPUBs in Dropbox.&lt;/p&gt;
+
+    
+
+
+&lt;div class=&#34;img-container&#34;&gt;
+    &lt;a href=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/brainfck-books-page.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:brainfck.org/books; description: The books page on brainfck.org — books grouped by year with read dates and tags. This served as the ground truth for which books belong in which notebook.; descPosition: left&#34;&gt;
+        &lt;i class=&#34;fa fa-search-plus fa-2x&#34;&gt;&lt;/i&gt;
+        &lt;img src=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/brainfck-books-page.png&#34; alt=&#34;image&#34;&gt;
+        &lt;div class=&#34;caption&#34;&gt;brainfck.org/books&lt;/div&gt;
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;WebFetch https://brainfck.org/books/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;→ returns books grouped by year with their read dates
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class=&#34;src-block-caption&#34;&gt;
+  &lt;span class=&#34;src-block-number&#34;&gt;Code Snippet 1:&lt;/span&gt;
+  Use claude-code to WebFetch the list of books
+&lt;/div&gt;
+&lt;p&gt;With the book list in hand, I also asked Claude to list the existing NotebookLM notebooks so I could see which years were already covered and how many sources each had:&lt;/p&gt;
+
+    
+
+
+&lt;div class=&#34;img-container&#34;&gt;
+    &lt;a href=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-listing-notebooks.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Claude Code listing NotebookLM notebooks; description: Claude Code querying all notebooks via the notebooklm-mcp tool. The response is structured as a table — books by year, plus other notebooks I use for music and programming topics.; descPosition: left&#34;&gt;
+        &lt;i class=&#34;fa fa-search-plus fa-2x&#34;&gt;&lt;/i&gt;
+        &lt;img src=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-listing-notebooks.png&#34; alt=&#34;image&#34;&gt;
+        &lt;div class=&#34;caption&#34;&gt;Claude Code listing NotebookLM notebooks&lt;/div&gt;
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&#34;step-2-search-dropbox-for-the-files&#34;&gt;
+  Step 2: Search Dropbox for the files
+  &lt;a href=&#34;#step-2-search-dropbox-for-the-files&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;For each book I ran a parallel Dropbox search:&lt;/p&gt;
+&lt;p&gt;I asked Claude to search for each book title using the &lt;code&gt;DropboxMCP&lt;/code&gt; MCP tool. Under the hood, Claude Code calls the tool directly:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Claude Code MCP tool call (one per book, all run in parallel)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mcp__DropboxMCP__search&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;Book Title&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;file_extensions&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;epub&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;pdf&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;filename_only&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Claude ran all searches in parallel, then cross-referenced the results against the book list. Many books lived in year-based folders (&lt;code&gt;E-Books/2024/&lt;/code&gt;, &lt;code&gt;E-Books/2025/&lt;/code&gt;, etc.), while older ones were in the root &lt;code&gt;E-Books/&lt;/code&gt; folder or the &lt;code&gt;Golang/&lt;/code&gt; subfolder.&lt;/p&gt;
+&lt;h3 id=&#34;step-3-extract-text-content&#34;&gt;
+  Step 3: Extract text content
+  &lt;a href=&#34;#step-3-extract-text-content&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;For files under 5MB, the Dropbox MCP can extract text directly:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mcp__DropboxMCP__get_file_content
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  path_or_file_id: &amp;#34;id:aTF8BX-...&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;For larger files (5–15MB EPUBs, oversized PDFs), I had to generate shared download link:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mcp__DropboxMCP__create_shared_link&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;path_or_file_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;id:aTF8BX-...&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;allow_download&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Then downloaded locally and converted with &lt;code&gt;pandoc&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pandoc -t markdown book.epub -o book_full.md
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;For PDFs, &lt;code&gt;pdftotext&lt;/code&gt; worked better:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pdftotext book.pdf book_full.md
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;step-4-create-the-notebook-and-upload&#34;&gt;
+  Step 4: Create the notebook and upload
+  &lt;a href=&#34;#step-4-create-the-notebook-and-upload&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;With the converted Markdown files in hand, I first created a new notebook for the year, then added each book as a source. The &lt;code&gt;notebook_create&lt;/code&gt; call returns a notebook ID which is then passed to every subsequent &lt;code&gt;source_add&lt;/code&gt; call:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 1. Create the notebook for the year (returns a notebook_id)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mcp__notebooklm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mcp__notebook_create&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;title&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;Books 2024&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 2. For each book: upload the converted Markdown file as a source&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mcp__notebooklm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mcp__source_add&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;notebook_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;...&amp;#34;&lt;/span&gt;          &lt;span class=&#34;c1&#34;&gt;# ID returned from step 1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;source_type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;file&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;file_path&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/path/to/book_full.md&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;title&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;The Effective Executive&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;All &lt;code&gt;source_add&lt;/code&gt; calls for a given year ran in parallel — typically 6–8 at once — so populating a full year&amp;rsquo;s notebook took only a minute or two.&lt;/p&gt;
+&lt;h2 id=&#34;querying-across-years&#34;&gt;
+  Querying across years
+  &lt;a href=&#34;#querying-across-years&#34; class=&#34;heading-anchor&#34; aria-label=&#34;Anchor&#34;&gt;#&lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With all notebooks populated, I can now query a year&amp;rsquo;s reading. But even simpler — I can just ask Claude Code in plain English:&lt;/p&gt;
+
+    
+
+
+&lt;div class=&#34;img-container&#34;&gt;
+    &lt;a href=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-querying-books-2026.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Asking Claude Code about Books 2026; description: A plain-English query to Claude Code: &amp;#34;which books are in 2026?&amp;#34; — Claude calls the notebooklm-mcp tool and returns a clean list of the 5 books in that notebook.; descPosition: left&#34;&gt;
+        &lt;i class=&#34;fa fa-search-plus fa-2x&#34;&gt;&lt;/i&gt;
+        &lt;img src=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-querying-books-2026.png&#34; alt=&#34;image&#34;&gt;
+        &lt;div class=&#34;caption&#34;&gt;Asking Claude Code about Books 2026&lt;/div&gt;
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Or go deeper with a structured query:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mcp__notebooklm-mcp__notebook_query
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  notebook_id: &amp;#34;Books 2026&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  query: &amp;#34;Give me a short summary of each book — main argument and key takeaways&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;The answers are grounded in the source material and surprisingly detailed. Here&amp;rsquo;s an example querying the main concepts from &lt;em&gt;Earth for All&lt;/em&gt;:&lt;/p&gt;
+
+    
+
+
+&lt;div class=&#34;img-container&#34;&gt;
+    &lt;a href=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-earth-for-all-query.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Querying Earth for All via Claude Code; description: Asking Claude Code for the main concepts from &amp;#34;Earth for All&amp;#34; — it queries the notebooklm-mcp tool and returns a structured breakdown of the book&amp;#39;s core premise, five turnarounds, and key ideas.; descPosition: left&#34;&gt;
+        &lt;i class=&#34;fa fa-search-plus fa-2x&#34;&gt;&lt;/i&gt;
+        &lt;img src=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/claude-code-earth-for-all-query.png&#34; alt=&#34;image&#34;&gt;
+        &lt;div class=&#34;caption&#34;&gt;Querying Earth for All via Claude Code&lt;/div&gt;
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This is particularly useful for rediscovering insights from books I read years ago and for finding thematic threads across multiple books in the same period.&lt;/p&gt;
+
+    
+
+
+&lt;div class=&#34;img-container&#34;&gt;
+    &lt;a href=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-books-2025-detail.png&#34; class=&#34;glightbox&#34; data-glightbox=&#34;title:Inside the Books 2025 notebook; description: The Books 2025 notebook with 9 sources loaded. The Studio panel on the right offers audio overviews, slide decks, mind maps, and more — all generated from the book content.; descPosition: left&#34;&gt;
+        &lt;i class=&#34;fa fa-search-plus fa-2x&#34;&gt;&lt;/i&gt;
+        &lt;img src=&#34;https://blog.dornea.nu/posts/img/2026/building-personal-book-library-notebooklm/notebooklm-books-2025-detail.png&#34; alt=&#34;image&#34;&gt;
+        &lt;div class=&#34;caption&#34;&gt;Inside the Books 2025 notebook&lt;/div&gt;
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The whole setup took a few hours across multiple sessions — most of that was handling edge
+cases (DRM, oversized files, misplacements). The actual notebook creation and uploading
+per year takes about 5 minutes once the files are in order.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Claude Code customizations in Emacs</title>
       <link>https://blog.dornea.nu/2026/04/23/claude-code-customizations-in-emacs/</link>
       <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
@@ -1474,50 +1767,50 @@ serves me best. Here is my reading list for &lt;a href=&#34;https://brainfck.org
 
 
 
-&lt;div class=&#34;habit-tracker-simple&#34; id=&#34;habit-1777019468663201345&#34;&gt;
+&lt;div class=&#34;habit-tracker-simple&#34; id=&#34;habit-1780376104985543452&#34;&gt;
   &lt;style&gt;
      
-    #habit-1777019468663201345 .year-grid {
+    #habit-1780376104985543452 .year-grid {
       display: grid;
       grid-template-rows: auto repeat(7, 1fr);
       gap: 2px;
       width: 100%;
     }
-    #habit-1777019468663201345 .month-labels {
+    #habit-1780376104985543452 .month-labels {
       display: grid;
       grid-auto-flow: column;
       gap: 2px;
     }
-    #habit-1777019468663201345 .week-row {
+    #habit-1780376104985543452 .week-row {
       display: grid;
       grid-auto-flow: column;
       gap: 2px;
       align-items: center;
     }
-    #habit-1777019468663201345 .months-grid-expanded {
+    #habit-1780376104985543452 .months-grid-expanded {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
     }
-    #habit-1777019468663201345 .weekday-labels {
+    #habit-1780376104985543452 .weekday-labels {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
     }
-    #habit-1777019468663201345 .calendar-grid {
+    #habit-1780376104985543452 .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
     }
-    #habit-1777019468663201345 .year-view .calendar-grid {
+    #habit-1780376104985543452 .year-view .calendar-grid {
       gap: 1px;
     }
-    #habit-1777019468663201345 .year-view .weekday-labels {
+    #habit-1780376104985543452 .year-view .weekday-labels {
       display: none;
     }
 
      
-    #habit-1777019468663201345 .day-cell {
+    #habit-1780376104985543452 .day-cell {
       aspect-ratio: 1;
       cursor: pointer;
       position: relative;
@@ -1529,35 +1822,35 @@ serves me best. Here is my reading list for &lt;a href=&#34;https://brainfck.org
       font-size: 10px;
       color: #666;
     }
-    #habit-1777019468663201345 .year-view .day-cell {
+    #habit-1780376104985543452 .year-view .day-cell {
       font-size: 0;
     }
-    #habit-1777019468663201345 .day-cell.empty {
+    #habit-1780376104985543452 .day-cell.empty {
       background: transparent;
       cursor: default;
     }
-    #habit-1777019468663201345 .day-cell.future {
+    #habit-1780376104985543452 .day-cell.future {
       background: #f5f5f5;
       opacity: 0.5;
     }
-    #habit-1777019468663201345 .day-cell[data-level=&#34;1&#34;] { background: #c6e48b; color: #333; }
-    #habit-1777019468663201345 .day-cell[data-level=&#34;2&#34;] { background: #7bc96f; color: #333; }
-    #habit-1777019468663201345 .day-cell[data-level=&#34;3&#34;] { background: #239a3b; color: white; }
-    #habit-1777019468663201345 .day-cell[data-level=&#34;4&#34;] { background: #196127; color: white; }
-    #habit-1777019468663201345 .day-cell:not(.empty):hover {
+    #habit-1780376104985543452 .day-cell[data-level=&#34;1&#34;] { background: #c6e48b; color: #333; }
+    #habit-1780376104985543452 .day-cell[data-level=&#34;2&#34;] { background: #7bc96f; color: #333; }
+    #habit-1780376104985543452 .day-cell[data-level=&#34;3&#34;] { background: #239a3b; color: white; }
+    #habit-1780376104985543452 .day-cell[data-level=&#34;4&#34;] { background: #196127; color: white; }
+    #habit-1780376104985543452 .day-cell:not(.empty):hover {
       outline: 2px solid #433a33;
       z-index: 10;
     }
 
      
-    #habit-1777019468663201345 .view-btn.active {
+    #habit-1780376104985543452 .view-btn.active {
       background: #433a33;
       color: white;
       border-color: #433a33;
     }
 
      
-    #habit-1777019468663201345 .tooltip {
+    #habit-1780376104985543452 .tooltip {
       position: absolute;
       pointer-events: none;
       z-index: 1000;
@@ -1566,7 +1859,7 @@ serves me best. Here is my reading list for &lt;a href=&#34;https://brainfck.org
     }
   &lt;/style&gt;
 
-  &lt;div id=&#34;habit-1777019468663201345-container&#34;&gt;&lt;/div&gt;
+  &lt;div id=&#34;habit-1780376104985543452-container&#34;&gt;&lt;/div&gt;
 
   &lt;div class=&#34;flex items-center mt4 f6 mid-gray&#34;&gt;
     &lt;span class=&#34;mr2&#34;&gt;Less&lt;/span&gt;
@@ -1578,7 +1871,7 @@ serves me best. Here is my reading list for &lt;a href=&#34;https://brainfck.org
     &lt;span&gt;More&lt;/span&gt;
   &lt;/div&gt;
 
-  &lt;div class=&#34;tooltip dark-gray bg-white pa2 br2 f6 shadow-3 ba b--moon-gray&#34; id=&#34;habit-1777019468663201345-tooltip&#34;&gt;&lt;/div&gt;
+  &lt;div class=&#34;tooltip dark-gray bg-white pa2 br2 f6 shadow-3 ba b--moon-gray&#34; id=&#34;habit-1780376104985543452-tooltip&#34;&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;script&gt;
@@ -1586,8 +1879,8 @@ serves me best. Here is my reading list for &lt;a href=&#34;https://brainfck.org
   const csvPath = &#39;\/data\/habits-2025.csv&#39;;
   const year = parseInt(&#34;2025&#34;, 10);
   const targetHabit = &#39;reading&#39;;
-  const container = document.getElementById(&#39;habit-1777019468663201345-container&#39;);
-  const tooltip = document.getElementById(&#39;habit-1777019468663201345-tooltip&#39;);
+  const container = document.getElementById(&#39;habit-1780376104985543452-container&#39;);
+  const tooltip = document.getElementById(&#39;habit-1780376104985543452-tooltip&#39;);
 
   fetch(csvPath)
     .then(response =&gt; {
@@ -1952,22 +2245,22 @@ having a reliable bike transformed how I move around the city.&lt;/p&gt;
 
 
 
-&lt;div class=&#34;garmin-tracker mv3&#34; id=&#34;garmin-1777019468663337690&#34;&gt;
+&lt;div class=&#34;garmin-tracker mv3&#34; id=&#34;garmin-1780376104985647386&#34;&gt;
   &lt;style&gt;
      
-    #garmin-1777019468663337690 .chart-container {
+    #garmin-1780376104985647386 .chart-container {
       position: relative;
       height: 220px;
       padding-top: 25px;
     }
-    #garmin-1777019468663337690 .bar-chart {
+    #garmin-1780376104985647386 .bar-chart {
       display: flex;
       align-items: flex-end;
       height: 100%;
       gap: 8px;
       padding: 10px 0;
     }
-    #garmin-1777019468663337690 .bar-group {
+    #garmin-1780376104985647386 .bar-group {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -1975,7 +2268,7 @@ having a reliable bike transformed how I move around the city.&lt;/p&gt;
       justify-content: flex-end;
       height: 100%;
     }
-    #garmin-1777019468663337690 .bar {
+    #garmin-1780376104985647386 .bar {
       width: 100%;
       background: linear-gradient(to top, #e74c3c, #c0392b);
       border-radius: 4px 4px 0 0;
@@ -1984,29 +2277,29 @@ having a reliable bike transformed how I move around the city.&lt;/p&gt;
       transition: opacity 0.2s;
       min-height: 2px;
     }
-    #garmin-1777019468663337690 .bar.cycling {
+    #garmin-1780376104985647386 .bar.cycling {
       background: linear-gradient(to top, #3498db, #2980b9);
     }
-    #garmin-1777019468663337690 .bar.strength-training {
+    #garmin-1780376104985647386 .bar.strength-training {
       background: linear-gradient(to top, #e67e22, #d35400);
     }
-    #garmin-1777019468663337690 .bar.running {
+    #garmin-1780376104985647386 .bar.running {
       background: linear-gradient(to top, #2ecc71, #27ae60);
     }
-    #garmin-1777019468663337690 .bar.walking {
+    #garmin-1780376104985647386 .bar.walking {
       background: linear-gradient(to top, #9b59b6, #8e44ad);
     }
-    #garmin-1777019468663337690 .bar:hover {
+    #garmin-1780376104985647386 .bar:hover {
       opacity: 0.8;
     }
-    #garmin-1777019468663337690 .bar-value {
+    #garmin-1780376104985647386 .bar-value {
       position: absolute;
       top: -20px;
       left: 50%;
       transform: translateX(-50%);
       white-space: nowrap;
     }
-    #garmin-1777019468663337690 .bar-tooltip {
+    #garmin-1780376104985647386 .bar-tooltip {
       position: absolute;
       top: -35px;
       left: 50%;
@@ -2016,17 +2309,17 @@ having a reliable bike transformed how I move around the city.&lt;/p&gt;
       transition: opacity 0.2s;
       pointer-events: none;
     }
-    #garmin-1777019468663337690 .bar:hover .bar-tooltip {
+    #garmin-1780376104985647386 .bar:hover .bar-tooltip {
       opacity: 1;
     }
-    #garmin-1777019468663337690 .summary-stats {
+    #garmin-1780376104985647386 .summary-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 15px;
     }
   &lt;/style&gt;
 
-  &lt;div id=&#34;garmin-1777019468663337690-container&#34; class=&#34;mid-gray pa3&#34;&gt;Loading activity data...&lt;/div&gt;
+  &lt;div id=&#34;garmin-1780376104985647386-container&#34; class=&#34;mid-gray pa3&#34;&gt;Loading activity data...&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;script&gt;
@@ -2036,7 +2329,7 @@ having a reliable bike transformed how I move around the city.&lt;/p&gt;
   const activitiesFilter = &#39;Cycling&#39;;
   const summaryOnly = &#39;&#39; === &#39;true&#39;;
   const allowedActivities = activitiesFilter ? activitiesFilter.split(&#39;,&#39;).map(a =&gt; a.trim()) : [];
-  const container = document.getElementById(&#39;garmin-1777019468663337690-container&#39;);
+  const container = document.getElementById(&#39;garmin-1780376104985647386-container&#39;);
 
   fetch(csvPath)
     .then(response =&gt; {
@@ -2310,22 +2603,22 @@ consistency throughout the year.&lt;/p&gt;
 
 
 
-&lt;div class=&#34;garmin-tracker mv3&#34; id=&#34;garmin-1777019468663438518&#34;&gt;
+&lt;div class=&#34;garmin-tracker mv3&#34; id=&#34;garmin-1780376104985720663&#34;&gt;
   &lt;style&gt;
      
-    #garmin-1777019468663438518 .chart-container {
+    #garmin-1780376104985720663 .chart-container {
       position: relative;
       height: 220px;
       padding-top: 25px;
     }
-    #garmin-1777019468663438518 .bar-chart {
+    #garmin-1780376104985720663 .bar-chart {
       display: flex;
       align-items: flex-end;
       height: 100%;
       gap: 8px;
       padding: 10px 0;
     }
-    #garmin-1777019468663438518 .bar-group {
+    #garmin-1780376104985720663 .bar-group {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -2333,7 +2626,7 @@ consistency throughout the year.&lt;/p&gt;
       justify-content: flex-end;
       height: 100%;
     }
-    #garmin-1777019468663438518 .bar {
+    #garmin-1780376104985720663 .bar {
       width: 100%;
       background: linear-gradient(to top, #e74c3c, #c0392b);
       border-radius: 4px 4px 0 0;
@@ -2342,29 +2635,29 @@ consistency throughout the year.&lt;/p&gt;
       transition: opacity 0.2s;
       min-height: 2px;
     }
-    #garmin-1777019468663438518 .bar.cycling {
+    #garmin-1780376104985720663 .bar.cycling {
       background: linear-gradient(to top, #3498db, #2980b9);
     }
-    #garmin-1777019468663438518 .bar.strength-training {
+    #garmin-1780376104985720663 .bar.strength-training {
       background: linear-gradient(to top, #e67e22, #d35400);
     }
-    #garmin-1777019468663438518 .bar.running {
+    #garmin-1780376104985720663 .bar.running {
       background: linear-gradient(to top, #2ecc71, #27ae60);
     }
-    #garmin-1777019468663438518 .bar.walking {
+    #garmin-1780376104985720663 .bar.walking {
       background: linear-gradient(to top, #9b59b6, #8e44ad);
     }
-    #garmin-1777019468663438518 .bar:hover {
+    #garmin-1780376104985720663 .bar:hover {
       opacity: 0.8;
     }
-    #garmin-1777019468663438518 .bar-value {
+    #garmin-1780376104985720663 .bar-value {
       position: absolute;
       top: -20px;
       left: 50%;
       transform: translateX(-50%);
       white-space: nowrap;
     }
-    #garmin-1777019468663438518 .bar-tooltip {
+    #garmin-1780376104985720663 .bar-tooltip {
       position: absolute;
       top: -35px;
       left: 50%;
@@ -2374,17 +2667,17 @@ consistency throughout the year.&lt;/p&gt;
       transition: opacity 0.2s;
       pointer-events: none;
     }
-    #garmin-1777019468663438518 .bar:hover .bar-tooltip {
+    #garmin-1780376104985720663 .bar:hover .bar-tooltip {
       opacity: 1;
     }
-    #garmin-1777019468663438518 .summary-stats {
+    #garmin-1780376104985720663 .summary-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 15px;
     }
   &lt;/style&gt;
 
-  &lt;div id=&#34;garmin-1777019468663438518-container&#34; class=&#34;mid-gray pa3&#34;&gt;Loading activity data...&lt;/div&gt;
+  &lt;div id=&#34;garmin-1780376104985720663-container&#34; class=&#34;mid-gray pa3&#34;&gt;Loading activity data...&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;script&gt;
@@ -2394,7 +2687,7 @@ consistency throughout the year.&lt;/p&gt;
   const activitiesFilter = &#39;Strength Training&#39;;
   const summaryOnly = &#39;weekly&#39; === &#39;true&#39;;
   const allowedActivities = activitiesFilter ? activitiesFilter.split(&#39;,&#39;).map(a =&gt; a.trim()) : [];
-  const container = document.getElementById(&#39;garmin-1777019468663438518-container&#39;);
+  const container = document.getElementById(&#39;garmin-1780376104985720663-container&#39;);
 
   fetch(csvPath)
     .then(response =&gt; {
@@ -2658,50 +2951,50 @@ consistency throughout the year.&lt;/p&gt;
 
 
 
-&lt;div class=&#34;habit-tracker-simple&#34; id=&#34;habit-1777019468663526213&#34;&gt;
+&lt;div class=&#34;habit-tracker-simple&#34; id=&#34;habit-1780376104985789061&#34;&gt;
   &lt;style&gt;
      
-    #habit-1777019468663526213 .year-grid {
+    #habit-1780376104985789061 .year-grid {
       display: grid;
       grid-template-rows: auto repeat(7, 1fr);
       gap: 2px;
       width: 100%;
     }
-    #habit-1777019468663526213 .month-labels {
+    #habit-1780376104985789061 .month-labels {
       display: grid;
       grid-auto-flow: column;
       gap: 2px;
     }
-    #habit-1777019468663526213 .week-row {
+    #habit-1780376104985789061 .week-row {
       display: grid;
       grid-auto-flow: column;
       gap: 2px;
       align-items: center;
     }
-    #habit-1777019468663526213 .months-grid-expanded {
+    #habit-1780376104985789061 .months-grid-expanded {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
     }
-    #habit-1777019468663526213 .weekday-labels {
+    #habit-1780376104985789061 .weekday-labels {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
     }
-    #habit-1777019468663526213 .calendar-grid {
+    #habit-1780376104985789061 .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
     }
-    #habit-1777019468663526213 .year-view .calendar-grid {
+    #habit-1780376104985789061 .year-view .calendar-grid {
       gap: 1px;
     }
-    #habit-1777019468663526213 .year-view .weekday-labels {
+    #habit-1780376104985789061 .year-view .weekday-labels {
       display: none;
     }
 
      
-    #habit-1777019468663526213 .day-cell {
+    #habit-1780376104985789061 .day-cell {
       aspect-ratio: 1;
       cursor: pointer;
       position: relative;
@@ -2713,35 +3006,35 @@ consistency throughout the year.&lt;/p&gt;
       font-size: 10px;
       color: #666;
     }
-    #habit-1777019468663526213 .year-view .day-cell {
+    #habit-1780376104985789061 .year-view .day-cell {
       font-size: 0;
     }
-    #habit-1777019468663526213 .day-cell.empty {
+    #habit-1780376104985789061 .day-cell.empty {
       background: transparent;
       cursor: default;
     }
-    #habit-1777019468663526213 .day-cell.future {
+    #habit-1780376104985789061 .day-cell.future {
       background: #f5f5f5;
       opacity: 0.5;
     }
-    #habit-1777019468663526213 .day-cell[data-level=&#34;1&#34;] { background: #c6e48b; color: #333; }
-    #habit-1777019468663526213 .day-cell[data-level=&#34;2&#34;] { background: #7bc96f; color: #333; }
-    #habit-1777019468663526213 .day-cell[data-level=&#34;3&#34;] { background: #239a3b; color: white; }
-    #habit-1777019468663526213 .day-cell[data-level=&#34;4&#34;] { background: #196127; color: white; }
-    #habit-1777019468663526213 .day-cell:not(.empty):hover {
+    #habit-1780376104985789061 .day-cell[data-level=&#34;1&#34;] { background: #c6e48b; color: #333; }
+    #habit-1780376104985789061 .day-cell[data-level=&#34;2&#34;] { background: #7bc96f; color: #333; }
+    #habit-1780376104985789061 .day-cell[data-level=&#34;3&#34;] { background: #239a3b; color: white; }
+    #habit-1780376104985789061 .day-cell[data-level=&#34;4&#34;] { background: #196127; color: white; }
+    #habit-1780376104985789061 .day-cell:not(.empty):hover {
       outline: 2px solid #433a33;
       z-index: 10;
     }
 
      
-    #habit-1777019468663526213 .view-btn.active {
+    #habit-1780376104985789061 .view-btn.active {
       background: #433a33;
       color: white;
       border-color: #433a33;
     }
 
      
-    #habit-1777019468663526213 .tooltip {
+    #habit-1780376104985789061 .tooltip {
       position: absolute;
       pointer-events: none;
       z-index: 1000;
@@ -2750,7 +3043,7 @@ consistency throughout the year.&lt;/p&gt;
     }
   &lt;/style&gt;
 
-  &lt;div id=&#34;habit-1777019468663526213-container&#34;&gt;&lt;/div&gt;
+  &lt;div id=&#34;habit-1780376104985789061-container&#34;&gt;&lt;/div&gt;
 
   &lt;div class=&#34;flex items-center mt4 f6 mid-gray&#34;&gt;
     &lt;span class=&#34;mr2&#34;&gt;Less&lt;/span&gt;
@@ -2762,7 +3055,7 @@ consistency throughout the year.&lt;/p&gt;
     &lt;span&gt;More&lt;/span&gt;
   &lt;/div&gt;
 
-  &lt;div class=&#34;tooltip dark-gray bg-white pa2 br2 f6 shadow-3 ba b--moon-gray&#34; id=&#34;habit-1777019468663526213-tooltip&#34;&gt;&lt;/div&gt;
+  &lt;div class=&#34;tooltip dark-gray bg-white pa2 br2 f6 shadow-3 ba b--moon-gray&#34; id=&#34;habit-1780376104985789061-tooltip&#34;&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;script&gt;
@@ -2770,8 +3063,8 @@ consistency throughout the year.&lt;/p&gt;
   const csvPath = &#39;\/data\/habits-2025.csv&#39;;
   const year = parseInt(&#34;2025&#34;, 10);
   const targetHabit = &#39;sport&#39;;
-  const container = document.getElementById(&#39;habit-1777019468663526213-container&#39;);
-  const tooltip = document.getElementById(&#39;habit-1777019468663526213-tooltip&#39;);
+  const container = document.getElementById(&#39;habit-1780376104985789061-container&#39;);
+  const tooltip = document.getElementById(&#39;habit-1780376104985789061-tooltip&#39;);
 
   fetch(csvPath)
     .then(response =&gt; {
@@ -3092,50 +3385,50 @@ subscription neared its end, I didn&amp;rsquo;t want to pay that much money agai
 
 
 
-&lt;div class=&#34;habit-tracker-simple&#34; id=&#34;habit-1777019468663630177&#34;&gt;
+&lt;div class=&#34;habit-tracker-simple&#34; id=&#34;habit-1780376104985868389&#34;&gt;
   &lt;style&gt;
      
-    #habit-1777019468663630177 .year-grid {
+    #habit-1780376104985868389 .year-grid {
       display: grid;
       grid-template-rows: auto repeat(7, 1fr);
       gap: 2px;
       width: 100%;
     }
-    #habit-1777019468663630177 .month-labels {
+    #habit-1780376104985868389 .month-labels {
       display: grid;
       grid-auto-flow: column;
       gap: 2px;
     }
-    #habit-1777019468663630177 .week-row {
+    #habit-1780376104985868389 .week-row {
       display: grid;
       grid-auto-flow: column;
       gap: 2px;
       align-items: center;
     }
-    #habit-1777019468663630177 .months-grid-expanded {
+    #habit-1780376104985868389 .months-grid-expanded {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
     }
-    #habit-1777019468663630177 .weekday-labels {
+    #habit-1780376104985868389 .weekday-labels {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
     }
-    #habit-1777019468663630177 .calendar-grid {
+    #habit-1780376104985868389 .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
     }
-    #habit-1777019468663630177 .year-view .calendar-grid {
+    #habit-1780376104985868389 .year-view .calendar-grid {
       gap: 1px;
     }
-    #habit-1777019468663630177 .year-view .weekday-labels {
+    #habit-1780376104985868389 .year-view .weekday-labels {
       display: none;
     }
 
      
-    #habit-1777019468663630177 .day-cell {
+    #habit-1780376104985868389 .day-cell {
       aspect-ratio: 1;
       cursor: pointer;
       position: relative;
@@ -3147,35 +3440,35 @@ subscription neared its end, I didn&amp;rsquo;t want to pay that much money agai
       font-size: 10px;
       color: #666;
     }
-    #habit-1777019468663630177 .year-view .day-cell {
+    #habit-1780376104985868389 .year-view .day-cell {
       font-size: 0;
     }
-    #habit-1777019468663630177 .day-cell.empty {
+    #habit-1780376104985868389 .day-cell.empty {
       background: transparent;
       cursor: default;
     }
-    #habit-1777019468663630177 .day-cell.future {
+    #habit-1780376104985868389 .day-cell.future {
       background: #f5f5f5;
       opacity: 0.5;
     }
-    #habit-1777019468663630177 .day-cell[data-level=&#34;1&#34;] { background: #c6e48b; color: #333; }
-    #habit-1777019468663630177 .day-cell[data-level=&#34;2&#34;] { background: #7bc96f; color: #333; }
-    #habit-1777019468663630177 .day-cell[data-level=&#34;3&#34;] { background: #239a3b; color: white; }
-    #habit-1777019468663630177 .day-cell[data-level=&#34;4&#34;] { background: #196127; color: white; }
-    #habit-1777019468663630177 .day-cell:not(.empty):hover {
+    #habit-1780376104985868389 .day-cell[data-level=&#34;1&#34;] { background: #c6e48b; color: #333; }
+    #habit-1780376104985868389 .day-cell[data-level=&#34;2&#34;] { background: #7bc96f; color: #333; }
+    #habit-1780376104985868389 .day-cell[data-level=&#34;3&#34;] { background: #239a3b; color: white; }
+    #habit-1780376104985868389 .day-cell[data-level=&#34;4&#34;] { background: #196127; color: white; }
+    #habit-1780376104985868389 .day-cell:not(.empty):hover {
       outline: 2px solid #433a33;
       z-index: 10;
     }
 
      
-    #habit-1777019468663630177 .view-btn.active {
+    #habit-1780376104985868389 .view-btn.active {
       background: #433a33;
       color: white;
       border-color: #433a33;
     }
 
      
-    #habit-1777019468663630177 .tooltip {
+    #habit-1780376104985868389 .tooltip {
       position: absolute;
       pointer-events: none;
       z-index: 1000;
@@ -3184,7 +3477,7 @@ subscription neared its end, I didn&amp;rsquo;t want to pay that much money agai
     }
   &lt;/style&gt;
 
-  &lt;div id=&#34;habit-1777019468663630177-container&#34;&gt;&lt;/div&gt;
+  &lt;div id=&#34;habit-1780376104985868389-container&#34;&gt;&lt;/div&gt;
 
   &lt;div class=&#34;flex items-center mt4 f6 mid-gray&#34;&gt;
     &lt;span class=&#34;mr2&#34;&gt;Less&lt;/span&gt;
@@ -3196,7 +3489,7 @@ subscription neared its end, I didn&amp;rsquo;t want to pay that much money agai
     &lt;span&gt;More&lt;/span&gt;
   &lt;/div&gt;
 
-  &lt;div class=&#34;tooltip dark-gray bg-white pa2 br2 f6 shadow-3 ba b--moon-gray&#34; id=&#34;habit-1777019468663630177-tooltip&#34;&gt;&lt;/div&gt;
+  &lt;div class=&#34;tooltip dark-gray bg-white pa2 br2 f6 shadow-3 ba b--moon-gray&#34; id=&#34;habit-1780376104985868389-tooltip&#34;&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;script&gt;
@@ -3204,8 +3497,8 @@ subscription neared its end, I didn&amp;rsquo;t want to pay that much money agai
   const csvPath = &#39;\/data\/habits-2025.csv&#39;;
   const year = parseInt(&#34;2025&#34;, 10);
   const targetHabit = &#39;meditation&#39;;
-  const container = document.getElementById(&#39;habit-1777019468663630177-container&#39;);
-  const tooltip = document.getElementById(&#39;habit-1777019468663630177-tooltip&#39;);
+  const container = document.getElementById(&#39;habit-1780376104985868389-container&#39;);
+  const tooltip = document.getElementById(&#39;habit-1780376104985868389-tooltip&#39;);
 
   fetch(csvPath)
     .then(response =&gt; {
@@ -22881,8 +23174,8 @@ and I&amp;rsquo;ve thought I have a quite decent presentation template. Till I&a
 &lt;p&gt;That &lt;a href=&#34;https://revealjs.com/&#34;&gt;reveal.js&lt;/a&gt; presentation completely my mind and I&amp;rsquo;ve started digging into &lt;a href=&#34;https://asciidoctor.org/&#34;&gt;asciidoc&lt;/a&gt;. And then
 there is also &lt;a href=&#34;https://github.com/yashi/org-asciidoc&#34;&gt;org-asciidoc&lt;/a&gt; which will export your ORG buffer into &lt;code&gt;asciidoc&lt;/code&gt;. However there were some
 &lt;a href=&#34;https://github.com/yashi/org-asciidoc/issues/14&#34;&gt;issues&lt;/a&gt; and quickly after Christmas I decided I&amp;rsquo;ll go on my own and setup my own revealjs theme.&lt;/p&gt;
-&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;Presentation as Code using &lt;a href=&#34;https://twitter.com/hashtag/org?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#org&lt;/a&gt; mode in &lt;a href=&#34;https://twitter.com/hashtag/emacs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#emacs&lt;/a&gt; and &lt;a href=&#34;https://twitter.com/hashtag/revealjs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#revealjs&lt;/a&gt; - &lt;a href=&#34;https://t.co/xszIHuDSEY&#34;&gt;https://t.co/xszIHuDSEY&lt;/a&gt; &lt;a href=&#34;https://t.co/39W0R1DNRO&#34;&gt;pic.twitter.com/39W0R1DNRO&lt;/a&gt;&lt;/p&gt;&amp;mdash; Victor Dorneanu (@victordorneanu) &lt;a href=&#34;https://twitter.com/victordorneanu/status/1481908662251704320?ref_src=twsrc%5Etfw&#34;&gt;January 14, 2022&lt;/a&gt;&lt;/blockquote&gt;
-&lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
+&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;Presentation as Code using &lt;a href=&#34;https://x.com/hashtag/org?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#org&lt;/a&gt; mode in &lt;a href=&#34;https://x.com/hashtag/emacs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#emacs&lt;/a&gt; and &lt;a href=&#34;https://x.com/hashtag/revealjs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#revealjs&lt;/a&gt; - &lt;a href=&#34;https://t.co/xszIHuDSEY&#34;&gt;https://t.co/xszIHuDSEY&lt;/a&gt; &lt;a href=&#34;https://t.co/39W0R1DNRO&#34;&gt;pic.twitter.com/39W0R1DNRO&lt;/a&gt;&lt;/p&gt;&amp;mdash; Victor Dorneanu (@victordorneanu) &lt;a href=&#34;https://x.com/victordorneanu/status/1481908662251704320?ref_src=twsrc%5Etfw&#34;&gt;January 14, 2022&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src=&#34;https://platform.x.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;Here are some links:&lt;/p&gt;
@@ -22901,8 +23194,8 @@ there is also &lt;a href=&#34;https://github.com/yashi/org-asciidoc&#34;&gt;org-
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;And here some GIF I&amp;rsquo;ve put on Twitter:&lt;/p&gt;
-&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;Short demo of my last &amp;quot;Presentation as Code&amp;quot; slides available at &lt;a href=&#34;https://t.co/xszIHuDSEY&#34;&gt;https://t.co/xszIHuDSEY&lt;/a&gt; &lt;a href=&#34;https://twitter.com/hashtag/revealjs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#revealjs&lt;/a&gt; &lt;a href=&#34;https://twitter.com/hashtag/emacs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#emacs&lt;/a&gt; &lt;a href=&#34;https://twitter.com/hashtag/orgmode?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#orgmode&lt;/a&gt; &lt;a href=&#34;https://t.co/GbKFxpK5l5&#34;&gt;pic.twitter.com/GbKFxpK5l5&lt;/a&gt;&lt;/p&gt;&amp;mdash; Victor Dorneanu (@victordorneanu) &lt;a href=&#34;https://twitter.com/victordorneanu/status/1482694904547586051?ref_src=twsrc%5Etfw&#34;&gt;January 16, 2022&lt;/a&gt;&lt;/blockquote&gt;
-&lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
+&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;Short demo of my last &amp;quot;Presentation as Code&amp;quot; slides available at &lt;a href=&#34;https://t.co/xszIHuDSEY&#34;&gt;https://t.co/xszIHuDSEY&lt;/a&gt; &lt;a href=&#34;https://x.com/hashtag/revealjs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#revealjs&lt;/a&gt; &lt;a href=&#34;https://x.com/hashtag/emacs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#emacs&lt;/a&gt; &lt;a href=&#34;https://x.com/hashtag/orgmode?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#orgmode&lt;/a&gt; &lt;a href=&#34;https://t.co/GbKFxpK5l5&#34;&gt;pic.twitter.com/GbKFxpK5l5&lt;/a&gt;&lt;/p&gt;&amp;mdash; Victor Dorneanu (@victordorneanu) &lt;a href=&#34;https://x.com/victordorneanu/status/1482694904547586051?ref_src=twsrc%5Etfw&#34;&gt;January 16, 2022&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src=&#34;https://platform.x.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
 
 
 </description>
@@ -23240,8 +23533,8 @@ Elisp code. Also switching from &lt;a href=&#34;https://www.spacemacs.org/&#34;&
 productivity in Emacs. Now I can say I do understand most of my configuration (see my
 &lt;a href=&#34;https://github.com/dorneanu/dotfiles&#34;&gt;dotfiles&lt;/a&gt;) whereas one year ago I was randomly copy&amp;amp;paste and putting pieces together in
 the hope they&amp;rsquo;ll somehow work.&lt;/p&gt;
-&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;After 15 years of &lt;a href=&#34;https://twitter.com/hashtag/vim?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#vim&lt;/a&gt; usage I&amp;#39;ve switched to &lt;a href=&#34;https://twitter.com/hashtag/spacemacs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#spacemacs&lt;/a&gt; and org-mode. This was a decision I definitely don&amp;#39;t regret.&lt;/p&gt;&amp;mdash; Victor Dorneanu (@victordorneanu) &lt;a href=&#34;https://twitter.com/victordorneanu/status/1222158980627288064?ref_src=twsrc%5Etfw&#34;&gt;January 28, 2020&lt;/a&gt;&lt;/blockquote&gt;
-&lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
+&lt;blockquote class=&#34;twitter-tweet&#34;&gt;&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;After 15 years of &lt;a href=&#34;https://x.com/hashtag/vim?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#vim&lt;/a&gt; usage I&amp;#39;ve switched to &lt;a href=&#34;https://x.com/hashtag/spacemacs?src=hash&amp;amp;ref_src=twsrc%5Etfw&#34;&gt;#spacemacs&lt;/a&gt; and org-mode. This was a decision I definitely don&amp;#39;t regret.&lt;/p&gt;&amp;mdash; Victor Dorneanu (@victordorneanu) &lt;a href=&#34;https://x.com/victordorneanu/status/1222158980627288064?ref_src=twsrc%5Etfw&#34;&gt;January 28, 2020&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src=&#34;https://platform.x.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
 
 
 &lt;h4 id=&#34;modules&#34;&gt;
